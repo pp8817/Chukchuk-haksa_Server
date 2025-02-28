@@ -17,10 +17,10 @@ public class StudentCourse extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "grade")
-    private String grade;
+    @Column(name = "grade", nullable = false)
+    private Grade grade;
 
-    @Column(name = "points")
+    @Column(name = "points", nullable = false)
     private Integer points;
 
     @Column(name = "is_retake")
