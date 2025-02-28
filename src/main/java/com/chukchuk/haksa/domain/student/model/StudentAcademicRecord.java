@@ -1,0 +1,38 @@
+package com.chukchuk.haksa.domain.student.model;
+
+import com.chukchuk.haksa.domain.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "liberal_arts_area_codes")
+public class StudentAcademicRecord extends BaseEntity {
+    @Id
+    private UUID id;
+
+    @Column(name = "attempted_credits_gpa")
+    private BigDecimal attemptedCreditsGpa;
+
+    @Column(name = "percentile")
+    private BigDecimal percentile;
+
+    @Column(name = "cumulative_gpa")
+    private BigDecimal cumulativeGpa;
+
+    @Column(name = "total_attempted_credits")
+    private BigDecimal totalAttemptedCredits;
+
+    @Column(name = "total_earned_credits")
+    private BigDecimal totalEarnedCredits;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
+}
