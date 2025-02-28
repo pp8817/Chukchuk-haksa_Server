@@ -35,7 +35,7 @@ dependencies {
 	// DB
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.h2database:h2'   // local
-//	runtimeOnly 'org.postgresql:postgresql' // prod
+	runtimeOnly 'org.postgresql:postgresql' // prod
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
