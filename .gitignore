@@ -8,6 +8,16 @@ build/
 ### yml ###
 /src/main/resources/*.yml
 
+### ELK ###
+elasticsearch.yml
+kibana.yml
+logstash.yml
+logstash.conf
+.env
+/elk-config/logstash/config/jvm.options
+/usr/share/elasticsearch/data/
+/usr/share/logstash/data/
+
 ### STS ###
 .apt_generated
 .classpath
