@@ -63,7 +63,7 @@
 
 ## 8. ERD
 (2025.03.01 기준)
-<img src=https://github.com/user-attachments/assets/33ec9b35-7a9d-448b-b796-9cde1fa87da8">
+<img src="https://github.com/user-attachments/assets/33ec9b35-7a9d-448b-b796-9cde1fa87da8">
 <br/>
 
 ## 9. 커밋 컨벤션
