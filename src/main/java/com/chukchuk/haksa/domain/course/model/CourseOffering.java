@@ -18,7 +18,6 @@ import java.time.Instant;
 public class CourseOffering extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "subject_establishment_semester")
@@ -27,10 +26,10 @@ public class CourseOffering extends BaseEntity {
     @Column(name = "is_video_lecture")
     private Boolean isVideoLecture;
 
-    @Column(name = "year")
+    @Column(name = "year", nullable = false)
     private Integer year;
 
-    @Column(name = "semester")
+    @Column(name = "semester", nullable = false)
     private Integer semester;
 
     @Column(name = "host_department")
@@ -51,16 +50,19 @@ public class CourseOffering extends BaseEntity {
     @Column(name = "points")
     private BigDecimal points;
 
+    @Column(name = "deleted_at")
+    private Instant deletedAt; // Soft delete 적용
+
     @Enumerated(EnumType.STRING)
     @Column(name = "evaluation_type_code")
-    private EvaluationType evaluationTypeCode; // USER-DEFINED Enum
+    private EvaluationType evaluationTypeCode;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "faculty_division_name")
-    private  FacultyDivision facultyDivisionName; // USER-DEFINED Enum
+    private  FacultyDivision facultyDivisionName;
     
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = false)
     private Course course;
     
     @ManyToOne
@@ -70,7 +72,4 @@ public class CourseOffering extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "professor_id")
     private Professor professor;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt; // Soft delete 적용
 }

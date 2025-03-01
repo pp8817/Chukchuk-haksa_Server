@@ -15,10 +15,9 @@ import java.time.Instant;
 public class Course extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "course_code")
+    @Column(name = "course_code", nullable = false)
     private String courseCode;
 
     @Column(name = "course_name")

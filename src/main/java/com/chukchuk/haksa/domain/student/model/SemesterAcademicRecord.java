@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.student.model;
 
+import com.chukchuk.haksa.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,8 +13,9 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "semester_academic_records")
-public class SemesterAcademicRecord {
+public class SemesterAcademicRecord extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "semester")

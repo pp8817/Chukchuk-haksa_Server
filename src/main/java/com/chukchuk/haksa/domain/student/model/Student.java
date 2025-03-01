@@ -2,6 +2,7 @@ package com.chukchuk.haksa.domain.student.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.department.model.Department;
+import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,31 +17,18 @@ import java.util.UUID;
 @Table(name = "students")
 public class Student extends BaseEntity {
     @Id
-    private UUID studentId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "student_id")
+    private UUID id;
 
-    @Column(name = "student_code")
+    @Column(name = "student_code", nullable = false, unique = true)
     private String studentCode;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "completed_semesters")
-    private Integer completedSemesters;
-
-    @Column(name = "grade_level")
-    private Integer gradeLevel;
-
-    @Column(name = "semester_enrolled")
-    private Integer semesterEnrolled;
-
-    @Column(name = "admission_year")
-    private Integer admissionYear;
-
     @Column(name = "is_graduated")
     private Boolean isGraduated;
-
-    @Column(name = "is_transfer_student")
-    private Boolean isTransferStudent;
 
     @Column(name = "admission_type")
     private String admissionType;
@@ -48,12 +36,11 @@ public class Student extends BaseEntity {
     @Column(name = "target_gpa")
     private BigDecimal targetGpa;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private StudentStatus status;
+    @Embedded
+    private AcademicInfo academicInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -17,10 +17,10 @@ import java.util.UUID;
 public class GraduationRequirement extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "total_credits")
+    @Column(name = "total_credits", nullable = false)
     private Integer totalCredits;
 
     @Column(name = "admission_year")

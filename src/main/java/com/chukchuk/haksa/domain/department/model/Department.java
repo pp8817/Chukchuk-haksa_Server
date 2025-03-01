@@ -20,7 +20,7 @@ public class Department extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(name = "department_code")
+    @Column(name = "department_code", unique = true)
     private String departmentCode;
 
     @Column(name = "established_department_name")

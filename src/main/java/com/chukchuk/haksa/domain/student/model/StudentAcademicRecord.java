@@ -12,9 +12,10 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "liberal_arts_area_codes")
+@Table(name = "student_academic_records")
 public class StudentAcademicRecord extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "attempted_credits_gpa")
@@ -33,6 +34,6 @@ public class StudentAcademicRecord extends BaseEntity {
     private BigDecimal totalEarnedCredits;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", unique = true)
     private Student student;
 }

@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.graduation.model;
 
+import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,8 +14,9 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "student_graduation_progress")
-public class StudentGraduationProgress {
+public class StudentGraduationProgress extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "elective_courses_fulfilled")
@@ -40,6 +42,6 @@ public class StudentGraduationProgress {
     private GraduationStatus graduationStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", unique = true)
     private Student student;
 }
