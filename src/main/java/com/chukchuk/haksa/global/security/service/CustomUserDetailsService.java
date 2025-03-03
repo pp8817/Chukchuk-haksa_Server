@@ -14,6 +14,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Loads user details by email.
+     *
+     * <p>This method queries the user repository for a user associated with the provided email.
+     * If a user is found, it is wrapped in a CustomUserDetails object and returned.
+     * Otherwise, a UsernameNotFoundException is thrown with a message indicating that no user exists with the specified email.
+     *
+     * @param email the email address of the user to be loaded
+     * @return the user details wrapped as a CustomUserDetails object
+     * @throws UsernameNotFoundException if no user is found with the provided email
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 

@@ -9,5 +9,11 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByEmail(String email);
+    /**
+ * Retrieves a User entity that matches the specified email address.
+ *
+ * @param email the email address of the user to retrieve
+ * @return an Optional containing the User if found, or an empty Optional otherwise
+ */
+Optional<User> findByEmail(String email);
 }

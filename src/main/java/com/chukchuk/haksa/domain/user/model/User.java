@@ -38,7 +38,16 @@ public class User extends BaseEntity {
     private Instant connectedAt;
 
     @Column(name = "deleted_at")
-    private Instant deletedAt; // Soft delete 적용
+    private Instant deletedAt; /**
+     * Creates a new User instance with the specified id, email, and profile nickname.
+     *
+     * <p>This builder constructor initializes the user with default settings:
+     * the user is marked as active (not deleted) and not connected to a portal.</p>
+     *
+     * @param id the unique identifier for the user
+     * @param email the user's email address
+     * @param profileNickname the user's profile nickname
+     */
 
     @Builder
     public User(UUID id, String email, String profileNickname) {
