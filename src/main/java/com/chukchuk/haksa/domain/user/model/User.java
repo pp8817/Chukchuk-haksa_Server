@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.user.model;
 import com.chukchuk.haksa.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +17,6 @@ import java.util.UUID;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "email")
@@ -39,4 +39,13 @@ public class User extends BaseEntity {
 
     @Column(name = "deleted_at")
     private Instant deletedAt; // Soft delete 적용
+
+    @Builder
+    public User(UUID id, String email, String profileNickname) {
+        this.id = id;
+        this.email = email;
+        this.profileNickname = profileNickname;
+        this.isDeleted = false;
+        this.portalConnected = false;
+    }
 }
