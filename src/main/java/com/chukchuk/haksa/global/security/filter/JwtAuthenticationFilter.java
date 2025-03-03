@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         User newUser = User.builder()
                             .id(UUID.fromString(uid))
                             .email(email)
-                            .profileNickname("Unkonwn User")
+                            .profileNickname("Unknown User")
                             .build();
                     return userRepository.save(newUser);
             });
