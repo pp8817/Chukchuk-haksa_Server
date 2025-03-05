@@ -1,6 +1,7 @@
-package com.chukchuk.haksa.domain.student.model;
+package com.chukchuk.haksa.domain.academic.record.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
+import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
