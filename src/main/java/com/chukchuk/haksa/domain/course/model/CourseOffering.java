@@ -48,7 +48,7 @@ public class CourseOffering extends BaseEntity {
     private Integer areaCode;
 
     @Column(name = "points")
-    private BigDecimal points;
+    private Integer points;
 
     @Column(name = "deleted_at")
     private Instant deletedAt; // Soft delete 적용

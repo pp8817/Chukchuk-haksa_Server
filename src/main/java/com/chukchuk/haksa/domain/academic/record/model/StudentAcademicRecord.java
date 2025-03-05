@@ -29,10 +29,10 @@ public class StudentAcademicRecord extends BaseEntity {
     private BigDecimal cumulativeGpa;
 
     @Column(name = "total_attempted_credits")
-    private BigDecimal totalAttemptedCredits;
+    private Integer totalAttemptedCredits;
 
     @Column(name = "total_earned_credits")
-    private BigDecimal totalEarnedCredits;
+    private Integer totalEarnedCredits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", unique = true)

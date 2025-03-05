@@ -41,10 +41,10 @@ public class SemesterAcademicRecord extends BaseEntity {
     private BigDecimal semesterGpa;
 
     @Column(name = "attempted_credits")
-    private BigDecimal attemptedCredits;
+    private Integer attemptedCredits;
 
     @Column(name = "earned_credits")
-    private BigDecimal earnedCredits;
+    private Integer earnedCredits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
