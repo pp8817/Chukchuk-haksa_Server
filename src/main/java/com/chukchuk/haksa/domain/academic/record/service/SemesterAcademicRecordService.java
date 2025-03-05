@@ -15,7 +15,7 @@ import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicReco
 @Service
 @RequiredArgsConstructor
 public class SemesterAcademicRecordService {
-    private SemesterAcademicRecordRepository semesterAcademicRecordRepository;
+    private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
 
     public List<SemesterAcademicRecord> getSemesterRecords(UUID studentId, Integer year, Integer semester) {
         return semesterAcademicRecordRepository
