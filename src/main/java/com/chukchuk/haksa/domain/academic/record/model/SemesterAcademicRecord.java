@@ -1,6 +1,7 @@
-package com.chukchuk.haksa.domain.student.model;
+package com.chukchuk.haksa.domain.academic.record.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
+import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,10 +41,10 @@ public class SemesterAcademicRecord extends BaseEntity {
     private BigDecimal semesterGpa;
 
     @Column(name = "attempted_credits")
-    private BigDecimal attemptedCredits;
+    private Integer attemptedCredits;
 
     @Column(name = "earned_credits")
-    private BigDecimal earnedCredits;
+    private Integer earnedCredits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")

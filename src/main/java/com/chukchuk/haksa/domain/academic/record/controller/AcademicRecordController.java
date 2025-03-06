@@ -1,0 +1,37 @@
+package com.chukchuk.haksa.domain.academic.record.controller;
+
+import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
+import com.chukchuk.haksa.domain.academic.record.service.AcademicRecordService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class AcademicRecordController {
+
+    private final AcademicRecordService academicRecordService;
+
+    /* 학기별 성적 및 수강 과목 정보 조회 API
+    * API 경로 변경 제안
+    * param으로 들어오는 year, semester의 Type을 String -> int로 변경 제안
+    *  */
+    @GetMapping("/get-academic") // Restful 방식으로 변경 제안: /api/academic-record
+    public ResponseEntity<AcademicRecordResponse> getAcademicRecord(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("year") String year,
+            @RequestParam("semester") String semester) {
+
+        String email = userDetails.getUsername();
+
+        AcademicRecordResponse response = academicRecordService.getAcademicRecord(email, Integer.parseInt(year), Integer.parseInt(semester));
+        return ResponseEntity.ok(response);
+    }
+
+}

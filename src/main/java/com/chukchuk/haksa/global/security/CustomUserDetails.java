@@ -28,18 +28,6 @@ public class CustomUserDetails implements UserDetails {
         this.isDeleted = user.getIsDeleted();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getProfileNickname() {
-        return profileNickname;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList(); // 현재는 권한이 필요 없으므로 빈 리스트 반환
@@ -50,6 +38,7 @@ public class CustomUserDetails implements UserDetails {
         return null; // Supabase 인증에서는 패스워드를 사용하지 않음
     }
 
+    // TODO: Username: email -> UID로 변경
     @Override
     public String getUsername() {
         return email;
