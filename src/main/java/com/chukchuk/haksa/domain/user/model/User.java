@@ -40,6 +40,9 @@ public class User extends BaseEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt; // Soft delete 적용
 
+    @Column(name = "last_synced_at")
+    private Instant lastSyncedAt;
+
     @Builder
     public User(UUID id, String email, String profileNickname) {
         this.id = id;
