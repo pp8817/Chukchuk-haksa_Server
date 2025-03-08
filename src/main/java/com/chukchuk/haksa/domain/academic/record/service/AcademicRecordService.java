@@ -26,7 +26,7 @@ public class AcademicRecordService {
 
         // 학기별 성적 조회
         List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades =
-                semesterAcademicRecordService.getSemesterGrades(studentId, year, semester);
+                semesterAcademicRecordService.getSemesterGrades(userEmail, year, semester);
 
         // TODO: 수강 과목 조회, 과목 카테고리 분류를 하나로 병합?
         // 수강 과목 조회
