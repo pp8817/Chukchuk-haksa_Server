@@ -16,7 +16,7 @@ import static com.chukchuk.haksa.domain.academic.record.dto.StudentCourseDto.Cou
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StudentCourseService {
-    private StudentCourseRepository studentCourseRepository;
+    private final StudentCourseRepository studentCourseRepository;
 
     public List<CourseDetailDto> getStudentCourses(UUID studentId, Integer year, Integer semester) {
         List<StudentCourse> courses = studentCourseRepository.findByStudentIdAndYearAndSemester(studentId, year, semester);
