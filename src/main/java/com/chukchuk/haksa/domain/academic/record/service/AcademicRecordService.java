@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.academic.record.dto.StudentCourseDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AcademicRecordService {
     private final SemesterAcademicRecordService semesterAcademicRecordService;
     private final StudentCourseService studentCourseService;

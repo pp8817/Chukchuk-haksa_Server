@@ -20,6 +20,11 @@ public class UserService {
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+    }
+
     public UUID getUserId(String email) {
         return userRepository.findByEmail(email)
                 .map(user -> user.getId())

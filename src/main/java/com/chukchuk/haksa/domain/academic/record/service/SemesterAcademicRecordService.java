@@ -5,6 +5,7 @@ import com.chukchuk.haksa.domain.academic.record.repository.SemesterAcademicReco
 import com.chukchuk.haksa.global.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicReco
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
 
