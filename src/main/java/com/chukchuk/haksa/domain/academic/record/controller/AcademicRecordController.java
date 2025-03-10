@@ -2,6 +2,8 @@ package com.chukchuk.haksa.domain.academic.record.controller;
 
 import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.service.AcademicRecordService;
+import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordService;
+import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AcademicRecordController {
 
     private final AcademicRecordService academicRecordService;
+    private final SemesterAcademicRecordService semesterAcademicRecordService;
 
     /* 학기별 성적 및 수강 과목 정보 조회 API
     * API 경로 변경 제안
@@ -31,6 +36,16 @@ public class AcademicRecordController {
         String email = userDetails.getUsername();
 
         AcademicRecordResponse response = academicRecordService.getAcademicRecord(email, Integer.parseInt(year), Integer.parseInt(semester));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get-semesters") //semester 불러오는 controller, 병합
+    public ResponseEntity<List<StudentSemesterDto.StudentSemesterInfoDto>> getSemesterRecord(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String email = userDetails.getUsername();
+        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getStudentSemester(email); //로직 간소화
+
         return ResponseEntity.ok(response);
     }
 
