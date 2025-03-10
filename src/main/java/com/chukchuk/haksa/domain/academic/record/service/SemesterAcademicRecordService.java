@@ -23,10 +23,6 @@ public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
     private final UserService userService;
 
-    public UUID getStudentId(String email) { //email로 studentID 얻기
-        return userService.getUserId(email);
-    }
-
     public List<SemesterAcademicRecord> getSemesterRecords(UUID studentId, Integer year, Integer semester) {
         return semesterAcademicRecordRepository
                 .findByStudentIdAndYearAndSemester(studentId, year, semester);
@@ -51,7 +47,7 @@ public class SemesterAcademicRecordService {
     }
 
     public List<StudentSemesterDto.StudentSemesterInfoDto> getStudentSemester(String email) {
-        UUID studentId = getStudentId(email);
+        UUID studentId = userService.getUserId(email);
 
         List<SemesterAcademicRecord> records = getStudentRecord(studentId); //email로 studentId 얻어오기
         if (records.isEmpty()) { //신입생 예외처리
