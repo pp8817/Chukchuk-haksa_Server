@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         try {
             Claims claims = kakaoOidcService.verifyIdToken(authHeader);
-            String kakaoUid = claims.getSubject(); // 카카오 고유 사용자 UID
             String email = claims.get("email", String.class);// 사용자 email
 
             // User 조회
@@ -48,7 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .orElseGet(() -> {
                         // 사용자 정보가 없으면 새로 저장
                         User newUser = User.builder()
-                                .id(UUID.fromString(kakaoUid))
                                 .email(email)
                                 .profileNickname("Unknown User")
                                 .build();
