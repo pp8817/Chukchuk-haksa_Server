@@ -38,7 +38,6 @@ public class CustomUserDetails implements UserDetails {
         return null; // Supabase 인증에서는 패스워드를 사용하지 않음
     }
 
-    // TODO: Username: email -> UID로 변경
     @Override
     public String getUsername() {
         return email;
