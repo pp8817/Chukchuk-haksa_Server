@@ -11,5 +11,8 @@ import java.util.UUID;
 public interface SemesterAcademicRecordRepository extends JpaRepository<SemesterAcademicRecord, UUID> {
 
     List<SemesterAcademicRecord> findByStudentIdAndYearAndSemester(UUID studentId, Integer year, Integer semester);
+
     List<SemesterAcademicRecord> findByStudentId(UUID studentId); //studentID로 data 얻어오기
+
+    List<SemesterAcademicRecord> findByStudentIdOrderByYearDescSemesterDesc(UUID studentId);
 }
