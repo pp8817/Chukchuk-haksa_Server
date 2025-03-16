@@ -60,9 +60,9 @@ public class SemesterAcademicRecordService {
     }
 
     public List<StudentSemesterDto.StudentSemesterInfoDto> getStudentSemester(String email) {
-        UUID studentId = userService.getUserId(email);
+        UUID studentId = userService.getUserId(email); //email로 studentId 얻어오기
 
-        List<SemesterAcademicRecord> records = getStudentRecord(studentId); //email로 studentId 얻어오기
+        List<SemesterAcademicRecord> records = getStudentRecord(studentId);
         if (records.isEmpty()) { //신입생 예외처리
             throw new FreshManException("신입생은 학기 기록이 없습니다.");
         }

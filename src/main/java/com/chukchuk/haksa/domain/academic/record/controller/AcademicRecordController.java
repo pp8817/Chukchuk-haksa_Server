@@ -44,7 +44,7 @@ public class AcademicRecordController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         String email = userDetails.getUsername();
-        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getStudentSemester(email); //로직 간소화
+        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getStudentSemester(email);
 
         return ResponseEntity.ok(response);
     }
