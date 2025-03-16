@@ -8,7 +8,7 @@ public record AcademicRecordResponse(
         Courses courses,
         Summary summary
 ) {
-    // TODO: 타입 수정
+
     public record Courses(
             List<StudentCourseDto.CourseDetailDto> major,
             List<StudentCourseDto.CourseDetailDto> liberal
