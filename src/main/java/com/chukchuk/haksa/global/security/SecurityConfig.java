@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 기반 인증
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // 인증이 필요 없는 경로
+                        .requestMatchers("/auth/kakao").permitAll() // 로그인 엔드포인트는 허용
                         .requestMatchers("/api/public").permitAll()
                         .requestMatchers("/api/private").authenticated()
                         .anyRequest().authenticated()

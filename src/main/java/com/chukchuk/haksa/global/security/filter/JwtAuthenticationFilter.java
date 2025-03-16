@@ -3,7 +3,8 @@ package com.chukchuk.haksa.global.security.filter;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
 import com.chukchuk.haksa.global.security.service.CustomUserDetailsService;
-import com.chukchuk.haksa.global.security.service.JwtUtil;
+import com.chukchuk.haksa.global.security.service.KakaoOidcService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,12 +18,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
+
+    private final KakaoOidcService kakaoOidcService;
     private final CustomUserDetailsService userDetailsService;
     private final UserRepository userRepository;
 
@@ -37,20 +38,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
         try {
-            String uid = jwtUtil.getUserIdFromToken(token);
-            String email = jwtUtil.getEmailFromToken(token);
+            Claims claims = kakaoOidcService.verifyIdToken(authHeader);
+            String email = claims.get("email", String.class);// 사용자 email
 
             // User 조회
             userRepository.findByEmail(email)
                     .orElseGet(() -> {
                         // 사용자 정보가 없으면 새로 저장
                         User newUser = User.builder()
-                            .id(UUID.fromString(uid))
-                            .email(email)
-                            .profileNickname("Unknown User")
-                            .build();
-                    return userRepository.save(newUser);
-            });
+                                .email(email)
+                                .profileNickname("Unknown User")
+                                .build();
+                        return userRepository.save(newUser);
+                    });
 
             //UserDetails 생성 후 인증 객체 저장
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
@@ -62,9 +62,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invaild Token");
             return;
         }
-
-        filterChain.doFilter(request, response);
     }
 }
-
-//
