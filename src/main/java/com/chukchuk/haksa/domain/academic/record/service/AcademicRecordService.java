@@ -30,13 +30,9 @@ public class AcademicRecordService {
         List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades =
                 semesterAcademicRecordService.getSemesterGrades(studentId, year, semester);
 
-        // TODO: 수강 과목 조회, 과목 카테고리 분류를 하나로 병합?
-        // 수강 과목 조회
-        List<StudentCourseDto.CourseDetailDto> courses = studentCourseService.getStudentCourses(studentId, year, semester);
-
-        // 과목 카테고리 분류
-        Map<String, List<StudentCourseDto.CourseDetailDto>> categorizedCourses = courses.stream()
-                .collect(Collectors.groupingBy(course -> getCourseCategory(course.areaType())));
+        // 수강 과목 조회 및 카테고리 분류
+        Map<String, List<StudentCourseDto.CourseDetailDto>> categorizedCourses = categorizeCourses(
+                studentCourseService.getStudentCourses(studentId, year, semester));
 
         List<StudentCourseDto.CourseDetailDto> majorCourses = categorizedCourses.getOrDefault("major", List.of());
         List<StudentCourseDto.CourseDetailDto> liberalCourses = categorizedCourses.getOrDefault("liberal", List.of());
@@ -44,8 +40,6 @@ public class AcademicRecordService {
         // 5️⃣ 전공 평점 계산
         double majorGpa = calculateMajorGpa(majorCourses);
 
-        // TODO: earnedCredits, semesterGpa이 Null로 오는 경우 대비 필요
-        // 최종 응답 데이터 생성
         return new AcademicRecordResponse(
                 semesterGrades,
                 new AcademicRecordResponse.Courses(majorCourses, liberalCourses),
@@ -55,18 +49,19 @@ public class AcademicRecordService {
 
     /* Using Method */
 
-    // 전공, 교양 분류 메서드
-    private String getCourseCategory(String areaType) {
-        return switch (areaType) {
-            case "전핵", "전선", "복선" -> "major";
-            default -> "liberal";
-        };
+    /*과목을 전공/교양으로 분류*/
+    private Map<String, List<StudentCourseDto.CourseDetailDto>> categorizeCourses(List<StudentCourseDto.CourseDetailDto> courses) {
+        return courses.stream()
+                .collect(Collectors.groupingBy(course -> switch (course.areaType()) {
+                    case "전핵", "전선", "복선" -> "major";
+                    default -> "liberal";
+                }));
     }
 
-    // 전공 평점 계산 메서드
+    /* 전공 평점 계산 메서드 */
     private double calculateMajorGpa(List<StudentCourseDto.CourseDetailDto> majorCourses) {
         if (majorCourses.isEmpty()) {
-            return 0;
+            return 0.0;
         }
 
         Map<String, Double> gradePoints = Map.of(
@@ -83,8 +78,9 @@ public class AcademicRecordService {
         for (StudentCourseDto.CourseDetailDto course : majorCourses) {
             if (gradePoints.containsKey(course.grade())) {
                 double points = gradePoints.get(course.grade());
-                totalPoints += points * course.credits().intValue();
-                totalCredits += course.credits().intValue();
+                int credits = course.credits().intValue();
+                totalPoints += points * credits;
+                totalCredits += credits;
             }
         }
 
