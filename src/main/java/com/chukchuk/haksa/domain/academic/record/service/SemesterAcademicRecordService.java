@@ -23,53 +23,53 @@ public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
     private final UserService userService;
 
-    public List<SemesterAcademicRecord> getSemesterRecords(UUID studentId, Integer year, Integer semester) {
-        return semesterAcademicRecordRepository
-                .findByStudentIdAndYearAndSemester(studentId, year, semester);
+    /* 특정 학생의 특정 학기 성적 조회 */
+    public SemesterGradeDto getSemesterGradesByYearAndSemester(UUID studentId, Integer year, Integer semester) {
+        return SemesterGradeDto.from(findSemesterRecordsByYearAndSemester(studentId, year, semester));
     }
 
-    public List<SemesterGradeDto> getSemesterGrades(UUID studentId, Integer year, Integer semester) {
-        List<SemesterAcademicRecord> records = getSemesterRecords(studentId, year, semester);
-
-        if (records.isEmpty()) {
-            throw new DataNotFoundException("학기 성적 데이터를 찾을 수 없습니다.");
-        }
-
-        return records.stream()
+    /* 특정 학생의 전체 학기 성적 조회 (최신순 정렬) */
+    public List<SemesterGradeDto> getAllSemesterGrades(UUID studentId) {
+        return findAllSemesterRecords(studentId).stream()
                 .map(SemesterGradeDto::from)
                 .collect(Collectors.toList());
     }
 
-    public List<SemesterGradeDto> getSemesterGrades(UUID studentId) {
+    /* 특정 학생의 특정 학기 성적 조회 (없으면 예외 발생) */
+    private SemesterAcademicRecord findSemesterRecordsByYearAndSemester(UUID studentId, Integer year, Integer semester) {
+        return semesterAcademicRecordRepository.findByStudentIdAndYearAndSemester(studentId, year, semester)
+                .orElseThrow(() -> new DataNotFoundException("해당 학기의 성적 데이터를 찾을 수 없습니다."));
+    }
+
+    /* 특정 학생의 전체 학기 성적 조회 (최신순 정렬, 없으면 예외 발생) */
+    private List<SemesterAcademicRecord> findAllSemesterRecords(UUID studentId) {
         List<SemesterAcademicRecord> records = semesterAcademicRecordRepository.findByStudentIdOrderByYearDescSemesterDesc(studentId);
 
-
         if (records.isEmpty()) {
             throw new DataNotFoundException("학기 성적 데이터를 찾을 수 없습니다.");
         }
 
-        return records.stream()
-                .map(SemesterGradeDto::from)
+        return records;
+    }
+
+    /* 학생의 학기 정보 조회 */
+    public List<StudentSemesterDto.StudentSemesterInfoDto> getSemestersByStudentEmail(String email) {
+        UUID studentId = userService.getUserId(email); //email로 studentId 얻어오기
+
+        return findSemestersByStudent(studentId).stream()
+                .map(StudentSemesterDto.StudentSemesterInfoDto::from)
                 .collect(Collectors.toList());
     }
 
+    /* 특정 학생의 학기 정보 조회 (신입생 예외 처리) */
+    private List<SemesterAcademicRecord> findSemestersByStudent(UUID studentId) {
+        List<SemesterAcademicRecord> records = semesterAcademicRecordRepository.findByStudentId(studentId);
 
-    public List<SemesterAcademicRecord> getStudentRecord(UUID studentId) {
-        return semesterAcademicRecordRepository
-                .findByStudentId(studentId);
-    }
-
-    public List<StudentSemesterDto.StudentSemesterInfoDto> getStudentSemester(String email) {
-        UUID studentId = userService.getUserId(email);
-
-        List<SemesterAcademicRecord> records = getStudentRecord(studentId); //email로 studentId 얻어오기
-        if (records.isEmpty()) { //신입생 예외처리
+        if (records.isEmpty()) {
             throw new FreshManException("신입생은 학기 기록이 없습니다.");
         }
 
-        return records.stream()
-                .map(StudentSemesterDto.StudentSemesterInfoDto::from)
-                .collect(Collectors.toList());
+        return records;
     }
 
 }

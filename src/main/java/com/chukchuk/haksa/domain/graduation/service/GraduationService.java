@@ -40,7 +40,7 @@ public class GraduationService {
         List<AreaProgressDto> areaProgress = graduationQueryRepository.getStudentAreaProgress(userId, effectiveDepartmentId, student.getAcademicInfo().getAdmissionYear());
 
         // 학기별 성적 조회
-        List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades = semesterAcademicRecordService.getSemesterGrades(userId);
+        List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades = semesterAcademicRecordService.getAllSemesterGrades(userId);
 
         // 학업 성적 요약 조회
         StudentAcademicRecordDto.AcademicSummaryDto academicSummary = studentAcademicRecordService.getAcademicSummary(userId);
