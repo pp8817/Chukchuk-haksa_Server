@@ -40,6 +40,19 @@ public class SemesterAcademicRecordService {
                 .collect(Collectors.toList());
     }
 
+    public List<SemesterGradeDto> getSemesterGrades(UUID studentId) {
+        List<SemesterAcademicRecord> records = semesterAcademicRecordRepository.findByStudentIdOrderByYearDescSemesterDesc(studentId);
+
+
+        if (records.isEmpty()) {
+            throw new DataNotFoundException("학기 성적 데이터를 찾을 수 없습니다.");
+        }
+
+        return records.stream()
+                .map(SemesterGradeDto::from)
+                .collect(Collectors.toList());
+    }
+
 
     public List<SemesterAcademicRecord> getStudentRecord(UUID studentId) {
         return semesterAcademicRecordRepository

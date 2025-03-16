@@ -8,7 +8,7 @@ public class SemesterAcademicRecordDto {
 
     public record SemesterGradeDto(
             Integer year, // 이수년도
-            String semester, // 학기 (1, 2, 여름, 겨울)
+            Integer semester, // 10, 15, 20, 25
             Integer earnedCredits, // 취득 학점
             Integer attemptedCredits, // 신청 학점
             BigDecimal semesterGpa, // 평점 평균
@@ -19,7 +19,7 @@ public class SemesterAcademicRecordDto {
         public static SemesterGradeDto from(SemesterAcademicRecord record) {
             return new SemesterGradeDto(
                     record.getYear(),
-                    String.valueOf(record.getSemester()),
+                    record.getSemester(),
                     record.getEarnedCredits(),
                     record.getAttemptedCredits(),
                     record.getSemesterGpa(),
