@@ -58,7 +58,7 @@ public class AcademicRecordService {
     // 전공, 교양 분류 메서드
     private String getCourseCategory(String areaType) {
         return switch (areaType) {
-            case "전핵", "전선" -> "major";
+            case "전핵", "전선", "복선" -> "major";
             default -> "liberal";
         };
     }
