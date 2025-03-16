@@ -44,7 +44,7 @@ public class AcademicRecordController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         String email = userDetails.getUsername();
-        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getStudentSemester(email);
+        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getSemestersByStudentEmail(email);
 
         return ResponseEntity.ok(response);
     }

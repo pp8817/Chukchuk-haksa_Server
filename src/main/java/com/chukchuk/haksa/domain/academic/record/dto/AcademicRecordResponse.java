@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record AcademicRecordResponse(
-        List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades,
+        SemesterAcademicRecordDto.SemesterGradeDto semesterGrade,
         Courses courses,
         Summary summary
 ) {
@@ -20,16 +20,15 @@ public record AcademicRecordResponse(
             double majorGpa,             // 전공 평점 평균
             BigDecimal percentile           // 백분위
     ) {
-        public static Summary from(List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades, double majorGpa) {
+        public static Summary from(SemesterAcademicRecordDto.SemesterGradeDto semesterGrade, double majorGpa) {
             Integer totalEarnedCredits = 0;
             BigDecimal cumulativeGpa = BigDecimal.ZERO;
             BigDecimal percentile = BigDecimal.ZERO;
 
-            if (!semesterGrades.isEmpty()) {
-                SemesterAcademicRecordDto.SemesterGradeDto firstGrade = semesterGrades.get(0);
-                totalEarnedCredits = firstGrade.earnedCredits();
-                cumulativeGpa = firstGrade.semesterGpa();
-                percentile = firstGrade.percentile();
+            if (semesterGrade != null) {
+                totalEarnedCredits = semesterGrade.earnedCredits();
+                cumulativeGpa = semesterGrade.semesterGpa();
+                percentile = semesterGrade.percentile();
             }
 
             return new Summary(

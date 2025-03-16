@@ -27,8 +27,8 @@ public class AcademicRecordService {
         UUID studentId = userService.getUserId(userEmail);
 
         // 학기별 성적 조회
-        List<SemesterAcademicRecordDto.SemesterGradeDto> semesterGrades =
-                semesterAcademicRecordService.getSemesterGrades(studentId, year, semester);
+        SemesterAcademicRecordDto.SemesterGradeDto semesterGrade =
+                semesterAcademicRecordService.getSemesterGradesByYearAndSemester(studentId, year, semester);
 
         // 수강 과목 조회 및 카테고리 분류
         Map<String, List<StudentCourseDto.CourseDetailDto>> categorizedCourses = categorizeCourses(
@@ -41,9 +41,9 @@ public class AcademicRecordService {
         double majorGpa = calculateMajorGpa(majorCourses);
 
         return new AcademicRecordResponse(
-                semesterGrades,
+                semesterGrade,
                 new AcademicRecordResponse.Courses(majorCourses, liberalCourses),
-                AcademicRecordResponse.Summary.from(semesterGrades, majorGpa)
+                AcademicRecordResponse.Summary.from(semesterGrade, majorGpa)
         );
     }
 
