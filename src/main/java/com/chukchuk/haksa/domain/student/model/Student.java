@@ -35,6 +35,10 @@ public class Student extends BaseEntity {
 
     @Column(name = "target_gpa")
     private BigDecimal targetGpa;
+    //targetGpa의 경우 setter가 필요하여 따로 설정함, DB에 저장해야하니 Entity에 씀
+    public void setTargetGpa(BigDecimal targetGpa) {
+        this.targetGpa = targetGpa;
+    }
 
     @Embedded
     private AcademicInfo academicInfo;
