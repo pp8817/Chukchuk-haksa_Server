@@ -9,5 +9,6 @@ public enum FacultyDivision {
     전취,
     전핵,
     전선,
-    일선
+    일선,
+    복선
 }
