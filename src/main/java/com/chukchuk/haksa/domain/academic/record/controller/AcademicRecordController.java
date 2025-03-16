@@ -30,12 +30,12 @@ public class AcademicRecordController {
     @GetMapping("/get-academic") // Restful 방식으로 변경 제안: /api/academic-record
     public ResponseEntity<AcademicRecordResponse> getAcademicRecord(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam("year") String year,
-            @RequestParam("semester") String semester) {
+            @RequestParam Integer year,
+            @RequestParam Integer semester) {
 
         String email = userDetails.getUsername();
 
-        AcademicRecordResponse response = academicRecordService.getAcademicRecord(email, Integer.parseInt(year), Integer.parseInt(semester));
+        AcademicRecordResponse response = academicRecordService.getAcademicRecord(email, year, semester);
         return ResponseEntity.ok(response);
     }
 
