@@ -37,7 +37,7 @@ public class AcademicRecordService {
         List<StudentCourseDto.CourseDetailDto> majorCourses = categorizedCourses.getOrDefault("major", List.of());
         List<StudentCourseDto.CourseDetailDto> liberalCourses = categorizedCourses.getOrDefault("liberal", List.of());
 
-        // 5️⃣ 전공 평점 계산
+        // 전공 평점 계산
         double majorGpa = calculateMajorGpa(majorCourses);
 
         return new AcademicRecordResponse(
