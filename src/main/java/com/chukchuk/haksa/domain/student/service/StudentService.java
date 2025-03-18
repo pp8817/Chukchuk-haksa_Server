@@ -31,4 +31,19 @@ public class StudentService {
         return studentRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("해당 학생이 존재하지 않습니다."));
     }
+
+    @Transactional
+    public void setStudentTargetGpa(String email, Double targetGpa) {
+        UUID studentId = userService.getUserId(email);
+        Student student = getStudentById(studentId);
+
+        //학점 입력 하는데 0 ~ 4.5 이외를 입력하는 경우
+        if (targetGpa != null &&
+                (targetGpa < 0 || targetGpa>4.5)) {
+            throw new IllegalArgumentException("유효하지 않은 목표 학점입니다");
+        }
+
+        student.changeTargetGpa(targetGpa);
+        studentRepository.save(student);
+    }
 }

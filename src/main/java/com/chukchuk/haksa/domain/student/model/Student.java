@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -34,10 +33,13 @@ public class Student extends BaseEntity {
     private String admissionType;
 
     @Column(name = "target_gpa")
-    private BigDecimal targetGpa;
-    //targetGpa의 경우 setter가 필요하여 따로 설정함, DB에 저장해야하니 Entity에 씀
-    public void setTargetGpa(BigDecimal targetGpa) {
+    private Double targetGpa;
+
+    private void setTargetGpa(Double targetGpa) {
         this.targetGpa = targetGpa;
+    }
+    public void changeTargetGpa(Double targetGpa) { //setTargetGpa를 private로 설정하면서 생성
+        setTargetGpa(targetGpa);
     }
 
     @Embedded
