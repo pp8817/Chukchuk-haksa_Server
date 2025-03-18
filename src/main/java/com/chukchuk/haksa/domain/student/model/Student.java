@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -34,7 +33,11 @@ public class Student extends BaseEntity {
     private String admissionType;
 
     @Column(name = "target_gpa")
-    private BigDecimal targetGpa;
+    private Double targetGpa;
+
+    public void setTargetGpa(Double targetGpa) {
+        this.targetGpa = targetGpa;
+    }
 
     @Embedded
     private AcademicInfo academicInfo;
