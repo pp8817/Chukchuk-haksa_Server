@@ -38,7 +38,7 @@ public class Student extends BaseEntity {
     private void setTargetGpa(Double targetGpa) {
         this.targetGpa = targetGpa;
     }
-    public void changeTargetGpa(Double targetGpa) { //setTargetGpa를 private로 설정하면서 생성
+    public void updateTargetGpa(Double targetGpa) {
         setTargetGpa(targetGpa);
     }
 
