@@ -35,11 +35,8 @@ public class Student extends BaseEntity {
     @Column(name = "target_gpa")
     private Double targetGpa;
 
-    private void setTargetGpa(Double targetGpa) {
+    public void setTargetGpa(Double targetGpa) {
         this.targetGpa = targetGpa;
-    }
-    public void updateTargetGpa(Double targetGpa) {
-        setTargetGpa(targetGpa);
     }
 
     @Embedded

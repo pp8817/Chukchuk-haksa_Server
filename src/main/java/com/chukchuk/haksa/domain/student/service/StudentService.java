@@ -43,7 +43,7 @@ public class StudentService {
             throw new IllegalArgumentException("유효하지 않은 목표 학점입니다");
         }
 
-        student.updateTargetGpa(targetGpa);
+        student.setTargetGpa(targetGpa);
         studentRepository.save(student);
     }
 }
