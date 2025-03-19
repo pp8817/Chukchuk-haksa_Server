@@ -15,6 +15,7 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class KakaoOidcService {
     private final KakaoOidcPublicKeyService publicKeyService;
+    // test
 
     public Claims verifyIdToken(String idToken) throws Exception {
         JsonNode jwks = publicKeyService.getKakaoOidcPublicKey();
