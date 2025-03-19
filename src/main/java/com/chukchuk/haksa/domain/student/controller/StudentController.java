@@ -15,7 +15,7 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    @PostMapping("target-gpa")
+    @PostMapping("/target-gpa")
     public ResponseEntity<?> setTargetGpa(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) Double targetGpa
