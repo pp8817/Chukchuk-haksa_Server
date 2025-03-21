@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- logo -->
-<img src="https://github.com/user-attachments/assets/16764352-ab1e-4cfa-b30e-6287fafde803" width="400"/>
+<img src="https://github.com/user-attachments/assets/16764352-ab1e-4cfa-b30e-6287fafde803" width="600"/>
 
 ### 척척학사 Backend Reamd.me ✅
 
@@ -24,14 +24,29 @@
 ## 1. 📝 소개
 <br />
 
+**척척학사**는 학생들이 학교 포털과 연동하여 본인의 이수 현황과 졸업 요건을 손쉽게 확인하고 관리할 수 있도록 도와주는 서비스입니다. 
+
+기존에는 학생들이 직접 학과별 졸업 요건을 찾아 하나하나 대조해야 했던 불편함이 있었지만, 척척학사는 이를 자동화하여 보다 편리하게 졸업 요건을 관리할 수 있도록 지원합니다. 현재 수원대학교 재학생 **600명** 이상이 사용 중이며, 학사 데이터를 실시간으로 동기화하여 졸업을 체계적으로 준비할 수 있도록 돕고 있습니다.
+
 ## 2. 💁‍♂️ 프로젝트 팀원
-|Backend 팀장|Backend 팀원|Backend 팀원|
-|:---:|:---:|:---:|
-| | |
-|||
-|||
+|Backend 팀장|Backend 팀원|
+|:---:|:---:|
+| | 
+||
+||
 
 ## 3. 💡 주요 기능
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/84cf31e3-6180-495f-a183-ead0d082b4fc" width="800" alt="척척학사 IA 구조도">
+  <br/>
+  <img src="https://github.com/user-attachments/assets/9fe3eb54-97be-48d9-8d60-c20da2a9e19d" width="800" alt="척척학사 기능 소개1">
+  <br/>
+  <img src="https://github.com/user-attachments/assets/1f464920-a223-45da-9cf1-4d8c2bd04cd6" width="800" alt="척척학사 기능 소개2">
+</p>
+
+- **학교 포털 데이터 연동**을 통한 학점, 성적 등 학사 데이터 실시간 동기화
+- 학생별 학사 데이터와 졸업 요건을 자동 비교 분석하여 **부족한 학점 확인**
 
 ## 4. 프로토타입
 
