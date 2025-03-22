@@ -1,14 +1,22 @@
 package com.chukchuk.haksa.domain.student.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
+import com.chukchuk.haksa.domain.academic.record.model.SemesterAcademicRecord;
+import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
+import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.department.model.Department;
+import com.chukchuk.haksa.domain.graduation.model.StudentGraduationProgress;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import static jakarta.persistence.CascadeType.REMOVE;
 
 @Entity
 @Getter
@@ -35,10 +43,6 @@ public class Student extends BaseEntity {
     @Column(name = "target_gpa")
     private Double targetGpa;
 
-    public void setTargetGpa(Double targetGpa) {
-        this.targetGpa = targetGpa;
-    }
-
     @Embedded
     private AcademicInfo academicInfo;
 
@@ -50,7 +54,28 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "major_id")
     private Department major;
 
+//    @OneToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "user_id", nullable = false, unique = true)
+//    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "secondary_major_id")
     private Department secondaryMajor;
+
+    @OneToOne(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    private StudentAcademicRecord studentAcademicRecord;
+
+    @OneToOne(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    private StudentGraduationProgress graduationProgress;
+
+    @OneToMany(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    private List<SemesterAcademicRecord> semesterAcademicRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    private List<StudentCourse> studentCourses = new ArrayList<>();
+
+    /* Using Method */
+    public void setTargetGpa(Double targetGpa) {
+        this.targetGpa = targetGpa;
+    }
 }
