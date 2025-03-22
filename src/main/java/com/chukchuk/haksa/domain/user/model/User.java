@@ -45,6 +45,9 @@ public class User extends BaseEntity {
     @Column(name = "last_synced_at")
     private Instant lastSyncedAt;
 
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private Student student;
+
     @Builder
     public User(UUID id, String email, String profileNickname) {
         this.id = id;
