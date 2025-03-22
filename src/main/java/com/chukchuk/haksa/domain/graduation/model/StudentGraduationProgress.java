@@ -41,7 +41,7 @@ public class StudentGraduationProgress extends BaseEntity {
     @Column(name = "graduation_status")
     private GraduationStatus graduationStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", unique = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
     private Student student;
 }
