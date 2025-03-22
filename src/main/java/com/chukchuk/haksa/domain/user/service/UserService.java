@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.user.service;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
 import com.chukchuk.haksa.global.exception.DataNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +30,11 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .map(user -> user.getId())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
+    }
+
+    @Transactional
+    public void deleteUserByEmail(String email){
+        UUID userId = getUserId(email);
+        userRepository.deleteById(userId);
     }
 }
