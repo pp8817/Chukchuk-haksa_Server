@@ -19,7 +19,7 @@ public class SemesterAcademicRecord extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "semester")
+    @Column(name = "semester", nullable = false)
     private Integer semester;
 
     @Column(name = "year")
