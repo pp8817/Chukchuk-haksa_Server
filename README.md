@@ -53,7 +53,7 @@
 ## 5. 🗂️ APIs
 작성한 API는 아래에서 확인할 수 있습니다.
 
-👉🏻 [API 바로보기](https://documenter.getpostman.com/view/36829015/2sAYdfpAx6)
+👉🏻 [API 바로보기](https://pp8817.github.io/swagger-ui/)
 
 
 <br />
