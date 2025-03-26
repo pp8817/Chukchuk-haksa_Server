@@ -1,29 +1,30 @@
 package com.chukchuk.haksa.domain.academic.record.dto;
 
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
 
 public class StudentCourseDto {
 
     // TODO: 타입 일치하는지 확인
+    @Schema(description = "수강 과목 상세 정보")
     public record CourseDetailDto(
-            String id,
-            String courseName, // 과목명
-            String courseCode, // 학수번호
-            String areaType, // 영역 (전공, 교양 등)
-            Integer credits, // 학점
-            String professor, // 교수명
-            String grade, // 성적 (A+, A0, B+ 등)
-            Integer score, // 실점수 (있는 경우)
-            Boolean isRetake, // 재수강 여부
-            Boolean isOnline, // 사이버강의 여부
-            Integer year, // 이수년도
-            Integer semester, // 이수학기코드
-            Integer originalScore // 실 점수
+            @Schema(description = "수강 ID") String id,
+            @Schema(description = "과목명") String courseName,
+            @Schema(description = "학수번호") String courseCode,
+            @Schema(description = "영역 (전공/교양 등)") String areaType,
+            @Schema(description = "학점") Integer credits,
+            @Schema(description = "교수명") String professor,
+            @Schema(description = "성적") String grade,
+            @Schema(description = "실 점수") Integer score,
+            @Schema(description = "재수강 여부") Boolean isRetake,
+            @Schema(description = "사이버 강의 여부") Boolean isOnline,
+            @Schema(description = "이수 연도") Integer year,
+            @Schema(description = "이수 학기") Integer semester,
+            @Schema(description = "원점수") Integer originalScore
     ) {
         public static CourseDetailDto from(StudentCourse course) {
-
             return new CourseDetailDto(
                     String.valueOf(course.getId()),
                     course.getOffering().getCourse().getCourseName(),

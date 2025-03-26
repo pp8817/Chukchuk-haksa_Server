@@ -30,6 +30,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 기반 인증
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/kakao").permitAll() // 로그인 엔드포인트는 허용
+                        // Swagger 허용 경로
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/api/public").permitAll()
                         .requestMatchers("/api/private").authenticated()
                         .anyRequest().authenticated()
