@@ -13,6 +13,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +64,12 @@ public class KakaoOidcService {
     }
 
     private void validateClaims(String expectedNonce, Claims claims) {
+
+        Date expiration = claims.getExpiration();
+        if (expiration == null || expiration.before(new Date())) {
+            throw new IllegalArgumentException("만료된 토큰입니다.");
+        }
+
         if (!claims.getIssuer().equals("https://kauth.kakao.com")) {
             throw new IllegalArgumentException("유효하지 않은 iss 입니다.");
         }
