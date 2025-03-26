@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 
 @Service
@@ -50,9 +52,14 @@ public class KakaoOidcService {
     }
 
     private PublicKey createPublicKey(JsonNode keyNode) throws Exception{
-        byte[] decodedKey = Base64.getDecoder().decode(keyNode.get("n").asText());
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
-        return java.security.KeyFactory.getInstance("RSA").generatePublic(keySpec);
+        // RSA 키 파라미터 추출
+        BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(keyNode.get("n").asText()));
+        BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(keyNode.get("n").asText()));
+
+        // RSA 공개키 생성
+        RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
+        KeyFactory factory = KeyFactory.getInstance("RSA");
+        return factory.generatePublic(spec);
     }
 
     private void validateClaims(String expectedNonce, Claims claims) {
