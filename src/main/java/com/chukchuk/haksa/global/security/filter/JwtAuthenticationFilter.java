@@ -30,15 +30,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        String expectedNonce = request.getHeader("nonce");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || expectedNonce == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.substring(7);
         try {
-            Claims claims = kakaoOidcService.verifyIdToken(authHeader);
+            Claims claims = kakaoOidcService.verifyIdToken(authHeader, expectedNonce);
             String email = claims.get("email", String.class);// 사용자 email
 
             // User 조회
