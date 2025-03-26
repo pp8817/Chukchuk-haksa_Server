@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordS
 import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ public class AcademicRecordController {
     *  */
     @GetMapping("/get-academic") // Restful 방식으로 변경 제안: /api/academic-record
     @Operation(summary = "학기별 성적 및 수강 과목 정보 조회", description = "지정한 학기(year, semester)에 해당하는 성적 및 수강 과목 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<AcademicRecordResponse> getAcademicRecord(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @Parameter(description = "연도", example = "2024") Integer year,
@@ -46,6 +48,7 @@ public class AcademicRecordController {
 
     @GetMapping("/get-semesters") //semester 불러오는 controller, 병합
     @Operation(summary = "사용자 학기 목록 조회", description = "사용자의 모든 학기 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<List<StudentSemesterDto.StudentSemesterInfoDto>> getSemesterRecord(
             @AuthenticationPrincipal UserDetails userDetails) {
 

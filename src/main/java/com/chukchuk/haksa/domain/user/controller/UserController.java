@@ -2,6 +2,7 @@ package com.chukchuk.haksa.domain.user.controller;
 
 import com.chukchuk.haksa.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class UserController {
 
     @DeleteMapping("/users/delete")
     @Operation(summary = "회원 탈퇴", description = "로그인된 사용자의 계정을 삭제합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> deleteUser(
             @AuthenticationPrincipal UserDetails userDetails
     ) {

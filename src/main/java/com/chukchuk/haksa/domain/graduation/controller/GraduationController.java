@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.graduation.controller;
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.service.GraduationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class GraduationController {
      */
     @GetMapping("/graduation-progress")
     @Operation(summary = "졸업 요건 및 학사 성적 정보 조회", description = "로그인된 사용자의 졸업 요건 충족 여부 및 학사 성적 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<GraduationProgressDto> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
