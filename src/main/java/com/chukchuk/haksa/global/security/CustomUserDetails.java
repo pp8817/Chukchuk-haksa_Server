@@ -35,12 +35,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null; // Supabase 인증에서는 패스워드를 사용하지 않음
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return id.toString();
     }
 
     @Override

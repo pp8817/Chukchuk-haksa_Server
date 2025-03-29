@@ -53,10 +53,9 @@ public class SemesterAcademicRecordService {
     }
 
     /* 학생의 학기 정보 조회 */
-    public List<StudentSemesterDto.StudentSemesterInfoDto> getSemestersByStudentEmail(String email) {
-        UUID studentId = userService.getUserId(email); //email로 studentId 얻어오기
+    public List<StudentSemesterDto.StudentSemesterInfoDto> getSemestersByStudentEmail(UUID userId) {
 
-        return findSemestersByStudent(studentId).stream()
+        return findSemestersByStudent(userId).stream()
                 .map(StudentSemesterDto.StudentSemesterInfoDto::from)
                 .collect(Collectors.toList());
     }

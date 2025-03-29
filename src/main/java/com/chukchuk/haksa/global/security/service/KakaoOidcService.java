@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
@@ -17,6 +20,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KakaoOidcService {
     private final KakaoOidcPublicKeyService publicKeyService;
 
@@ -55,7 +59,7 @@ public class KakaoOidcService {
     private PublicKey createPublicKey(JsonNode keyNode) throws Exception{
         // RSA 키 파라미터 추출
         BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(keyNode.get("n").asText()));
-        BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(keyNode.get("n").asText()));
+        BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(keyNode.get("e").asText()));
 
         // RSA 공개키 생성
         RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
@@ -63,7 +67,7 @@ public class KakaoOidcService {
         return factory.generatePublic(spec);
     }
 
-    private void validateClaims(String expectedNonce, Claims claims) {
+    private void validateClaims(String expectedNonce, Claims claims) throws Exception {
 
         Date expiration = claims.getExpiration();
         if (expiration == null || expiration.before(new Date())) {
@@ -88,8 +92,11 @@ public class KakaoOidcService {
             throw new IllegalArgumentException("aud 클레임 형식이 올바르지 않습니다.");
         }
 
+        String hashedNonce = hashSHA256(expectedNonce);
+
         String nonce = claims.get("nonce", String.class);
-        if (!expectedNonce.equals(nonce)) {
+
+        if (!nonce.equals(hashedNonce)) {
             throw new IllegalArgumentException("유효하지 않은 nonce 입니다.");
         }
     }
@@ -102,6 +109,19 @@ public class KakaoOidcService {
             }
         }
         return null;
+    }
+
+    private String hashSHA256(String input) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : encodedHash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
 }

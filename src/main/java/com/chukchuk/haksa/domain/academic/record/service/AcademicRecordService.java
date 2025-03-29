@@ -22,17 +22,15 @@ public class AcademicRecordService {
     private final UserService userService;
 
     /* 학기별 성적 및 수강 과목 정보 조회 */
-    public AcademicRecordResponse getAcademicRecord(String userEmail, Integer year, Integer semester) {
-
-        UUID studentId = userService.getUserId(userEmail);
+    public AcademicRecordResponse getAcademicRecord(UUID userId, Integer year, Integer semester) {
 
         // 학기별 성적 조회
         SemesterAcademicRecordDto.SemesterGradeDto semesterGrade =
-                semesterAcademicRecordService.getSemesterGradesByYearAndSemester(studentId, year, semester);
+                semesterAcademicRecordService.getSemesterGradesByYearAndSemester(userId, year, semester);
 
         // 수강 과목 조회 및 카테고리 분류
         Map<String, List<StudentCourseDto.CourseDetailDto>> categorizedCourses = categorizeCourses(
-                studentCourseService.getStudentCourses(studentId, year, semester));
+                studentCourseService.getStudentCourses(userId, year, semester));
 
         List<StudentCourseDto.CourseDetailDto> majorCourses = categorizedCourses.getOrDefault("major", List.of());
         List<StudentCourseDto.CourseDetailDto> liberalCourses = categorizedCourses.getOrDefault("liberal", List.of());
