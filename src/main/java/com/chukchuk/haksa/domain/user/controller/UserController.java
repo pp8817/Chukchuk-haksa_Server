@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,18 +40,14 @@ public class UserController {
     @PostMapping("/users/signin")
     @Operation(summary = "회원 가입", description = "사용자 회원가입을 진행합니다.")
     public ResponseEntity<?> signInUser(
-            @RequestBody UserDto.SignInUserRequest signInUserRequest
+            @RequestBody UserDto.SignInRequest signInRequest
             ) {
         try {
-            log.info(signInUserRequest.id_token(), signInUserRequest.nonce());
-            userService.signInWithKakao(signInUserRequest.id_token(), signInUserRequest.nonce());
+            UserDto.SignInResponse signInResponse = userService.signInWithKakao(signInRequest);
 
-            return ResponseEntity.ok(UserDto.SignInUserResponse.builder()
-                    .status("200")
-                            .accessToken(signInUserRequest.id_token())
-                    .build());
+            return ResponseEntity.ok(signInResponse);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(UserDto.SignInUserResponse.builder().status("400").build());
+            return ResponseEntity.badRequest().body(UserDto.SignInResponse.builder().status(HttpStatus.UNAUTHORIZED).build());
         }
     }
 }

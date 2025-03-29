@@ -1,14 +1,19 @@
 package com.chukchuk.haksa.domain.user.service;
 
+import com.chukchuk.haksa.domain.auth.dto.AuthDto;
+import com.chukchuk.haksa.domain.auth.service.RefreshTokenService;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
+import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
 import com.chukchuk.haksa.global.exception.DataNotFoundException;
+import com.chukchuk.haksa.global.security.service.JwtProvider;
 import com.chukchuk.haksa.global.security.service.KakaoOidcService;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,6 +25,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final KakaoOidcService kakaoOidcService;
+    private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     // TODO: Custom Exception으로 변경
     public User getUserByEmail(String email) {
@@ -34,23 +41,30 @@ public class UserService {
     }
 
     @Transactional
-    public void signInWithKakao(String idToken, String nonce) throws Exception {
-        // Kakao 토큰 검증
+    public UserDto.SignInResponse signInWithKakao(UserDto.SignInRequest signInRequest) throws Exception {
+        // Kakaoㅌ 토큰 검증
+        String idToken = signInRequest.id_token();
+        String nonce = signInRequest.nonce();
         Claims claims = kakaoOidcService.verifyIdToken(idToken, nonce);
 
         // 클레임에서 필요한 정보 추출
         String email = claims.get("email", String.class);
 
-        // 회원 가입, 로그인 처리
-        // User 조회
-        userRepository.findByEmail(email)
+        // User 조회 or 생성
+        User user = userRepository.findByEmail(email)
                 .orElseGet(() -> userRepository.save(User.builder()
                         .email(email)
                         .profileNickname("Unknown User")
                         .build()
                 ));
 
-        log.info("회원가입 성공");
+        // token 발급
+        String userId = user.getId().toString();
+        String accessToken = jwtProvider.createAccessToken(userId, user.getEmail(), "USER");
+        AuthDto.RefreshTokenWithExpiry refresh = jwtProvider.createRefreshToken(userId);
+        refreshTokenService.save(userId, refresh.token(), refresh.expiry());
+
+        return new UserDto.SignInResponse(HttpStatus.OK, accessToken, refresh.token());
     }
     @Transactional
     public void deleteUserByEmail(String email){
