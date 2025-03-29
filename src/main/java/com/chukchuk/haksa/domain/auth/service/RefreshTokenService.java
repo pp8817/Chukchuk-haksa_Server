@@ -10,6 +10,8 @@ import com.chukchuk.haksa.global.exception.InvalidTokenException;
 import com.chukchuk.haksa.global.security.service.JwtProvider;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
@@ -56,5 +59,18 @@ public class RefreshTokenService {
     public RefreshToken findByUserId(String userId) {
         return refreshTokenRepository.findById(userId)
                 .orElseThrow(() -> new InvalidTokenException("RefreshToken이 존재하지 않음"));
+    }
+
+    /* 일정 시간마다 유효기간이 지난 RefreshToken 정보 삭제 */
+    @Transactional
+    @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul") // 정각 실행
+    public void deletedExpiredTokens() {
+        try {
+            Date now = new Date();
+            int deleted = refreshTokenRepository.deleteByExpiryBefore(now);
+            log.info("[RefreshToken 정리] {}개 삭제", deleted);
+        } catch (Exception e) {
+            log.error("[RefreshToken 정리 실패]", e);
+        }
     }
 }
