@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -40,9 +41,9 @@ public class AcademicRecordController {
             @RequestParam @Parameter(description = "연도", example = "2024") Integer year,
             @RequestParam @Parameter(description = "학기", example = "10, 15, 20 ...") Integer semester) {
 
-        String email = userDetails.getUsername();
+        UUID userId = UUID.fromString(userDetails.getUsername());
 
-        AcademicRecordResponse response = academicRecordService.getAcademicRecord(email, year, semester);
+        AcademicRecordResponse response = academicRecordService.getAcademicRecord(userId, year, semester);
         return ResponseEntity.ok(response);
     }
 
@@ -52,8 +53,9 @@ public class AcademicRecordController {
     public ResponseEntity<List<StudentSemesterDto.StudentSemesterInfoDto>> getSemesterRecord(
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        String email = userDetails.getUsername();
-        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getSemestersByStudentEmail(email);
+        UUID userId = UUID.fromString(userDetails.getUsername());
+
+        List<StudentSemesterDto.StudentSemesterInfoDto> response = semesterAcademicRecordService.getSemestersByStudentEmail(userId);
 
         return ResponseEntity.ok(response);
     }

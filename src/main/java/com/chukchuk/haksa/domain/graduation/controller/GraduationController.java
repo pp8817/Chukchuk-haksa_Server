@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -30,8 +32,9 @@ public class GraduationController {
     public ResponseEntity<GraduationProgressDto> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String email = userDetails.getUsername();
-        GraduationProgressDto graduationProgress = graduationService.getGraduationProgress(email);
+        UUID userId = UUID.fromString(userDetails.getUsername());
+
+        GraduationProgressDto graduationProgress = graduationService.getGraduationProgress(userId);
         return ResponseEntity.ok(graduationProgress);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -32,8 +33,9 @@ public class UserController {
     public ResponseEntity<?> deleteUser(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String email = userDetails.getUsername();
-        userService.deleteUserByEmail(email);
+        UUID userId = UUID.fromString(userDetails.getUsername());
+        userService.deleteUserByEmail(userId);
+
         return ResponseEntity.ok(Map.of("success", true));
     }
 
