@@ -53,7 +53,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://www.cchaksa.com", "https://cchaksa.com/")); // 프론트 도메인
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://www.cchaksa.com",
+                "https://cchaksa.com",
+                "https://pp8817.github.io"
+                ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // 쿠키 허용할 경우 true
