@@ -33,13 +33,12 @@ public class StudentService {
     }
 
     @Transactional
-    public void setStudentTargetGpa(String email, Double targetGpa) {
-        UUID studentId = userService.getUserId(email);
-        Student student = getStudentById(studentId);
+    public void setStudentTargetGpa(UUID userId, Double targetGpa) {
+        Student student = getStudentById(userId);
 
         //학점 입력 하는데 0 ~ 4.5 이외를 입력하는 경우
         if (targetGpa != null &&
-                (targetGpa < 0 || targetGpa>4.5)) {
+                (targetGpa < 0 || targetGpa > 4.5)) {
             throw new IllegalArgumentException("유효하지 않은 목표 학점입니다");
         }
 

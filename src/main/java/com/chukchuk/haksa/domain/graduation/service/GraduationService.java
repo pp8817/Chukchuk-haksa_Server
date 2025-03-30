@@ -29,8 +29,7 @@ public class GraduationService {
     private final StudentAcademicRecordService studentAcademicRecordService;
 
     /* 졸업 요건, 학사 성적 정보 조회 */
-    public GraduationProgressDto getGraduationProgress(String email) {
-        UUID userId = userService.getUserId(email);
+    public GraduationProgressDto getGraduationProgress(UUID userId) {
         Student student = studentService.getStudentById(userId);
 
         // 전공 코드가 없는 학과도 있으므로 majorId가 없으면 departmentId를 사용

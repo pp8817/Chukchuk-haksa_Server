@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api")
@@ -31,8 +33,9 @@ public class StudentController {
             @RequestParam(required = false)
             @Parameter(description = "목표 GPA", example = "3.8") Double targetGpa
     ) {
-        String email = userDetails.getUsername();
-        studentService.setStudentTargetGpa(email, targetGpa);
+        UUID userId = UUID.fromString(userDetails.getUsername());
+
+        studentService.setStudentTargetGpa(userId, targetGpa);
         return ResponseEntity.ok("목표 학점 저장 완료");
     }
 }
