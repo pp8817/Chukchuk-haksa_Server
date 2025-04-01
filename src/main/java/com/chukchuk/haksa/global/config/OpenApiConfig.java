@@ -3,7 +3,6 @@ package com.chukchuk.haksa.global.config;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(title = "척척학사 API", version = "v0", description = "API 명세서"),
-        security = @SecurityRequirement(name = "bearerAuth"), // 모든 API에 인증 기본 적용
+//        security = @SecurityRequirement(name = "bearerAuth"), // 모든 API에 인증 기본 적용
         servers = {
-                @Server(url = "http://localhost:8080", description = "로컬 서버")
+                @Server(url = "http://localhost:8080", description = "Local Server"),
+                @Server(url = "https://chukchuk-haksa-server.onrender.com", description = "Dev Server")
         }
 )
 @SecurityScheme(
