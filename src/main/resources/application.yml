@@ -1,0 +1,29 @@
+spring:
+  profiles:
+    active: local
+  jackson:
+    time-zone: Asia/Seoul
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  config:
+    import: optional:file:.env[.properties]
+
+server:
+  port: 8080
+  application:
+    name: "chukchuk-haksa"  # 프로젝트 이름 명시
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-expiration: ${JWT_ACCESS_EXPIRATION}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+  appKey: ${APP_KEY}
+
+#logging:
+#  logstash:
+#    host: 172.18.0.4
+#    port: 5044
+#  level:
+#    org.hibernate.SQL: debug  # SQL 로그 레벨 (info → debug로 변경하여 더 자세히 확인)
+#    org.hibernate.type.descriptor.sql.BasicBinder: trace  # 바인딩되는 파라미터도 로그 출력
