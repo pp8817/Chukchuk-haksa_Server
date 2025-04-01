@@ -6,14 +6,16 @@ build/
 !**/src/test/**/build/
 
 ### yml ###
-/src/main/resources/*.yml
+#/src/main/resources/*.yml
+
+### env 파일은 git에서 무시 ###
+.env
 
 ### ELK ###
 elasticsearch.yml
 kibana.yml
 logstash.yml
 logstash.conf
-.env
 /elk-config/logstash/config/jvm.options
 /usr/share/elasticsearch/data/
 /usr/share/logstash/data/

@@ -27,6 +27,10 @@ dependencies {
 	// Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// Validator
+	implementation 'org.hibernate.validator:hibernate-validator'
+	implementation 'jakarta.validation:jakarta.validation-api'
+
 	// Swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
