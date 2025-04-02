@@ -7,7 +7,6 @@ import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
 import com.chukchuk.haksa.global.exception.DataNotFoundException;
-import com.chukchuk.haksa.global.exception.DuplicationException;
 import com.chukchuk.haksa.global.security.service.JwtProvider;
 import com.chukchuk.haksa.global.security.service.KakaoOidcService;
 import io.jsonwebtoken.Claims;
@@ -40,8 +39,6 @@ public class UserService {
         Claims claims = verifyKakaoToken(signInRequest);
         String email = extractEmail(claims);
 
-        validateDuplicateEmail(email);
-
         User user = findOrCreateUser(email);
         return generateSignInResponse(user);
     }
@@ -60,12 +57,6 @@ public class UserService {
 
     private String extractEmail(Claims claims) {
         return claims.get("email", String.class);
-    }
-
-    private void validateDuplicateEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicationException("이미 존재하는 이메일입니다.");
-        }
     }
 
     private User findOrCreateUser(String email) {
