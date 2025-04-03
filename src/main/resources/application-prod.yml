@@ -12,6 +12,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          use_get_generated_keys: true
+          statement_cache_size: 0
 
 logging:
   level:
