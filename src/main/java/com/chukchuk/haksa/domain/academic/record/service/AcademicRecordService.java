@@ -2,6 +2,7 @@ package com.chukchuk.haksa.domain.academic.record.service;
 
 import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto;
+import com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto;
 import com.chukchuk.haksa.domain.academic.record.dto.StudentCourseDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class AcademicRecordService {
     private final SemesterAcademicRecordService semesterAcademicRecordService;
+    private final StudentAcademicRecordService studentAcademicRecordService;
     private final StudentCourseService studentCourseService;
     private final UserService userService;
 
@@ -43,6 +45,11 @@ public class AcademicRecordService {
                 new AcademicRecordResponse.Courses(majorCourses, liberalCourses),
                 AcademicRecordResponse.Summary.from(semesterGrade, majorGpa)
         );
+    }
+
+    public StudentAcademicRecordDto.AcademicSummaryDto getAcademicSummary(UUID userId) {
+
+        return studentAcademicRecordService.getAcademicSummary(userId);
     }
 
     /* Using Method */
