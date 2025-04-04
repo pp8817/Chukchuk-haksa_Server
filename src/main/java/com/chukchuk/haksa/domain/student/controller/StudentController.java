@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.student.controller;
 
+import com.chukchuk.haksa.domain.student.dto.StudentDto;
 import com.chukchuk.haksa.domain.student.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,16 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/student")
 @RequiredArgsConstructor
 @Tag(name = "Student", description = "학생 설정 관련 API")
 public class StudentController {
@@ -37,5 +35,18 @@ public class StudentController {
 
         studentService.setStudentTargetGpa(userId, targetGpa);
         return ResponseEntity.ok("목표 학점 저장 완료");
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "사용자 프로필 조회", description = "로그인된 사용자의 프로필 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<StudentDto.Profile> getProfile(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        UUID userId = UUID.fromString(userDetails.getUsername());
+
+        StudentDto.Profile studentProfile = studentService.getStudentProfile(userId);
+
+        return ResponseEntity.ok(studentProfile);
     }
 }

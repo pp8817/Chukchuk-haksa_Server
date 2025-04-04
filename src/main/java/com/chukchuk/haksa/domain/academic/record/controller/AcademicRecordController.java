@@ -50,7 +50,6 @@ public class AcademicRecordController {
         UUID userId = UUID.fromString(userDetails.getUsername());
         StudentAcademicRecordDto.AcademicSummaryDto academicSummary = academicRecordService.getAcademicSummary(userId);
 
-
         return ResponseEntity.ok(academicSummary);
     }
 
