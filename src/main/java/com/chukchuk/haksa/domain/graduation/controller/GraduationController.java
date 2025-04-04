@@ -17,17 +17,17 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/graduation")
 @Tag(name = "Graduation", description = "졸업 요건 및 진행 현황 관련 API")
 public class GraduationController {
 
     private final GraduationService graduationService;
 
     /**
-     * 졸업 요건, 학사 성적 정보 조회 API
+     * 졸업 요건 진행 상황 조회 API
      */
-    @GetMapping("/graduation-progress")
-    @Operation(summary = "졸업 요건 및 학사 성적 정보 조회", description = "로그인된 사용자의 졸업 요건 충족 여부 및 학사 성적 정보를 조회합니다.")
+    @GetMapping("/progress")
+    @Operation(summary = "졸업 요건 진행 상황 조회", description = "로그인된 사용자의 졸업 요건 충족 여부를 조회합니다.")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<GraduationProgressDto> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails
