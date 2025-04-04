@@ -4,7 +4,6 @@ import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto;
 import com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto;
 import com.chukchuk.haksa.domain.academic.record.dto.StudentCourseDto;
-import com.chukchuk.haksa.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ public class AcademicRecordService {
     private final SemesterAcademicRecordService semesterAcademicRecordService;
     private final StudentAcademicRecordService studentAcademicRecordService;
     private final StudentCourseService studentCourseService;
-    private final UserService userService;
 
     /* 학기별 성적 및 수강 과목 정보 조회 */
     public AcademicRecordResponse getAcademicRecord(UUID userId, Integer year, Integer semester) {
@@ -42,8 +40,7 @@ public class AcademicRecordService {
 
         return new AcademicRecordResponse(
                 semesterGrade,
-                new AcademicRecordResponse.Courses(majorCourses, liberalCourses),
-                AcademicRecordResponse.Summary.from(semesterGrade, majorGpa)
+                new AcademicRecordResponse.Courses(majorCourses, liberalCourses)
         );
     }
 

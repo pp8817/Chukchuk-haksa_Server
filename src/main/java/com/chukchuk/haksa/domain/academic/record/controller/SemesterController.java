@@ -39,7 +39,7 @@ public class SemesterController {
     }
 
     @GetMapping("/grades")
-    @Operation(summary = "사용자 학기 별 성적 조회", description = "사용자의 학기 별 성적을 조회합니다.")
+    @Operation(summary = "사용자 학기 별 성적 조회", description = "사용자의 학기 별 성적 정보를 조회합니다.")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<List<SemesterGradeDto>> getSemesterGrades(
             @AuthenticationPrincipal UserDetails userDetails) {

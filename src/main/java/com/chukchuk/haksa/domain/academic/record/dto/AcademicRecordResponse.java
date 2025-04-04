@@ -17,7 +17,7 @@ public record AcademicRecordResponse(
             @Schema(description = "교양 과목 목록") List<StudentCourseDto.CourseDetailDto> liberal
     ) {}
 
-    // Summary가 필요한가?
+//     Summary가 필요한가?
 //    @Schema(description = "학업 요약 정보")
 //    public record Summary(
 //            @Schema(description = "총 취득 학점", example = "92") Integer totalEarnedCredits,

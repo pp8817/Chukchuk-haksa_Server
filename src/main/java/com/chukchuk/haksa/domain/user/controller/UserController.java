@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "사용자 관련 API")
 @Slf4j
@@ -27,7 +27,7 @@ public class UserController {
     private final UserService userService;
     private final KakaoOidcService kakaoOidcService;
 
-    @DeleteMapping("/users/delete")
+    @DeleteMapping("/delete")
     @Operation(summary = "회원 탈퇴", description = "로그인된 사용자의 계정을 삭제합니다.")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> deleteUser(
@@ -39,7 +39,7 @@ public class UserController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    @PostMapping("/users/signin")
+    @PostMapping("/signin")
     @Operation(summary = "회원 가입", description = "사용자 회원가입을 진행합니다.")
     public ResponseEntity<?> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
