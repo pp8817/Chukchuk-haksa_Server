@@ -21,7 +21,7 @@ public class TokenCookieProvider {
                 .secure(false) // local 테스트용으로 false 설정
                 .path("/")
                 .maxAge(accessTokenExpiration / 1000)
-                .sameSite("None") // 추후 도메인 일치시켜 변경 Strict로 변경 필요
+                .sameSite("Lax") // local 테스트용으로 Lax
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class TokenCookieProvider {
                 .secure(false) // local 테스트용으로 false 설정
                 .path("/")
                 .maxAge(refreshTokenExpiration / 1000)
-                .sameSite("None") // 추후 도메인 일치시켜 변경 Strict로 변경 필요
+                .sameSite("Lax") // local 테스트용으로 Lax
                 .build();
     }
 }
