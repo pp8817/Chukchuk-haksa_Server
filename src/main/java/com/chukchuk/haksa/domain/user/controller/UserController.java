@@ -4,10 +4,14 @@ import com.chukchuk.haksa.domain.auth.service.TokenCookieProvider;
 import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +45,32 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    @Operation(summary = "회원 가입", description = "사용자 회원가입을 진행합니다.")
+    @Operation(
+            summary = "회원 가입",
+            description = "사용자 회원가입을 진행합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "로그인 성공 시 accessToken / refreshToken 쿠키를 반환합니다.",
+                            headers = {
+                                    @Header(
+                                            name = "Set-Cookie",
+                                            description = "accessToken이 담긴 HttpOnly 쿠키",
+                                            schema = @Schema(type = "string")
+                                    ),
+                                    @Header(
+                                            name = "Set-Cookie",
+                                            description = "refreshToken이 담긴 HttpOnly 쿠키",
+                                            schema = @Schema(type = "string")
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "카카오 로그인 실패 또는 유효하지 않은 요청"
+                    )
+            }
+    )
     public ResponseEntity<?> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
@@ -51,10 +80,12 @@ public class UserController {
             ResponseCookie accessCookie = tokenCookieProvider.createAccessTokenCookie(signInResponse.accessToken());
             ResponseCookie refreshCookie = tokenCookieProvider.createRefreshTokenCookie(signInResponse.refreshToken());
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
+            headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
             return ResponseEntity.ok()
-                    .header("Set-Cookie", accessCookie.toString())
-                    .header("Set-Cookie", refreshCookie.toString())
+                    .headers(headers)
                     .body(UserDto.SignInResponse.builder()
                             .status(signInResponse.status())
                             .build()); // body에서 토큰은 제거
