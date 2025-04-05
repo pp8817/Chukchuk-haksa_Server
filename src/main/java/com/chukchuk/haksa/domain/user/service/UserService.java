@@ -34,6 +34,11 @@ public class UserService {
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
     }
 
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+    }
+
     @Transactional
     public UserDto.SignInResponse signInWithKakao(UserDto.SignInRequest signInRequest) throws Exception {
         Claims claims = verifyKakaoToken(signInRequest);

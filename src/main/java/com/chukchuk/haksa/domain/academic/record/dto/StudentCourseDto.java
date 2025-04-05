@@ -1,6 +1,7 @@
 package com.chukchuk.haksa.domain.academic.record.dto;
 
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
+import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class StudentCourseDto {
             @Schema(description = "수강 ID") String id,
             @Schema(description = "과목명") String courseName,
             @Schema(description = "학수번호") String courseCode,
-            @Schema(description = "영역 (전공/교양 등)") String areaType,
+            @Schema(description = "영역 (전공/교양 등)") FacultyDivision areaType,
             @Schema(description = "학점") Integer credits,
             @Schema(description = "교수명") String professor,
             @Schema(description = "성적") String grade,
@@ -29,7 +30,7 @@ public class StudentCourseDto {
                     String.valueOf(course.getId()),
                     course.getOffering().getCourse().getCourseName(),
                     course.getOffering().getCourse().getCourseCode(),
-                    course.getOffering().getFacultyDivisionName().name(),
+                    course.getOffering().getFacultyDivisionName(),
                     course.getOffering().getPoints(),
                     course.getOffering().getProfessor() != null ? course.getOffering().getProfessor().getProfessorName() : "미지정",
                     course.getGrade() != null ? course.getGrade().getValue().getValue() : "F",

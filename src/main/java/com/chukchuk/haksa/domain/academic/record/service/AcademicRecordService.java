@@ -2,8 +2,8 @@ package com.chukchuk.haksa.domain.academic.record.service;
 
 import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto;
+import com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto;
 import com.chukchuk.haksa.domain.academic.record.dto.StudentCourseDto;
-import com.chukchuk.haksa.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class AcademicRecordService {
     private final SemesterAcademicRecordService semesterAcademicRecordService;
+    private final StudentAcademicRecordService studentAcademicRecordService;
     private final StudentCourseService studentCourseService;
-    private final UserService userService;
 
     /* 학기별 성적 및 수강 과목 정보 조회 */
     public AcademicRecordResponse getAcademicRecord(UUID userId, Integer year, Integer semester) {
@@ -35,14 +35,18 @@ public class AcademicRecordService {
         List<StudentCourseDto.CourseDetailDto> majorCourses = categorizedCourses.getOrDefault("major", List.of());
         List<StudentCourseDto.CourseDetailDto> liberalCourses = categorizedCourses.getOrDefault("liberal", List.of());
 
-        // 전공 평점 계산
-        double majorGpa = calculateMajorGpa(majorCourses);
+//        // 전공 평점 계산
+//        double majorGpa = calculateMajorGpa(majorCourses);
 
         return new AcademicRecordResponse(
                 semesterGrade,
-                new AcademicRecordResponse.Courses(majorCourses, liberalCourses),
-                AcademicRecordResponse.Summary.from(semesterGrade, majorGpa)
+                new AcademicRecordResponse.Courses(majorCourses, liberalCourses)
         );
+    }
+
+    public StudentAcademicRecordDto.AcademicSummaryDto getAcademicSummary(UUID userId) {
+
+        return studentAcademicRecordService.getAcademicSummary(userId);
     }
 
     /* Using Method */
@@ -51,7 +55,7 @@ public class AcademicRecordService {
     private Map<String, List<StudentCourseDto.CourseDetailDto>> categorizeCourses(List<StudentCourseDto.CourseDetailDto> courses) {
         return courses.stream()
                 .collect(Collectors.groupingBy(course -> switch (course.areaType()) {
-                    case "전핵", "전선", "복선" -> "major";
+                    case 전핵, 전선, 복선 -> "major";
                     default -> "liberal";
                 }));
     }

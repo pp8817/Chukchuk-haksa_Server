@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.graduation.repository;
 
+import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.AreaProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.CourseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -20,6 +22,27 @@ import java.util.stream.Collectors;
 public class GraduationQueryRepository {
     private final EntityManager em;
     private final ObjectMapper ob;
+
+    /* 필요 졸업 학점 계산 로직 */
+    @Cacheable(
+            cacheNames = "requiredCredits",
+            key = "#departmentId + '_' + #admissionYear"
+    )
+    public Integer getTotalRequiredGraduationCredits(Long departmentId, Integer admissionYear) {
+        String sql = """
+        SELECT COALESCE(SUM(dar.required_credits), 0)
+        FROM department_area_requirements dar
+        WHERE dar.department_id = :departmentId
+          AND dar.admission_year = :admissionYear
+    """;
+
+        Query query = em.createNativeQuery(sql);
+        query.setParameter("departmentId", departmentId);
+        query.setParameter("admissionYear", admissionYear);
+
+        Object result = query.getSingleResult();
+        return ((Number) result).intValue();
+    }
 
     public List<AreaProgressDto> getStudentAreaProgress(UUID studentId, Long departmentId, Integer admissionYear) {
         String sql = """
@@ -99,7 +122,8 @@ public class GraduationQueryRepository {
     }
 
     private AreaProgressDto mapToDto(Object[] row) {
-        String areaType = (String) row[0];
+        FacultyDivision areaType = FacultyDivision.valueOf((String) row[0]);
+
         Integer requiredCredits = (Integer) row[1];
         Integer earnedCredits = (Integer) row[2];
         Integer requiredElectiveCourses = (Integer) row[3];
