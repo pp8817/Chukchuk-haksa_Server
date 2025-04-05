@@ -8,6 +8,9 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  cache:
+    type: simple # 테스트
+
 server:
   port: 8080
   application:
