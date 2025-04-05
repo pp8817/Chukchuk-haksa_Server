@@ -103,6 +103,20 @@ public class Student extends BaseEntity {
         this.user = user;
     }
 
+
+    public void addStudentCourse(StudentCourse course) {
+        this.studentCourses.add(course);
+    }
+
+    // 연관관계 편의 메서드
+    public void setAcademicRecord(StudentAcademicRecord record) {
+        this.studentAcademicRecord = record;
+    }
+
+    public void addSemesterRecord(SemesterAcademicRecord record) {
+        this.semesterAcademicRecords.add(record);
+    }
+
     public void setTargetGpa(Double targetGpa) {
         this.targetGpa = targetGpa;
     }

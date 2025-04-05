@@ -15,6 +15,7 @@ import java.time.Instant;
 public class Course extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "course_code", nullable = false)
@@ -25,4 +26,9 @@ public class Course extends BaseEntity {
 
     @Column(name = "delete_at")
     private Instant deleteAt; // Soft delete 적용
+
+    public Course(String courseCode, String courseName) {
+        this.courseCode = courseCode;
+        this.courseName = courseName;
+    }
 }

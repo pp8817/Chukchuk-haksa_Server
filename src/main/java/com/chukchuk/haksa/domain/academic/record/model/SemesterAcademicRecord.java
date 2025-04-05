@@ -49,4 +49,28 @@ public class SemesterAcademicRecord extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
+
+    public SemesterAcademicRecord(
+            Student student,
+            Integer year,
+            Integer semester,
+            Integer attemptedCredits,
+            Integer earnedCredits,
+            BigDecimal semesterGpa,
+            BigDecimal semesterPercentile,
+            BigDecimal attemptedCreditsGpa,
+            Integer classRank,
+            Integer totalStudents
+    ) {
+        this.student = student;
+        this.year = year;
+        this.semester = semester;
+        this.attemptedCredits = attemptedCredits;
+        this.earnedCredits = earnedCredits;
+        this.semesterGpa = semesterGpa;
+        this.semesterPercentile = semesterPercentile;
+        this.attemptedCreditsGpa = attemptedCreditsGpa;
+        this.classRank = classRank;
+        this.totalStudents = totalStudents;
+    }
 }

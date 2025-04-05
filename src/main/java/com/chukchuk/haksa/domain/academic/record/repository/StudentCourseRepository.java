@@ -1,6 +1,7 @@
 package com.chukchuk.haksa.domain.academic.record.repository;
 
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
+import com.chukchuk.haksa.domain.student.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +27,10 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
             @Param("year") Integer year,
             @Param("semester") Integer semester
     );
+
+    List<StudentCourse> findByStudent(Student student);
+
+    void deleteAll(List<StudentCourse> entities);
 }
 
 

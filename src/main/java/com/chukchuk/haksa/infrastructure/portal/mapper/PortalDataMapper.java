@@ -16,7 +16,7 @@ public class PortalDataMapper {
         );
     }
 
-    public static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDTO s) {
+    private static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDTO s) {
         return new PortalStudentInfo(
                 s.sno(),
                 s.studNm(),
@@ -39,7 +39,7 @@ public class PortalDataMapper {
         );
     }
 
-    public static PortalAcademicData toPortalAcademicInfo(List<RawPortalSemesterDTO> semesters, RawPortalGradeResponseDTO academicRecords) {
+    private static PortalAcademicData toPortalAcademicInfo(List<RawPortalSemesterDTO> semesters, RawPortalGradeResponseDTO academicRecords) {
         List<SemesterCourseInfo> semesterCourses = new ArrayList<>();
 
         for (RawPortalSemesterDTO sem : semesters) {
@@ -92,7 +92,7 @@ public class PortalDataMapper {
         return new PortalAcademicData(semesterCourses, new GradeSummary(grades, summary), summary);
     }
 
-    public static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDTO> semesters) {
+    private static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDTO> semesters) {
         List<CourseInfo> courses = new ArrayList<>();
         List<ProfessorInfo> professors = new ArrayList<>();
         List<OfferingInfo> offerings = new ArrayList<>();

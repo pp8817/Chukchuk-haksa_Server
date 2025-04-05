@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static com.chukchuk.haksa.infrastructure.portal.model.InitializePortalConnectionResult.*;
 
+/* 포털 연동 초기화 유스케이스 실행 */
 @Service
 @RequiredArgsConstructor
 public class InitializePortalConnectionService {
