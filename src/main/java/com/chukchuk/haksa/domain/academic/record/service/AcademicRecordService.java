@@ -35,8 +35,8 @@ public class AcademicRecordService {
         List<StudentCourseDto.CourseDetailDto> majorCourses = categorizedCourses.getOrDefault("major", List.of());
         List<StudentCourseDto.CourseDetailDto> liberalCourses = categorizedCourses.getOrDefault("liberal", List.of());
 
-        // 전공 평점 계산
-        double majorGpa = calculateMajorGpa(majorCourses);
+//        // 전공 평점 계산
+//        double majorGpa = calculateMajorGpa(majorCourses);
 
         return new AcademicRecordResponse(
                 semesterGrade,
@@ -55,7 +55,7 @@ public class AcademicRecordService {
     private Map<String, List<StudentCourseDto.CourseDetailDto>> categorizeCourses(List<StudentCourseDto.CourseDetailDto> courses) {
         return courses.stream()
                 .collect(Collectors.groupingBy(course -> switch (course.areaType()) {
-                    case "전핵", "전선", "복선" -> "major";
+                    case 전핵, 전선, 복선 -> "major";
                     default -> "liberal";
                 }));
     }

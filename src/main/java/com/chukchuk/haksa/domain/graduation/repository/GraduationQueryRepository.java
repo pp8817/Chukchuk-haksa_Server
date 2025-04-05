@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.graduation.repository;
 
+import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.AreaProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.CourseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -121,7 +122,8 @@ public class GraduationQueryRepository {
     }
 
     private AreaProgressDto mapToDto(Object[] row) {
-        String areaType = (String) row[0];
+        FacultyDivision areaType = FacultyDivision.valueOf((String) row[0]);
+
         Integer requiredCredits = (Integer) row[1];
         Integer earnedCredits = (Integer) row[2];
         Integer requiredElectiveCourses = (Integer) row[3];
