@@ -22,7 +22,6 @@ public class TokenCookieProvider {
                 .path("/")
                 .maxAge(accessTokenExpiration / 1000)
                 .sameSite("None") // 추후 도메인 일치시켜 변경 Strict로 변경 필요
-                .secure(true)
                 .build();
     }
 
@@ -33,7 +32,6 @@ public class TokenCookieProvider {
                 .path("/")
                 .maxAge(refreshTokenExpiration / 1000)
                 .sameSite("None") // 추후 도메인 일치시켜 변경 Strict로 변경 필요
-                .secure(true)
                 .build();
     }
 }
