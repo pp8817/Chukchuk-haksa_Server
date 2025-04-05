@@ -1,6 +1,7 @@
 package com.chukchuk.haksa.domain.user.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
+import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,8 +46,8 @@ public class User extends BaseEntity {
     @Column(name = "last_synced_at")
     private Instant lastSyncedAt;
 
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private Student student;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Student student;
 
     @Builder
     public User(UUID id, String email, String profileNickname) {
@@ -55,5 +56,13 @@ public class User extends BaseEntity {
         this.profileNickname = profileNickname;
         this.isDeleted = false;
         this.portalConnected = false;
+    }
+
+    public void setPortalConnected(boolean portalConnected) {
+        this.portalConnected = portalConnected;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
     }
 }

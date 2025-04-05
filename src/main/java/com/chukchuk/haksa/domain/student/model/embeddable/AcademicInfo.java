@@ -6,6 +6,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,21 +35,16 @@ public class AcademicInfo {
     @Column(name = "completed_semesters")
     private Integer completedSemesters;
 
-    public static AcademicInfo create(
-            int admissionYear,
-            int semesterEnrolled,
-            boolean isTransferStudent,
-            StudentStatus status,
-            int gradeLevel,
-            int completedSemesters
-    ) {
-        AcademicInfo info = new AcademicInfo();
-        info.admissionYear = admissionYear;
-        info.semesterEnrolled = semesterEnrolled;
-        info.isTransferStudent = isTransferStudent;
-        info.status = status;
-        info.gradeLevel = gradeLevel;
-        info.completedSemesters = completedSemesters;
-        return info;
+
+    // Builder 패턴 추가
+    @Builder
+    public AcademicInfo(Integer admissionYear, Integer semesterEnrolled, Boolean isTransferStudent,
+                        StudentStatus status, Integer gradeLevel, Integer completedSemesters) {
+        this.admissionYear = admissionYear;
+        this.semesterEnrolled = semesterEnrolled;
+        this.isTransferStudent = isTransferStudent;
+        this.status = status;
+        this.gradeLevel = gradeLevel;
+        this.completedSemesters = completedSemesters;
     }
 }
