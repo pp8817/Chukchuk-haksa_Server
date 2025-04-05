@@ -23,6 +23,9 @@ security:
     refresh-expiration: ${JWT_REFRESH_EXPIRATION}
   appKey: ${APP_KEY}
 
+crawler:
+  base-url: ${CRAWLER_BASE_URL}
+
 #logging:
 #  logstash:
 #    host: 172.18.0.4
