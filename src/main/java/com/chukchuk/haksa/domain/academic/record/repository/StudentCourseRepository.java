@@ -29,8 +29,6 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
     );
 
     List<StudentCourse> findByStudent(Student student);
-
-    void deleteAll(List<StudentCourse> entities);
 }
 
 
