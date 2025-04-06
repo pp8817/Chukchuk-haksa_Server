@@ -1,8 +1,10 @@
 package com.chukchuk.haksa.infrastructure.portal.model;
 
+import org.springframework.lang.Nullable;
+
 public class MergedOfferingAcademic {
-    private PortalOfferingCreationData offering;
-    private PortalCourseInfo academic; // null 가능
+    private final PortalOfferingCreationData offering;
+    private final @Nullable PortalCourseInfo academic;
 
     public MergedOfferingAcademic(PortalOfferingCreationData offering, PortalCourseInfo academic) {
         this.offering = offering;
