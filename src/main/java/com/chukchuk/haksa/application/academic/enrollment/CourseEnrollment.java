@@ -4,8 +4,10 @@ package com.chukchuk.haksa.application.academic.enrollment;
 import com.chukchuk.haksa.domain.student.model.Grade;
 import com.chukchuk.haksa.domain.student.model.GradeType;
 
+import java.util.UUID;
+
 public class CourseEnrollment {
-    private String studentId;
+    private UUID studentId;
     private Long offeringId;
     private Grade grade;
     private int points;
@@ -13,7 +15,7 @@ public class CourseEnrollment {
     private Double originalScore;
 
     // 생성자
-    public CourseEnrollment(String studentId, Long offeringId, Grade grade, int points, boolean isRetake, Double originalScore) {
+    public CourseEnrollment(UUID studentId, Long offeringId, Grade grade, int points, boolean isRetake, Double originalScore) {
         this.studentId = studentId;
         this.offeringId = offeringId;
         this.grade = grade;
@@ -23,12 +25,12 @@ public class CourseEnrollment {
     }
 
     // factory 메서드
-    public static CourseEnrollment create(String studentId, Long offeringId, GradeType gradeType, int points, boolean isRetake, Double originalScore) {
+    public static CourseEnrollment create(UUID studentId, Long offeringId, GradeType gradeType, int points, boolean isRetake, Double originalScore) {
         return new CourseEnrollment(studentId, offeringId, new Grade(gradeType), points, isRetake, originalScore);
     }
 
     // getter 메서드들
-    public String getStudentId() {
+    public UUID getStudentId() {
         return studentId;
     }
 

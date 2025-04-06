@@ -1,12 +1,11 @@
 package com.chukchuk.haksa.application.portal;
 
-import com.chukchuk.haksa.application.academic.*;
+import com.chukchuk.haksa.application.academic.AcademicRecord;
 import com.chukchuk.haksa.application.academic.dto.SyncAcademicRecordResult;
 import com.chukchuk.haksa.application.academic.enrollment.CourseEnrollment;
 import com.chukchuk.haksa.application.academic.repository.AcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
-import com.chukchuk.haksa.domain.auth.service.AuthService;
 import com.chukchuk.haksa.domain.course.dto.CreateOfferingCommand;
 import com.chukchuk.haksa.domain.course.model.CourseOffering;
 import com.chukchuk.haksa.domain.course.service.CourseOfferingService;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SyncAcademicRecordService {
 
-    private final AuthService authService;
     private final AcademicRecordRepository academicRecordRepository;
     private final StudentCourseRepository studentCourseRepository;
     private final StudentService studentService;
@@ -42,11 +40,9 @@ public class SyncAcademicRecordService {
     private final CourseService courseService;
 
     @Transactional
-    public SyncAcademicRecordResult executeWithPortalData(PortalData portalData) {
+    public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
         try {
-            String userId = authService.getAuthenticatedUserId();
-            UUID studentId = UUID.fromString(userId);
-            Student student = studentService.getStudentById(studentId);
+            Student student = studentService.getStudentById(userId);
 
             // 1) 성적 요약 저장
             AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(userId, portalData.academic());
@@ -81,7 +77,7 @@ public class SyncAcademicRecordService {
     /* offerings(교과)와 academic(학업 성적)을 합쳐서
     *  최종적으로 CourseEnrollment를 만드는 메서드
     *  */
-    private List<CourseEnrollment> processCurriculumData(PortalCurriculumData curriculumData, PortalAcademicData academicData, String userId) {
+    private List<CourseEnrollment> processCurriculumData(PortalCurriculumData curriculumData, PortalAcademicData academicData, UUID userId) {
         List<CourseEnrollment> enrollments = new ArrayList<>();
         Map<String, MergedOfferingAcademic> mergedList = mergeOfferingsAndAcademic(curriculumData, academicData);
 

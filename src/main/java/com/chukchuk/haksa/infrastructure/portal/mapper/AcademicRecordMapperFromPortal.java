@@ -8,6 +8,7 @@ import com.chukchuk.haksa.infrastructure.portal.model.PortalAcademicData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class AcademicRecordMapperFromPortal {
@@ -19,8 +20,8 @@ public class AcademicRecordMapperFromPortal {
      * @param academicData - 포털에서 정제한 학업 정보 데이터
      * @return AcademicRecord 도메인 모델
      */
-    public static AcademicRecord fromPortalAcademicData(String studentId, PortalAcademicData academicData) {
-        if (studentId == null || studentId.isEmpty()) {
+    public static AcademicRecord fromPortalAcademicData(UUID studentId, PortalAcademicData academicData) {
+        if (studentId == null) {
             throw new InvalidDataException("Student ID is required");
         }
 

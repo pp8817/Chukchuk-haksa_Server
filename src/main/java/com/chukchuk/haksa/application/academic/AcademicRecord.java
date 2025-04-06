@@ -5,25 +5,26 @@ import com.chukchuk.haksa.application.academic.enrollment.CourseEnrollments;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class AcademicRecord {
-    private String studentId;
+    private UUID studentId;
     private List<SemesterGrade> semesters;
     private AcademicSummary summary;
     private CourseEnrollments courseEnrollments;
 
-    public AcademicRecord(String studentId, List<SemesterGrade> semesters, AcademicSummary summary, CourseEnrollments courseEnrollments) {
+    public AcademicRecord(UUID studentId, List<SemesterGrade> semesters, AcademicSummary summary, CourseEnrollments courseEnrollments) {
         this.studentId = studentId;
         this.semesters = semesters;
         this.summary = summary;
         this.courseEnrollments = courseEnrollments;
     }
 
-    public static AcademicRecord create(String studentId, List<SemesterGrade> semesters, AcademicSummary summary, CourseEnrollments courseEnrollments) {
+    public static AcademicRecord create(UUID studentId, List<SemesterGrade> semesters, AcademicSummary summary, CourseEnrollments courseEnrollments) {
         return new AcademicRecord(studentId, semesters, summary, courseEnrollments);
     }
 
-    public String getStudentId() {
+    public UUID getStudentId() {
         return studentId;
     }
 

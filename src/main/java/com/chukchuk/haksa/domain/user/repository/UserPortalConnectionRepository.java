@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.time.Instant;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,14 +20,7 @@ public class UserPortalConnectionRepository {
     private final StudentRepository studentRepository;
 
     @Transactional
-    public void initializePortalConnection(UUID userId, StudentInitializationDataType studentData) {
-        // 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
-
-        // 포털 연동 상태 업데이트
-        user.setPortalConnected(true);
-
+    public void initializePortalConnection(User user, StudentInitializationDataType studentData) {
         // 학과 및 전공 정보는 StudentInitializationDataType에서 이미 전달됨
         Department department = studentData.getDepartment(); // 학과 객체
         Department major = studentData.getMajor();          // 전공 객체
@@ -57,5 +50,42 @@ public class UserPortalConnectionRepository {
         // DB에 저장
         userRepository.save(user);
         studentRepository.save(student);
+    }
+
+    @Transactional
+    public void refreshPortalConnection(User user, StudentInitializationDataType studentData) {
+
+        // 학생 정보 조회
+        Student student = studentRepository.findById(user.getId())
+                .orElseThrow(() -> new DataNotFoundException("학생 정보를 찾을 수 없습니다."));
+
+        // 학과 및 전공 정보
+        Department department = studentData.getDepartment();
+        Department major = studentData.getMajor();
+        Department secondaryMajor = studentData.getSecondaryMajor();
+
+        // 기존 학생 정보 갱신
+        student.updateInfo(
+                studentData.getName(),
+                department,
+                major,
+                secondaryMajor,
+                studentData.getAdmissionYear(),
+                studentData.getSemesterEnrolled(),
+                studentData.isTransferStudent(),
+                studentData.isGraduated(),
+                studentData.getStatus(),
+                studentData.getGradeLevel(),
+                studentData.getCompletedSemesters(),
+                studentData.getAdmissionType()
+        );
+
+        // 마지막 동기화 시간 갱신
+        user.updateLastSyncedAt(Instant.now());
+
+        // 저장
+        studentRepository.save(student);
+        userRepository.save(user);
+
     }
 }

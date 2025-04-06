@@ -65,4 +65,8 @@ public class User extends BaseEntity {
     public void setStudent(Student student) {
         this.student = student;
     }
+
+    public void updateLastSyncedAt(Instant time) {
+        this.lastSyncedAt = time;
+    }
 }

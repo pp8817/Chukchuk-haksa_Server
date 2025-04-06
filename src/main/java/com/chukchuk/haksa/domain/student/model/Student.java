@@ -103,6 +103,27 @@ public class Student extends BaseEntity {
         this.user = user;
     }
 
+    public void updateInfo(String name, Department department, Department major, Department secondaryMajor,
+                           Integer admissionYear, Integer semesterEnrolled, Boolean isTransferStudent,
+                           Boolean isGraduated, StudentStatus status, Integer gradeLevel,
+                           Integer completedSemesters, String admissionType) {
+
+        this.name = name;
+        this.department = department;
+        this.major = major;
+        this.secondaryMajor = secondaryMajor;
+        this.isGraduated = isGraduated;
+        this.admissionType = admissionType;
+
+        this.academicInfo = AcademicInfo.builder()
+                .admissionYear(admissionYear)
+                .semesterEnrolled(semesterEnrolled)
+                .isTransferStudent(isTransferStudent)
+                .status(status)
+                .gradeLevel(gradeLevel)
+                .completedSemesters(completedSemesters)
+                .build();
+    }
 
     public void addStudentCourse(StudentCourse course) {
         this.studentCourses.add(course);
