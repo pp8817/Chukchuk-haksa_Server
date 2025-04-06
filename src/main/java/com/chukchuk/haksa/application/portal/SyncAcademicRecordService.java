@@ -70,7 +70,8 @@ public class SyncAcademicRecordService {
 
             return new SyncAcademicRecordResult(true, null);
         } catch (Exception e) {
-            return new SyncAcademicRecordResult(false, e.getMessage());
+            log.error("학업 이력 동기화 중 오류 발생", e);
+            return new SyncAcademicRecordResult(false, "동기화 실패");
         }
     }
 

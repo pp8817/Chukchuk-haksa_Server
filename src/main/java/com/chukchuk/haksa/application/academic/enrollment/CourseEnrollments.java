@@ -51,15 +51,15 @@ public class CourseEnrollments {
     }
 
     // 과목을 수강한 적이 있는지 확인
-    public boolean hasPassedCourse(int offeringId) {
+    public boolean hasPassedCourse(Long offeringId) {
         return enrollments.stream()
-                .anyMatch(enrollment -> enrollment.getOfferingId() == offeringId && enrollment.isPassed());
+                .anyMatch(enrollment -> enrollment.getOfferingId().equals(offeringId) && enrollment.isPassed());
     }
 
     // 현재 수강 중인 과목이 있는지 확인
-    public boolean isCurrentlyEnrolled(int offeringId) {
+    public boolean isCurrentlyEnrolled(Long offeringId) {
         return enrollments.stream()
-                .anyMatch(enrollment -> enrollment.getOfferingId() == offeringId && !enrollment.isCompleted());
+                .anyMatch(enrollment -> enrollment.getOfferingId().equals(offeringId) && !enrollment.isCompleted());
     }
 
     // 총 학점을 계산하는 메서드

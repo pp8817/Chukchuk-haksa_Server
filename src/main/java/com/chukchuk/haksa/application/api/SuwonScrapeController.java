@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -54,8 +53,7 @@ public class SuwonScrapeController {
     public ResponseEntity<?> login(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @Parameter(description = "포털 로그인 ID") String username,
-            @RequestParam @Parameter(description = "포털 로그인 비밀번호") String password,
-            HttpSession session
+            @RequestParam @Parameter(description = "포털 로그인 비밀번호") String password
     ) {
 
         try {

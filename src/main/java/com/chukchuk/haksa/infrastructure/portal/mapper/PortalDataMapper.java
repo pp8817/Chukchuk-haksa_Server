@@ -8,6 +8,9 @@ import java.util.List;
 
 public class PortalDataMapper {
 
+    private static final Integer DEFAULT_TOTAL_CREDITS = 0;
+    private static final Double DEFAULT_GPA = 0.0;
+
     public static PortalData toPortalData(RawPortalData raw) {
         return new PortalData(
                 toPortalStudentInfo(raw.student()),
@@ -26,54 +29,53 @@ public class PortalDataMapper {
                 s.the2MjorCd() != null ? new CodeName(s.the2MjorCd(), s.the2MjorNm()) : null,
                 s.scrgStatNm(),
                 new AdmissionInfo(
-                        Integer.parseInt(s.enscYear()),
-                        Integer.parseInt(s.enscSmrCd()),
+                        parseIntSafe(s.enscYear()),
+                        parseIntSafe(s.enscSmrCd()),
                         s.enscDvcd()
                 ),
-                new PortalAcademicInfo( // ← 여기만 변경
+                new PortalAcademicInfo(
                         s.studGrde(),
                         s.facSmrCnt(),
-                        0,
-                        0.0
+                        DEFAULT_TOTAL_CREDITS,
+                        DEFAULT_GPA
                 )
         );
     }
 
     private static PortalAcademicData toPortalAcademicInfo(List<RawPortalSemesterDTO> semesters, RawPortalGradeResponseDTO academicRecords) {
+        List<SemesterCourseInfo> semesterCourses = extractSemesterCourses(semesters);
+        List<SemesterGrade> grades = extractSemesterGrades(academicRecords);
+        AcademicSummary summary = createAcademicSummary(academicRecords);
+
+        return new PortalAcademicData(semesterCourses, new GradeSummary(grades, summary), summary);
+    }
+
+    private static List<SemesterCourseInfo> extractSemesterCourses(List<RawPortalSemesterDTO> semesters) {
         List<SemesterCourseInfo> semesterCourses = new ArrayList<>();
 
         for (RawPortalSemesterDTO sem : semesters) {
             String[] parts = sem.semester().split("-");
-            int year = Integer.parseInt(parts[0]);
-            int semester = Integer.parseInt(parts[1]);
+            int year = parseIntSafe(parts[0]);
+            int semester = parseIntSafe(parts[1]);
 
             List<CourseInfo> courses = new ArrayList<>();
             for (RawPortalCourseDTO c : sem.courses()) {
-                courses.add(new CourseInfo(
-                        c.subjtCd(),
-                        c.subjtNm(),
-                        c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수",
-                        c.estbDpmjNm(),
-                        c.point(),
-                        c.cretGrdCd(),
-                        !"-".equals(c.refacYearSmr()),
-                        c.timtSmryCn(),
-                        c.facDvnm(),
-                        parseIntSafe(c.cltTerrNm()),
-                        parseIntSafe(c.cltTerrCd()),
-                        parseIntSafe(c.subjtEstbSmrCd()),
-                        parseDoubleSafe(c.gainPont())
-                ));
+                courses.add(createCourseInfo(c));
             }
 
             semesterCourses.add(new SemesterCourseInfo(year, semester, courses));
         }
 
+        return semesterCourses;
+    }
+
+    private static List<SemesterGrade> extractSemesterGrades(RawPortalGradeResponseDTO academicRecords) {
         List<SemesterGrade> grades = new ArrayList<>();
+
         for (RawPortalSemesterGradeDTO g : academicRecords.listSmrCretSumTabYearSmr()) {
             grades.add(new SemesterGrade(
-                    Integer.parseInt(g.cretGainYear()),
-                    Integer.parseInt(g.cretSmrCd()),
+                    parseIntSafe(g.cretGainYear()),
+                    parseIntSafe(g.cretSmrCd()),
                     g.gainPoint(),
                     g.applPoint(),
                     g.gainAvmk(),
@@ -82,14 +84,34 @@ public class PortalDataMapper {
             ));
         }
 
-        AcademicSummary summary = new AcademicSummary(
-                Integer.parseInt(academicRecords.selectSmrCretSumTabSjTotal().applPoint()),
-                Integer.parseInt(academicRecords.selectSmrCretSumTabSjTotal().gainPoint()),
-                Double.parseDouble(academicRecords.selectSmrCretSumTabSjTotal().gainAvmk()),
-                Double.parseDouble(academicRecords.selectSmrCretSumTabSjTotal().gainTavgPont())
-        );
+        return grades;
+    }
 
-        return new PortalAcademicData(semesterCourses, new GradeSummary(grades, summary), summary);
+    private static AcademicSummary createAcademicSummary(RawPortalGradeResponseDTO academicRecords) {
+        return new AcademicSummary(
+                parseIntSafe(academicRecords.selectSmrCretSumTabSjTotal().applPoint()),
+                parseIntSafe(academicRecords.selectSmrCretSumTabSjTotal().gainPoint()),
+                parseDoubleSafe(academicRecords.selectSmrCretSumTabSjTotal().gainAvmk()),
+                parseDoubleSafe(academicRecords.selectSmrCretSumTabSjTotal().gainTavgPont())
+        );
+    }
+
+    private static CourseInfo createCourseInfo(RawPortalCourseDTO c) {
+        return new CourseInfo(
+                c.subjtCd(),
+                c.subjtNm(),
+                c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수",
+                c.estbDpmjNm(),
+                c.point(),
+                c.cretGrdCd(),
+                !"-".equals(c.refacYearSmr()),
+                c.timtSmryCn(),
+                c.facDvnm(),
+                parseIntSafe(c.cltTerrNm()),
+                parseIntSafe(c.cltTerrCd()),
+                parseIntSafe(c.subjtEstbSmrCd()),
+                parseDoubleSafe(c.gainPont())
+        );
     }
 
     private static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDTO> semesters) {
@@ -98,25 +120,11 @@ public class PortalDataMapper {
         List<OfferingInfo> offerings = new ArrayList<>();
 
         for (RawPortalSemesterDTO sem : semesters) {
-            int year = Integer.parseInt(sem.semester().split("-")[0]);
-            int semester = Integer.parseInt(sem.semester().split("-")[1]);
+            int year = parseIntSafe(sem.semester().split("-")[0]);
+            int semester = parseIntSafe(sem.semester().split("-")[1]);
 
             for (RawPortalCourseDTO c : sem.courses()) {
-                courses.add(new CourseInfo(
-                        c.subjtCd(),                                     // code
-                        c.subjtNm(),                                     // name
-                        c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수", // professor
-                        c.estbDpmjNm(),                                  // department
-                        c.point(),                                       // credits
-                        c.cretGrdCd(),                                   // grade
-                        !"-".equals(c.refacYearSmr()),                   // isRetake
-                        c.timtSmryCn(),                                  // schedule
-                        c.facDvnm(),                                     // areaType
-                        parseIntSafe(c.cltTerrNm()),                     // areaCode
-                        parseIntSafe(c.cltTerrCd()),                     // originalAreaCode
-                        parseIntSafe(c.subjtEstbSmrCd()),                // establishmentSemester
-                        parseDoubleSafe(c.gainPont())                    // originalScore
-                ));
+                courses.add(createCourseInfo(c));
                 professors.add(new ProfessorInfo(c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수"));
 
                 offerings.add(new OfferingInfo(
@@ -141,7 +149,7 @@ public class PortalDataMapper {
 
     private static Integer parseIntSafe(String str) {
         try {
-            return str != null ? Integer.parseInt(str) : null;
+            return (str != null && !str.isBlank()) ? Integer.parseInt(str) : null;
         } catch (NumberFormatException e) {
             return null;
         }
@@ -149,7 +157,7 @@ public class PortalDataMapper {
 
     private static Double parseDoubleSafe(String str) {
         try {
-            return str != null ? Double.parseDouble(str) : null;
+            return (str != null && !str.isBlank()) ? Double.parseDouble(str) : null;
         } catch (NumberFormatException e) {
             return null;
         }

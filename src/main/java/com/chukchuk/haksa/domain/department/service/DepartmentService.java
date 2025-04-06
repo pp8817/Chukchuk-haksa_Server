@@ -13,6 +13,7 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepository;
 
     // 학과 코드로 조회하고, 없으면 새로 생성
+    @Transactional
     public Department getOrCreateDepartment(String departmentCode, String establishedDepartmentName) {
         return departmentRepository.findByDepartmentCode(departmentCode)
                 .orElseGet(() -> {

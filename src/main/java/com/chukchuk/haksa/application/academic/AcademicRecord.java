@@ -99,15 +99,15 @@ public class AcademicRecord {
         return courseEnrollments.getEligibleForRetake();
     }
 
-    public boolean hasPassedCourse(int offeringId) {
+    public boolean hasPassedCourse(Long offeringId) {
         return courseEnrollments.hasPassedCourse(offeringId);
     }
 
-    public boolean isCurrentlyEnrolled(int offeringId) {
+    public boolean isCurrentlyEnrolled(Long offeringId) {
         return courseEnrollments.isCurrentlyEnrolled(offeringId);
     }
 
-    public boolean canTakeCourse(int offeringId) {
+    public boolean canTakeCourse(Long offeringId) {
         return !hasPassedCourse(offeringId) && !isCurrentlyEnrolled(offeringId);
     }
 }
