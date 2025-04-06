@@ -25,4 +25,9 @@ public class Department extends BaseEntity {
 
     @Column(name = "established_department_name")
     private String establishedDepartmentName;
+
+    public Department(String departmentCode, String establishedDepartmentName) {
+        this.departmentCode = departmentCode;
+        this.establishedDepartmentName = establishedDepartmentName;
+    }
 }

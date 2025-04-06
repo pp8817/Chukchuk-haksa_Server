@@ -7,8 +7,10 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.graduation.model.StudentGraduationProgress;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
+import com.chukchuk.haksa.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -54,13 +56,13 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "major_id")
     private Department major;
 
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "user_id", nullable = false, unique = true)
-//    private User user;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "secondary_major_id")
     private Department secondaryMajor;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @OneToOne(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
     private StudentAcademicRecord studentAcademicRecord;
@@ -75,6 +77,67 @@ public class Student extends BaseEntity {
     private List<StudentCourse> studentCourses = new ArrayList<>();
 
     /* Using Method */
+
+    @Builder
+    public Student(String studentCode, String name, Department department, Department major, Department secondaryMajor,
+                   Integer admissionYear, Integer semesterEnrolled, Boolean isTransferStudent, Boolean isGraduated,
+                   StudentStatus status, Integer gradeLevel, Integer completedSemesters, String admissionType, User user) {
+        this.studentCode = studentCode;
+        this.name = name;
+        this.department = department;
+        this.major = major;
+        this.secondaryMajor = secondaryMajor;
+        this.isGraduated = isGraduated;
+        this.admissionType = admissionType;
+
+        // Builder 패턴을 이용해 AcademicInfo 객체 생성
+        this.academicInfo = AcademicInfo.builder()
+                .admissionYear(admissionYear)
+                .semesterEnrolled(semesterEnrolled)
+                .isTransferStudent(isTransferStudent)
+                .status(status)  // Enum으로 변환
+                .gradeLevel(gradeLevel)
+                .completedSemesters(completedSemesters)
+                .build();
+
+        this.user = user;
+    }
+
+    public void updateInfo(String name, Department department, Department major, Department secondaryMajor,
+                           Integer admissionYear, Integer semesterEnrolled, Boolean isTransferStudent,
+                           Boolean isGraduated, StudentStatus status, Integer gradeLevel,
+                           Integer completedSemesters, String admissionType) {
+
+        this.name = name;
+        this.department = department;
+        this.major = major;
+        this.secondaryMajor = secondaryMajor;
+        this.isGraduated = isGraduated;
+        this.admissionType = admissionType;
+
+        this.academicInfo = AcademicInfo.builder()
+                .admissionYear(admissionYear)
+                .semesterEnrolled(semesterEnrolled)
+                .isTransferStudent(isTransferStudent)
+                .status(status)
+                .gradeLevel(gradeLevel)
+                .completedSemesters(completedSemesters)
+                .build();
+    }
+
+    public void addStudentCourse(StudentCourse course) {
+        this.studentCourses.add(course);
+    }
+
+    // 연관관계 편의 메서드
+    public void setAcademicRecord(StudentAcademicRecord record) {
+        this.studentAcademicRecord = record;
+    }
+
+    public void addSemesterRecord(SemesterAcademicRecord record) {
+        this.semesterAcademicRecords.add(record);
+    }
+
     public void setTargetGpa(Double targetGpa) {
         this.targetGpa = targetGpa;
     }

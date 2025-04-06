@@ -26,6 +26,7 @@ repositories {
 dependencies {
 	// Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 	// Validator
 	implementation 'org.hibernate.validator:hibernate-validator'
@@ -42,6 +43,7 @@ dependencies {
 	// DB
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'org.postgresql:postgresql' // prod
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'

@@ -16,6 +16,7 @@ import java.time.Instant;
 public class CourseOffering extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "subject_establishment_semester")
@@ -70,4 +71,38 @@ public class CourseOffering extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professor_id")
     private Professor professor;
+
+    public CourseOffering(
+            Integer subjectEstablishmentSemester,
+            Boolean isVideoLecture,
+            Integer year,
+            Integer semester,
+            String hostDepartment,
+            String classSection,
+            String scheduleSummary,
+            Integer originalAreaCode,
+            Integer areaCode,
+            Integer points,
+            EvaluationType evaluationTypeCode,
+            FacultyDivision facultyDivisionName,
+            Course course,
+            Professor professor,
+            Department department
+    ) {
+        this.subjectEstablishmentSemester = subjectEstablishmentSemester;
+        this.isVideoLecture = isVideoLecture;
+        this.year = year;
+        this.semester = semester;
+        this.hostDepartment = hostDepartment;
+        this.classSection = classSection;
+        this.scheduleSummary = scheduleSummary;
+        this.originalAreaCode = originalAreaCode;
+        this.areaCode = areaCode;
+        this.points = points;
+        this.evaluationTypeCode = evaluationTypeCode;
+        this.facultyDivisionName = facultyDivisionName;
+        this.course = course;
+        this.professor = professor;
+        this.department = department;
+    }
 }
