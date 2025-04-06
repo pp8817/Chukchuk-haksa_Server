@@ -33,15 +33,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 기반 인증
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/kakao").permitAll() // 로그인 엔드포인트는 허용
-                        // Swagger 허용 경로
+                        // 인증 없이 허용할 엔드포인트
                         .requestMatchers(
+                                "/auth/kakao",
+                                "/api/users/signin",
+                                "/api/users/signin/**",
+                                "/api/auth/refresh",
+                                "/api/public",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        .requestMatchers("/api/users/signin", "/api/users/signin/**", "/api/auth/refresh").permitAll()
-                        .requestMatchers("/api/public").permitAll()
                         .requestMatchers("/api/private").authenticated()
                         .anyRequest().authenticated()
                 )
