@@ -11,16 +11,35 @@ import java.math.BigDecimal;
 public class AcademicRecordMapper {
 
     public static StudentAcademicRecord toEntity(Student student, AcademicSummary summary) {
+
+        if (summary == null) {
+            throw new IllegalArgumentException("AcademicSummary cannot be null");
+        }
+
+        // null 체크를 통한 안전한 변환
+        BigDecimal cumulativeGpa = summary.getCumulativeGpa() != null
+                ? BigDecimal.valueOf(summary.getCumulativeGpa()) : BigDecimal.ZERO;
+
+        BigDecimal percentile = summary.getPercentile() != null
+                ? BigDecimal.valueOf(summary.getPercentile()) : BigDecimal.ZERO;
+
         return new StudentAcademicRecord(
                 student,
                 summary.getTotalAttemptedCredits(),
                 summary.getTotalEarnedCredits(),
-                BigDecimal.valueOf(summary.getCumulativeGpa()),
-                BigDecimal.valueOf(summary.getPercentile())
+                cumulativeGpa,
+                percentile
         );
     }
 
     public static SemesterAcademicRecord toEntity(Student student, SemesterGrade grade) {
+        if (grade == null) {
+            throw new IllegalArgumentException("SemesterGrade cannot be null");
+        }
+
+        BigDecimal attemptedCreditsGpa = grade.getAttemptedCreditsGpa() != null
+                ? BigDecimal.valueOf(grade.getAttemptedCreditsGpa()) : BigDecimal.ZERO;
+
         return new SemesterAcademicRecord(
                 student,
                 grade.getYear(),
@@ -29,7 +48,7 @@ public class AcademicRecordMapper {
                 grade.getEarnedCredits(),
                 BigDecimal.valueOf(grade.getSemesterGpa()),
                 BigDecimal.valueOf(grade.getSemesterPercentile()),
-                BigDecimal.valueOf(grade.getAttemptedCreditsGpa()),
+                attemptedCreditsGpa,
                 grade.getClassRank(),
                 grade.getTotalStudents()
         );
