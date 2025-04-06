@@ -20,6 +20,7 @@ import java.time.Instant;
 public class StudentCourse {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Embedded
@@ -46,4 +47,20 @@ public class StudentCourse {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
+
+    public StudentCourse(
+            Student student,
+            CourseOffering offering,
+            Grade grade,
+            Integer points,
+            Boolean isRetake,
+            Integer originalScore
+    ) {
+        this.student = student;
+        this.offering = offering;
+        this.grade = grade;
+        this.points = points;
+        this.isRetake = isRetake;
+        this.originalScore = originalScore;
+    }
 }

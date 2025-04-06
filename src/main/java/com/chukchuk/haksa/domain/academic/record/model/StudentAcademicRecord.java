@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.academic.record.model;
 
+import com.chukchuk.haksa.application.academic.AcademicSummary;
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
@@ -37,4 +38,25 @@ public class StudentAcademicRecord extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
+
+    public StudentAcademicRecord(
+            Student student,
+            Integer totalAttemptedCredits,
+            Integer totalEarnedCredits,
+            BigDecimal cumulativeGpa,
+            BigDecimal percentile
+    ) {
+        this.student = student;
+        this.totalAttemptedCredits = totalAttemptedCredits;
+        this.totalEarnedCredits = totalEarnedCredits;
+        this.cumulativeGpa = cumulativeGpa;
+        this.percentile = percentile;
+    }
+
+    public void updateWith(AcademicSummary summary) {
+        this.totalAttemptedCredits = summary.getTotalAttemptedCredits();
+        this.totalEarnedCredits = summary.getTotalEarnedCredits();
+        this.cumulativeGpa = BigDecimal.valueOf(summary.getCumulativeGpa());
+        this.percentile = BigDecimal.valueOf(summary.getPercentile());
+    }
 }
