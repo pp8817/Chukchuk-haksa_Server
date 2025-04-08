@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.student.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,6 +9,7 @@ import jakarta.persistence.Enumerated;
 public class Grade {
 
     @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
+    @Column(name = "grade")
     private GradeType value;
 
     protected Grade() {} // JPA를 위한 기본 생성자
