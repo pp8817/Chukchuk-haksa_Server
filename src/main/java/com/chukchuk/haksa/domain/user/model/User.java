@@ -49,13 +49,23 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private Student student;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role = Role.USER;;
+
     @Builder
-    public User(UUID id, String email, String profileNickname) {
+    public User(UUID id, String email, String profileNickname, Role role) {
         this.id = id;
         this.email = email;
+        this.role = (role != null) ? role : Role.USER;
         this.profileNickname = profileNickname;
         this.isDeleted = false;
         this.portalConnected = false;
+    }
+
+    public enum Role {
+        USER,     // 기본값
+        TEST      // 테스트용
     }
 
     public void setPortalConnected(boolean portalConnected) {

@@ -1,7 +1,10 @@
 package com.chukchuk.haksa.domain.user.controller;
 
 import com.chukchuk.haksa.domain.auth.service.TokenCookieProvider;
+import com.chukchuk.haksa.domain.user.dto.TestUserDto;
 import com.chukchuk.haksa.domain.user.dto.UserDto;
+import com.chukchuk.haksa.domain.user.model.User;
+import com.chukchuk.haksa.domain.user.service.TestUserService;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -30,6 +33,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final TestUserService testUserService;
     private final TokenCookieProvider tokenCookieProvider;
 
     @DeleteMapping("/delete")
@@ -73,7 +77,7 @@ public class UserController {
     )
     public ResponseEntity<?> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
-            ) {
+    ) {
         try {
             UserDto.SignInResponse signInResponse = userService.signInWithKakao(signInRequest);
 
@@ -92,5 +96,12 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(UserDto.SignInResponse.builder().status(HttpStatus.UNAUTHORIZED).build());
         }
+    }
+
+    @GetMapping("/test")
+    @Operation(summary = "Test 계정 정보 조회")
+    public ResponseEntity<TestUserDto> getTestUser() {
+        User user = testUserService.getTestUser();
+        return ResponseEntity.ok(TestUserDto.from(user));
     }
 }
