@@ -1,9 +1,12 @@
 package com.chukchuk.haksa.infrastructure.portal.mapper;
 
-import com.chukchuk.haksa.application.academic.*;
+import com.chukchuk.haksa.application.academic.AcademicRecord;
+import com.chukchuk.haksa.application.academic.AcademicSummary;
+import com.chukchuk.haksa.application.academic.SemesterGrade;
 import com.chukchuk.haksa.application.academic.enrollment.CourseEnrollment;
 import com.chukchuk.haksa.application.academic.enrollment.CourseEnrollments;
-import com.chukchuk.haksa.global.exception.InvalidDataException;
+import com.chukchuk.haksa.global.exception.BusinessException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalAcademicData;
 
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ public class AcademicRecordMapperFromPortal {
      */
     public static AcademicRecord fromPortalAcademicData(UUID studentId, PortalAcademicData academicData) {
         if (studentId == null) {
-            throw new InvalidDataException("Student ID is required");
+            throw new BusinessException(ErrorCode.STUDENT_ID_REQUIRED);
         }
 
         List<com.chukchuk.haksa.infrastructure.portal.model.SemesterGrade> semesters = academicData.grades().semesters();

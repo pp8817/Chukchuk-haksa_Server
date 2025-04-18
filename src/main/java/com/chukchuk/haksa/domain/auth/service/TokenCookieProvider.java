@@ -20,7 +20,7 @@ public class TokenCookieProvider {
 
     public ResponseCookie createAccessTokenCookie(String accessToken) {
         return ResponseCookie.from("accessToken", accessToken)
-                .httpOnly(httpOnly())
+                .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .maxAge(accessTokenExpiration / 1000)
@@ -30,7 +30,7 @@ public class TokenCookieProvider {
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
         return ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(httpOnly())
+                .httpOnly(true)
                 .secure(true)
                 .path("/")
                 .maxAge(refreshTokenExpiration / 1000)

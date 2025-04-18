@@ -1,5 +1,7 @@
 package com.chukchuk.haksa.global.security.service;
 
+import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.global.exception.TokenException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -27,33 +29,40 @@ public class KakaoOidcService {
     @Value("${security.appKey}")
     private String appKey;
 
-    public Claims verifyIdToken(String idToken, String expectedNonce) throws Exception {
-        JsonNode jwks = publicKeyService.getKakaoOidcPublicKey();
+    public Claims verifyIdToken(String idToken, String expectedNonce) {
+        try {
+            JsonNode jwks = publicKeyService.getKakaoOidcPublicKey();
 
-        // ID 토큰의 헤더에서 kid(Key ID) 추출
-        String[] parts = idToken.split("\\.");
-        String headerJson = new String(Base64.getDecoder().decode(parts[0]));
-        String kid = new ObjectMapper().readTree(headerJson).get("kid").asText();
+            String[] parts = idToken.split("\\.");
+            if (parts.length != 3) {
+                throw new TokenException(ErrorCode.TOKEN_INVALID_FORMAT);
+            }
 
-        // kid에 해당하는 공개 키 찾기
-        JsonNode keyNode = findMatchingKey(jwks, kid);
-        if (keyNode == null) {
-            throw new IllegalArgumentException("일치하는 공개키가 없습니다.");
+            String headerJson = new String(Base64.getDecoder().decode(parts[0]));
+            String kid = new ObjectMapper().readTree(headerJson).get("kid").asText();
+
+            JsonNode keyNode = findMatchingKey(jwks, kid);
+            if (keyNode == null) {
+                throw new TokenException(ErrorCode.TOKEN_NO_MATCHING_KEY);
+            }
+
+            PublicKey publicKey = createPublicKey(keyNode);
+
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(publicKey)
+                    .build()
+                    .parseClaimsJws(idToken)
+                    .getBody();
+
+            validateClaims(expectedNonce, claims);
+
+            return claims;
+
+        } catch (TokenException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TokenException(ErrorCode.TOKEN_PARSE_ERROR);
         }
-
-        // 공개 키 생성
-        PublicKey publicKey = createPublicKey(keyNode);
-
-        // 토큰 검증 및 파싱
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(publicKey)
-                .build()
-                .parseClaimsJws(idToken)
-                .getBody();
-
-        validateClaims(expectedNonce, claims);
-
-        return claims;
     }
 
     private PublicKey createPublicKey(JsonNode keyNode) throws Exception{
@@ -67,37 +76,34 @@ public class KakaoOidcService {
         return factory.generatePublic(spec);
     }
 
-    private void validateClaims(String expectedNonce, Claims claims) throws Exception {
-
+    private void validateClaims(String expectedNonce, Claims claims) {
         Date expiration = claims.getExpiration();
         if (expiration == null || expiration.before(new Date())) {
-            throw new IllegalArgumentException("만료된 토큰입니다.");
+            throw new TokenException(ErrorCode.TOKEN_EXPIRED);
         }
 
-        if (!claims.getIssuer().equals("https://kauth.kakao.com")) {
-            throw new IllegalArgumentException("유효하지 않은 iss 입니다.");
+        if (!"https://kauth.kakao.com".equals(claims.getIssuer())) {
+            throw new TokenException(ErrorCode.TOKEN_INVALID_ISS);
         }
 
-        // aud가 배열로 오는 경우 대비
         Object audClaim = claims.get("aud");
-        if (audClaim instanceof String) { // 배열이 아닌 경우
+        if (audClaim instanceof String) {
             if (!appKey.equals(audClaim)) {
-                throw new IllegalArgumentException("유효하지 않은 aud 입니다.");
+                throw new TokenException(ErrorCode.TOKEN_INVALID_AUD);
             }
-        } else if (audClaim instanceof java.util.List) { // 배열인 경우
+        } else if (audClaim instanceof java.util.List) {
             if (!((java.util.List<?>) audClaim).contains(appKey)) {
-                throw new IllegalArgumentException("유효하지 않은 aud 입니다.");
+                throw new TokenException(ErrorCode.TOKEN_INVALID_AUD);
             }
         } else {
-            throw new IllegalArgumentException("aud 클레임 형식이 올바르지 않습니다.");
+            throw new TokenException(ErrorCode.TOKEN_INVALID_AUD_FORMAT);
         }
 
         String hashedNonce = hashSHA256(expectedNonce);
-
         String nonce = claims.get("nonce", String.class);
 
-        if (!nonce.equals(hashedNonce)) {
-            throw new IllegalArgumentException("유효하지 않은 nonce 입니다.");
+        if (!hashedNonce.equals(nonce)) {
+            throw new TokenException(ErrorCode.TOKEN_INVALID_NONCE);
         }
     }
 
@@ -111,17 +117,22 @@ public class KakaoOidcService {
         return null;
     }
 
-    private String hashSHA256(String input) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+    private String hashSHA256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
 
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : encodedHash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : encodedHash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception e) {
+            throw new TokenException(ErrorCode.TOKEN_HASH_ERROR);
         }
-        return hexString.toString();
     }
 
 }

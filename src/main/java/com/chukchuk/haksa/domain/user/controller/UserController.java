@@ -12,14 +12,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -41,7 +39,7 @@ public class UserController {
         UUID userId = UUID.fromString(userDetails.getUsername());
         userService.deleteUserByEmail(userId);
 
-        return ResponseEntity.ok(Map.of("success", true));
+        return ResponseEntity.ok(com.chukchuk.haksa.global.common.response.ApiResponse.success("회원 탈퇴가 완료되었습니다."));
     }
 
     @PostMapping("/signin")
@@ -74,23 +72,21 @@ public class UserController {
     public ResponseEntity<?> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
-        try {
-            UserDto.SignInResponse signInResponse = userService.signInWithKakao(signInRequest);
+        UserDto.SignInResponse signInResponse = userService.signInWithKakao(signInRequest);
 
-            ResponseCookie accessCookie = tokenCookieProvider.createAccessTokenCookie(signInResponse.accessToken());
-            ResponseCookie refreshCookie = tokenCookieProvider.createRefreshTokenCookie(signInResponse.refreshToken());
+        ResponseCookie accessCookie = tokenCookieProvider.createAccessTokenCookie(signInResponse.accessToken());
+        ResponseCookie refreshCookie = tokenCookieProvider.createRefreshTokenCookie(signInResponse.refreshToken());
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
-            headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(UserDto.SignInResponse.builder()
-                            .status(signInResponse.status())
-                            .build()); // body에서 토큰은 제거
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(UserDto.SignInResponse.builder().status(HttpStatus.UNAUTHORIZED).build());
-        }
+        UserDto.SignInResponse body = UserDto.SignInResponse.builder()
+                .status(signInResponse.status())
+                .build();
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(com.chukchuk.haksa.global.common.response.ApiResponse.success(body));
     }
 }

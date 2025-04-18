@@ -2,6 +2,7 @@ package com.chukchuk.haksa.domain.graduation.controller;
 
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.service.GraduationService;
+import com.chukchuk.haksa.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,12 +30,12 @@ public class GraduationController {
     @GetMapping("/progress")
     @Operation(summary = "졸업 요건 진행 상황 조회", description = "로그인된 사용자의 졸업 요건 충족 여부를 조회합니다.")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<GraduationProgressDto> getGraduationProgress(
+    public ResponseEntity<ApiResponse<GraduationProgressDto>> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
 
-        GraduationProgressDto graduationProgress = graduationService.getGraduationProgress(userId);
-        return ResponseEntity.ok(graduationProgress);
+        GraduationProgressDto response = graduationService.getGraduationProgress(userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

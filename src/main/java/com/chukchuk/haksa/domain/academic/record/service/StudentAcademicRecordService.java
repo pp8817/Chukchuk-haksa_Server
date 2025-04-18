@@ -6,7 +6,8 @@ import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecor
 import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.service.StudentService;
-import com.chukchuk.haksa.global.exception.DataNotFoundException;
+import com.chukchuk.haksa.global.exception.EntityNotFoundException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,6 @@ public class StudentAcademicRecordService {
 
     public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID id) {
         return studentAcademicRecordRepository.findByStudentId(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 학생의 학적 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_ACADEMIC_RECORD_NOT_FOUND));
     }
 }
