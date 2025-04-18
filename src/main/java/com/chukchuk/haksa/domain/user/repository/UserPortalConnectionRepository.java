@@ -5,7 +5,8 @@ import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.StudentInitializationDataType;
 import com.chukchuk.haksa.domain.user.model.User;
-import com.chukchuk.haksa.global.exception.DataNotFoundException;
+import com.chukchuk.haksa.global.exception.EntityNotFoundException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,7 @@ public class UserPortalConnectionRepository {
 
         // 학생 정보 조회
         Student student = studentRepository.findById(user.getId())
-                .orElseThrow(() -> new DataNotFoundException("학생 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
 
         // 학과 및 전공 정보
         Department department = studentData.getDepartment();

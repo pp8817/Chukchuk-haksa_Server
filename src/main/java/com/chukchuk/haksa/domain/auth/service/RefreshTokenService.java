@@ -5,8 +5,9 @@ import com.chukchuk.haksa.domain.auth.entity.RefreshToken;
 import com.chukchuk.haksa.domain.auth.repository.RefreshTokenRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
-import com.chukchuk.haksa.global.exception.DataNotFoundException;
-import com.chukchuk.haksa.global.exception.InvalidTokenException;
+import com.chukchuk.haksa.global.exception.EntityNotFoundException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.global.exception.TokenException;
 import com.chukchuk.haksa.global.security.service.JwtProvider;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,11 @@ public class RefreshTokenService {
 
         RefreshToken saved = findByUserId(userId);
         if (!saved.getToken().equals(refreshToken)) {
-            throw new InvalidTokenException("RefreshToken 불일치");
+            throw new TokenException(ErrorCode.REFRESH_TOKEN_MISMATCH);
         }
 
         User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
 
         String newAccessToken = jwtProvider.createAccessToken(userId, user.getEmail(), "USER");
         AuthDto.RefreshTokenWithExpiry newRefresh = jwtProvider.createRefreshToken(userId);
@@ -58,7 +59,7 @@ public class RefreshTokenService {
 
     public RefreshToken findByUserId(String userId) {
         return refreshTokenRepository.findById(userId)
-                .orElseThrow(() -> new InvalidTokenException("RefreshToken이 존재하지 않음"));
+                .orElseThrow(() -> new TokenException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
     }
 
     /* 일정 시간마다 유효기간이 지난 RefreshToken 정보 삭제 */
