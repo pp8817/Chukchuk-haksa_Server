@@ -1,6 +1,7 @@
 package com.chukchuk.haksa.global.security.service;
 
-import com.chukchuk.haksa.global.exception.InvalidTokenException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.global.exception.TokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -75,9 +76,9 @@ public class JwtProvider {
                     .parseClaimsJws(token) // 서명 유효성 검증 + Base64 디코딩, Claims 추출
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException("토큰이 만료되었습니다.", e);
+            throw new TokenException(ErrorCode.TOKEN_EXPIRED);
         } catch (Exception e) {
-            throw new InvalidTokenException("토큰이 유효하지 않습니다.", e);
+            throw new TokenException(ErrorCode.TOKEN_INVALID);
         }
     }
 
