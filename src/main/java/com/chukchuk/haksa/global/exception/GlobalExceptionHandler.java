@@ -1,7 +1,6 @@
 package com.chukchuk.haksa.global.exception;
 
 import com.chukchuk.haksa.global.common.response.ApiResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,7 +10,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<ApiResponse<?>> handleTokenException(TokenException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(ApiResponse.error(e.getCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleEntityNotFound(EntityNotFoundException e) {
+        return ResponseEntity
+                .status(e.getStatus())
                 .body(ApiResponse.error(e.getCode(), e.getMessage()));
     }
 
