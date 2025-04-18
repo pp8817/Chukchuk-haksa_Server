@@ -59,6 +59,8 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "https://www.cchaksa.com",
                 "https://cchaksa.com",
+                "https://dev.cchaksa.com:3000"
+                ,
                 "https://pp8817.github.io"
                 ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
