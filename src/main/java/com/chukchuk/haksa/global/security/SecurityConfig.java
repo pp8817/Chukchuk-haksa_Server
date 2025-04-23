@@ -39,10 +39,15 @@ public class SecurityConfig {
                                 "/api/users/signin",
                                 "/api/users/signin/**",
                                 "/api/auth/refresh",
-                                "/api/public",
+                                "/api/public"
+                        ).permitAll()
+                        .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/swagger-config/**",
+                                "/webjars/**"
                         ).permitAll()
                         .requestMatchers("/api/private").authenticated()
                         .anyRequest().authenticated()
@@ -59,10 +64,10 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "https://www.cchaksa.com",
                 "https://cchaksa.com",
-                "https://dev.cchaksa.com:3000"
-                ,
-                "https://pp8817.github.io"
+                "https://dev.cchaksa.com:3000",
+                "https://dev.api.cchaksa.com"
                 ));
+        configuration.setAllowedOriginPatterns(List.of("*")); // 임시로 모든 origin 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // 쿠키 허용할 경우 true
