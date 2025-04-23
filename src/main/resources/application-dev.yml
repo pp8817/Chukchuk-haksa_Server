@@ -30,6 +30,9 @@ security:
   cookie:
     dev-mode: true
 
+server:
+  forward-headers-strategy: native
+
 logging:
   level:
     root: info
