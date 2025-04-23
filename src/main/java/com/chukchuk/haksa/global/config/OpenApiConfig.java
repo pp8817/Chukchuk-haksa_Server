@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "척척학사 API", version = "v0", description = "API 명세서"),
+        info = @Info(title = "척척학사 API", version = "v1", description = "API 명세서"),
 //        security = @SecurityRequirement(name = "bearerAuth"), // 모든 API에 인증 기본 적용
         servers = {
-                @Server(url = "http://localhost:8080", description = "Local Server"),
-                @Server(url = "https://chukchuk-haksa-server.onrender.com", description = "Dev Server")
+                @Server(url = "https://dev.api.cchaksa.com", description = "Dev Server"),
+                @Server(url = "http://localhost:8080", description = "Local Server")
         }
 )
 @SecurityScheme(

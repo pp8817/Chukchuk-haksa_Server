@@ -29,6 +29,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+        if (path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger")
+                || path.startsWith("/webjars")
+                || path.startsWith("/swagger-config")
+                || path.equals("/")
+        ) {
+            log.info("Bypassing JWT filter for swagger: " + path);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = extractTokenFromCookie(request);
         if (token == null) {
             filterChain.doFilter(request, response);
@@ -39,7 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtProvider.parseToken(token);
             String userId = claims.getSubject();
 
-            //UserDetails 생성 후 인증 객체 저장
             UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
@@ -47,8 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invaild Token");
-            return;
+            log.warn("JWT 토큰 검증 실패: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
