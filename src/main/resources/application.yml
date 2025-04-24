@@ -30,6 +30,12 @@ redis:
   encrypt:
     key: ${REDIS_ENCRYPT_KEY}
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    url: /static/openapi.yaml  # 상대 경로
+
 #logging:
 #  logstash:
 #    host: 172.18.0.4
