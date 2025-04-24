@@ -1,3 +1,10 @@
+openapi: 3.0.1
+info:
+  title: Chukchuk Haksa API
+  description: 척척학사 OpenAPI 문서입니다.
+  version: 1.0.0
+
+paths: {}
 components:
   schemas:
     ApiResponse:
