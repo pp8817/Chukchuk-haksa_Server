@@ -34,7 +34,7 @@ springdoc:
   api-docs:
     enabled: true
   swagger-ui:
-    url: /static/openapi.yaml  # 상대 경로
+    url: /openapi.yaml  # 상대 경로
 
 #logging:
 #  logstash:
