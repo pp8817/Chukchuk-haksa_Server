@@ -5,9 +5,6 @@ import com.chukchuk.haksa.domain.auth.service.TokenCookieProvider;
 import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -47,30 +44,7 @@ public class UserController {
     @PostMapping("/signin")
     @Operation(
             summary = "회원 가입",
-            description = "사용자 회원가입을 진행합니다.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "로그인 성공 시 accessToken / refreshToken 쿠키를 반환합니다.",
-                            headers = {
-                                    @Header(
-                                            name = "Set-Cookie",
-                                            description = "accessToken이 담긴 HttpOnly 쿠키",
-                                            schema = @Schema(type = "string")
-                                    ),
-                                    @Header(
-                                            name = "Set-Cookie",
-                                            description = "refreshToken이 담긴 HttpOnly 쿠키",
-                                            schema = @Schema(type = "string")
-                                    )
-                            }
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "카카오 로그인 실패 또는 유효하지 않은 요청"
-                    )
-            }
-    )
+            description = "사용자 회원가입을 진행합니다.")
     public ResponseEntity<?> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {

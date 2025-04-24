@@ -1,12 +1,21 @@
 package com.chukchuk.haksa.domain.user.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class UserDto {
+
+    @Schema(description = "카카오 로그인 요청 정보")
     public record SignInRequest(
+            @Schema(description = "카카오에서 발급받은 ID 토큰")
             String id_token,
+
+            @Schema(description = "로그인 시 사용한 nonce 값", example = "random_nonce_value")
             String nonce
-    ) {
+    ) {}
 
-    }
-
-    public record PortalLinkStatusResponse(boolean isPortalLinked) {}
+    @Schema(description = "포털 연동 여부 응답")
+    public record PortalLinkStatusResponse(
+            @Schema(description = "포털 연동 여부", example = "true")
+            boolean isPortalLinked
+    ) {}
 }

@@ -1,30 +1,47 @@
 package com.chukchuk.haksa.domain.auth.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.util.Date;
 
+
 public class AuthDto {
+
+    @Schema(description = "만료 시간을 포함한 리프레시 토큰 정보")
     public record RefreshTokenWithExpiry(
+            @Schema(description = "Refresh Token")
             String token,
+
+            @Schema(description = "만료 시각")
             Date expiry
-    ) {
-    }
+    ) {}
 
-    public record RefreshRequest(String refreshToken) {
+    @Schema(description = "리프레시 토큰 요청 DTO")
+    public record RefreshRequest(
+            @Schema(description = "Refresh Token")
+            String refreshToken
+    ) {}
 
-    }
+    @Schema(description = "Refresh Response DTO")
+    public record RefreshResponse(
+            @Schema(description = "액세스 토큰")
+            String accessToken,
 
-    public record RefreshResponse(String accessToken, String refreshToken) {
+            @Schema(description = "리프레시 토큰")
+            String refreshToken
+    ) {}
 
-    }
-
+    @Schema(description = "카카오 로그인 성공 시 반환되는 토큰 정보")
     @Builder
     public record SignInTokenResponse(
+            @Schema(description = "액세스 토큰")
             String accessToken,
-            String refreshToken,
-            boolean isPortalLinked
-    ) {
 
-    }
+            @Schema(description = "리프레시 토큰")
+            String refreshToken,
+
+            @Schema(description = "포털 연동 여부", example = "true")
+            boolean isPortalLinked
+    ) {}
 }
