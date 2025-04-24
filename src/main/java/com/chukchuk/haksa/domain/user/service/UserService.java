@@ -14,7 +14,6 @@ import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -41,7 +40,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto.SignInResponse signInWithKakao(UserDto.SignInRequest signInRequest) {
+    public AuthDto.SignInTokenResponse signInWithKakao(UserDto.SignInRequest signInRequest) {
         Claims claims = verifyKakaoToken(signInRequest);
         String email = extractEmail(claims);
 
@@ -75,12 +74,12 @@ public class UserService {
                 ));
     }
 
-    private UserDto.SignInResponse generateSignInResponse(User user) {
+    private AuthDto.SignInTokenResponse generateSignInResponse(User user) {
         String userId = user.getId().toString();
         String accessToken = jwtProvider.createAccessToken(userId, user.getEmail(), "USER");
         AuthDto.RefreshTokenWithExpiry refresh = jwtProvider.createRefreshToken(userId);
         refreshTokenService.save(userId, refresh.token(), refresh.expiry());
 
-        return new UserDto.SignInResponse(HttpStatus.OK, accessToken, refresh.token());
+        return new AuthDto.SignInTokenResponse(accessToken, refresh.token(), user.getPortalConnected());
     }
 }

@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.user.controller;
 
+import com.chukchuk.haksa.domain.auth.dto.AuthDto;
 import com.chukchuk.haksa.domain.auth.service.TokenCookieProvider;
 import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
@@ -42,6 +43,7 @@ public class UserController {
         return ResponseEntity.ok(com.chukchuk.haksa.global.common.response.ApiResponse.success("회원 탈퇴가 완료되었습니다."));
     }
 
+    /* 회원가입/로그인 */
     @PostMapping("/signin")
     @Operation(
             summary = "회원 가입",
@@ -72,21 +74,20 @@ public class UserController {
     public ResponseEntity<?> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
-        UserDto.SignInResponse signInResponse = userService.signInWithKakao(signInRequest);
+        AuthDto.SignInTokenResponse tokens = userService.signInWithKakao(signInRequest);
 
-        ResponseCookie accessCookie = tokenCookieProvider.createAccessTokenCookie(signInResponse.accessToken());
-        ResponseCookie refreshCookie = tokenCookieProvider.createRefreshTokenCookie(signInResponse.refreshToken());
+        ResponseCookie accessCookie = tokenCookieProvider.createAccessTokenCookie(tokens.accessToken());
+        ResponseCookie refreshCookie = tokenCookieProvider.createRefreshTokenCookie(tokens.refreshToken());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
         headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        UserDto.SignInResponse body = UserDto.SignInResponse.builder()
-                .status(signInResponse.status())
-                .build();
+        UserDto.PortalLinkStatusResponse body = new UserDto.PortalLinkStatusResponse(tokens.isPortalLinked());
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(com.chukchuk.haksa.global.common.response.ApiResponse.success(body));
     }
+
 }
