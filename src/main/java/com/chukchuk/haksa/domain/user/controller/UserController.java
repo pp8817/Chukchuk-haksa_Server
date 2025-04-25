@@ -6,8 +6,6 @@ import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +45,7 @@ public class UserController {
     @PostMapping("/signin")
     @Operation(
             summary = "회원 가입",
-            description = "사용자 회원가입을 진행합니다.",
-            responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공",
-                            content = @Content(schema = @Schema(implementation = UserDto.PortalLinkStatusResponse.class)))
-            })
+            description = "사용자 회원가입을 진행합니다.")
     public ResponseEntity<ApiResponse<UserDto.PortalLinkStatusResponse>> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
@@ -70,5 +64,4 @@ public class UserController {
                 .headers(headers)
                 .body(ApiResponse.success(body));
     }
-
 }
