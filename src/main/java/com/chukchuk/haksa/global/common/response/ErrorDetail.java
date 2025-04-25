@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-
 @Schema(description = "에러 상세 정보")
 public class ErrorDetail {
 
