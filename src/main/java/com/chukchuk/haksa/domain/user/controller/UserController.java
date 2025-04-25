@@ -63,7 +63,9 @@ public class UserController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "회원가입 성공",
-                            content = @Content(schema = @Schema(implementation = SignInApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SignInApiResponse.class)))
             })
     public ResponseEntity<ApiResponse<UserDto.SignInResponse>> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest

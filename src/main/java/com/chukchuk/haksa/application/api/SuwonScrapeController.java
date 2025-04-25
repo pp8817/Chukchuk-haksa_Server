@@ -57,7 +57,9 @@ public class SuwonScrapeController {
             description = "수원대학교 포털 로그인 후 Redis에 계정 정보를 저장합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "로그인 성공",
-                            content = @Content(schema = @Schema(implementation = PortalLoginApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = PortalLoginApiResponse.class)))
             }
     )
     @SecurityRequirement(name = "bearerAuth")
@@ -85,7 +87,9 @@ public class SuwonScrapeController {
             description = "Redis에 저장된 포털 로그인 정보를 사용하여 데이터를 크롤링합니다.",
             responses = {
                     @ApiResponse(responseCode = "202", description = "동기화 성공",
-                            content = @Content(schema = @Schema(implementation = StartScrapingApiResponse.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = StartScrapingApiResponse.class))),
                     @ApiResponse(responseCode = "401", description = "로그인 필요"),
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
@@ -144,7 +148,9 @@ public class SuwonScrapeController {
             description = "포털 정보를 재연동하고 학업 이력을 동기화합니다.",
             responses = {
                     @ApiResponse(responseCode = "202", description = "동기화 성공",
-                            content = @Content(schema = @Schema(implementation = RefreshScrapingApiResponse.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = RefreshScrapingApiResponse.class))),
                     @ApiResponse(responseCode = "401", description = "로그인 필요"),
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }

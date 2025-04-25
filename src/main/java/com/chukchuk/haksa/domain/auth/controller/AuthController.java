@@ -32,7 +32,9 @@ public class AuthController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "토큰 재발급 성공",
-                            content = @Content(schema = @Schema(implementation = RefreshTokenApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = RefreshTokenApiResponse.class)))
             })
     public ResponseEntity<ApiResponse<RefreshResponse>> refreshResponse(@RequestBody RefreshRequest request) {
         RefreshResponse response = refreshTokenService.reissue(request.refreshToken());

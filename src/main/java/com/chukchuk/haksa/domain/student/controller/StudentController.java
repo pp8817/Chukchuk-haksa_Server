@@ -38,7 +38,9 @@ public class StudentController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "목표 GPA 설정 성공",
-                            content = @Content(schema = @Schema(implementation = TargetGpaApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = TargetGpaApiResponse.class)))
             }
     )
     @SecurityRequirement(name = "bearerAuth")
@@ -61,7 +63,9 @@ public class StudentController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "사용자 프로필 정보 조회 성공",
-                            content = @Content(schema = @Schema(implementation = StudentProfileApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = StudentProfileApiResponse.class)))
             }
     )
     @SecurityRequirement(name = "bearerAuth")

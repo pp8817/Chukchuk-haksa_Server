@@ -41,7 +41,9 @@ public class AcademicRecordController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "지정 학기 성적 및 수강 과목 정보 조회 성공",
-                            content = @Content(schema = @Schema(implementation = AcademicRecordApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AcademicRecordApiResponse.class)))
             }
     )
     @SecurityRequirement(name = "bearerAuth")
@@ -64,7 +66,9 @@ public class AcademicRecordController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "사용자 학업 요약 정보 조회 성공",
-                            content = @Content(schema = @Schema(implementation = AcademicSummaryApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AcademicSummaryApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AcademicSummaryResponse>> getAcademicSummary(

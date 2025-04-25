@@ -38,7 +38,9 @@ public class GraduationController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "사용자의 졸업 요건 충족 여부 조회 성공",
-                            content = @Content(schema = @Schema(implementation = GraduationProgressApiResponse.class)))
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = GraduationProgressApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<GraduationProgressResponse>> getGraduationProgress(
