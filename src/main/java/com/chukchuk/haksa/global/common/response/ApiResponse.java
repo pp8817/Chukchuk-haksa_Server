@@ -1,14 +1,24 @@
 package com.chukchuk.haksa.global.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
+@Schema(description = "API 응답 공통 포맷")
 public class ApiResponse<T> {
+
+    @Schema(description = "성공 여부", example = "true")
     private boolean success;
+
+    @Schema(description = "응답 데이터")
     private T data;
+
+    @Schema(description = "메시지", example = "요청 성공")
     private String message;
+
+    @Schema(description = "에러 정보")
     private ErrorDetail error;
 
     private ApiResponse(boolean success, T data, String message, ErrorDetail error) {
@@ -34,5 +44,5 @@ public class ApiResponse<T> {
         return new ApiResponse<>(false, null, null, new ErrorDetail(code, message, details));
     }
 
-    // Getter 생략 가능 (또는 @Getter 사용)
+
 }
