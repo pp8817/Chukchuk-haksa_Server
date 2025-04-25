@@ -2,8 +2,11 @@ package com.chukchuk.haksa.domain.graduation.controller;
 
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.service.GraduationService;
+import com.chukchuk.haksa.domain.graduation.wrapper.GraduationProgressApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +31,15 @@ public class GraduationController {
      * 졸업 요건 진행 상황 조회 API
      */
     @GetMapping("/progress")
-    @Operation(summary = "졸업 요건 진행 상황 조회", description = "로그인된 사용자의 졸업 요건 충족 여부를 조회합니다.")
+    @Operation(
+            summary = "졸업 요건 진행 상황 조회",
+            description = "로그인된 사용자의 졸업 요건 충족 여부를 조회합니다.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "200",
+                            description = "사용자의 졸업 요건 충족 여부 조회 성공",
+                            content = @Content(schema = @Schema(implementation = GraduationProgressApiResponse.class)))
+            })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<GraduationProgressDto>> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails

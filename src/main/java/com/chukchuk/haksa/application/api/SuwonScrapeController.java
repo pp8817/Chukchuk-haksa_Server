@@ -1,8 +1,12 @@
 package com.chukchuk.haksa.application.api;
 
 import com.chukchuk.haksa.application.academic.dto.SyncAcademicRecordResult;
+import com.chukchuk.haksa.application.api.dto.PortalLoginMessageResponse;
 import com.chukchuk.haksa.application.api.dto.RefreshScrapingResponse;
 import com.chukchuk.haksa.application.api.dto.StartScrapingResponse;
+import com.chukchuk.haksa.application.api.wrapper.PortalLoginApiResponse;
+import com.chukchuk.haksa.application.api.wrapper.RefreshScrapingApiResponse;
+import com.chukchuk.haksa.application.api.wrapper.StartScrapingApiResponse;
 import com.chukchuk.haksa.application.portal.InitializePortalConnectionService;
 import com.chukchuk.haksa.application.portal.RefreshPortalConnectionService;
 import com.chukchuk.haksa.application.portal.SyncAcademicRecordService;
@@ -48,7 +52,14 @@ public class SuwonScrapeController {
     private final RedisPortalCredentialStore redisStore;
 
     @PostMapping("/login")
-    @Operation(summary = "포털 로그인", description = "수원대학교 포털 로그인 후 Redis에 계정 정보를 저장합니다.")
+    @Operation(
+            summary = "포털 로그인",
+            description = "수원대학교 포털 로그인 후 Redis에 계정 정보를 저장합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "로그인 성공",
+                            content = @Content(schema = @Schema(implementation = PortalLoginApiResponse.class)))
+            }
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> login(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -62,7 +73,7 @@ public class SuwonScrapeController {
 
             redisStore.save(userId, username, password);
 
-            return ResponseEntity.ok("로그인 성공");
+            return ResponseEntity.ok(com.chukchuk.haksa.global.common.response.ApiResponse.success(new PortalLoginMessageResponse("로그인 성공")));
         } catch (PortalLoginException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
@@ -74,7 +85,7 @@ public class SuwonScrapeController {
             description = "Redis에 저장된 포털 로그인 정보를 사용하여 데이터를 크롤링합니다.",
             responses = {
                     @ApiResponse(responseCode = "202", description = "동기화 성공",
-                            content = @Content(schema = @Schema(implementation = StartScrapingResponse.class))),
+                            content = @Content(schema = @Schema(implementation = StartScrapingApiResponse.class))),
                     @ApiResponse(responseCode = "401", description = "로그인 필요"),
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
@@ -118,7 +129,7 @@ public class SuwonScrapeController {
             // 세션(포털 로그인 정보) 삭제
             redisStore.clear(userId);
 
-            return ResponseEntity.accepted().body(response);
+            return ResponseEntity.accepted().body(com.chukchuk.haksa.global.common.response.ApiResponse.success(response));
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
             error.put("taskId", taskId);
@@ -133,7 +144,7 @@ public class SuwonScrapeController {
             description = "포털 정보를 재연동하고 학업 이력을 동기화합니다.",
             responses = {
                     @ApiResponse(responseCode = "202", description = "동기화 성공",
-                            content = @Content(schema = @Schema(implementation = RefreshScrapingResponse.class))),
+                            content = @Content(schema = @Schema(implementation = RefreshScrapingApiResponse.class))),
                     @ApiResponse(responseCode = "401", description = "로그인 필요"),
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
@@ -173,7 +184,7 @@ public class SuwonScrapeController {
             // Redis 로그인 정보 삭제
             redisStore.clear(userId);
 
-            return ResponseEntity.accepted().body(response);
+            return ResponseEntity.accepted().body(com.chukchuk.haksa.global.common.response.ApiResponse.success(response));
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
             error.put("taskId", taskId);

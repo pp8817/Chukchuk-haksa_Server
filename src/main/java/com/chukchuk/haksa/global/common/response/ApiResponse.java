@@ -21,7 +21,7 @@ public class ApiResponse<T> {
     @Schema(description = "에러 정보")
     private ErrorDetail error;
 
-    private ApiResponse(boolean success, T data, String message, ErrorDetail error) {
+    protected ApiResponse(boolean success, T data, String message, ErrorDetail error) {
         this.success = success;
         this.data = data;
         this.message = message;
@@ -30,6 +30,10 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, data, null, null);
+    }
+
+    public static <T> ApiResponse<T> successMessage(String message) {
+        return new ApiResponse<>(true, null, message, null);
     }
 
     public static <T> ApiResponse<T> success(T data, String message) {

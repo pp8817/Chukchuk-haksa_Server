@@ -2,8 +2,12 @@ package com.chukchuk.haksa.domain.academic.record.controller;
 
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.SemesterGradeDto;
 import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordService;
+import com.chukchuk.haksa.domain.academic.record.wrapper.SemesterGradesApiResponse;
+import com.chukchuk.haksa.domain.academic.record.wrapper.StudentSemesterListApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +32,15 @@ public class SemesterController {
     private final SemesterAcademicRecordService semesterAcademicRecordService;
 
     @GetMapping
-    @Operation(summary = "사용자 학기 목록 조회", description = "사용자의 모든 학기 정보를 조회합니다.")
+    @Operation(
+            summary = "사용자 학기 목록 조회",
+            description = "사용자의 모든 학기 정보를 조회합니다.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "200",
+                            description = "사용자의 모든 학기 정보 조회 성공",
+                            content = @Content(schema = @Schema(implementation = StudentSemesterListApiResponse.class)))
+            })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<StudentSemesterInfoDto>>> getSemesterRecord(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -41,7 +53,15 @@ public class SemesterController {
     }
 
     @GetMapping("/grades")
-    @Operation(summary = "사용자 학기 별 성적 조회", description = "사용자의 학기 별 성적 정보를 조회합니다.")
+    @Operation(
+            summary = "사용자 학기 별 성적 조회",
+            description = "사용자의 학기 별 성적 정보를 조회합니다.",
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "200",
+                            description = "사용자의 학기 별 성적 정보 조회 성공",
+                            content = @Content(schema = @Schema(implementation = SemesterGradesApiResponse.class)))
+            })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<SemesterGradeDto>>> getSemesterGrades(
             @AuthenticationPrincipal UserDetails userDetails) {
