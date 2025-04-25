@@ -46,7 +46,7 @@ public class UserController {
     @Operation(
             summary = "회원 가입",
             description = "사용자 회원가입을 진행합니다.")
-    public ResponseEntity<ApiResponse<UserDto.PortalLinkStatusResponse>> signInUser(
+    public ResponseEntity<ApiResponse<UserDto.SignInResponse>> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
         AuthDto.SignInTokenResponse tokens = userService.signInWithKakao(signInRequest);
@@ -58,7 +58,7 @@ public class UserController {
         headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
         headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        UserDto.PortalLinkStatusResponse body = new UserDto.PortalLinkStatusResponse(tokens.isPortalLinked());
+        UserDto.SignInResponse body = new UserDto.SignInResponse(tokens.isPortalLinked());
 
         return ResponseEntity.ok()
                 .headers(headers)
