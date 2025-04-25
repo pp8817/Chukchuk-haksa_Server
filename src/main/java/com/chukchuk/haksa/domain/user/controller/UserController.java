@@ -41,7 +41,7 @@ public class UserController {
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
-                            description = "목표 GPA 설정 성공",
+                            description = "회원 탈퇴 API",
                             content = @Content(schema = @Schema(implementation = DeleteUserApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
