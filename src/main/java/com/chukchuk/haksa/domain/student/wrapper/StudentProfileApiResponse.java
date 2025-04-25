@@ -4,13 +4,13 @@ package com.chukchuk.haksa.domain.student.wrapper;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import static com.chukchuk.haksa.domain.student.dto.StudentDto.Profile;
+import static com.chukchuk.haksa.domain.student.dto.StudentDto.StudentProfileResponse;
 
 @Schema(name = "StudentProfileApiResponse", description = "학생 프로필 응답")
-public class StudentProfileApiResponse extends ApiResponse<Profile> {
+public class StudentProfileApiResponse extends ApiResponse<StudentProfileResponse> {
     public StudentProfileApiResponse() {
         super(true,
-                new Profile(
+                new StudentProfileResponse(
                         "홍길동",                 // name
                         "20231234",             // studentCode
                         "컴퓨터공학과",         // departmentName

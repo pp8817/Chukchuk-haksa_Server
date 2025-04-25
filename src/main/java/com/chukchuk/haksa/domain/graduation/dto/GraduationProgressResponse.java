@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Schema(description = "졸업 요건 진행 상황 응답")
-public class GraduationProgressDto {
+public class GraduationProgressResponse {
     @Schema(description = "졸업 요건 영역별 이수 현황")
     private List<AreaProgressDto> graduationProgress;
 }

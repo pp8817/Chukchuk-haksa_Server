@@ -1,6 +1,6 @@
 package com.chukchuk.haksa.domain.graduation.controller;
 
-import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressDto;
+import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
 import com.chukchuk.haksa.domain.graduation.service.GraduationService;
 import com.chukchuk.haksa.domain.graduation.wrapper.GraduationProgressApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
@@ -41,12 +41,12 @@ public class GraduationController {
                             content = @Content(schema = @Schema(implementation = GraduationProgressApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<GraduationProgressDto>> getGraduationProgress(
+    public ResponseEntity<ApiResponse<GraduationProgressResponse>> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
 
-        GraduationProgressDto response = graduationService.getGraduationProgress(userId);
+        GraduationProgressResponse response = graduationService.getGraduationProgress(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

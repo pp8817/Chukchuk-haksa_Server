@@ -25,7 +25,7 @@ public class AcademicRecordService {
     public AcademicRecordResponse getAcademicRecord(UUID userId, Integer year, Integer semester) {
 
         // 학기별 성적 조회
-        SemesterAcademicRecordDto.SemesterGradeDto semesterGrade =
+        SemesterAcademicRecordDto.SemesterGradeResponse semesterGrade =
                 semesterAcademicRecordService.getSemesterGradesByYearAndSemester(userId, year, semester);
 
         // 수강 과목 조회 및 카테고리 분류
@@ -41,7 +41,7 @@ public class AcademicRecordService {
         );
     }
 
-    public StudentAcademicRecordDto.AcademicSummaryDto getAcademicSummary(UUID userId) {
+    public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID userId) {
 
         return studentAcademicRecordService.getAcademicSummary(userId);
     }

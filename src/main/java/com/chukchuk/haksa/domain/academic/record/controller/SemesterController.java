@@ -1,6 +1,6 @@
 package com.chukchuk.haksa.domain.academic.record.controller;
 
-import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.SemesterGradeDto;
+import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.SemesterGradeResponse;
 import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordService;
 import com.chukchuk.haksa.domain.academic.record.wrapper.SemesterGradesApiResponse;
 import com.chukchuk.haksa.domain.academic.record.wrapper.StudentSemesterListApiResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-import static com.chukchuk.haksa.domain.student.dto.StudentSemesterDto.StudentSemesterInfoDto;
+import static com.chukchuk.haksa.domain.student.dto.StudentSemesterDto.StudentSemesterInfoResponse;
 
 @RestController
 @RequestMapping("/api/semester")
@@ -42,12 +42,12 @@ public class SemesterController {
                             content = @Content(schema = @Schema(implementation = StudentSemesterListApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<List<StudentSemesterInfoDto>>> getSemesterRecord(
+    public ResponseEntity<ApiResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
 
-        List<StudentSemesterInfoDto> response = semesterAcademicRecordService.getSemestersByStudentEmail(userId);
+        List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentEmail(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -63,12 +63,12 @@ public class SemesterController {
                             content = @Content(schema = @Schema(implementation = SemesterGradesApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<List<SemesterGradeDto>>> getSemesterGrades(
+    public ResponseEntity<ApiResponse<List<SemesterGradeResponse>>> getSemesterGrades(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
 
-        List<SemesterGradeDto> response = semesterAcademicRecordService.getAllSemesterGrades(userId);
+        List<SemesterGradeResponse> response = semesterAcademicRecordService.getAllSemesterGrades(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

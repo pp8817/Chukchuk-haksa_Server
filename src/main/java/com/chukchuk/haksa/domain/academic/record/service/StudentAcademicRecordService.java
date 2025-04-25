@@ -23,7 +23,7 @@ public class StudentAcademicRecordService {
     private final GraduationQueryRepository graduationQueryRepository;
     private final StudentService studentService;
 
-    public StudentAcademicRecordDto.AcademicSummaryDto getAcademicSummary(UUID userId) {
+    public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID userId) {
         StudentAcademicRecord studentAcademicRecord = getStudentAcademicRecordByStudentId(userId);
 
         Student student = studentService.getStudentById(userId);
@@ -34,7 +34,7 @@ public class StudentAcademicRecordService {
 
         Integer totalRequiredGraduationCredits = graduationQueryRepository.getTotalRequiredGraduationCredits(effectiveDepartmentId, admissionYear);
 
-        return StudentAcademicRecordDto.AcademicSummaryDto.from(studentAcademicRecord, totalRequiredGraduationCredits);
+        return StudentAcademicRecordDto.AcademicSummaryResponse.from(studentAcademicRecord, totalRequiredGraduationCredits);
     }
 
     public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID id) {

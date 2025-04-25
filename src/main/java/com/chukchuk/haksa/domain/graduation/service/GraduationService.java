@@ -1,7 +1,7 @@
 package com.chukchuk.haksa.domain.graduation.service;
 
 import com.chukchuk.haksa.domain.graduation.dto.AreaProgressDto;
-import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressDto;
+import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
 import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.service.StudentService;
@@ -21,7 +21,7 @@ public class GraduationService {
     private final GraduationQueryRepository graduationQueryRepository;
 
     /* 졸업 요건 진행 상황 조회 */
-    public GraduationProgressDto getGraduationProgress(UUID userId) {
+    public GraduationProgressResponse getGraduationProgress(UUID userId) {
         Student student = studentService.getStudentById(userId);
 
         // 전공 코드가 없는 학과도 있으므로 majorId가 없으면 departmentId를 사용
@@ -30,6 +30,6 @@ public class GraduationService {
         // 졸업 요건 충족 여부 조회
         List<AreaProgressDto> areaProgress = graduationQueryRepository.getStudentAreaProgress(userId, effectiveDepartmentId, student.getAcademicInfo().getAdmissionYear());
 
-        return new GraduationProgressDto(areaProgress);
+        return new GraduationProgressResponse(areaProgress);
     }
 }

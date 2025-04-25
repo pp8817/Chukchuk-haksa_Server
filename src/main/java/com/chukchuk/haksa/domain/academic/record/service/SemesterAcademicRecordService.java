@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.SemesterGradeDto;
+import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.SemesterGradeResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +25,14 @@ public class SemesterAcademicRecordService {
     private final UserService userService;
 
     /* 특정 학생의 특정 학기 성적 조회 */
-    public SemesterGradeDto getSemesterGradesByYearAndSemester(UUID studentId, Integer year, Integer semester) {
-        return SemesterGradeDto.from(findSemesterRecordsByYearAndSemester(studentId, year, semester));
+    public SemesterGradeResponse getSemesterGradesByYearAndSemester(UUID studentId, Integer year, Integer semester) {
+        return SemesterGradeResponse.from(findSemesterRecordsByYearAndSemester(studentId, year, semester));
     }
 
     /* 특정 학생의 전체 학기 성적 조회 (최신순 정렬) */
-    public List<SemesterGradeDto> getAllSemesterGrades(UUID studentId) {
+    public List<SemesterGradeResponse> getAllSemesterGrades(UUID studentId) {
         return findAllSemesterRecords(studentId).stream()
-                .map(SemesterGradeDto::from)
+                .map(SemesterGradeResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -54,10 +54,10 @@ public class SemesterAcademicRecordService {
     }
 
     /* 학생의 학기 정보 조회 */
-    public List<StudentSemesterDto.StudentSemesterInfoDto> getSemestersByStudentEmail(UUID userId) {
+    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentEmail(UUID userId) {
 
         return findSemestersByStudent(userId).stream()
-                .map(StudentSemesterDto.StudentSemesterInfoDto::from)
+                .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
     }
 

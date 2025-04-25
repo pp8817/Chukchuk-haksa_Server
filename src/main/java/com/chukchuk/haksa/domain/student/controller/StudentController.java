@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.chukchuk.haksa.domain.student.dto.StudentDto.Profile;
+import static com.chukchuk.haksa.domain.student.dto.StudentDto.StudentProfileResponse;
 
 
 @RestController
@@ -65,12 +65,12 @@ public class StudentController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<Profile>> getProfile(
+    public ResponseEntity<ApiResponse<StudentProfileResponse>> getProfile(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
 
-        Profile response = studentService.getStudentProfile(userId);
+        StudentProfileResponse response = studentService.getStudentProfile(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

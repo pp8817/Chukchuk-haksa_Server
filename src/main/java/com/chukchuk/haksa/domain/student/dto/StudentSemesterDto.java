@@ -7,12 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class StudentSemesterDto {
 
     @Schema(description = "학생의 이수 학기 정보")
-    public record StudentSemesterInfoDto(
+    public record StudentSemesterInfoResponse(
             @Schema(description = "이수 연도", example = "2023") int year,
             @Schema(description = "이수 학기 코드 (10: 1학기, 15: 여름학기, 20: 2학기, 25: 겨울학기)", example = "10") int semester
     ) {
-        public static StudentSemesterInfoDto from(SemesterAcademicRecord record) {
-            return new StudentSemesterInfoDto(
+        public static StudentSemesterInfoResponse from(SemesterAcademicRecord record) {
+            return new StudentSemesterInfoResponse(
                     record.getYear(),
                     record.getSemester()
             );

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto.AcademicSummaryDto;
+import static com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto.AcademicSummaryResponse;
 
 @RestController
 @RequestMapping("/api/academic")
@@ -67,11 +67,11 @@ public class AcademicRecordController {
                             content = @Content(schema = @Schema(implementation = AcademicSummaryApiResponse.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<AcademicSummaryDto>> getAcademicSummary(
+    public ResponseEntity<ApiResponse<AcademicSummaryResponse>> getAcademicSummary(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
-        AcademicSummaryDto response = academicRecordService.getAcademicSummary(userId);
+        AcademicSummaryResponse response = academicRecordService.getAcademicSummary(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

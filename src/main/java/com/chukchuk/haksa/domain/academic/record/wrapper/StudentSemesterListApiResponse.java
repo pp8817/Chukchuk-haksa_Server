@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Schema(name = "StudentSemesterListApiResponse", description = "사용자 학기 목록 응답")
-public class StudentSemesterListApiResponse extends ApiResponse<List<StudentSemesterDto.StudentSemesterInfoDto>> {
+public class StudentSemesterListApiResponse extends ApiResponse<List<StudentSemesterDto.StudentSemesterInfoResponse>> {
     public StudentSemesterListApiResponse() {
         super(true, Collections.emptyList(), null, null);
     }

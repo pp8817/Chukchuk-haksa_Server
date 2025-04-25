@@ -27,14 +27,14 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
     }
 
-    public StudentDto.Profile getStudentProfile(UUID userId) {
+    public StudentDto.StudentProfileResponse getStudentProfile(UUID userId) {
         StudentDto.StudentInfoDto studentInfo = getStudentInfo(userId);
         int currentSemester = getCurrentSemester(studentInfo.gradeLevel(), studentInfo.completedSemesters());
 
         User user = userService.getUserById(userId);
         String lastSyncedAt = user.getLastSyncedAt() != null ? user.getLastSyncedAt().toString() : "";
 
-        return StudentDto.Profile.from(studentInfo, currentSemester, lastSyncedAt);
+        return StudentDto.StudentProfileResponse.from(studentInfo, currentSemester, lastSyncedAt);
     }
 
     @Transactional

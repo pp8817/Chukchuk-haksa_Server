@@ -6,7 +6,7 @@ import java.util.List;
 
 @Schema(description = "학기별 성적 및 수강 과목 응답")
 public record AcademicRecordResponse(
-        @Schema(description = "학기 성적 정보") SemesterAcademicRecordDto.SemesterGradeDto semesterGrade,
+        @Schema(description = "학기 성적 정보") SemesterAcademicRecordDto.SemesterGradeResponse semesterGrade,
         @Schema(description = "수강 과목 목록") Courses courses
 //        @Schema(description = "학업 요약 정보") Summary summary
 ) {
