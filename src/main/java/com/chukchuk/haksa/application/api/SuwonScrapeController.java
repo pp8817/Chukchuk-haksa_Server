@@ -1,7 +1,7 @@
 package com.chukchuk.haksa.application.api;
 
 import com.chukchuk.haksa.application.academic.dto.SyncAcademicRecordResult;
-import com.chukchuk.haksa.application.api.dto.PortalLoginMessageResponse;
+import com.chukchuk.haksa.application.api.dto.PortalLoginResponse;
 import com.chukchuk.haksa.application.api.dto.RefreshScrapingResponse;
 import com.chukchuk.haksa.application.api.dto.StartScrapingResponse;
 import com.chukchuk.haksa.application.api.wrapper.PortalLoginApiResponse;
@@ -73,7 +73,7 @@ public class SuwonScrapeController {
         String userId = userDetails.getUsername();
         redisStore.save(userId, username, password);
 
-        return ResponseEntity.ok(ApiResponse.success(new PortalLoginMessageResponse("로그인 성공")));
+        return ResponseEntity.ok(ApiResponse.success(new PortalLoginResponse("로그인 성공")));
     }
 
     @PostMapping("/start")
