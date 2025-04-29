@@ -21,21 +21,28 @@ public enum ErrorCode {
     // User 관련
     USER_NOT_FOUND("U01", "해당 사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     STUDENT_ACADEMIC_RECORD_NOT_FOUND("U02", "해당 학생의 학적 정보가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
-
     STUDENT_NOT_FOUND("S01", "해당 학생이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     INVALID_TARGET_GPA("S02", "유효하지 않은 목표 학점입니다.", HttpStatus.BAD_REQUEST),
     STUDENT_ID_REQUIRED("S03", "Student ID는 필수입니다.", HttpStatus.BAD_REQUEST),
 
+    // 학업 관련
     SEMESTER_RECORD_NOT_FOUND("A01", "해당 학기의 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     SEMESTER_RECORD_EMPTY("A02", "학기 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FRESHMAN_NO_SEMESTER("A03", "신입생은 학기 기록이 없습니다.", HttpStatus.BAD_REQUEST),
 
-    // Portal 관련
+    // 포털 관련
     PORTAL_LOGIN_FAILED("P01", "포털 로그인 실패", HttpStatus.UNAUTHORIZED),
     PORTAL_SCRAPE_FAILED("P02", "포털 크롤링 실패", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    // 공통 (Common)
-    INVALID_ARGUMENT("C01", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+    // 공통(Common)
+    INVALID_ARGUMENT("C01", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
+
+    // 인증 및 세션 관련
+    SESSION_EXPIRED("A04", "로그인 세션이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
+
+    // 서버 오류 관련
+    SCRAPING_FAILED("C02", "포털 크롤링 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    REFRESH_FAILED("C03", "포털 정보 재연동 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
     private final String message;

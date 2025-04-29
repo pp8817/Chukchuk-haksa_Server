@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.infrastructure.portal.client;
 
+import com.chukchuk.haksa.global.exception.ErrorCode;
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
 import com.chukchuk.haksa.infrastructure.portal.exception.PortalLoginException;
 import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
@@ -35,7 +36,7 @@ public class PortalClient {
                 case LOCKED -> "계정이 잠겼습니다. 포털에서 비밀번호 재발급이 필요합니다.";
                 default -> "로그인 중 오류가 발생했습니다.";
             };
-            throw new PortalLoginException(message, e);
+            throw new PortalLoginException(ErrorCode.PORTAL_LOGIN_FAILED, e);
         }
     }
 
@@ -55,7 +56,7 @@ public class PortalClient {
                 case LOCKED -> "계정이 잠겼습니다. 포털에서 비밀번호 재발급이 필요합니다.";
                 default -> "크롤링 중 오류가 발생했습니다.";
             };
-            throw new PortalScrapeException(message, e);
+            throw new PortalScrapeException(ErrorCode.PORTAL_SCRAPE_FAILED, e);
         }
     }
 
