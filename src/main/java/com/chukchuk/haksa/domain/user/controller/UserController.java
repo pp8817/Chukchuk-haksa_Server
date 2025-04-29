@@ -6,8 +6,8 @@ import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import com.chukchuk.haksa.domain.user.wrapper.DeleteUserApiResponse;
 import com.chukchuk.haksa.domain.user.wrapper.SignInApiResponse;
-import com.chukchuk.haksa.global.common.response.ApiResponse;
 import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
+import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,13 +53,13 @@ public class UserController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<MessageOnlyResponse>> deleteUser(
+    public ResponseEntity<SuccessResponse<MessageOnlyResponse>> deleteUser(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
         userService.deleteUserById(userId);
 
-        return ResponseEntity.ok(ApiResponse.success(new MessageOnlyResponse("회원 탈퇴가 완료되었습니다.")));
+        return ResponseEntity.ok(SuccessResponse.of(new MessageOnlyResponse("회원 탈퇴가 완료되었습니다.")));
     }
 
     /* 회원가입/로그인 */
@@ -86,7 +86,7 @@ public class UserController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class)))
             }
     )
-    public ResponseEntity<ApiResponse<UserDto.SignInResponse>> signInUser(
+    public ResponseEntity<SuccessResponse<UserDto.SignInResponse>> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
         AuthDto.SignInTokenResponse tokens = userService.signInWithKakao(signInRequest);
@@ -102,6 +102,6 @@ public class UserController {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(ApiResponse.success(body));
+                .body(SuccessResponse.of(body));
     }
 }

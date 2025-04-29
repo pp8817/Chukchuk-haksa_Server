@@ -28,6 +28,6 @@ public class SuccessResponse<T> implements ApiResponse {
     }
 
     public static <T> SuccessResponse<T> of(T data) {
-        return new SuccessResponse<>(data, null);
+        return new SuccessResponse<>(data, "요청 성공");
     }
 }

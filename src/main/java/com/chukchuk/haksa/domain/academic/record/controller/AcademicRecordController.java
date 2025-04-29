@@ -4,7 +4,7 @@ import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.service.AcademicRecordService;
 import com.chukchuk.haksa.domain.academic.record.wrapper.AcademicRecordApiResponse;
 import com.chukchuk.haksa.domain.academic.record.wrapper.AcademicSummaryApiResponse;
-import com.chukchuk.haksa.global.common.response.ApiResponse;
+import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,7 +70,7 @@ public class AcademicRecordController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<AcademicRecordResponse>> getAcademicRecord(
+    public ResponseEntity<SuccessResponse<AcademicRecordResponse>> getAcademicRecord(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @Parameter(description = "연도", example = "2024") Integer year,
             @RequestParam @Parameter(description = "학기", example = "10, 15, 20 ...") Integer semester) {
@@ -78,7 +78,7 @@ public class AcademicRecordController {
         UUID userId = UUID.fromString(userDetails.getUsername());
         AcademicRecordResponse response = academicRecordService.getAcademicRecord(userId, year, semester);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(SuccessResponse.of(response));
     }
 
     @GetMapping("/summary")
@@ -116,13 +116,13 @@ public class AcademicRecordController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<AcademicSummaryResponse>> getAcademicSummary(
+    public ResponseEntity<SuccessResponse<AcademicSummaryResponse>> getAcademicSummary(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
         AcademicSummaryResponse response = academicRecordService.getAcademicSummary(userId);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(SuccessResponse.of(response));
     }
 
 }

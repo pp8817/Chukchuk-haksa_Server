@@ -15,7 +15,7 @@ public class ErrorResponse implements ApiResponse {
     @Schema(description = "에러 상세")
     private final ErrorDetail error;
 
-    private ErrorResponse(ErrorDetail error) {
+    protected ErrorResponse(ErrorDetail error) {
         this.error = error;
     }
 

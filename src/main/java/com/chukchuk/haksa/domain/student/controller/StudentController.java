@@ -3,8 +3,8 @@ package com.chukchuk.haksa.domain.student.controller;
 import com.chukchuk.haksa.domain.student.service.StudentService;
 import com.chukchuk.haksa.domain.student.wrapper.StudentProfileApiResponse;
 import com.chukchuk.haksa.domain.student.wrapper.TargetGpaApiResponse;
-import com.chukchuk.haksa.global.common.response.ApiResponse;
 import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
+import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -54,7 +54,7 @@ public class StudentController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<MessageOnlyResponse>> setTargetGpa(
+    public ResponseEntity<SuccessResponse<MessageOnlyResponse>> setTargetGpa(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false)
             @Parameter(description = "목표 GPA", example = "3.8") Double targetGpa
@@ -62,7 +62,7 @@ public class StudentController {
         UUID userId = UUID.fromString(userDetails.getUsername());
 
         studentService.setStudentTargetGpa(userId, targetGpa);
-        return ResponseEntity.ok(ApiResponse.success(new MessageOnlyResponse("목표 학점 저장 완료")));
+        return ResponseEntity.ok(SuccessResponse.of(new MessageOnlyResponse("목표 학점 저장 완료")));
     }
 
     @GetMapping("/profile")
@@ -83,13 +83,13 @@ public class StudentController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<StudentProfileResponse>> getProfile(
+    public ResponseEntity<SuccessResponse<StudentProfileResponse>> getProfile(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
 
         StudentProfileResponse response = studentService.getStudentProfile(userId);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(SuccessResponse.of(response));
     }
 }

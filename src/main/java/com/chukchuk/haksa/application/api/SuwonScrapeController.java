@@ -10,15 +10,15 @@ import com.chukchuk.haksa.application.api.wrapper.StartScrapingApiResponse;
 import com.chukchuk.haksa.application.portal.InitializePortalConnectionService;
 import com.chukchuk.haksa.application.portal.RefreshPortalConnectionService;
 import com.chukchuk.haksa.application.portal.SyncAcademicRecordService;
+import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
-import com.chukchuk.haksa.global.common.response.ApiResponse;
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
 import com.chukchuk.haksa.infrastructure.portal.model.InitializePortalConnectionResult;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.repository.PortalRepository;
 import com.chukchuk.haksa.infrastructure.redis.RedisPortalCredentialStore;
-import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -64,7 +64,7 @@ public class SuwonScrapeController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<PortalLoginResponse>> login(
+    public ResponseEntity<SuccessResponse<PortalLoginResponse>> login(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @Parameter(description = "포털 로그인 ID") String username,
             @RequestParam @Parameter(description = "포털 로그인 비밀번호") String password
@@ -73,7 +73,7 @@ public class SuwonScrapeController {
         String userId = userDetails.getUsername();
         redisStore.save(userId, username, password);
 
-        return ResponseEntity.ok(ApiResponse.success(new PortalLoginResponse("로그인 성공")));
+        return ResponseEntity.ok(SuccessResponse.of(new PortalLoginResponse("로그인 성공")));
     }
 
     @PostMapping("/start")
@@ -90,7 +90,7 @@ public class SuwonScrapeController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<StartScrapingResponse>> startScraping(
+    public ResponseEntity<SuccessResponse<StartScrapingResponse>> startScraping(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
@@ -117,7 +117,7 @@ public class SuwonScrapeController {
         redisStore.clear(userId);
 
         StartScrapingResponse response = new StartScrapingResponse(UUID.randomUUID().toString(), initResult.studentInfo());
-        return ResponseEntity.accepted().body(ApiResponse.success(response));
+        return ResponseEntity.accepted().body(SuccessResponse.of(response));
     }
 
     @PostMapping("/refresh")
@@ -134,7 +134,7 @@ public class SuwonScrapeController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<RefreshScrapingResponse>> refreshAndSync(
+    public ResponseEntity<SuccessResponse<RefreshScrapingResponse>> refreshAndSync(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
@@ -161,6 +161,6 @@ public class SuwonScrapeController {
         redisStore.clear(userId);
 
         RefreshScrapingResponse response = new RefreshScrapingResponse(UUID.randomUUID().toString(), "포털 재연동 및 학업 이력 동기화 완료");
-        return ResponseEntity.accepted().body(ApiResponse.success(response));
+        return ResponseEntity.accepted().body(SuccessResponse.of(response));
     }
 }
