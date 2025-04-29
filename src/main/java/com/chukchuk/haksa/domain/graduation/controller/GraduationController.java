@@ -4,6 +4,7 @@ import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
 import com.chukchuk.haksa.domain.graduation.service.GraduationService;
 import com.chukchuk.haksa.domain.graduation.wrapper.GraduationProgressApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
+import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,11 +38,26 @@ public class GraduationController {
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
-                            description = "사용자의 졸업 요건 충족 여부 조회 성공",
+                            description = "졸업 요건 충족 여부 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = GraduationProgressApiResponse.class)))
-            })
+                                    schema = @Schema(implementation = GraduationProgressApiResponse.class)
+                            )),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "사용자 정보 없음 (ErrorCode: S01, FRESHMAN_NO_SEMESTER)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseWrapper.class)
+                            )),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "졸업 요건 정보 없음 (ErrorCode: G01, GRADUATION_REQUIREMENTS_NOT_FOUND)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseWrapper.class)))
+            }
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<GraduationProgressResponse>> getGraduationProgress(
             @AuthenticationPrincipal UserDetails userDetails

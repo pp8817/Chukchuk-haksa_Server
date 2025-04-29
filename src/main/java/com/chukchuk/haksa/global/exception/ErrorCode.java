@@ -29,6 +29,7 @@ public enum ErrorCode {
     SEMESTER_RECORD_NOT_FOUND("A01", "해당 학기의 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     SEMESTER_RECORD_EMPTY("A02", "학기 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FRESHMAN_NO_SEMESTER("A03", "신입생은 학기 기록이 없습니다.", HttpStatus.BAD_REQUEST),
+    GRADUATION_REQUIREMENTS_NOT_FOUND("G01", "졸업 요건 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 포털 관련
     PORTAL_LOGIN_FAILED("P01", "포털 로그인 실패", HttpStatus.UNAUTHORIZED),
