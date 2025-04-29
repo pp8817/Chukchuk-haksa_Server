@@ -4,7 +4,8 @@ import com.chukchuk.haksa.domain.academic.record.model.SemesterAcademicRecord;
 import com.chukchuk.haksa.domain.academic.record.repository.SemesterAcademicRecordRepository;
 import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
-import com.chukchuk.haksa.global.exception.BusinessException;
+import com.chukchuk.haksa.global.exception.BaseException;
+import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class SemesterAcademicRecordService {
         List<SemesterAcademicRecord> records = semesterAcademicRecordRepository.findByStudentId(studentId);
 
         if (records.isEmpty()) {
-            throw new BusinessException(ErrorCode.FRESHMAN_NO_SEMESTER);
+            throw new CommonException(ErrorCode.FRESHMAN_NO_SEMESTER);
         }
 
         return records;
