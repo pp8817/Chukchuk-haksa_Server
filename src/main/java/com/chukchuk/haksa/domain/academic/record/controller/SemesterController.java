@@ -5,6 +5,7 @@ import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordS
 import com.chukchuk.haksa.domain.academic.record.wrapper.SemesterGradesApiResponse;
 import com.chukchuk.haksa.domain.academic.record.wrapper.StudentSemesterListApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
+import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +42,19 @@ public class SemesterController {
                             description = "사용자의 모든 학기 정보 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = StudentSemesterListApiResponse.class)))
+                                    schema = @Schema(implementation = StudentSemesterListApiResponse.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "학기 데이터 없음 (ErrorCode: A03, FRESHMAN_NO_SEMESTER)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseWrapper.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseWrapper.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
@@ -64,7 +77,19 @@ public class SemesterController {
                             description = "사용자의 학기 별 성적 정보 조회 성공",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = SemesterGradesApiResponse.class)))
+                                    schema = @Schema(implementation = SemesterGradesApiResponse.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "학기 성적 데이터 없음 (ErrorCode: A02, SEMESTER_RECORD_EMPTY)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseWrapper.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseWrapper.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<SemesterGradeResponse>>> getSemesterGrades(
