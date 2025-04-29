@@ -64,7 +64,7 @@ public class SuwonScrapeController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<?>> login(
+    public ResponseEntity<ApiResponse<PortalLoginResponse>> login(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @Parameter(description = "포털 로그인 ID") String username,
             @RequestParam @Parameter(description = "포털 로그인 비밀번호") String password

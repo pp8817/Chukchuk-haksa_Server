@@ -49,7 +49,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserByEmail(UUID userId) {
+    public void deleteUserById(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
 

@@ -57,7 +57,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
-        userService.deleteUserByEmail(userId);
+        userService.deleteUserById(userId);
 
         return ResponseEntity.ok(ApiResponse.success(new MessageOnlyResponse("회원 탈퇴가 완료되었습니다.")));
     }
