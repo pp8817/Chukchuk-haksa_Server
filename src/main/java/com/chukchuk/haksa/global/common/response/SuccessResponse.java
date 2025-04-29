@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-@Schema(description = "API 성공 응답 포맷")
+@Schema(description = "성공 응답 포맷")
 public class SuccessResponse<T> implements ApiResponse {
 
     @Schema(description = "성공 여부", example = "true")
@@ -18,16 +18,16 @@ public class SuccessResponse<T> implements ApiResponse {
     @Schema(description = "메시지", example = "요청 성공")
     private final String message;
 
-    private SuccessResponse(T data, String message) {
+    public SuccessResponse(T data, String message) {
         this.data = data;
         this.message = message;
     }
 
-    public static <T> SuccessResponse<T> of(T data) {
-        return new SuccessResponse<>(data, null);
-    }
-
     public static <T> SuccessResponse<T> of(T data, String message) {
         return new SuccessResponse<>(data, message);
+    }
+
+    public static <T> SuccessResponse<T> of(T data) {
+        return new SuccessResponse<>(data, null);
     }
 }
