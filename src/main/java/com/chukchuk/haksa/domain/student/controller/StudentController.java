@@ -5,6 +5,7 @@ import com.chukchuk.haksa.domain.student.wrapper.StudentProfileApiResponse;
 import com.chukchuk.haksa.domain.student.wrapper.TargetGpaApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
 import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
+import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,9 +39,18 @@ public class StudentController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "목표 GPA 설정 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = TargetGpaApiResponse.class)))
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TargetGpaApiResponse.class))
+                    ),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 GPA 입력 (ErrorCode: S02, INVALID_TARGET_GPA)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class))
+                    ),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "학생 정보 없음 (ErrorCode: S01, STUDENT_NOT_FOUND)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class))
+                    )
             }
     )
     @SecurityRequirement(name = "bearerAuth")
@@ -63,9 +73,13 @@ public class StudentController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "사용자 프로필 정보 조회 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = StudentProfileApiResponse.class)))
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentProfileApiResponse.class))
+                    ),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "학생 정보 없음 (ErrorCode: S01, STUDENT_NOT_FOUND)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class))
+                    )
             }
     )
     @SecurityRequirement(name = "bearerAuth")
