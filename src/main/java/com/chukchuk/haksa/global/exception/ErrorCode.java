@@ -3,6 +3,7 @@ package com.chukchuk.haksa.global.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+
     // Token 관련
     TOKEN_INVALID_FORMAT("T01", "ID 토큰 형식이 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
     TOKEN_NO_MATCHING_KEY("T02", "일치하는 공개키가 없습니다.", HttpStatus.UNAUTHORIZED),
@@ -27,7 +28,14 @@ public enum ErrorCode {
 
     SEMESTER_RECORD_NOT_FOUND("A01", "해당 학기의 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     SEMESTER_RECORD_EMPTY("A02", "학기 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    FRESHMAN_NO_SEMESTER("A03", "신입생은 학기 기록이 없습니다.", HttpStatus.BAD_REQUEST);
+    FRESHMAN_NO_SEMESTER("A03", "신입생은 학기 기록이 없습니다.", HttpStatus.BAD_REQUEST),
+
+    // Portal 관련
+    PORTAL_LOGIN_FAILED("P01", "포털 로그인 실패", HttpStatus.UNAUTHORIZED),
+    PORTAL_SCRAPE_FAILED("P02", "포털 크롤링 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // 공통 (Common)
+    INVALID_ARGUMENT("C01", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

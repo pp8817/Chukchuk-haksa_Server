@@ -1,19 +1,15 @@
 package com.chukchuk.haksa.infrastructure.portal.exception;
 
+import com.chukchuk.haksa.global.exception.BaseException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
-import lombok.Getter;
 
-@Getter
-public class PortalLoginException extends RuntimeException {
-    private final ErrorCode errorCode;
+public class PortalLoginException extends BaseException {
 
     public PortalLoginException(ErrorCode errorCode) {
-        super(errorCode.message());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public PortalLoginException(ErrorCode errorCode, Throwable cause) {
-        super(errorCode.message(), cause);
-        this.errorCode = errorCode;
+        super(errorCode, cause);
     }
 }

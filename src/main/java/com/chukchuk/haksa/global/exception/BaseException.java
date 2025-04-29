@@ -1,17 +1,20 @@
 package com.chukchuk.haksa.global.exception;
 
 import org.springframework.http.HttpStatus;
+import lombok.Getter;
 
-public class BusinessException extends RuntimeException {
+@Getter
+public abstract class BaseException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    public BusinessException(ErrorCode errorCode) {
+    protected BaseException(ErrorCode errorCode) {
         super(errorCode.message());
         this.errorCode = errorCode;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    protected BaseException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.message(), cause);
+        this.errorCode = errorCode;
     }
 
     public String getCode() {
