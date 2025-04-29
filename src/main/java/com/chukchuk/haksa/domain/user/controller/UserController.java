@@ -8,6 +8,7 @@ import com.chukchuk.haksa.domain.user.wrapper.DeleteUserApiResponse;
 import com.chukchuk.haksa.domain.user.wrapper.SignInApiResponse;
 import com.chukchuk.haksa.global.common.response.ApiResponse;
 import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
+import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,9 +42,16 @@ public class UserController {
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
-                            description = "회원 탈퇴 API",
-                            content = @Content(schema = @Schema(implementation = DeleteUserApiResponse.class)))
-            })
+                            description = "회원 탈퇴 성공",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeleteUserApiResponse.class))
+                    ),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "404",
+                            description = "사용자 정보 없음 (ErrorCode: U01, USER_NOT_FOUND)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class))
+                    )
+            }
+    )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<MessageOnlyResponse>> deleteUser(
             @AuthenticationPrincipal UserDetails userDetails
@@ -57,16 +65,27 @@ public class UserController {
     /* 회원가입/로그인 */
     @PostMapping("/signin")
     @Operation(
-            summary = "회원 가입",
-            description = "사용자 회원가입을 진행합니다.",
+            summary = "회원 가입 및 로그인",
+            description = "사용자가 카카오 소셜 로그인으로 회원가입 및 로그인을 진행합니다.",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
-                            description = "회원가입 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = SignInApiResponse.class)))
-            })
+                            description = "회원가입/로그인 성공",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SignInApiResponse.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "401",
+                            description = "토큰 유효성 오류 (ErrorCode: T10, TOKEN_INVALID)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "401",
+                            description = "만료된 토큰 오류 (ErrorCode: T04, TOKEN_EXPIRED)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "500",
+                            description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseWrapper.class)))
+            }
+    )
     public ResponseEntity<ApiResponse<UserDto.SignInResponse>> signInUser(
             @RequestBody UserDto.SignInRequest signInRequest
             ) {
