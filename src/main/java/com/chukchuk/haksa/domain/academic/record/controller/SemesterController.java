@@ -4,7 +4,7 @@ import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.S
 import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordService;
 import com.chukchuk.haksa.domain.academic.record.wrapper.SemesterGradesApiResponse;
 import com.chukchuk.haksa.domain.academic.record.wrapper.StudentSemesterListApiResponse;
-import com.chukchuk.haksa.global.common.response.ApiResponse;
+import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -57,14 +57,14 @@ public class SemesterController {
                                     schema = @Schema(implementation = ErrorResponseWrapper.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
+    public ResponseEntity<SuccessResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
 
         List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentEmail(userId);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(SuccessResponse.of(response));
     }
 
     @GetMapping("/grades")
@@ -92,13 +92,13 @@ public class SemesterController {
                                     schema = @Schema(implementation = ErrorResponseWrapper.class)))
             })
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<List<SemesterGradeResponse>>> getSemesterGrades(
+    public ResponseEntity<SuccessResponse<List<SemesterGradeResponse>>> getSemesterGrades(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
 
         List<SemesterGradeResponse> response = semesterAcademicRecordService.getAllSemesterGrades(userId);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(SuccessResponse.of(response));
     }
 }
