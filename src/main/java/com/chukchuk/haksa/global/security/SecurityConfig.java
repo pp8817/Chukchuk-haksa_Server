@@ -36,6 +36,7 @@ public class SecurityConfig {
                         // 인증 없이 허용할 엔드포인트
                         .requestMatchers(
                                 "/",
+                                "/health",
                                 "/auth/kakao",
                                 "/api/users/signin",
                                 "/api/users/signin/**",
