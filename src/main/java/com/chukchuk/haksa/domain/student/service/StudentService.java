@@ -5,7 +5,8 @@ import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.service.UserService;
-import com.chukchuk.haksa.global.exception.BusinessException;
+import com.chukchuk.haksa.global.exception.BaseException;
+import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +28,14 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
     }
 
-    public StudentDto.Profile getStudentProfile(UUID userId) {
+    public StudentDto.StudentProfileResponse getStudentProfile(UUID userId) {
         StudentDto.StudentInfoDto studentInfo = getStudentInfo(userId);
         int currentSemester = getCurrentSemester(studentInfo.gradeLevel(), studentInfo.completedSemesters());
 
         User user = userService.getUserById(userId);
         String lastSyncedAt = user.getLastSyncedAt() != null ? user.getLastSyncedAt().toString() : "";
 
-        return StudentDto.Profile.from(studentInfo, currentSemester, lastSyncedAt);
+        return StudentDto.StudentProfileResponse.from(studentInfo, currentSemester, lastSyncedAt);
     }
 
     @Transactional
@@ -44,7 +45,7 @@ public class StudentService {
         //학점 입력 하는데 0 ~ 4.5 이외를 입력하는 경우
         if (targetGpa != null &&
                 (targetGpa < 0 || targetGpa > 4.5)) {
-            throw new BusinessException(ErrorCode.INVALID_TARGET_GPA);
+            throw new CommonException(ErrorCode.INVALID_TARGET_GPA);
         }
 
         student.setTargetGpa(targetGpa);

@@ -1,7 +1,15 @@
 package com.chukchuk.haksa.infrastructure.portal.exception;
 
-public class PortalScrapeException extends RuntimeException {
-    public PortalScrapeException(String message, Throwable cause) {
-        super(message, cause);
+import com.chukchuk.haksa.global.exception.BaseException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
+
+public class PortalScrapeException extends BaseException {
+
+    public PortalScrapeException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    public PortalScrapeException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode, cause);
     }
 }

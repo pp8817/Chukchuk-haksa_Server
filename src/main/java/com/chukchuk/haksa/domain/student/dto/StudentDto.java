@@ -34,7 +34,7 @@ public class StudentDto {
     }
 
     @Schema(description = "학생 프로필 정보")
-    public record Profile(
+    public record StudentProfileResponse(
             @Schema(description = "이름") String name,
             @Schema(description = "학번") String studentCode,
             @Schema(description = "학과 이름") String departmentName,
@@ -45,8 +45,8 @@ public class StudentDto {
             @Schema(description = "마지막 업데이트 일시") String lastUpdatedAt,
             @Schema(description = "학사 정보 마지막 연동 일시") String lastSyncedAt
     ) {
-        public static Profile from(StudentDto.StudentInfoDto studentInfoDto, int currentSemester, String lastSyncedAt) {
-            return new Profile(
+        public static StudentProfileResponse from(StudentDto.StudentInfoDto studentInfoDto, int currentSemester, String lastSyncedAt) {
+            return new StudentProfileResponse(
                     Objects.requireNonNullElse(studentInfoDto.name(), ""),
                     Objects.requireNonNullElse(studentInfoDto.studentCode(), ""),
                     Objects.requireNonNullElse(studentInfoDto.departmentName(), ""),
@@ -59,4 +59,6 @@ public class StudentDto {
             );
         }
     }
+
+
 }

@@ -1,44 +1,46 @@
 package com.chukchuk.haksa.global.exception;
 
-import com.chukchuk.haksa.global.common.response.ApiResponse;
+import com.chukchuk.haksa.global.common.response.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(TokenException.class)
-    public ResponseEntity<ApiResponse<?>> handleTokenException(TokenException e) {
+    /**
+     * BaseException (우리 커스텀 예외 최상위 클래스) 처리
+     */
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex) {
+        log.warn("[BaseException] {} - {}", ex.getClass().getSimpleName(), ex.getMessage());
         return ResponseEntity
-                .status(e.getStatus())
-                .body(ApiResponse.error(e.getCode(), e.getMessage()));
+                .status(ex.getStatus())
+                .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleEntityNotFound(EntityNotFoundException e) {
-        return ResponseEntity
-                .status(e.getStatus())
-                .body(ApiResponse.error(e.getCode(), e.getMessage()));
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ApiResponse<?>> handleBusiness(BusinessException e) {
-        return ResponseEntity.status(e.getStatus())
-                .body(ApiResponse.error(e.getCode(), e.getMessage()));
-    }
-
+    /**
+     * IllegalArgumentException 처리 (잘못된 요청 파라미터)
+     */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<?>> handleIllegalArgument(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(
-                ApiResponse.error("BAD_REQUEST", e.getMessage())
-        );
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("[IllegalArgumentException] {}", ex.getMessage());
+        ErrorCode errorCode = ErrorCode.INVALID_ARGUMENT;
+        return ResponseEntity
+                .status(errorCode.status())
+                .body(ErrorResponse.of(errorCode.code(), ex.getMessage(), null));
     }
 
+    /**
+     * RuntimeException 처리 (예상 못한 서버 오류)
+     */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<?>> handleRuntime(RuntimeException e) {
-        return ResponseEntity.internalServerError().body(
-                ApiResponse.error("INTERNAL_ERROR", e.getMessage())
-        );
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
+        log.error("[RuntimeException] {}", ex.getMessage(), ex);
+        return ResponseEntity
+                .internalServerError()
+                .body(ErrorResponse.of("INTERNAL_ERROR", "서버 오류가 발생했습니다.", null));
     }
 }

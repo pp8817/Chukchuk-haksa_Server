@@ -14,7 +14,7 @@ public class UserDto {
     ) {}
 
     @Schema(description = "포털 연동 여부 응답")
-    public record PortalLinkStatusResponse(
+    public record SignInResponse(
             @Schema(description = "포털 연동 여부", example = "true")
             boolean isPortalLinked
     ) {}

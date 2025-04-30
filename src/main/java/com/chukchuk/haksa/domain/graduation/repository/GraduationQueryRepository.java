@@ -3,6 +3,8 @@ package com.chukchuk.haksa.domain.graduation.repository;
 import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.AreaProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.CourseDto;
+import com.chukchuk.haksa.global.exception.CommonException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -117,6 +119,10 @@ public class GraduationQueryRepository {
         query.setParameter("admissionYear", admissionYear);
 
         List<Object[]> results = query.getResultList();
+
+        if (results.isEmpty()) {
+            throw new CommonException(ErrorCode.GRADUATION_REQUIREMENTS_NOT_FOUND);
+        }
 
         return results.stream().map(this::mapToDto).collect(Collectors.toList());
     }

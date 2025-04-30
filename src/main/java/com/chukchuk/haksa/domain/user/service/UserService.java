@@ -49,10 +49,11 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserByEmail(UUID userId){
-        userRepository.deleteById(userId);
-        // User - Student 연관관계를 엮어 자동 삭제 로직을 만들어야 하지만, Student 저장 로직이 별도로 존재하지 않아, 연관관계를 형성하지 못함. 수정하기 전까지 임의 삭제 방식으로 진행
-        studentRepository.deleteById(userId);
+    public void deleteUserById(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        userRepository.delete(user);
     }
 
     /* private method */

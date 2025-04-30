@@ -35,11 +35,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 인증 없이 허용할 엔드포인트
                         .requestMatchers(
+                                "/",
+                                "/health",
                                 "/auth/kakao",
                                 "/api/users/signin",
                                 "/api/users/signin/**",
-                                "/api/auth/refresh",
-                                "/api/public"
+                                "/api/auth/refresh"
                         ).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
@@ -50,7 +51,6 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/openapi.yaml"
                         ).permitAll()
-                        .requestMatchers("/api/private").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
