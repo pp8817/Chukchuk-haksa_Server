@@ -7,6 +7,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "API 응답 최상위 인터페이스")
 public interface ApiResponse {
-    @Schema(description = "성공 여부", example = "true")
     boolean isSuccess();
 }
