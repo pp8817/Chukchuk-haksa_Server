@@ -4,16 +4,15 @@ spring:
     username: ${DEV_DB_USERNAME}
     password: ${DEV_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
-      idle-timeout: 30000              # 커넥션 유휴 유지 시간 (30초)
-      max-lifetime: 1800000            # 커넥션 최대 생명주기 (30분)
-      keepalive-time: 30000            # 30초마다 keep-alive 쿼리 전송
-      connection-timeout: 20000        # 커넥션 획득 타임아웃 (20초)
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      keepalive-time: 30000
+      connection-timeout: 20000
       validation-timeout: 5000
-      connection-test-query: SELECT 1  # 커넥션이 살아있는지 검증
+      connection-test-query: SELECT 1
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
