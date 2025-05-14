@@ -26,7 +26,7 @@ public class StudentAcademicRecordService {
     public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID userId) {
         StudentAcademicRecord studentAcademicRecord = getStudentAcademicRecordByStudentId(userId);
 
-        Student student = studentService.getStudentById(userId);
+        Student student = studentService.getStudent(userId);
 
         // 전공 코드가 없는 학과도 있으므로 majorId가 없으면 departmentId를 사용
         Long effectiveDepartmentId = student.getMajor() != null ? student.getMajor().getId() : student.getDepartment().getId();
