@@ -43,7 +43,8 @@ public enum ErrorCode {
 
     // 서버 오류 관련
     SCRAPING_FAILED("C02", "포털 크롤링 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    REFRESH_FAILED("C03", "포털 정보 재연동 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    REFRESH_FAILED("C03", "포털 정보 재연동 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    FORBIDDEN("C04", "접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
 
     private final String code;
     private final String message;
