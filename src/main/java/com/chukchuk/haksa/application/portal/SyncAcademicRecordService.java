@@ -42,7 +42,7 @@ public class SyncAcademicRecordService {
     @Transactional
     public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
         try {
-            Student student = studentService.getStudentById(userId);
+            Student student = studentService.getStudent(userId);
 
             // 1) 성적 요약 저장
             AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(userId, portalData.academic());
