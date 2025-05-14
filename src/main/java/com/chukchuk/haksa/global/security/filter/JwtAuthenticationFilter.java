@@ -3,6 +3,7 @@ package com.chukchuk.haksa.global.security.filter;
 import com.chukchuk.haksa.global.security.service.CustomUserDetailsService;
 import com.chukchuk.haksa.global.security.service.JwtProvider;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -27,16 +30,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService userDetailsService;
 
+    private static final List<String> WHITELIST_PATHS = List.of(
+            "/", "/v3/api-docs", "/swagger", "/webjars", "/swagger-config"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        if (path.startsWith("/v3/api-docs")
-                || path.startsWith("/swagger")
-                || path.startsWith("/webjars")
-                || path.startsWith("/swagger-config")
-                || path.equals("/")
-        ) {
-            log.info("Bypassing JWT filter for swagger: " + path);
+
+        if (WHITELIST_PATHS.stream().anyMatch(path::startsWith)) {
+            log.info("Bypassing JWT filter for swagger: {}", path);
             filterChain.doFilter(request, response);
             return;
         }
@@ -57,9 +60,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
+        } catch (ExpiredJwtException e) {
+            request.setAttribute("exception", "expired");
+            throw new InsufficientAuthenticationException("Access token expired", e); // Spring Security 흐름 타게
         } catch (Exception e) {
-            log.warn("JWT 토큰 검증 실패: {}", e.getMessage());
-            SecurityContextHolder.clearContext();
+            request.setAttribute("exception", "invalid");
+            throw new InsufficientAuthenticationException("Invalid token", e);
         }
 
         filterChain.doFilter(request, response);
