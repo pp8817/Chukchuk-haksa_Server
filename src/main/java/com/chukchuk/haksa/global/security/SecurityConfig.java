@@ -1,6 +1,8 @@
 package com.chukchuk.haksa.global.security;
 
 import com.chukchuk.haksa.global.security.filter.JwtAuthenticationFilter;
+import com.chukchuk.haksa.global.security.handler.CustomAccessDeniedHandler;
+import com.chukchuk.haksa.global.security.handler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,63 +21,63 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 기반 인증
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 인증 없이 허용할 엔드포인트
-                        .requestMatchers(
-                                "/",
-                                "/health",
-                                "/auth/kakao",
-                                "/api/users/signin",
-                                "/api/users/signin/**",
-                                "/api/auth/refresh"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/swagger-config/**",
-                                "/webjars/**",
-                                "/openapi.yaml"
-                        ).permitAll()
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/", "/health", "/auth/kakao",
+            "/api/users/signin", "/api/users/signin/**", "/api/auth/refresh"
+    };
+
+    private static final String[] SWAGGER_ENDPOINTS = {
+            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+            "/swagger-resources/**", "/swagger-config/**",
+            "/webjars/**", "/openapi.yaml"
+    };
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "https://www.cchaksa.com",
                 "https://cchaksa.com",
                 "https://dev.cchaksa.com:3000",
                 "https://dev.api.cchaksa.com"
-                ));
-        configuration.setAllowedOriginPatterns(List.of("*")); // 임시로 모든 origin 허용
+        ));
+        configuration.setAllowedOriginPatterns(List.of("*")); // TODO: 배포 전 반드시 제한 필요
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // 쿠키 허용할 경우 true
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 
