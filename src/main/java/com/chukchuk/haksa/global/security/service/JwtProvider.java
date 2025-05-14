@@ -76,8 +76,9 @@ public class JwtProvider {
                     .parseClaimsJws(token) // 서명 유효성 검증 + Base64 디코딩, Claims 추출
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new TokenException(ErrorCode.TOKEN_EXPIRED);
+            throw e;
         } catch (Exception e) {
+            log.warn("JWT parsing error: {}", e.getMessage(), e);
             throw new TokenException(ErrorCode.TOKEN_INVALID);
         }
     }

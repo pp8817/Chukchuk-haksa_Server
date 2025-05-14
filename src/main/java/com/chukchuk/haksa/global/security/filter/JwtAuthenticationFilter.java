@@ -38,7 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        if (WHITELIST_PATHS.stream().anyMatch(path::startsWith)) {
+        if (WHITELIST_PATHS.stream().anyMatch(p ->
+                p.equals("/") ? path.equals("/") : path.startsWith(p)
+        )) {
             log.info("Bypassing JWT filter for swagger: {}", path);
             filterChain.doFilter(request, response);
             return;
