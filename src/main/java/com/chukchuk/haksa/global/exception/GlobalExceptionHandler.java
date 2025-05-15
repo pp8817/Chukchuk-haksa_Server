@@ -21,6 +21,15 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(org.springframework.web.servlet.NoHandlerFoundException ex) {
+        log.warn("[NoHandlerFoundException] {}", ex.getRequestURL());
+        ErrorCode errorCode = ErrorCode.NOT_FOUND;
+        return ResponseEntity
+                .status(errorCode.status())
+                .body(ErrorResponse.of(errorCode.code(), errorCode.message(), null));
+    }
+
     /**
      * IllegalArgumentException 처리 (잘못된 요청 파라미터)
      */
@@ -42,5 +51,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .internalServerError()
                 .body(ErrorResponse.of("INTERNAL_ERROR", "서버 오류가 발생했습니다.", null));
+    }
+
+    /**
+     * EntityNotFoundException 처리
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException ex) {
+        log.warn("[EntityNotFoundException] {}", ex.getMessage());
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
     }
 }

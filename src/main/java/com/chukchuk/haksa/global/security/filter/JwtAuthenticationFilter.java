@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
 
     private static final List<String> WHITELIST_PATHS = List.of(
-            "/", "/v3/api-docs", "/swagger", "/webjars", "/swagger-config"
+            "/", "/v3/api-docs", "/swagger", "/webjars", "/swagger-config", "/error"
     );
 
     @Override
