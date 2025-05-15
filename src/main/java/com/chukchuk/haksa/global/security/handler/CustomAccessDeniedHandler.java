@@ -30,10 +30,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         log.warn("Access denied: {}, path: {}", errorCode.name(), request.getRequestURI());
 
         response.setStatus(errorCode.status().value());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         ErrorResponse error = ErrorResponse.of(errorCode.code(), errorCode.message());
         response.getWriter().write(objectMapper.writeValueAsString(error));
+        response.getWriter().flush();
     }
 }
