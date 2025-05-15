@@ -37,6 +37,7 @@ public enum ErrorCode {
 
     // 공통(Common)
     INVALID_ARGUMENT("C01", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
+    NOT_FOUND("C05", "요청한 API를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 인증 및 세션 관련
     SESSION_EXPIRED("A04", "로그인 세션이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
