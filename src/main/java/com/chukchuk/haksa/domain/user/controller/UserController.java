@@ -16,8 +16,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,7 +69,11 @@ public class UserController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "200",
                             description = "회원가입/로그인 성공",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SignInApiResponse.class))),
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SignInApiResponse.class)
+                            )
+                    ),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "401",
                             description = "토큰 유효성 오류 (ErrorCode: T10, TOKEN_INVALID)",
@@ -91,17 +93,8 @@ public class UserController {
             ) {
         AuthDto.SignInTokenResponse tokens = userService.signInWithKakao(signInRequest);
 
-        ResponseCookie accessCookie = tokenCookieProvider.createAccessTokenCookie(tokens.accessToken());
-        ResponseCookie refreshCookie = tokenCookieProvider.createRefreshTokenCookie(tokens.refreshToken());
+        UserDto.SignInResponse response = new UserDto.SignInResponse(tokens.accessToken(), tokens.refreshToken(), tokens.isPortalLinked());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
-        UserDto.SignInResponse body = new UserDto.SignInResponse(tokens.isPortalLinked());
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(SuccessResponse.of(body));
+        return ResponseEntity.ok(SuccessResponse.of(response));
     }
 }
