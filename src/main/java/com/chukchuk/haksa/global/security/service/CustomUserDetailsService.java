@@ -1,6 +1,8 @@
 package com.chukchuk.haksa.global.security.service;
 
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
+import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.global.exception.TokenException;
 import com.chukchuk.haksa.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return userRepository.findById(UUID.fromString(userId))
                 .map(CustomUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with userId: " + userId));
+                .orElseThrow(() -> new TokenException(ErrorCode.USER_NOT_FOUND));
     }
 }
