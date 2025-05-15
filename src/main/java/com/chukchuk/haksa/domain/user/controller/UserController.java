@@ -1,7 +1,6 @@
 package com.chukchuk.haksa.domain.user.controller;
 
 import com.chukchuk.haksa.domain.auth.dto.AuthDto;
-import com.chukchuk.haksa.domain.auth.service.TokenCookieProvider;
 import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import com.chukchuk.haksa.domain.user.wrapper.DeleteUserApiResponse;
@@ -31,7 +30,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final TokenCookieProvider tokenCookieProvider;
 
     @DeleteMapping("/delete")
     @Operation(
