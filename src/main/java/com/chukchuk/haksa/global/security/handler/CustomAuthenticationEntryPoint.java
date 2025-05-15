@@ -21,6 +21,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     private static final String EXCEPTION_ATTR = "exception";
     private static final String EXPIRED = "expired";
+    private static final String INVALID = "invalid";
 
     private final ObjectMapper objectMapper;
 
@@ -28,9 +29,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
 
         String exceptionType = (String) request.getAttribute(EXCEPTION_ATTR);
-        ErrorCode errorCode = EXPIRED.equals(exceptionType)
-                ? ErrorCode.TOKEN_EXPIRED
-                : ErrorCode.TOKEN_INVALID;
+        ErrorCode errorCode;
+        if (EXPIRED.equals(exceptionType)) {
+            errorCode = ErrorCode.TOKEN_EXPIRED;
+        } else if (INVALID.equals(exceptionType)) {
+            errorCode = ErrorCode.TOKEN_INVALID;
+        } else {
+            errorCode = ErrorCode.AUTHENTICATION_REQUIRED; // 토큰 없음 등 일반적인 인증 실패 응답
+        }
 
         log.warn("Authentication failed: {}, path: {}", errorCode.name(), request.getRequestURI());
 
