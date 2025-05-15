@@ -3,7 +3,6 @@ package com.chukchuk.haksa.global.security.handler;
 import com.chukchuk.haksa.global.common.response.ErrorResponse;
 import com.chukchuk.haksa.global.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +19,16 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private static final String EXCEPTION_ATTR = "exception";
+    private static final String EXPIRED = "expired";
+
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
 
-        String exceptionType = (String) request.getAttribute("exception");
-        ErrorCode errorCode = "expired".equals(exceptionType)
+        String exceptionType = (String) request.getAttribute(EXCEPTION_ATTR);
+        ErrorCode errorCode = EXPIRED.equals(exceptionType)
                 ? ErrorCode.TOKEN_EXPIRED
                 : ErrorCode.TOKEN_INVALID;
 

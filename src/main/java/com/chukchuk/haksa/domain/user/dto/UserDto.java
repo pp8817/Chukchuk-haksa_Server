@@ -13,9 +13,17 @@ public class UserDto {
             String nonce
     ) {}
 
-    @Schema(description = "포털 연동 여부 응답")
+    @Schema(description = "회원가입 및 로그인 응답")
     public record SignInResponse(
+
+            @Schema(description = "Access Token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+            String accessToken,
+
+            @Schema(description = "Refresh Token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+            String refreshToken,
+
             @Schema(description = "포털 연동 여부", example = "true")
             boolean isPortalLinked
+
     ) {}
 }
