@@ -9,10 +9,10 @@ import lombok.Getter;
 @Schema(description = "성공 응답 포맷")
 public class SuccessResponse<T> implements ApiResponse {
 
-    @Schema(description = "성공 여부", example = "true")
+    @Schema(description = "성공 여부", example = "true", required = true)
     private final boolean success = true;
 
-    @Schema(description = "응답 데이터")
+    @Schema(description = "응답 데이터", required = true)
     private final T data;
 
     @Schema(description = "메시지", example = "요청 성공")

@@ -66,8 +66,8 @@ public class SuwonScrapeController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<PortalLoginResponse>> login(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam @Parameter(description = "포털 로그인 ID") String username,
-            @RequestParam @Parameter(description = "포털 로그인 비밀번호") String password
+            @RequestParam @Parameter(description = "포털 로그인 ID", required = true) String username,
+            @RequestParam @Parameter(description = "포털 로그인 비밀번호", required = true) String password
     ) {
         portalRepository.login(username, password);
         String userId = userDetails.getUsername();

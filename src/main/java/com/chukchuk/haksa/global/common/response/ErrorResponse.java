@@ -9,7 +9,7 @@ import lombok.Getter;
 @Schema(description = "API 실패 응답 포맷")
 public class ErrorResponse implements ApiResponse {
 
-    @Schema(description = "성공 여부", example = "false")
+    @Schema(description = "성공 여부", example = "false", required = true)
     private final boolean success = false;
 
     @Schema(description = "에러 상세")

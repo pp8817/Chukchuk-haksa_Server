@@ -72,8 +72,8 @@ public class AcademicRecordController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<AcademicRecordResponse>> getAcademicRecord(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam @Parameter(description = "연도", example = "2024") Integer year,
-            @RequestParam @Parameter(description = "학기", example = "10, 15, 20 ...") Integer semester) {
+            @RequestParam @Parameter(description = "연도", example = "2024", required = true) Integer year,
+            @RequestParam @Parameter(description = "학기", example = "10, 15, 20 ...", required = true) Integer semester) {
 
         UUID userId = UUID.fromString(userDetails.getUsername());
         AcademicRecordResponse response = academicRecordService.getAcademicRecord(userId, year, semester);
