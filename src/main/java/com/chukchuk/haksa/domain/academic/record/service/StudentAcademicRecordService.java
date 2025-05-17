@@ -23,10 +23,10 @@ public class StudentAcademicRecordService {
     private final GraduationQueryRepository graduationQueryRepository;
     private final StudentService studentService;
 
-    public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID userId) {
-        StudentAcademicRecord studentAcademicRecord = getStudentAcademicRecordByStudentId(userId);
+    public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID studentId) {
+        StudentAcademicRecord studentAcademicRecord = getStudentAcademicRecordByStudentId(studentId);
 
-        Student student = studentService.getStudent(userId);
+        Student student = studentService.getStudentById(studentId);
 
         // 전공 코드가 없는 학과도 있으므로 majorId가 없으면 departmentId를 사용
         Long effectiveDepartmentId = student.getMajor() != null ? student.getMajor().getId() : student.getDepartment().getId();
@@ -37,8 +37,8 @@ public class StudentAcademicRecordService {
         return StudentAcademicRecordDto.AcademicSummaryResponse.from(studentAcademicRecord, totalRequiredGraduationCredits);
     }
 
-    public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID id) {
-        return studentAcademicRecordRepository.findByStudentId(id)
+    public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID studentId) {
+        return studentAcademicRecordRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_ACADEMIC_RECORD_NOT_FOUND));
     }
 }
