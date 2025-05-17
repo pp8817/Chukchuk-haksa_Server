@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,6 +56,9 @@ public class SemesterAcademicRecordService {
     public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentEmail(UUID studentId) {
 
         return findSemestersByStudent(studentId).stream()
+                .sorted(Comparator
+                        .comparing(SemesterAcademicRecord::getYear).reversed()
+                        .thenComparing(SemesterAcademicRecord::getSemester, Comparator.reverseOrder()))
                 .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
     }
