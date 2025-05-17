@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.academic.record.wrapper.SemesterGradesApiRespon
 import com.chukchuk.haksa.domain.academic.record.wrapper.StudentSemesterListApiResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
+import com.chukchuk.haksa.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,11 +58,10 @@ public class SemesterController {
             })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID studentId = userDetails.getStudentId();
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
-        List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentEmail(userId);
+        List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentEmail(studentId);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
@@ -93,11 +92,10 @@ public class SemesterController {
             })
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<List<SemesterGradeResponse>>> getSemesterGrades(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UUID studentId = userDetails.getStudentId();
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-
-        List<SemesterGradeResponse> response = semesterAcademicRecordService.getAllSemesterGrades(userId);
+        List<SemesterGradeResponse> response = semesterAcademicRecordService.getAllSemesterGrades(studentId);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
