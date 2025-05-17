@@ -21,14 +21,14 @@ public class GraduationService {
     private final GraduationQueryRepository graduationQueryRepository;
 
     /* 졸업 요건 진행 상황 조회 */
-    public GraduationProgressResponse getGraduationProgress(UUID userId) {
-        Student student = studentService.getStudent(userId);
+    public GraduationProgressResponse getGraduationProgress(UUID studentId) {
+        Student student = studentService.getStudentById(studentId);
 
         // 전공 코드가 없는 학과도 있으므로 majorId가 없으면 departmentId를 사용
         Long effectiveDepartmentId = student.getMajor() != null ? student.getMajor().getId() : student.getDepartment().getId();
 
         // 졸업 요건 충족 여부 조회
-        List<AreaProgressDto> areaProgress = graduationQueryRepository.getStudentAreaProgress(userId, effectiveDepartmentId, student.getAcademicInfo().getAdmissionYear());
+        List<AreaProgressDto> areaProgress = graduationQueryRepository.getStudentAreaProgress(studentId, effectiveDepartmentId, student.getAcademicInfo().getAdmissionYear());
 
         return new GraduationProgressResponse(areaProgress);
     }
