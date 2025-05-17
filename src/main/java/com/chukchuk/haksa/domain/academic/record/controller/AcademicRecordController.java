@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.academic.record.wrapper.AcademicRecordApiRespon
 import com.chukchuk.haksa.domain.academic.record.wrapper.AcademicSummaryApiResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
+import com.chukchuk.haksa.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,12 +71,12 @@ public class AcademicRecordController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<AcademicRecordResponse>> getAcademicRecord(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam @Parameter(description = "연도", example = "2024") Integer year,
             @RequestParam @Parameter(description = "학기", example = "10, 15, 20 ...") Integer semester) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-        AcademicRecordResponse response = academicRecordService.getAcademicRecord(userId, year, semester);
+        UUID studentId = userDetails.getStudentId();
+        AcademicRecordResponse response = academicRecordService.getAcademicRecord(studentId, year, semester);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
@@ -117,10 +117,10 @@ public class AcademicRecordController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<AcademicSummaryResponse>> getAcademicSummary(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        UUID userId = UUID.fromString(userDetails.getUsername());
-        AcademicSummaryResponse response = academicRecordService.getAcademicSummary(userId);
+        UUID studentId = userDetails.getStudentId();
+        AcademicSummaryResponse response = academicRecordService.getAcademicSummary(studentId);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
