@@ -14,6 +14,7 @@ import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.global.security.CustomUserDetails;
 import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
 import com.chukchuk.haksa.infrastructure.portal.model.InitializePortalConnectionResult;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
@@ -135,7 +136,7 @@ public class SuwonScrapeController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<RefreshScrapingResponse>> refreshAndSync(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         String username = redisStore.getUsername(userId);

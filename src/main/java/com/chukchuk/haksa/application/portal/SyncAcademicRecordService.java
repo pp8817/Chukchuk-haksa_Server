@@ -43,14 +43,15 @@ public class SyncAcademicRecordService {
     public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
         try {
             Student student = studentService.getStudent(userId);
+            UUID studentId = student.getId();
 
             // 1) 성적 요약 저장
-            AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(userId, portalData.academic());
+            AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(studentId, portalData.academic());
             academicRecordRepository.upsertAcademicRecords(academicRecord, student);
             log.info("academicRecordRepository.upsertAcademicRecord finished");
 
             // 2) 수강 기록 저장
-            List<CourseEnrollment> enrollments = processCurriculumData(portalData.curriculum(), portalData.academic(), userId);
+            List<CourseEnrollment> enrollments = processCurriculumData(portalData.curriculum(), portalData.academic(), studentId);
 
             List<Long> offeringIds = enrollments.stream()
                     .map(e -> (long) e.getOfferingId())
@@ -78,7 +79,7 @@ public class SyncAcademicRecordService {
     /* offerings(교과)와 academic(학업 성적)을 합쳐서
     *  최종적으로 CourseEnrollment를 만드는 메서드
     *  */
-    private List<CourseEnrollment> processCurriculumData(PortalCurriculumData curriculumData, PortalAcademicData academicData, UUID userId) {
+    private List<CourseEnrollment> processCurriculumData(PortalCurriculumData curriculumData, PortalAcademicData academicData, UUID studentId) {
         List<CourseEnrollment> enrollments = new ArrayList<>();
         Map<String, MergedOfferingAcademic> mergedList = mergeOfferingsAndAcademic(curriculumData, academicData);
 
@@ -121,7 +122,7 @@ public class SyncAcademicRecordService {
             boolean isRetake = academic != null && academic.isRetake();
             double originalScore = academic != null ? academic.getOriginalScore() : 0;
 
-            CourseEnrollment enrollment = new CourseEnrollment(userId, courseOffering.getId(), grade, offering.getPoints(), isRetake, originalScore);
+            CourseEnrollment enrollment = new CourseEnrollment(studentId, courseOffering.getId(), grade, offering.getPoints(), isRetake, originalScore);
             enrollments.add(enrollment);
         }
 
