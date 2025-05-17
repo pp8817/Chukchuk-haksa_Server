@@ -33,19 +33,21 @@ public class StudentService {
         return user.getStudent();
     }
 
-    public StudentDto.StudentProfileResponse getStudentProfile(UUID userId) {
-        StudentDto.StudentInfoDto studentInfo = StudentDto.StudentInfoDto.from(getStudent(userId));
+    public StudentDto.StudentProfileResponse getStudentProfile(UUID studentId) {
+        Student student = getStudentById(studentId);
+
+        StudentDto.StudentInfoDto studentInfo = StudentDto.StudentInfoDto.from(student);
         int currentSemester = getCurrentSemester(studentInfo.gradeLevel(), studentInfo.completedSemesters());
 
-        User user = userService.getUserById(userId);
+        User user = student.getUser();
         String lastSyncedAt = user.getLastSyncedAt() != null ? user.getLastSyncedAt().toString() : "";
 
         return StudentDto.StudentProfileResponse.from(studentInfo, currentSemester, lastSyncedAt);
     }
 
     @Transactional
-    public void setStudentTargetGpa(UUID userId, Double targetGpa) {
-        Student student = getStudent(userId);
+    public void setStudentTargetGpa(UUID studentId, Double targetGpa) {
+        Student student = getStudentById(studentId);
 
         //학점 입력 하는데 0 ~ 4.5 이외를 입력하는 경우
         if (targetGpa != null &&

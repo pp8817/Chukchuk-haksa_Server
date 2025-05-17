@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.student.wrapper.TargetGpaApiResponse;
 import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
+import com.chukchuk.haksa.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -55,13 +55,13 @@ public class StudentController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<MessageOnlyResponse>> setTargetGpa(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = false)
             @Parameter(description = "목표 GPA", example = "3.8") Double targetGpa
     ) {
-        UUID userId = UUID.fromString(userDetails.getUsername());
+        UUID studentId = userDetails.getStudentId();
 
-        studentService.setStudentTargetGpa(userId, targetGpa);
+        studentService.setStudentTargetGpa(studentId, targetGpa);
         return ResponseEntity.ok(SuccessResponse.of(new MessageOnlyResponse("목표 학점 저장 완료")));
     }
 
@@ -84,11 +84,11 @@ public class StudentController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<StudentProfileResponse>> getProfile(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        UUID userId = UUID.fromString(userDetails.getUsername());
+        UUID studentId = userDetails.getStudentId();
 
-        StudentProfileResponse response = studentService.getStudentProfile(userId);
+        StudentProfileResponse response = studentService.getStudentProfile(studentId);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
