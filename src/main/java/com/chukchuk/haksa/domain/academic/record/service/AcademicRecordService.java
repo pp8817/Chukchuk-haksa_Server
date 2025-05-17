@@ -2,7 +2,6 @@ package com.chukchuk.haksa.domain.academic.record.service;
 
 import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto;
-import com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto;
 import com.chukchuk.haksa.domain.academic.record.dto.StudentCourseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,11 +38,6 @@ public class AcademicRecordService {
                 semesterGrade,
                 new AcademicRecordResponse.Courses(majorCourses, liberalCourses)
         );
-    }
-
-    public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID studentId) {
-
-        return studentAcademicRecordService.getAcademicSummary(studentId);
     }
 
     /* Using Method */

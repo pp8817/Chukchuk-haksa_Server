@@ -2,6 +2,7 @@ package com.chukchuk.haksa.domain.academic.record.controller;
 
 import com.chukchuk.haksa.domain.academic.record.dto.AcademicRecordResponse;
 import com.chukchuk.haksa.domain.academic.record.service.AcademicRecordService;
+import com.chukchuk.haksa.domain.academic.record.service.StudentAcademicRecordService;
 import com.chukchuk.haksa.domain.academic.record.wrapper.AcademicRecordApiResponse;
 import com.chukchuk.haksa.domain.academic.record.wrapper.AcademicSummaryApiResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
@@ -32,6 +33,7 @@ import static com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecor
 public class AcademicRecordController {
 
     private final AcademicRecordService academicRecordService;
+    private final StudentAcademicRecordService studentAcademicRecordService;
 
     /* 학기별 성적 및 수강 과목 정보 조회 API */
     @GetMapping("/record")
@@ -120,7 +122,7 @@ public class AcademicRecordController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         UUID studentId = userDetails.getStudentId();
-        AcademicSummaryResponse response = academicRecordService.getAcademicSummary(studentId);
+        AcademicSummaryResponse response = studentAcademicRecordService.getAcademicSummary(studentId);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
