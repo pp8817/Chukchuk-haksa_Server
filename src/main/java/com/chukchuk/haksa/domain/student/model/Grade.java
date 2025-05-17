@@ -1,14 +1,13 @@
 package com.chukchuk.haksa.domain.student.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 @Embeddable
 public class Grade {
 
-    @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
+    @Convert(converter = GradeTypeConverter.class)
     @Column(name = "grade")
     private GradeType value;
 
