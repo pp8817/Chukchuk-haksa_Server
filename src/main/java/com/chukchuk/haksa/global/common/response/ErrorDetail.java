@@ -9,10 +9,10 @@ import lombok.Getter;
 @Schema(description = "에러 상세 정보")
 public class ErrorDetail {
 
-    @Schema(description = "에러 코드", example = "U01")
+    @Schema(description = "에러 코드", example = "U01", required = true)
     private String code;
 
-    @Schema(description = "에러 메시지", example = "해당 사용자를 찾을 수 없습니다.")
+    @Schema(description = "에러 메시지", example = "해당 사용자를 찾을 수 없습니다.", required = true)
     private String message;
 
     @Schema(description = "에러 추가 정보", nullable = true)
