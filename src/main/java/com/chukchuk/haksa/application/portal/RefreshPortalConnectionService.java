@@ -11,6 +11,7 @@ import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalStudentInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public class RefreshPortalConnectionService {
     private final UserPortalConnectionRepository userPortalConnectionRepository;
     private final UserService userService;
 
+    @Transactional
     public boolean executeWithPortalData(UUID userId, PortalData portalData) {
         try {
             User user = userService.getUserById(userId);

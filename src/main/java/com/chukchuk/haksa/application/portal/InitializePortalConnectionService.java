@@ -11,7 +11,9 @@ import com.chukchuk.haksa.infrastructure.portal.model.InitializePortalConnection
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalStudentInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -20,12 +22,14 @@ import static com.chukchuk.haksa.infrastructure.portal.model.InitializePortalCon
 /* 포털 연동 초기화 유스케이스 실행 */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InitializePortalConnectionService {
 
     private final DepartmentService departmentService;
     private final UserPortalConnectionRepository userPortalConnectionRepository;
     private final UserService userService;
 
+    @Transactional
     public InitializePortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {
         try {
             PortalStudentInfo student = portalData.student();
@@ -86,8 +90,8 @@ public class InitializePortalConnectionService {
 
             return success(student.studentCode(), studentInfo);
         } catch (Exception e) {
-            return failure(
-                    e.getMessage() != null ? e.getMessage() : "포털 연동 중 오류가 발생했습니다.");
+            log.error("[INIT][ERROR] 포털 초기화 중 예외 발생", e); // 추가
+            return failure(e.getMessage() != null ? e.getMessage() : "포털 연동 중 오류가 발생했습니다.");
         }
     }
 }
