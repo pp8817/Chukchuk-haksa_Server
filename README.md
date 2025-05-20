@@ -132,3 +132,6 @@ fix: 사용자 정보 누락 버그 해결
 - [척척학사: Entity 연관관계 분석 및 리팩토링](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-Entity-%EC%97%B0%EA%B4%80%EA%B4%80%EA%B3%84-%EB%B6%84%EC%84%9D-%EB%B0%8F-%EB%A6%AC%ED%8C%A9%ED%86%A0%EB%A7%81)
 - [척척학사: API 응답 모듈 분리 과정](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-API-%EC%9D%91%EB%8B%B5-%EB%AA%A8%EB%93%88-%EB%B6%84%EB%A6%AC-%EA%B3%BC%EC%A0%95)
 - [척척학사: 무중단 배포 전략 - 프로젝트에 적용하기](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC-%EC%A0%84%EB%9E%B5-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)
+- [척척학사: Next.js 기반 서버를 Spring으로 갈아엎은 이유](https://velog.io/@pp8817/척척학사-Next.js-Spring-Boot-백엔드-마이그레이션-회고)
+- [척척학사: 크롤링 로직 비동기 처리 대신 Redis 캐싱을 도입한 이유](https://velog.io/@pp8817/척척학사-크롤링-로직-비동기-처리-대신-Redis-캐싱을-도입한-이유)
+- [척척학사: 로그 시스템 리빌드: ELK → Grafana Loki](https://velog.io/@pp8817/척척학사-ELK에서-Grafana-Loki-Stack으로-갈아탄-이유와-후기)
