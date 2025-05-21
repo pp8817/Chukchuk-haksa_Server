@@ -81,16 +81,16 @@ public class InitializePortalConnectionService {
             userPortalConnectionRepository.initializePortalConnection(user, studentData);
 
             StudentInfo studentInfo = new StudentInfo(
-                    student.name(),
+                    raw.name(),
                     "수원대학교",
                     major != null ? major.getEstablishedDepartmentName() : department.getEstablishedDepartmentName(),
-                    student.studentCode(),
-                    student.academic().gradeLevel(),
-                    student.status(),
-                    student.academic().completedSemesters() % 2 == 0 ? 1 : 2
+                    raw.studentCode(),
+                    raw.academic().gradeLevel(),
+                    raw.status(),
+                    raw.academic().completedSemesters() % 2 == 0 ? 1 : 2
             );
 
-            return success(student.studentCode(), studentInfo);
+            return success(raw.studentCode(), studentInfo);
         } catch (Exception e) {
             log.error("[PORTAL][INIT] 예외 발생: {}", e.getMessage(), e);
             throw new RuntimeException("포털 연동 중 오류가 발생했습니다.", e); // rollback이 정상 처리
