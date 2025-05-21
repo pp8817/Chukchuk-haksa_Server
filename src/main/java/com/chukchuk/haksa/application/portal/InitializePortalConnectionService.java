@@ -90,7 +90,7 @@ public class InitializePortalConnectionService {
 
             return success(student.studentCode(), studentInfo);
         } catch (Exception e) {
-            log.error("[INIT][ERROR] 포털 초기화 중 예외 발생", e); // 추가
+            log.error("[PORTAL][INIT] 예외 발생: {}", e.getMessage(), e);
             return failure(e.getMessage() != null ? e.getMessage() : "포털 연동 중 오류가 발생했습니다.");
         }
     }
