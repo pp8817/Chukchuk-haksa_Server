@@ -3,8 +3,6 @@ package com.chukchuk.haksa.domain.academic.record.service;
 import com.chukchuk.haksa.domain.academic.record.model.SemesterAcademicRecord;
 import com.chukchuk.haksa.domain.academic.record.repository.SemesterAcademicRecordRepository;
 import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
-import com.chukchuk.haksa.domain.user.service.UserService;
-import com.chukchuk.haksa.global.exception.BaseException;
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
@@ -12,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicReco
 @Transactional(readOnly = true)
 public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
-    private final UserService userService;
 
     /* 특정 학생의 특정 학기 성적 조회 */
     public SemesterGradeResponse getSemesterGradesByYearAndSemester(UUID studentId, Integer year, Integer semester) {
@@ -55,9 +53,12 @@ public class SemesterAcademicRecordService {
     }
 
     /* 학생의 학기 정보 조회 */
-    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentEmail(UUID userId) {
+    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentEmail(UUID studentId) {
 
-        return findSemestersByStudent(userId).stream()
+        return findSemestersByStudent(studentId).stream()
+                .sorted(Comparator
+                        .comparing(SemesterAcademicRecord::getYear).reversed()
+                        .thenComparing(SemesterAcademicRecord::getSemester, Comparator.reverseOrder()))
                 .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
     }

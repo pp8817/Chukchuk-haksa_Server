@@ -58,15 +58,17 @@ public class User extends BaseEntity {
         this.portalConnected = false;
     }
 
-    public void setPortalConnected(boolean portalConnected) {
-        this.portalConnected = portalConnected;
-    }
-
     public void setStudent(Student student) {
         this.student = student;
     }
 
     public void updateLastSyncedAt(Instant time) {
         this.lastSyncedAt = time;
+    }
+
+    public void markPortalConnected(Instant now) {
+        this.portalConnected = true;
+        this.connectedAt = now;
+        this.lastSyncedAt = now;
     }
 }

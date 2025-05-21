@@ -1,7 +1,11 @@
 package com.chukchuk.haksa.domain.student.model;
 
+import com.chukchuk.haksa.global.exception.CommonException;
+import com.chukchuk.haksa.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
@@ -28,5 +32,16 @@ public enum GradeType {
 
     public boolean isCompleted() {
         return this != IP;
+    }
+
+    public static GradeType from(String value) {
+        if (value == null || value.isBlank()) {
+            return GradeType.IP; // 성적이 없는 경우 In Progress 처리
+        }
+
+        return Arrays.stream(values())
+                .filter(v -> v.getValue().equals(value))
+                .findFirst()
+                .orElseThrow(() -> new CommonException(ErrorCode.INVALID_GRADE_TYPE));
     }
 }

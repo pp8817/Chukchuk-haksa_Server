@@ -8,6 +8,7 @@ import com.chukchuk.haksa.domain.user.wrapper.SignInApiResponse;
 import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
+import com.chukchuk.haksa.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -50,7 +50,7 @@ public class UserController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<MessageOnlyResponse>> deleteUser(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         UUID userId = UUID.fromString(userDetails.getUsername());
         userService.deleteUserById(userId);

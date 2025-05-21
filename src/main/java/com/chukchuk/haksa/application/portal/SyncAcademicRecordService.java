@@ -41,16 +41,27 @@ public class SyncAcademicRecordService {
 
     @Transactional
     public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
+        return sync(userId, portalData, true);
+    }
+
+    @Transactional
+    public SyncAcademicRecordResult executeForRefreshPortalData(UUID userId, PortalData portalData) {
+        return sync(userId, portalData, false);
+    }
+
+    private SyncAcademicRecordResult sync(UUID userId, PortalData portalData, boolean isInitial) {
         try {
             Student student = studentService.getStudent(userId);
+            UUID studentId = student.getId();
 
-            // 1) 성적 요약 저장
-            AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(userId, portalData.academic());
-            academicRecordRepository.upsertAcademicRecords(academicRecord, student);
-            log.info("academicRecordRepository.upsertAcademicRecord finished");
+            AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(studentId, portalData.academic());
+            if (isInitial) {
+                academicRecordRepository.insertAllAcademicRecords(academicRecord, student);
+            } else {
+                academicRecordRepository.updateChangedAcademicRecords(academicRecord, student);
+            }
 
-            // 2) 수강 기록 저장
-            List<CourseEnrollment> enrollments = processCurriculumData(portalData.curriculum(), portalData.academic(), userId);
+            List<CourseEnrollment> enrollments = processCurriculumData(portalData.curriculum(), portalData.academic(), studentId);
 
             List<Long> offeringIds = enrollments.stream()
                     .map(e -> (long) e.getOfferingId())
@@ -78,7 +89,7 @@ public class SyncAcademicRecordService {
     /* offerings(교과)와 academic(학업 성적)을 합쳐서
     *  최종적으로 CourseEnrollment를 만드는 메서드
     *  */
-    private List<CourseEnrollment> processCurriculumData(PortalCurriculumData curriculumData, PortalAcademicData academicData, UUID userId) {
+    private List<CourseEnrollment> processCurriculumData(PortalCurriculumData curriculumData, PortalAcademicData academicData, UUID studentId) {
         List<CourseEnrollment> enrollments = new ArrayList<>();
         Map<String, MergedOfferingAcademic> mergedList = mergeOfferingsAndAcademic(curriculumData, academicData);
 
@@ -89,10 +100,12 @@ public class SyncAcademicRecordService {
         for (MergedOfferingAcademic item : mergedList.values()) {
             PortalOfferingCreationData offering = item.getOffering();
             PortalCourseInfo academic = item.getAcademic();
+            log.info(">>>>> academic={}", academic);
 
             // 과목 ID 및 교수 ID 구하기
             Long courseId = courseMap.get(offering.getCourseCode());
-            Long professorId = professorMap.get(offering.getProfessorName());
+            String professorName = offering.getProfessorName() != null ? offering.getProfessorName() : "미확인 교수";
+            Long professorId = professorMap.get(professorName);
 
             CreateOfferingCommand createOfferingCommand = new CreateOfferingCommand(
                     courseId,
@@ -115,13 +128,13 @@ public class SyncAcademicRecordService {
             // 개설강좌 및 성적 처리
             CourseOffering courseOffering = courseOfferingService.getOrCreateOffering(createOfferingCommand);
             Grade grade = academic != null
-                    ? new Grade(GradeType.valueOf(academic.getGrade()))
+                    ? new Grade(GradeType.from(academic.getGrade()))
                     : Grade.createInProgress();
 
             boolean isRetake = academic != null && academic.isRetake();
-            double originalScore = academic != null ? academic.getOriginalScore() : 0;
+            double originalScore = Optional.ofNullable(academic.getOriginalScore()).orElse(0.0);
 
-            CourseEnrollment enrollment = new CourseEnrollment(userId, courseOffering.getId(), grade, offering.getPoints(), isRetake, originalScore);
+            CourseEnrollment enrollment = new CourseEnrollment(studentId, courseOffering.getId(), grade, offering.getPoints(), isRetake, originalScore);
             enrollments.add(enrollment);
         }
 
@@ -206,6 +219,13 @@ public class SyncAcademicRecordService {
             professorMap.put(name, id);
         }
 
+        // 명시적으로 "미확인 교수"도 포함
+        if (!professorMap.containsKey("미확인 교수")) {
+            Long id = professorService.getOrCreate("미확인 교수").getId();
+            professorMap.put("미확인 교수", id);
+        }
+
+
         return professorMap;
     }
 
@@ -232,6 +252,8 @@ public class SyncAcademicRecordService {
     }
 
     private PortalOfferingCreationData toCreationData(OfferingInfo info) {
+        log.debug("from OfferingInfo, facultyDivisionName: {}, evaluationType:{}", info.facultyDivisionName(), info.evaluationType());
+
         PortalOfferingCreationData data = new PortalOfferingCreationData();
         data.setCourseCode(info.courseCode());
         data.setYear(info.year());
@@ -245,6 +267,11 @@ public class SyncAcademicRecordService {
         data.setSubjectEstablishmentSemester(info.subjectEstablishmentSemester());
         data.setAreaCode(info.areaCode());
         data.setOriginalAreaCode(info.originalAreaCode());
+
+        // 누락된 필드 추가
+        data.setEvaluationType(info.evaluationType());
+        data.setIsVideoLecture(info.isVideoLecture());
+
         return data;
     }
 

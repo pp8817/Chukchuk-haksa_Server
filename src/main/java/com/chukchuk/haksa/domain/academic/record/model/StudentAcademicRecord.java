@@ -36,7 +36,7 @@ public class StudentAcademicRecord extends BaseEntity {
     private Integer totalEarnedCredits;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
     public StudentAcademicRecord(
@@ -58,5 +58,16 @@ public class StudentAcademicRecord extends BaseEntity {
         this.totalEarnedCredits = summary.getTotalEarnedCredits();
         this.cumulativeGpa = BigDecimal.valueOf(summary.getCumulativeGpa());
         this.percentile = BigDecimal.valueOf(summary.getPercentile());
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public boolean isSameAs(AcademicSummary summary) {
+        return this.totalAttemptedCredits != null && this.totalAttemptedCredits.equals(summary.getTotalAttemptedCredits()) &&
+                this.totalEarnedCredits != null && this.totalEarnedCredits.equals(summary.getTotalEarnedCredits()) &&
+                this.cumulativeGpa != null && this.cumulativeGpa.compareTo(BigDecimal.valueOf(summary.getCumulativeGpa())) == 0 &&
+                this.percentile != null && this.percentile.compareTo(BigDecimal.valueOf(summary.getPercentile())) == 0;
     }
 }

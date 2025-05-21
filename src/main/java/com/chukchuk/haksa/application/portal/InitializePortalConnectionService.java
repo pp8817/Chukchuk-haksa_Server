@@ -7,34 +7,38 @@ import com.chukchuk.haksa.domain.user.model.StudentInitializationDataType;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserPortalConnectionRepository;
 import com.chukchuk.haksa.domain.user.service.UserService;
-import com.chukchuk.haksa.infrastructure.portal.model.InitializePortalConnectionResult;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalStudentInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static com.chukchuk.haksa.infrastructure.portal.model.InitializePortalConnectionResult.*;
+import static com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult.*;
 
 /* 포털 연동 초기화 유스케이스 실행 */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InitializePortalConnectionService {
 
     private final DepartmentService departmentService;
     private final UserPortalConnectionRepository userPortalConnectionRepository;
     private final UserService userService;
 
-    public InitializePortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {
+    @Transactional
+    public PortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {
         try {
-            PortalStudentInfo student = portalData.student();
-
             // 사용자 조회 및 포털 연동 여부 확인
             User user = userService.getUserById(userId);
             if (user.getPortalConnected()) {
                 return failure("이미 포털 계정과 연동된 사용자입니다.");
             }
+
+            PortalStudentInfo student = portalData.student();
 
             // 학과 및 전공 정보 설정
             Department department = departmentService.getOrCreateDepartment(
@@ -86,8 +90,8 @@ public class InitializePortalConnectionService {
 
             return success(student.studentCode(), studentInfo);
         } catch (Exception e) {
-            return failure(
-                    e.getMessage() != null ? e.getMessage() : "포털 연동 중 오류가 발생했습니다.");
+            log.error("[PORTAL][INIT] 예외 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("포털 연동 중 오류가 발생했습니다.", e); // rollback이 정상 처리
         }
     }
 }

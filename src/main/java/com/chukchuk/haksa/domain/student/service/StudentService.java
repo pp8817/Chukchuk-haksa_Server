@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.service.UserService;
 import com.chukchuk.haksa.global.exception.CommonException;
+import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,25 +22,36 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final UserService userService;
 
+    public Student getStudentById(UUID studentId) {
+        return studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
+    }
+
     public Student getStudent(UUID userId) {
         User user = userService.getUserById(userId);
 
         return user.getStudent();
     }
 
-    public StudentDto.StudentProfileResponse getStudentProfile(UUID userId) {
-        StudentDto.StudentInfoDto studentInfo = StudentDto.StudentInfoDto.from(getStudent(userId));
+    public void save(Student student) {
+        studentRepository.save(student);
+    }
+
+    public StudentDto.StudentProfileResponse getStudentProfile(UUID studentId) {
+        Student student = getStudentById(studentId);
+
+        StudentDto.StudentInfoDto studentInfo = StudentDto.StudentInfoDto.from(student);
         int currentSemester = getCurrentSemester(studentInfo.gradeLevel(), studentInfo.completedSemesters());
 
-        User user = userService.getUserById(userId);
+        User user = student.getUser();
         String lastSyncedAt = user.getLastSyncedAt() != null ? user.getLastSyncedAt().toString() : "";
 
         return StudentDto.StudentProfileResponse.from(studentInfo, currentSemester, lastSyncedAt);
     }
 
     @Transactional
-    public void setStudentTargetGpa(UUID userId, Double targetGpa) {
-        Student student = getStudent(userId);
+    public void setStudentTargetGpa(UUID studentId, Double targetGpa) {
+        Student student = getStudentById(studentId);
 
         //학점 입력 하는데 0 ~ 4.5 이외를 입력하는 경우
         if (targetGpa != null &&

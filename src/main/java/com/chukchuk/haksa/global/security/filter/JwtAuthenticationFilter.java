@@ -4,6 +4,7 @@ import com.chukchuk.haksa.global.security.service.CustomUserDetailsService;
 import com.chukchuk.haksa.global.security.service.JwtProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
 
     private static final List<String> WHITELIST_PATHS = List.of(
-            "/", "/v3/api-docs", "/swagger", "/webjars", "/swagger-config"
+            "/", "/v3/api-docs", "/swagger", "/webjars", "/swagger-config", "/error"
     );
 
     @Override
@@ -63,8 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (ExpiredJwtException e) {
             request.setAttribute("exception", "expired");
-            throw new InsufficientAuthenticationException("Access token expired", e); // Spring Security 흐름 타게
-        } catch (Exception e) {
+            throw new InsufficientAuthenticationException("Access token expired", e);
+        } catch (JwtException e) {
             request.setAttribute("exception", "invalid");
             throw new InsufficientAuthenticationException("Invalid token", e);
         }

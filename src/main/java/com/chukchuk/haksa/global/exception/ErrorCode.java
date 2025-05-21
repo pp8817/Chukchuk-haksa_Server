@@ -30,6 +30,8 @@ public enum ErrorCode {
     SEMESTER_RECORD_EMPTY("A02", "학기 성적 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FRESHMAN_NO_SEMESTER("A03", "신입생은 학기 기록이 없습니다.", HttpStatus.BAD_REQUEST),
     GRADUATION_REQUIREMENTS_NOT_FOUND("G01", "졸업 요건 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    // 학업 관련
+    INVALID_GRADE_TYPE("A06", "존재하지 않는 성적 등급입니다.", HttpStatus.BAD_REQUEST),
 
     // 포털 관련
     PORTAL_LOGIN_FAILED("P01", "포털 로그인 실패", HttpStatus.UNAUTHORIZED),
@@ -37,9 +39,12 @@ public enum ErrorCode {
 
     // 공통(Common)
     INVALID_ARGUMENT("C01", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
+    NOT_FOUND("C05", "요청한 API를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // 인증 및 세션 관련
     SESSION_EXPIRED("A04", "로그인 세션이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
+    // 인증 및 세션 관련
+    AUTHENTICATION_REQUIRED("A05", "인증이 필요한 요청입니다.", HttpStatus.UNAUTHORIZED),
 
     // 서버 오류 관련
     SCRAPING_FAILED("C02", "포털 크롤링 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
