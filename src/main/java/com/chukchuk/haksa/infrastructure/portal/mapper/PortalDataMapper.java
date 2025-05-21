@@ -2,10 +2,12 @@ package com.chukchuk.haksa.infrastructure.portal.mapper;
 
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.*;
 import com.chukchuk.haksa.infrastructure.portal.model.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class PortalDataMapper {
 
     private static final Integer DEFAULT_TOTAL_CREDITS = 0;
@@ -73,6 +75,8 @@ public class PortalDataMapper {
         List<SemesterGrade> grades = new ArrayList<>();
 
         for (RawPortalSemesterGradeDTO g : academicRecords.listSmrCretSumTabYearSmr()) {
+            log.debug("grade year = {}, semester = '{}'", g.cretGainYear(), g.cretSmrCd());
+
             grades.add(new SemesterGrade(
                     parseIntSafe(g.cretGainYear()),
                     parseIntSafe(g.cretSmrCd()),
@@ -130,16 +134,19 @@ public class PortalDataMapper {
                 offerings.add(new OfferingInfo(
                         c.subjtCd(),
                         year,
-                        parseIntSafe(c.subjtEstbSmrCd()),
+                        semester,
+//                        parseIntSafe(c.subjtEstbSmrCd()),
                         c.diclNo(),
                         c.ltrPrfsNm(),
                         c.timtSmryCn(),
                         c.point(),
                         c.estbDpmjNm(),
                         c.facDvnm(),
-                        parseIntSafe(c.subjtEstbSmrCd()),
+                        parseIntSafe(c.subjtEstbSmrCd()), // subjectEstablishmentSemester
                         parseIntSafe(c.cltTerrNm()),
-                        parseIntSafe(c.cltTerrCd())
+                        parseIntSafe(c.cltTerrCd()),
+                        "UNKNOWN", // TODO: 우선 기본값 처리, 추후 변경 필요
+                        false
                 ));
             }
         }

@@ -12,5 +12,7 @@ public record OfferingInfo(
         String facultyDivisionName,
         Integer subjectEstablishmentSemester,
         Integer areaCode,
-        Integer originalAreaCode
+        Integer originalAreaCode,
+        String evaluationType,          // 추가
+        Boolean isVideoLecture
 ) {}
