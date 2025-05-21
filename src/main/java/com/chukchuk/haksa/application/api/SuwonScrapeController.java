@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,7 +67,7 @@ public class SuwonScrapeController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<PortalLoginResponse>> login(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam @Parameter(description = "포털 로그인 ID", required = true) String username,
             @RequestParam @Parameter(description = "포털 로그인 비밀번호", required = true) String password
     ) {
@@ -94,7 +93,7 @@ public class SuwonScrapeController {
     )
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<ScrapingResponse>> startScraping(
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
         log.info("[START] 포털 동기화 시작: userId={}", userId); // 요청 시작
