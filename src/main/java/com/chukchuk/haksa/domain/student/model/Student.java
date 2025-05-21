@@ -150,12 +150,12 @@ public class Student extends BaseEntity {
 
     // 학생 정보 업데이트 시 변경 사항 감지 메서드
     public boolean needsUpdate(StudentInitializationDataType newData) {
-        if (!this.name.equals(newData.getName())) return true;
-        if (!this.department.equals(newData.getDepartment())) return true;
+        if (!equalsNullable(this.name, newData.getName())) return true;
+        if (!equalsNullable(this.department, newData.getDepartment())) return true;
         if (!equalsNullable(this.major, newData.getMajor())) return true;
         if (!equalsNullable(this.secondaryMajor, newData.getSecondaryMajor())) return true;
-        if (!this.isGraduated.equals(newData.isGraduated())) return true;
-        if (!this.admissionType.equals(newData.getAdmissionType())) return true;
+        if (!equalsNullable(this.isGraduated, newData.isGraduated())) return true;
+        if (!equalsNullable(this.admissionType, newData.getAdmissionType())) return true;
 
         AcademicInfo newInfo = AcademicInfo.builder()
                 .admissionYear(newData.getAdmissionYear())
@@ -166,11 +166,11 @@ public class Student extends BaseEntity {
                 .completedSemesters(newData.getCompletedSemesters())
                 .build();
 
-        return !this.academicInfo.equals(newInfo);
+        return !equalsNullable(this.academicInfo, newInfo);
     }
 
     private boolean equalsNullable(Object a, Object b) {
-        return a == null ? b == null : a.equals(b);
+        return java.util.Objects.equals(a, b);
     }
 
 }

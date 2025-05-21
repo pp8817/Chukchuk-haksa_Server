@@ -27,12 +27,13 @@ public class StudentService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
     }
 
-    public Student getStudent(UUID userId) {
+    public Student getStudentByUserId(UUID userId) {
         User user = userService.getUserById(userId);
 
         return user.getStudent();
     }
 
+    @Transactional
     public void save(Student student) {
         studentRepository.save(student);
     }

@@ -54,7 +54,7 @@ public class UserPortalConnectionRepository {
     @Transactional
     public void refreshPortalConnection(User user, StudentInitializationDataType studentData) {
         // 학생 정보 조회
-        Student student = studentService.getStudent(user.getId());
+        Student student = studentService.getStudentByUserId(user.getId());
 
         // 학과 및 전공 정보
         Department department = studentData.getDepartment();

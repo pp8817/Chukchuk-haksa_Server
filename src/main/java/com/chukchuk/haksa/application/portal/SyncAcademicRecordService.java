@@ -51,7 +51,7 @@ public class SyncAcademicRecordService {
 
     private SyncAcademicRecordResult sync(UUID userId, PortalData portalData, boolean isInitial) {
         try {
-            Student student = studentService.getStudent(userId);
+            Student student = studentService.getStudentByUserId(userId);
             UUID studentId = student.getId();
 
             AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(studentId, portalData.academic());
