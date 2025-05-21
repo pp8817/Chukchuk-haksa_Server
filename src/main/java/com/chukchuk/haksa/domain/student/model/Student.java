@@ -7,6 +7,7 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.graduation.model.StudentGraduationProgress;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
+import com.chukchuk.haksa.domain.user.model.StudentInitializationDataType;
 import com.chukchuk.haksa.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -146,4 +147,30 @@ public class Student extends BaseEntity {
     public void setTargetGpa(Double targetGpa) {
         this.targetGpa = targetGpa;
     }
+
+    // 학생 정보 업데이트 시 변경 사항 감지 메서드
+    public boolean needsUpdate(StudentInitializationDataType newData) {
+        if (!this.name.equals(newData.getName())) return true;
+        if (!this.department.equals(newData.getDepartment())) return true;
+        if (!equalsNullable(this.major, newData.getMajor())) return true;
+        if (!equalsNullable(this.secondaryMajor, newData.getSecondaryMajor())) return true;
+        if (!this.isGraduated.equals(newData.isGraduated())) return true;
+        if (!this.admissionType.equals(newData.getAdmissionType())) return true;
+
+        AcademicInfo newInfo = AcademicInfo.builder()
+                .admissionYear(newData.getAdmissionYear())
+                .semesterEnrolled(newData.getSemesterEnrolled())
+                .isTransferStudent(newData.isTransferStudent())
+                .status(newData.getStatus())
+                .gradeLevel(newData.getGradeLevel())
+                .completedSemesters(newData.getCompletedSemesters())
+                .build();
+
+        return !this.academicInfo.equals(newInfo);
+    }
+
+    private boolean equalsNullable(Object a, Object b) {
+        return a == null ? b == null : a.equals(b);
+    }
+
 }
