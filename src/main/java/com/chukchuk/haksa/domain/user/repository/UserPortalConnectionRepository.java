@@ -2,11 +2,10 @@ package com.chukchuk.haksa.domain.user.repository;
 
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.student.model.Student;
-import com.chukchuk.haksa.domain.student.repository.StudentRepository;
+import com.chukchuk.haksa.domain.student.service.StudentService;
 import com.chukchuk.haksa.domain.user.model.StudentInitializationDataType;
 import com.chukchuk.haksa.domain.user.model.User;
-import com.chukchuk.haksa.global.exception.EntityNotFoundException;
-import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +15,8 @@ import java.time.Instant;
 @Repository
 @RequiredArgsConstructor
 public class UserPortalConnectionRepository {
-
-    private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
+    private final UserService userService;
+    private final StudentService studentService;
 
     @Transactional
     public void initializePortalConnection(User user, StudentInitializationDataType studentData) {
@@ -49,16 +47,14 @@ public class UserPortalConnectionRepository {
         user.setStudent(student);
 
         // DB에 저장
-        userRepository.save(user);
-        studentRepository.save(student);
+        userService.save(user);
+        studentService.save(student);
     }
 
     @Transactional
     public void refreshPortalConnection(User user, StudentInitializationDataType studentData) {
-
         // 학생 정보 조회
-        Student student = studentRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
+        Student student = studentService.getStudent(user.getId());
 
         // 학과 및 전공 정보
         Department department = studentData.getDepartment();
@@ -85,8 +81,8 @@ public class UserPortalConnectionRepository {
         user.updateLastSyncedAt(Instant.now());
 
         // 저장
-        studentRepository.save(student);
-        userRepository.save(user);
+        userService.save(user);
+        studentService.save(student);
 
     }
 }

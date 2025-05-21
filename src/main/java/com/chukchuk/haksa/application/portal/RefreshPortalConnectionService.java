@@ -7,16 +7,21 @@ import com.chukchuk.haksa.domain.user.model.StudentInitializationDataType;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserPortalConnectionRepository;
 import com.chukchuk.haksa.domain.user.service.UserService;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalStudentInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult.*;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RefreshPortalConnectionService {
 
     private final DepartmentService departmentService;
@@ -24,18 +29,17 @@ public class RefreshPortalConnectionService {
     private final UserService userService;
 
     @Transactional
-    public boolean executeWithPortalData(UUID userId, PortalData portalData) {
+    public PortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {
         try {
-            User user = userService.getUserById(userId);
 
-            // 포털 연동되지 않은 사용자는 거부
+            // 사용자 조회 및 포털 연동 여부 확인
+            User user = userService.getUserById(userId);
             if (!user.getPortalConnected()) {
-                throw new IllegalStateException("아직 포털 계정과 연동되지 않은 사용자입니다.");
+                return failure("아직 포털 계정과 연동되지 않은 사용자입니다.");
             }
 
             PortalStudentInfo student = portalData.student();
 
-            // 학과 및 전공 정보 설정
             Department department = departmentService.getOrCreateDepartment(
                     student.department().code(), student.department().name());
             Department major = student.major().code() != null
@@ -46,7 +50,7 @@ public class RefreshPortalConnectionService {
                     : null;
 
             if (department == null) {
-                throw new IllegalStateException("학과/전공 정보 초기화 실패");
+                return failure("학과/전공 정보 초기화 실패");
             }
 
             StudentInitializationDataType studentData = StudentInitializationDataType.builder()
@@ -65,13 +69,22 @@ public class RefreshPortalConnectionService {
                     .admissionType(student.admission().type())
                     .build();
 
-            // 포털 정보 갱신 (기존 initialize와 다른 포인트)
             userPortalConnectionRepository.refreshPortalConnection(user, studentData);
 
-            return true;
+            StudentInfo studentInfo = new StudentInfo(
+                    student.name(),
+                    "수원대학교",
+                    major != null ? major.getEstablishedDepartmentName() : department.getEstablishedDepartmentName(),
+                    student.studentCode(),
+                    student.academic().gradeLevel(),
+                    student.status(),
+                    student.academic().completedSemesters() % 2 == 0 ? 1 : 2
+            );
+
+            return success(student.studentCode(), studentInfo);
         } catch (Exception e) {
-            // 실패 로깅 또는 예외 핸들링
-            return false;
+            log.error("[PORTAL][INIT] 예외 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("포털 연동 중 오류가 발생했습니다.", e); // rollback이 정상 처리
         }
     }
 }
