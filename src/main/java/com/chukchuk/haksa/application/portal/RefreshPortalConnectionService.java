@@ -40,8 +40,9 @@ public class RefreshPortalConnectionService {
 
             Department department = departmentService.getOrCreateDepartment(
                     raw.department().code(), raw.department().name());
-            Department major = raw.major().code() != null
-                    ? departmentService.getOrCreateDepartment(raw.major().code(), raw.major().name())
+            var majorDto = raw.major();
+            Department major = (majorDto != null && majorDto.code() != null)
+                    ? departmentService.getOrCreateDepartment(majorDto.code(), majorDto.name())
                     : null;
             Department secondaryMajor = raw.secondaryMajor() != null
                     ? departmentService.getOrCreateDepartment(raw.secondaryMajor().code(), raw.secondaryMajor().name())
