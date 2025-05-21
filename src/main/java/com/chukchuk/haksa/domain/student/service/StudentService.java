@@ -33,6 +33,10 @@ public class StudentService {
         return user.getStudent();
     }
 
+    public void save(Student student) {
+        studentRepository.save(student);
+    }
+
     public StudentDto.StudentProfileResponse getStudentProfile(UUID studentId) {
         Student student = getStudentById(studentId);
 

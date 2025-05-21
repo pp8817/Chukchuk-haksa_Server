@@ -40,6 +40,11 @@ public class UserService {
     }
 
     @Transactional
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Transactional
     public AuthDto.SignInTokenResponse signInWithKakao(UserDto.SignInRequest signInRequest) {
         Claims claims = verifyKakaoToken(signInRequest);
         String email = extractEmail(claims);
