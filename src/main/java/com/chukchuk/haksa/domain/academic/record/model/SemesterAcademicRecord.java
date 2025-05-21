@@ -3,9 +3,12 @@ package com.chukchuk.haksa.domain.academic.record.model;
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -14,6 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "semester_academic_records")
+@Access(AccessType.FIELD)
 public class SemesterAcademicRecord extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,7 +51,7 @@ public class SemesterAcademicRecord extends BaseEntity {
     private Integer earnedCredits;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
     public SemesterAcademicRecord(
@@ -72,5 +76,13 @@ public class SemesterAcademicRecord extends BaseEntity {
         this.attemptedCreditsGpa = attemptedCreditsGpa;
         this.classRank = classRank;
         this.totalStudents = totalStudents;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Integer getSemester() {
+        return this.semester;
     }
 }
