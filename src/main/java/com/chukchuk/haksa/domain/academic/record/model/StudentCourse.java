@@ -63,4 +63,8 @@ public class StudentCourse {
         this.isRetake = isRetake;
         this.originalScore = originalScore;
     }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 }

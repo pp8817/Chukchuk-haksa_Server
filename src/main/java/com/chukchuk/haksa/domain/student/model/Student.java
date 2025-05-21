@@ -64,16 +64,16 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @OneToOne(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "student", cascade = {CascadeType.PERSIST, REMOVE}, orphanRemoval = true)
     private StudentAcademicRecord studentAcademicRecord;
 
-    @OneToOne(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    @OneToOne(mappedBy = "student", cascade = {CascadeType.PERSIST, REMOVE}, orphanRemoval = true)
     private StudentGraduationProgress graduationProgress;
 
-    @OneToMany(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, REMOVE}, orphanRemoval = true)
     private List<SemesterAcademicRecord> semesterAcademicRecords = new ArrayList<>();
 
-    @OneToMany(mappedBy = "student", cascade = REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, REMOVE}, orphanRemoval = true)
     private List<StudentCourse> studentCourses = new ArrayList<>();
 
     /* Using Method */
@@ -127,15 +127,20 @@ public class Student extends BaseEntity {
 
     public void addStudentCourse(StudentCourse course) {
         this.studentCourses.add(course);
+        course.setStudent(this);
     }
 
     // 연관관계 편의 메서드
     public void setAcademicRecord(StudentAcademicRecord record) {
         this.studentAcademicRecord = record;
+        if (record != null) {
+            record.setStudent(this);
+        }
     }
 
     public void addSemesterRecord(SemesterAcademicRecord record) {
         this.semesterAcademicRecords.add(record);
+        record.setStudent(this);
     }
 
     public void setTargetGpa(Double targetGpa) {

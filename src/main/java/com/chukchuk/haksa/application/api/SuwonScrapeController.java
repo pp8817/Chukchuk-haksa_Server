@@ -95,28 +95,41 @@ public class SuwonScrapeController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String userId = userDetails.getUsername();
+        log.info("[START] 포털 동기화 시작: userId={}", userId); // 요청 시작
+
         String username = redisStore.getUsername(userId);
         String password = redisStore.getPassword(userId);
+        log.info("[REDIS] 로드 완료: username={}, password={}", username != null, password != null);
 
         if (username == null || password == null) {
+            log.warn("[REDIS] 사용자 정보가 존재하지 않음: session expired");
             throw new CommonException(ErrorCode.SESSION_EXPIRED);
         }
 
-        PortalData portalData = portalRepository.fetchPortalData(username, password);
+        PortalData portalData;
+        try {
+            portalData = portalRepository.fetchPortalData(username, password);
+            log.info("[PORTAL] 포털 데이터 크롤링 성공");
+        } catch (Exception e) {
+            log.error("[PORTAL] 포털 데이터 크롤링 실패", e);
+            throw new PortalScrapeException(ErrorCode.SCRAPING_FAILED);
+        }
 
         UUID uuUserId = UUID.fromString(userId);
         InitializePortalConnectionResult initResult = initializePortalConnectionService.executeWithPortalData(uuUserId, portalData);
         if (!initResult.isSuccess()) {
+            log.warn("[INIT] 포털 초기화 실패: userId={}, reason={}", userId, initResult.error());
             throw new PortalScrapeException(ErrorCode.SCRAPING_FAILED);
         }
 
         SyncAcademicRecordResult syncResult = syncAcademicRecordService.executeWithPortalData(uuUserId, portalData);
         if (!syncResult.isSuccess()) {
+            log.warn("[SYNC] 학업 동기화 실패: userId={}, reason={}", userId, syncResult.getError());
             throw new PortalScrapeException(ErrorCode.SCRAPING_FAILED);
         }
 
         redisStore.clear(userId);
-
+        log.info("[COMPLETE] 동기화 완료: userId={}", userId); // 완료 로그
         StartScrapingResponse response = new StartScrapingResponse(UUID.randomUUID().toString(), initResult.studentInfo());
         return ResponseEntity.accepted().body(SuccessResponse.of(response));
     }
