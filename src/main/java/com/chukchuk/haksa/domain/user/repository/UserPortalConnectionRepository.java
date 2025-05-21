@@ -61,28 +61,27 @@ public class UserPortalConnectionRepository {
         Department major = studentData.getMajor();
         Department secondaryMajor = studentData.getSecondaryMajor();
 
-        // 기존 학생 정보 갱신
-        student.updateInfo(
-                studentData.getName(),
-                department,
-                major,
-                secondaryMajor,
-                studentData.getAdmissionYear(),
-                studentData.getSemesterEnrolled(),
-                studentData.isTransferStudent(),
-                studentData.isGraduated(),
-                studentData.getStatus(),
-                studentData.getGradeLevel(),
-                studentData.getCompletedSemesters(),
-                studentData.getAdmissionType()
-        );
+        if (student.needsUpdate(studentData)) {
+            // 기존 학생 정보 갱신
+            student.updateInfo(
+                    studentData.getName(),
+                    department,
+                    major,
+                    secondaryMajor,
+                    studentData.getAdmissionYear(),
+                    studentData.getSemesterEnrolled(),
+                    studentData.isTransferStudent(),
+                    studentData.isGraduated(),
+                    studentData.getStatus(),
+                    studentData.getGradeLevel(),
+                    studentData.getCompletedSemesters(),
+                    studentData.getAdmissionType()
+            );
+            studentService.save(student);
+        }
 
         // 마지막 동기화 시간 갱신
         user.updateLastSyncedAt(Instant.now());
-
-        // 저장
         userService.save(user);
-        studentService.save(student);
-
     }
 }
