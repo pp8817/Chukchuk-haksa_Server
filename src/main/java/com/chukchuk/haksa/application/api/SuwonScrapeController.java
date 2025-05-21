@@ -178,7 +178,7 @@ public class SuwonScrapeController {
             throw new PortalScrapeException(ErrorCode.SCRAPING_FAILED);
         }
 
-        SyncAcademicRecordResult syncResult = syncAcademicRecordService.executeWithPortalData(uuUserId, portalData);
+        SyncAcademicRecordResult syncResult = syncAcademicRecordService.executeForRefreshPortalData(uuUserId, portalData);
         if (!syncResult.isSuccess()) {
             log.warn("[SYNC] 학업 동기화 실패: userId={}, reason={}", userId, syncResult.getError());
             throw new PortalScrapeException(ErrorCode.REFRESH_FAILED);

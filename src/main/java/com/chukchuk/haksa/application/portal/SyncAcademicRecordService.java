@@ -41,16 +41,26 @@ public class SyncAcademicRecordService {
 
     @Transactional
     public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
+        return sync(userId, portalData, true);
+    }
+
+    @Transactional
+    public SyncAcademicRecordResult executeForRefreshPortalData(UUID userId, PortalData portalData) {
+        return sync(userId, portalData, false);
+    }
+
+    private SyncAcademicRecordResult sync(UUID userId, PortalData portalData, boolean isInitial) {
         try {
             Student student = studentService.getStudent(userId);
             UUID studentId = student.getId();
 
-            // 1) 성적 요약 저장
             AcademicRecord academicRecord = AcademicRecordMapperFromPortal.fromPortalAcademicData(studentId, portalData.academic());
-            academicRecordRepository.upsertAcademicRecords(academicRecord, student);
-            log.info("academicRecordRepository.upsertAcademicRecord finished");
+            if (isInitial) {
+                academicRecordRepository.insertAllAcademicRecords(academicRecord, student);
+            } else {
+                academicRecordRepository.updateChangedAcademicRecords(academicRecord, student);
+            }
 
-            // 2) 수강 기록 저장
             List<CourseEnrollment> enrollments = processCurriculumData(portalData.curriculum(), portalData.academic(), studentId);
 
             List<Long> offeringIds = enrollments.stream()

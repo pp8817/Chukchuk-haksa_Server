@@ -3,14 +3,12 @@ package com.chukchuk.haksa.domain.academic.record.model;
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -84,5 +82,25 @@ public class SemesterAcademicRecord extends BaseEntity {
 
     public Integer getSemester() {
         return this.semester;
+    }
+
+    private boolean compareBigDecimal(BigDecimal a, BigDecimal b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        return a.compareTo(b) == 0;
+    }
+
+    public boolean equalsContentOf(SemesterAcademicRecord other) {
+        if (other == null) return false;
+
+        return Objects.equals(this.year, other.year) &&
+                Objects.equals(this.semester, other.semester) &&
+                Objects.equals(this.totalStudents, other.totalStudents) &&
+                Objects.equals(this.classRank, other.classRank) &&
+                Objects.equals(this.attemptedCredits, other.attemptedCredits) &&
+                Objects.equals(this.earnedCredits, other.earnedCredits) &&
+                compareBigDecimal(this.semesterGpa, other.semesterGpa) &&
+                compareBigDecimal(this.semesterPercentile, other.semesterPercentile) &&
+                compareBigDecimal(this.attemptedCreditsGpa, other.attemptedCreditsGpa);
     }
 }

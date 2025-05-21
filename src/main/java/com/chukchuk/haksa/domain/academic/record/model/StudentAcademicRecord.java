@@ -63,4 +63,11 @@ public class StudentAcademicRecord extends BaseEntity {
     public void setStudent(Student student) {
         this.student = student;
     }
+
+    public boolean isSameAs(AcademicSummary summary) {
+        return this.totalAttemptedCredits != null && this.totalAttemptedCredits.equals(summary.getTotalAttemptedCredits()) &&
+                this.totalEarnedCredits != null && this.totalEarnedCredits.equals(summary.getTotalEarnedCredits()) &&
+                this.cumulativeGpa != null && this.cumulativeGpa.compareTo(BigDecimal.valueOf(summary.getCumulativeGpa())) == 0 &&
+                this.percentile != null && this.percentile.compareTo(BigDecimal.valueOf(summary.getPercentile())) == 0;
+    }
 }
