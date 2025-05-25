@@ -135,3 +135,4 @@ fix: 사용자 정보 누락 버그 해결
 - [척척학사: Next.js 기반 서버를 Spring으로 갈아엎은 이유](https://velog.io/@pp8817/척척학사-Next.js-Spring-Boot-백엔드-마이그레이션-회고)
 - [척척학사: 크롤링 로직 비동기 처리 대신 Redis 캐싱을 도입한 이유](https://velog.io/@pp8817/척척학사-크롤링-로직-비동기-처리-대신-Redis-캐싱을-도입한-이유)
 - [척척학사: 로그 시스템 리빌드: ELK → Grafana Loki](https://velog.io/@pp8817/척척학사-ELK에서-Grafana-Loki-Stack으로-갈아탄-이유와-후기)
+- [척척학사: 포털 데이터 Redis 캐싱 전략 도입기](https://velog.io/@pp8817/척척학사-포털-데이터-Redis-캐싱-전략-도입기)
