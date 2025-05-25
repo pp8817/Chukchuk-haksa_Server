@@ -8,6 +8,7 @@ import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.service.StudentService;
 import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.infrastructure.redis.RedisCacheStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class StudentAcademicRecordService {
     private final StudentAcademicRecordRepository studentAcademicRecordRepository;
     private final GraduationQueryRepository graduationQueryRepository;
     private final StudentService studentService;
+    private final RedisCacheStore redisCacheStore;
 
     public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID studentId) {
         StudentAcademicRecord studentAcademicRecord = getStudentAcademicRecordByStudentId(studentId);

@@ -15,7 +15,19 @@ public class RedisCacheStore {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper ob;
 
-    // 기본 저장
+    public static final Duration DEFAULT_TTL = Duration.ofDays(7);
+
+    // 기본 저장: Default TTL 사용
+    public <T> void set(String key, T value) {
+        try {
+            String json = ob.writeValueAsString(value);
+            redisTemplate.opsForValue().set(key, json, DEFAULT_TTL);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis 캐싱 직렬화 실패", e);
+        }
+    }
+
+    // 저장: TTL 수동 설정
     public <T> void set(String key, T value, Duration ttl) {
         try {
             String json = ob.writeValueAsString(value);
