@@ -19,6 +19,7 @@ import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.repository.PortalRepository;
+import com.chukchuk.haksa.infrastructure.redis.RedisCacheStore;
 import com.chukchuk.haksa.infrastructure.redis.RedisPortalCredentialStore;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,7 +50,8 @@ public class SuwonScrapeController {
     private final InitializePortalConnectionService initializePortalConnectionService;
     private final RefreshPortalConnectionService refreshPortalConnectionService;
     private final SyncAcademicRecordService syncAcademicRecordService;
-    private final RedisPortalCredentialStore redisStore;
+    private final RedisPortalCredentialStore redisPortalCredentialStore;
+    private final RedisCacheStore redisCacheStore;
     private final UserService userService;
 
     @PostMapping("/login")
@@ -72,7 +74,7 @@ public class SuwonScrapeController {
             @RequestParam @Parameter(description = "포털 로그인 비밀번호", required = true) String password
     ) {
         String userId = userDetails.getUsername();
-        redisStore.save(userId, username, password);
+        redisPortalCredentialStore.save(userId, username, password);
 
         return ResponseEntity.ok(SuccessResponse.of(new PortalLoginResponse("로그인 성공")));
     }
@@ -123,7 +125,7 @@ public class SuwonScrapeController {
             throw new PortalScrapeException(ErrorCode.SCRAPING_FAILED);
         }
 
-        redisStore.clear(userId);
+        redisPortalCredentialStore.clear(userId);
         log.info("[COMPLETE] 동기화 완료: userId={}", userId); // 완료 로그
 
         // 사용자 포털 연결 정보 설정
@@ -182,7 +184,11 @@ public class SuwonScrapeController {
             throw new PortalScrapeException(ErrorCode.REFRESH_FAILED);
         }
 
-        redisStore.clear(userId);
+        // 캐시 데이터 무효화
+        UUID studentId = userDetails.getStudentId();
+        redisCacheStore.deleteAllByStudentId(studentId);
+
+        redisPortalCredentialStore.clear(userId);
         log.info("[COMPLETE] 동기화 완료: userId={}", userId); // 완료 로그
 
         User user = userService.getUserById(uuUserId);
@@ -194,8 +200,8 @@ public class SuwonScrapeController {
     }
 
     private String[] loadPortalCredentials(String userId) {
-        String username = redisStore.getUsername(userId);
-        String password = redisStore.getPassword(userId);
+        String username = redisPortalCredentialStore.getUsername(userId);
+        String password = redisPortalCredentialStore.getPassword(userId);
         if (username == null || password == null) {
             throw new CommonException(ErrorCode.SESSION_EXPIRED);
         }

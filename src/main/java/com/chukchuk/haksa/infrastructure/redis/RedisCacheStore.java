@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -62,7 +63,7 @@ public class RedisCacheStore {
     }
 
     // studentId 기반 전체 캐시 삭제
-    public void deleteAllByStudentId(String studentId) {
+    public void deleteAllByStudentId(UUID studentId) {
         String prefix = "student:" + studentId + ":";
         deleteByPrefix(prefix);
     }
