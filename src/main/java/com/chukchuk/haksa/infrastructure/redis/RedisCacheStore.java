@@ -1,5 +1,7 @@
 package com.chukchuk.haksa.infrastructure.redis;
 
+import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
+import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,13 +14,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.chukchuk.haksa.domain.academic.record.dto.StudentAcademicRecordDto.AcademicSummaryResponse;
+
 @Component
 @RequiredArgsConstructor
 public class RedisCacheStore {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper ob;
 
-    public static final Duration DEFAULT_TTL = Duration.ofDays(7);
+    public static final Duration DEFAULT_TTL = Duration.ofDays(30);
 
     // 기본 저장: Default TTL 사용
     public <T> void set(String key, T value) {
@@ -80,5 +84,45 @@ public class RedisCacheStore {
     public void deleteAllByStudentId(UUID studentId) {
         String prefix = "student:" + studentId + ":";
         deleteByPrefix(prefix);
+    }
+
+    // ──────────────── [도메인별 key 헬퍼] ──────────────── //
+
+    public String keyForSummary(UUID studentId) {
+        return "student:" + studentId + ":summary";
+    }
+
+    public String keyForSemesters(UUID studentId) {
+        return "student:" + studentId + ":semesters";
+    }
+
+    public String keyForGraduation(UUID studentId) {
+        return "student:" + studentId + ":graduation";
+    }
+
+    // ──────────────── [도메인별 캐시 처리] ──────────────── //
+
+    public void setAcademicSummary(UUID studentId, AcademicSummaryResponse summary) {
+        set(keyForSummary(studentId), summary);
+    }
+
+    public AcademicSummaryResponse getAcademicSummary(UUID studentId) {
+        return get(keyForSummary(studentId), AcademicSummaryResponse.class);
+    }
+
+    public void setSemesterList(UUID studentId, List<StudentSemesterDto.StudentSemesterInfoResponse> list) {
+        set(keyForSemesters(studentId), list);
+    }
+
+    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemesterList(UUID studentId) {
+        return getList(keyForSemesters(studentId), StudentSemesterDto.StudentSemesterInfoResponse.class);
+    }
+
+    public void setGraduationProgress(UUID studentId, GraduationProgressResponse progress) {
+        set(keyForGraduation(studentId), progress);
+    }
+
+    public GraduationProgressResponse getGraduationProgress(UUID studentId) {
+        return get(keyForGraduation(studentId), GraduationProgressResponse.class);
     }
 }

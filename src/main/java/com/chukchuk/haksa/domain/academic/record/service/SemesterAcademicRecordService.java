@@ -56,17 +56,11 @@ public class SemesterAcademicRecordService {
 
     /* 학생의 학기 정보 조회 */
     public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentId(UUID studentId) {
-        String key = "student:" + studentId + ":semesters";
-
-        // 1. 캐시 확인
-        List<StudentSemesterDto.StudentSemesterInfoResponse> cached = redisCacheStore.getList(
-                key, StudentSemesterDto.StudentSemesterInfoResponse.class
-        );
+        List<StudentSemesterDto.StudentSemesterInfoResponse> cached = redisCacheStore.getSemesterList(studentId);
         if (cached != null) {
             return cached;
         }
 
-        // 2. DB 조회
         List<StudentSemesterDto.StudentSemesterInfoResponse> response = findSemestersByStudent(studentId).stream()
                 .sorted(Comparator
                         .comparing(SemesterAcademicRecord::getYear).reversed()
@@ -74,8 +68,7 @@ public class SemesterAcademicRecordService {
                 .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
 
-        // 3. 캐시 저장
-        redisCacheStore.set(key, response);
+        redisCacheStore.setSemesterList(studentId, response);
         return response;
     }
 

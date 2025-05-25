@@ -24,9 +24,7 @@ public class GraduationService {
 
     /* 졸업 요건 진행 상황 조회 */
     public GraduationProgressResponse getGraduationProgress(UUID studentId) {
-        String key = "student:" + studentId + "graduation-progress";
-
-        GraduationProgressResponse cached = redisCacheStore.get(key, GraduationProgressResponse.class);
+        GraduationProgressResponse cached = redisCacheStore.getGraduationProgress(studentId);
         if (cached != null) {
             return cached;
         }
@@ -39,7 +37,7 @@ public class GraduationService {
         List<AreaProgressDto> areaProgress = graduationQueryRepository.getStudentAreaProgress(studentId, effectiveDepartmentId, student.getAcademicInfo().getAdmissionYear());
 
         GraduationProgressResponse response = new GraduationProgressResponse(areaProgress);
-        redisCacheStore.set(key, response);
+        redisCacheStore.setGraduationProgress(studentId, response);
         return response;
     }
 }
