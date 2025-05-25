@@ -71,7 +71,6 @@ public class SuwonScrapeController {
             @RequestParam @Parameter(description = "포털 로그인 ID", required = true) String username,
             @RequestParam @Parameter(description = "포털 로그인 비밀번호", required = true) String password
     ) {
-//        portalRepository.login(username, password); // 포털 크롤링 시작 ('/api/suwon-scrape/start') 로직에서 담덩
         String userId = userDetails.getUsername();
         redisStore.save(userId, username, password);
 
