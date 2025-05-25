@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.infrastructure.redis.RedisCacheStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicReco
 @Transactional(readOnly = true)
 public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
+    private final RedisCacheStore redisCacheStore;
 
     /* 특정 학생의 특정 학기 성적 조회 */
     public SemesterGradeResponse getSemesterGradesByYearAndSemester(UUID studentId, Integer year, Integer semester) {
@@ -53,14 +55,28 @@ public class SemesterAcademicRecordService {
     }
 
     /* 학생의 학기 정보 조회 */
-    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentEmail(UUID studentId) {
+    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentId(UUID studentId) {
+        String key = "student:" + studentId + ":semesters";
 
-        return findSemestersByStudent(studentId).stream()
+        // 1. 캐시 확인
+        List<StudentSemesterDto.StudentSemesterInfoResponse> cached = redisCacheStore.getList(
+                key, StudentSemesterDto.StudentSemesterInfoResponse.class
+        );
+        if (cached != null) {
+            return cached;
+        }
+
+        // 2. DB 조회
+        List<StudentSemesterDto.StudentSemesterInfoResponse> response = findSemestersByStudent(studentId).stream()
                 .sorted(Comparator
                         .comparing(SemesterAcademicRecord::getYear).reversed()
                         .thenComparing(SemesterAcademicRecord::getSemester, Comparator.reverseOrder()))
                 .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
+
+        // 3. 캐시 저장
+        redisCacheStore.set(key, response);
+        return response;
     }
 
     /* 특정 학생의 학기 정보 조회 (신입생 예외 처리) */

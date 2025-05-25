@@ -1,12 +1,14 @@
 package com.chukchuk.haksa.infrastructure.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,12 +40,24 @@ public class RedisCacheStore {
         }
     }
 
-    // 조회
+    // 단건 조회
     public <T> T get(String key, Class<T> clazz) {
         String json = redisTemplate.opsForValue().get(key);
         if (json == null) return null;
         try {
             return ob.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    // 복수 조회
+    public <T> List<T> getList(String key, Class<T>  elementClass) {
+        String json = redisTemplate.opsForValue().get(key);
+        if (json == null) return null;
+        try {
+            JavaType type = ob.getTypeFactory().constructCollectionType(List.class, elementClass);
+            return ob.readValue(json, type);
         } catch (JsonProcessingException e) {
             return null;
         }

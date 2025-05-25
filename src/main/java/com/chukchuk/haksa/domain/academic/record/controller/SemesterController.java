@@ -61,7 +61,7 @@ public class SemesterController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         UUID studentId = userDetails.getStudentId();
 
-        List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentEmail(studentId);
+        List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentId(studentId);
 
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
