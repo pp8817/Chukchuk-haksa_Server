@@ -8,6 +8,7 @@ import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
 import com.chukchuk.haksa.infrastructure.redis.RedisCacheStore;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicReco
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
     private final RedisCacheStore redisCacheStore;
@@ -56,9 +58,14 @@ public class SemesterAcademicRecordService {
 
     /* 학생의 학기 정보 조회 */
     public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentId(UUID studentId) {
-        List<StudentSemesterDto.StudentSemesterInfoResponse> cached = redisCacheStore.getSemesterList(studentId);
-        if (cached != null) {
-            return cached;
+        try {
+            List<StudentSemesterDto.StudentSemesterInfoResponse> cached = redisCacheStore.getSemesterList(studentId);
+            if (cached != null) {
+                return cached;
+            }
+        } catch (Exception e) {
+            // Redis 장애 시 로그 남기고 계속 진행
+            log.warn("Redis cache retrieval failed for studentId: {}", studentId, e);
         }
 
         List<StudentSemesterDto.StudentSemesterInfoResponse> response = findSemestersByStudent(studentId).stream()
@@ -68,7 +75,11 @@ public class SemesterAcademicRecordService {
                 .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
 
-        redisCacheStore.setSemesterList(studentId, response);
+        try {
+            redisCacheStore.setSemesterList(studentId, response);
+        } catch (Exception e) {
+            log.warn("Redis 캐시 저장 실패 - studentId: {}", studentId, e);
+        }
         return response;
     }
 
