@@ -61,9 +61,9 @@ public class RedisCacheStore {
         }
     }
 
-    // userId 기반 전체 캐시 삭제
-    public void deleteAllByUserId(String userId) {
-        String prefix = "user:" + userId+":";
+    // studentId 기반 전체 캐시 삭제
+    public void deleteAllByStudentId(String studentId) {
+        String prefix = "student:" + studentId + ":";
         deleteByPrefix(prefix);
     }
 }

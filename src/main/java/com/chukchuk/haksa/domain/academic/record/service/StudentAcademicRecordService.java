@@ -26,6 +26,12 @@ public class StudentAcademicRecordService {
     private final RedisCacheStore redisCacheStore;
 
     public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID studentId) {
+        String key = "student:" + studentId + ":summary";
+
+        StudentAcademicRecordDto.AcademicSummaryResponse cached = redisCacheStore.get(key, StudentAcademicRecordDto.AcademicSummaryResponse.class);
+
+        if (cached != null) return cached;
+
         StudentAcademicRecord studentAcademicRecord = getStudentAcademicRecordByStudentId(studentId);
 
         Student student = studentService.getStudentById(studentId);
@@ -36,7 +42,10 @@ public class StudentAcademicRecordService {
 
         Integer totalRequiredGraduationCredits = graduationQueryRepository.getTotalRequiredGraduationCredits(effectiveDepartmentId, admissionYear);
 
-        return StudentAcademicRecordDto.AcademicSummaryResponse.from(studentAcademicRecord, totalRequiredGraduationCredits);
+        StudentAcademicRecordDto.AcademicSummaryResponse response = StudentAcademicRecordDto.AcademicSummaryResponse.from(studentAcademicRecord, totalRequiredGraduationCredits);
+
+        redisCacheStore.set(key, response);
+        return response;
     }
 
     public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID studentId) {
