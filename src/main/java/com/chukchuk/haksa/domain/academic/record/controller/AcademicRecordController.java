@@ -83,6 +83,7 @@ public class AcademicRecordController {
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
 
+    /* 사용자 학업 요약 정보 조회 API */
     @GetMapping("/summary")
     @Operation(
             summary = "사용자 학업 요약 정보 조회",

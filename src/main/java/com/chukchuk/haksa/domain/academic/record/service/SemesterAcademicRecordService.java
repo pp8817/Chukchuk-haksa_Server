@@ -6,7 +6,9 @@ import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.EntityNotFoundException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
+import com.chukchuk.haksa.infrastructure.redis.RedisCacheStore;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +22,10 @@ import static com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicReco
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class SemesterAcademicRecordService {
     private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
+    private final RedisCacheStore redisCacheStore;
 
     /* 특정 학생의 특정 학기 성적 조회 */
     public SemesterGradeResponse getSemesterGradesByYearAndSemester(UUID studentId, Integer year, Integer semester) {
@@ -53,14 +57,30 @@ public class SemesterAcademicRecordService {
     }
 
     /* 학생의 학기 정보 조회 */
-    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentEmail(UUID studentId) {
+    public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentId(UUID studentId) {
+        try {
+            List<StudentSemesterDto.StudentSemesterInfoResponse> cached = redisCacheStore.getSemesterList(studentId);
+            if (cached != null) {
+                return cached;
+            }
+        } catch (Exception e) {
+            // Redis 장애 시 로그 남기고 계속 진행
+            log.warn("Redis cache retrieval failed for studentId: {}", studentId, e);
+        }
 
-        return findSemestersByStudent(studentId).stream()
+        List<StudentSemesterDto.StudentSemesterInfoResponse> response = findSemestersByStudent(studentId).stream()
                 .sorted(Comparator
                         .comparing(SemesterAcademicRecord::getYear).reversed()
                         .thenComparing(SemesterAcademicRecord::getSemester, Comparator.reverseOrder()))
                 .map(StudentSemesterDto.StudentSemesterInfoResponse::from)
                 .collect(Collectors.toList());
+
+        try {
+            redisCacheStore.setSemesterList(studentId, response);
+        } catch (Exception e) {
+            log.warn("Redis 캐시 저장 실패 - studentId: {}", studentId, e);
+        }
+        return response;
     }
 
     /* 특정 학생의 학기 정보 조회 (신입생 예외 처리) */

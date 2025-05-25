@@ -12,10 +12,6 @@ import org.springframework.stereotype.Repository;
 public class PortalRepository {
     private final PortalClient portalClient;
 
-    public void login(String username, String password) {
-        portalClient.login(username, password);
-    }
-
     public PortalData fetchPortalData(String username, String password) {
         RawPortalData rawPortalData = portalClient.scrapeAll(username, password);
         return PortalDataMapper.toPortalData(rawPortalData);
