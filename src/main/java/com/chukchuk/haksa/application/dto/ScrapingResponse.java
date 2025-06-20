@@ -1,4 +1,4 @@
-package com.chukchuk.haksa.application.api.dto;
+package com.chukchuk.haksa.application.dto;
 
 import com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult;
 import io.swagger.v3.oas.annotations.media.Schema;

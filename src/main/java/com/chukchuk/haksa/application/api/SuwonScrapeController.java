@@ -1,10 +1,10 @@
 package com.chukchuk.haksa.application.api;
 
 import com.chukchuk.haksa.application.academic.dto.SyncAcademicRecordResult;
-import com.chukchuk.haksa.application.api.dto.PortalLoginResponse;
-import com.chukchuk.haksa.application.api.dto.ScrapingResponse;
-import com.chukchuk.haksa.application.api.wrapper.PortalLoginApiResponse;
-import com.chukchuk.haksa.application.api.wrapper.ScrapingApiResponse;
+import com.chukchuk.haksa.application.dto.PortalLoginResponse;
+import com.chukchuk.haksa.application.dto.ScrapingResponse;
+import com.chukchuk.haksa.application.academic.wrapper.PortalLoginApiResponse;
+import com.chukchuk.haksa.application.academic.wrapper.ScrapingApiResponse;
 import com.chukchuk.haksa.application.portal.InitializePortalConnectionService;
 import com.chukchuk.haksa.application.portal.RefreshPortalConnectionService;
 import com.chukchuk.haksa.application.portal.SyncAcademicRecordService;

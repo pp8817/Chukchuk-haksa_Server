@@ -1,4 +1,4 @@
-package com.chukchuk.haksa.application.api.dto;
+package com.chukchuk.haksa.application.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
