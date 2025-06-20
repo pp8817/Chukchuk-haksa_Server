@@ -1,6 +1,6 @@
-package com.chukchuk.haksa.application.api.wrapper;
+package com.chukchuk.haksa.application.academic.wrapper;
 
-import com.chukchuk.haksa.application.api.dto.PortalLoginResponse;
+import com.chukchuk.haksa.application.dto.PortalLoginResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
