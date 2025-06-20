@@ -1,17 +1,10 @@
 package com.chukchuk.haksa.domain.academic.record.controller;
 
+import com.chukchuk.haksa.domain.academic.record.controller.docs.SemesterControllerDocs;
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterAcademicRecordDto.SemesterGradeResponse;
 import com.chukchuk.haksa.domain.academic.record.service.SemesterAcademicRecordService;
-import com.chukchuk.haksa.domain.academic.record.wrapper.SemesterGradesApiResponse;
-import com.chukchuk.haksa.domain.academic.record.wrapper.StudentSemesterListApiResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
-import com.chukchuk.haksa.global.common.response.wrapper.ErrorResponseWrapper;
 import com.chukchuk.haksa.global.security.CustomUserDetails;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,76 +20,23 @@ import static com.chukchuk.haksa.domain.student.dto.StudentSemesterDto.StudentSe
 @RestController
 @RequestMapping("/api/semester")
 @RequiredArgsConstructor
-@Tag(name = "Semester Record", description = "학기 별 성적 및 학기 정보 관련 API")
-public class SemesterController {
+public class SemesterController implements SemesterControllerDocs {
 
     private final SemesterAcademicRecordService semesterAcademicRecordService;
 
     @GetMapping
-    @Operation(
-            summary = "사용자 학기 목록 조회",
-            description = "사용자의 모든 학기 정보를 조회합니다.",
-            responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "200",
-                            description = "사용자의 모든 학기 정보 조회 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = StudentSemesterListApiResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "404",
-                            description = "학기 데이터 없음 (ErrorCode: A03, FRESHMAN_NO_SEMESTER)",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseWrapper.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "500",
-                            description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseWrapper.class)))
-            })
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         UUID studentId = userDetails.getStudentId();
-
         List<StudentSemesterInfoResponse> response = semesterAcademicRecordService.getSemestersByStudentId(studentId);
-
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
 
     @GetMapping("/grades")
-    @Operation(
-            summary = "사용자 학기 별 성적 조회",
-            description = "사용자의 학기 별 성적 정보를 조회합니다.",
-            responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "200",
-                            description = "사용자의 학기 별 성적 정보 조회 성공",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = SemesterGradesApiResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "404",
-                            description = "학기 성적 데이터 없음 (ErrorCode: A02, SEMESTER_RECORD_EMPTY)",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseWrapper.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "500",
-                            description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseWrapper.class)))
-            })
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<SuccessResponse<List<SemesterGradeResponse>>> getSemesterGrades(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         UUID studentId = userDetails.getStudentId();
-
         List<SemesterGradeResponse> response = semesterAcademicRecordService.getAllSemesterGrades(studentId);
-
         return ResponseEntity.ok(SuccessResponse.of(response));
     }
 }
