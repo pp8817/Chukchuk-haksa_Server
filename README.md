@@ -59,14 +59,14 @@
 
 ### 🔧 Back-end
 - Java 17
-- Spring Boot 3
+- Spring Boot 3.2.5
 - Spring Security, OAuth2
 - JPA, Hibernate
 
 ### ☁️ Infra
 - AWS EC2, ALB, Route53, ACM ...
 - PostgreSQL (Supabase 연동)
-- Redis (세션 관리 및 임시 저장소)
+- Redis (세션 관리 및 임시 저장소, 포털 데이터 캐싱)
 
 ### 🛠 Tools
 - Git, GitHub
@@ -136,3 +136,4 @@ fix: 사용자 정보 누락 버그 해결
 - [척척학사: 크롤링 로직 비동기 처리 대신 Redis 캐싱을 도입한 이유](https://velog.io/@pp8817/척척학사-크롤링-로직-비동기-처리-대신-Redis-캐싱을-도입한-이유)
 - [척척학사: 로그 시스템 리빌드: ELK → Grafana Loki](https://velog.io/@pp8817/척척학사-ELK에서-Grafana-Loki-Stack으로-갈아탄-이유와-후기)
 - [척척학사: 포털 데이터 Redis 캐싱 전략 도입기](https://velog.io/@pp8817/척척학사-포털-데이터-Redis-캐싱-전략-도입기)
+- [척척학사: 복수전공생도 사용할 수 있게 만들기](https://velog.io/@pp8817/척척학사-복수전공생도-사용할-수-있게-만들기)
