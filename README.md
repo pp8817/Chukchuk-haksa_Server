@@ -1,9 +1,7 @@
+# 척척학사 Backend
+
 <div align="center">
-
-<img src="https://github.com/user-attachments/assets/16764352-ab1e-4cfa-b30e-6287fafde803" width="600"/>
-
-<h2>척척학사 Backend</h2>
-
+  <img src="https://github.com/user-attachments/assets/16764352-ab1e-4cfa-b30e-6287fafde803" width="600"/>
 </div>
 
 ---
@@ -25,11 +23,12 @@
 
 **척척학사**는 학생들이 학교 포털과 연동하여 본인의 이수 현황과 졸업 요건을 손쉽게 확인하고 관리할 수 있도록 도와주는 서비스입니다.
 
-> 기존에는 학생들이 직접 졸업 요건을 일일이 대조해야 했지만, 척척학사는 이를 자동화하여 효율적인 졸업 준비를 지원합니다.
+> 기존에는 학생들이 졸업 요건을 직접 확인하며 수작업으로 비교해야 했지만,  
+> 척척학사는 이를 **학교 포털과 실시간 연동**, **자동 분석**, **시각적 안내** 기능으로 효율화합니다.
 
-- **800명 이상** 수원대 재학생 사용 중
-- **학교 포털과 실시간 동기화**
-- **졸업 요건 자동 분석**
+- ✅ **800명 이상** 수원대 재학생 사용 중
+- 🔁 **학교 포털과 실시간 동기화**
+- 🧠 **졸업 요건 자동 분석 및 부족 항목 안내**
 
 ---
 
@@ -45,13 +44,13 @@
 
 - 포털 연동을 통한 학점·성적·커리큘럼 실시간 동기화
 - 졸업 요건과 사용자 학사 정보 자동 비교
-- 부족한 학점 및 조건 자동 분석
+- 부족한 학점 및 조건 자동 분석 및 안내
 
 ---
 
 ## 3. 🗂️ API 문서
 
-- 👉 [Swagger API 문서 보기](https://dev.api.cchaksa.com/swagger-ui/index.html#/)
+👉 [Swagger API 문서 보기](https://dev.api.cchaksa.com/swagger-ui/index.html#/)
 
 ---
 
@@ -65,8 +64,8 @@
 
 ### ☁️ Infra
 - AWS EC2, ALB, Route53, ACM ...
-- PostgreSQL (Supabase 연동)
-- Redis (세션 관리 및 임시 저장소, 포털 데이터 캐싱)
+- PostgreSQL (Supabase 연동: BaaS 인증/스토리지 활용)
+- Redis (세션 관리, 포털 데이터 캐싱)
 
 ### 🛠 Tools
 - Git, GitHub
@@ -75,9 +74,9 @@
 
 ---
 
-## 5. 🛠 프로젝트 아키텍처
+## 5. 🛠 아키텍처
 
-(아키텍처 다이어그램 추가 예정)
+> 📌 아키텍처 다이어그램은 추후 업데이트될 예정입니다.
 
 ---
 
@@ -92,7 +91,7 @@
 ## 7. 📝 커밋 컨벤션
 
 ### ✅ 기본 구조
-```bash
+```
 type: subject
 
 body (선택)
@@ -105,12 +104,12 @@ fix: 버그 수정
 refactor: 코드 리팩토링
 comment: 주석 추가/수정
 docs: 문서 수정
-test: 테스트 관련 코드
+test: 테스트 코드 작성 또는 수정
 chore: 빌드/패키지 설정 변경
 rename: 파일/폴더명 변경
 remove: 파일 삭제
-style: 포맷 변경
-!BREAKING CHANGE!: 주요 API 변경
+style: 코드 포맷팅
+!BREAKING CHANGE!: 기존 API 사용에 영향을 주는 변경 (예: 응답 포맷 변경 등)
 ```
 
 ### ✅ 커밋 예시
@@ -126,14 +125,20 @@ fix: 사용자 정보 누락 버그 해결
 사용자 서비스 코드 수정
 ```
 
+---
+
 ## 8. 📝 관련 블로그 게시글
-- [척척학사: Supabase를 알아보자 With Java, Spring](https://velog.io/@pp8817/DB-Supabase%EB%A5%BC-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90-With-Java-Spring)
-- [척척학사: OIDC 인증, 인가 처리 With Kakao 소셜 로그인](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-OIDC-%EC%9D%B8%EC%A6%9D-%EC%9D%B8%EA%B0%80-%EC%B2%98%EB%A6%AC-With-Kakao-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
-- [척척학사: Entity 연관관계 분석 및 리팩토링](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-Entity-%EC%97%B0%EA%B4%80%EA%B4%80%EA%B3%84-%EB%B6%84%EC%84%9D-%EB%B0%8F-%EB%A6%AC%ED%8C%A9%ED%86%A0%EB%A7%81)
-- [척척학사: API 응답 모듈 분리 과정](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-API-%EC%9D%91%EB%8B%B5-%EB%AA%A8%EB%93%88-%EB%B6%84%EB%A6%AC-%EA%B3%BC%EC%A0%95)
-- [척척학사: 무중단 배포 전략 - 프로젝트에 적용하기](https://velog.io/@pp8817/%EC%B2%99%EC%B2%99%ED%95%99%EC%82%AC-%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC-%EC%A0%84%EB%9E%B5-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)
-- [척척학사: Next.js 기반 서버를 Spring으로 갈아엎은 이유](https://velog.io/@pp8817/척척학사-Next.js-Spring-Boot-백엔드-마이그레이션-회고)
-- [척척학사: 크롤링 로직 비동기 처리 대신 Redis 캐싱을 도입한 이유](https://velog.io/@pp8817/척척학사-크롤링-로직-비동기-처리-대신-Redis-캐싱을-도입한-이유)
-- [척척학사: 로그 시스템 리빌드: ELK → Grafana Loki](https://velog.io/@pp8817/척척학사-ELK에서-Grafana-Loki-Stack으로-갈아탄-이유와-후기)
-- [척척학사: 포털 데이터 Redis 캐싱 전략 도입기](https://velog.io/@pp8817/척척학사-포털-데이터-Redis-캐싱-전략-도입기)
-- [척척학사: 복수전공생도 사용할 수 있게 만들기](https://velog.io/@pp8817/척척학사-복수전공생도-사용할-수-있게-만들기)
+
+👉 [척척학사 블로그 시리즈](https://velog.io/@pp8817/series/척척학사)
+
+- [Supabase를 알아보자 With Java, Spring](https://velog.io/@pp8817/DB-Supabase를-알아보자-With-Java-Spring)
+- [OIDC 인증, 인가 처리 With Kakao 소셜 로그인](https://velog.io/@pp8817/척척학사-OIDC-인증-인가-처리-With-Kakao-소셜-로그인)
+- [Entity 연관관계 분석 및 리팩토링](https://velog.io/@pp8817/척척학사-Entity-연관관계-분석-및-리팩토링)
+- [API 응답 모듈 분리 과정](https://velog.io/@pp8817/척척학사-API-응답-모듈-분리-과정)
+- [무중단 배포 전략 - 프로젝트에 적용하기](https://velog.io/@pp8817/척척학사-무중단-배포-전략-프로젝트에-적용하기)
+- [Next.js 기반 서버를 Spring으로 갈아엎은 이유](https://velog.io/@pp8817/척척학사-Next.js-Spring-Boot-백엔드-마이그레이션-회고)
+- [크롤링 로직 비동기 처리 대신 Redis 캐싱 도입한 이유](https://velog.io/@pp8817/척척학사-크롤링-로직-비동기-처리-대신-Redis-캐싱을-도입한-이유)
+- [로그 시스템 리빌드: ELK → Grafana Loki](https://velog.io/@pp8817/척척학사-ELK에서-Grafana-Loki-Stack으로-갈아탄-이유와-후기)
+- [포털 데이터 Redis 캐싱 전략 도입기](https://velog.io/@pp8817/척척학사-포털-데이터-Redis-캐싱-전략-도입기)
+- [복수전공생도 사용할 수 있게 만들기](https://velog.io/@pp8817/척척학사-복수전공생도-사용할-수-있게-만들기)
+- [디스크 용량 부족으로 인한 JVM 실행 실패 해결기](https://velog.io/@pp8817/척척학사-디스크-용량-부족-문제)
