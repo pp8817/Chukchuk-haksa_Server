@@ -12,8 +12,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "dual_major_requirements")
-public class MajorBasicCourses extends BaseEntity {
+@Table(name = "major_basic_requirements")
+public class MajorBasicRequirement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
