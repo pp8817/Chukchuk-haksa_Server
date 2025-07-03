@@ -1,6 +1,7 @@
-package com.chukchuk.haksa.domain.department.model;
+package com.chukchuk.haksa.domain.requirement.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
+import com.chukchuk.haksa.domain.department.model.Department;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
