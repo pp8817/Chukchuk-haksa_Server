@@ -1,4 +1,4 @@
-package com.chukchuk.haksa.domain.student.model;
+package com.chukchuk.haksa.domain.student.model.grade;
 
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.ErrorCode;

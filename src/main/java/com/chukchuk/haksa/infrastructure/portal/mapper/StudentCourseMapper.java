@@ -3,7 +3,7 @@ package com.chukchuk.haksa.infrastructure.portal.mapper;
 import com.chukchuk.haksa.application.academic.enrollment.CourseEnrollment;
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.course.model.CourseOffering;
-import com.chukchuk.haksa.domain.student.model.Grade;
+import com.chukchuk.haksa.domain.student.model.grade.Grade;
 import com.chukchuk.haksa.domain.student.model.Student;
 
 public class StudentCourseMapper {

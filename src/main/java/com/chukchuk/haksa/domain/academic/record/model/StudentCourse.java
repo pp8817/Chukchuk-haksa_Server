@@ -1,7 +1,7 @@
 package com.chukchuk.haksa.domain.academic.record.model;
 
 import com.chukchuk.haksa.domain.course.model.CourseOffering;
-import com.chukchuk.haksa.domain.student.model.Grade;
+import com.chukchuk.haksa.domain.student.model.grade.Grade;
 import com.chukchuk.haksa.domain.student.model.Student;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

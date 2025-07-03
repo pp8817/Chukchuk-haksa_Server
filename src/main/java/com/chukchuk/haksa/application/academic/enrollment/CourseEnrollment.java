@@ -1,8 +1,8 @@
 package com.chukchuk.haksa.application.academic.enrollment;
 
 
-import com.chukchuk.haksa.domain.student.model.Grade;
-import com.chukchuk.haksa.domain.student.model.GradeType;
+import com.chukchuk.haksa.domain.student.model.grade.Grade;
+import com.chukchuk.haksa.domain.student.model.grade.GradeType;
 
 import java.util.UUID;
 

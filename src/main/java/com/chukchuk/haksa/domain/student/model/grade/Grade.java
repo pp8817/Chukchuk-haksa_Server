@@ -1,4 +1,4 @@
-package com.chukchuk.haksa.domain.student.model;
+package com.chukchuk.haksa.domain.student.model.grade;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
