@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.graduation.repository;
 import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.AreaProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.CourseDto;
+import com.chukchuk.haksa.domain.requirement.model.MajorRole;
 import com.chukchuk.haksa.global.exception.CommonException;
 import com.chukchuk.haksa.global.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,6 +47,7 @@ public class GraduationQueryRepository {
         return ((Number) result).intValue();
     }
 
+    // TODO: Join 방식 변경 필요 -> 현재 방식은 Join 범위가 넓기 때문에 데이터가 많이질수록 비효율적
     public List<AreaProgressDto> getStudentAreaProgress(UUID studentId, Long departmentId, Integer admissionYear) {
         String sql = """
     WITH latest_courses AS (
@@ -126,6 +128,96 @@ public class GraduationQueryRepository {
 
         return results.stream().map(this::mapToDto).collect(Collectors.toList());
     }
+
+    /* 복수전공 요건 조회 */
+    public List<AreaProgressDto> getDualMajorAreaProgress(UUID studentId, Long departmentId, MajorRole majorRole) {
+        String sql = """
+        SELECT
+            dmr.area_type,
+            dmr.required_credits,
+            CAST(COALESCE(SUM(co.points), 0) AS INTEGER) AS earned_credits,
+            0 AS required_elective_courses,
+            0 AS completed_elective_courses,
+            0 AS total_elective_courses,
+            CASE
+                WHEN COUNT(sc.offering_id) = 0 THEN NULL
+                ELSE CAST(json_agg(
+                    json_build_object(
+                        'courseName', c.course_name,
+                        'credits', co.points,
+                        'grade', sc.grade,
+                        'semester', co.semester,
+                        'year', co.year,
+                        'originalScore', sc.original_score
+                    )
+                ) AS TEXT)
+            END AS courses
+        FROM student_courses sc
+        JOIN course_offerings co ON sc.offering_id = co.id
+        JOIN courses c ON co.course_id = c.id
+        JOIN dual_major_requirements dmr
+          ON dmr.department_id = :departmentId
+         AND dmr.major_role = :majorRole
+         AND dmr.area_type = co.faculty_division_name
+        WHERE sc.student_id = :studentId
+          AND sc.grade != 'F'
+        GROUP BY dmr.area_type, dmr.required_credits
+    """;
+
+        Query query = em.createNativeQuery(sql);
+        query.setParameter("studentId", studentId);
+        query.setParameter("departmentId", departmentId);
+        query.setParameter("majorRole", majorRole.name());
+
+        List<Object[]> results = query.getResultList();
+
+        if (results.isEmpty()) {
+            throw new CommonException(ErrorCode.GRADUATION_REQUIREMENTS_NOT_FOUND);
+        }
+
+        return results.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    /* 전공기초 교양 조회 */
+    public AreaProgressDto getBasicCourseProgress(UUID studentId, Long departmentId) {
+        String sql = """
+        SELECT
+            '전교' AS area_type,
+            mbr.required_credits,
+            CAST(COALESCE(SUM(co.points), 0) AS INTEGER) AS earned_credits,
+            0, 0, 0,
+            CASE
+                WHEN COUNT(sc.offering_id) = 0 THEN NULL
+                ELSE CAST(json_agg(
+                    json_build_object(
+                        'courseName', c.course_name,
+                        'credits', co.points,
+                        'grade', sc.grade,
+                        'semester', co.semester,
+                        'year', co.year,
+                        'originalScore', sc.original_score
+                    )
+                ) AS TEXT)
+            END AS courses
+        FROM student_courses sc
+        JOIN course_offerings co ON sc.offering_id = co.id
+        JOIN courses c ON co.course_id = c.id
+        JOIN major_basic_requirements mbr ON mbr.department_id = :departmentId
+        WHERE sc.student_id = :studentId
+          AND sc.grade != 'F'
+          AND co.faculty_division_name = '전교'
+        GROUP BY mbr.required_credits
+    """;
+
+        Query query = em.createNativeQuery(sql);
+        query.setParameter("studentId", studentId);
+        query.setParameter("departmentId", departmentId);
+
+        Object[] row = (Object[]) query.getSingleResult();
+        return mapToDto(row);
+    }
+
+    /******/
 
     private AreaProgressDto mapToDto(Object[] row) {
         FacultyDivision areaType = FacultyDivision.valueOf((String) row[0]);

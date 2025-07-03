@@ -148,6 +148,15 @@ public class Student extends BaseEntity {
         this.targetGpa = targetGpa;
     }
 
+    public Boolean hasSecondaryMajor() {
+        return this.secondaryMajor != null;
+    }
+
+    public Long getMajorOrDepartmentId() {
+        // 전공 코드가 없는 학과도 있으므로 majorId가 없으면 departmentId를 사용
+        return this.getMajor() != null ? this.getMajor().getId() : this.getDepartment().getId();
+    }
+
     // 학생 정보 업데이트 시 변경 사항 감지 메서드
     public boolean needsUpdate(StudentInitializationDataType newData) {
         if (!equalsNullable(this.name, newData.getName())) return true;
