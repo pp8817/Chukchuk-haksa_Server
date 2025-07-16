@@ -41,3 +41,6 @@ server:
 logging:
   level:
     root: info
+
+swagger:
+  server-url: https://api.cchaksa.com

@@ -16,3 +16,6 @@ spring:
       port: ${LOCAL_REDIS_PORT}
       username: default
       password:
+
+swagger:
+  server-url: http://localhost:8080
