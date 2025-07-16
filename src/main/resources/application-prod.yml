@@ -16,22 +16,21 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
+      host: ${PROD_REDIS_HOST}
+      port: ${PROD_REDIS_PORT}
+      username: ${PROD_REDIS_USERNAME:}
+      password: ${PROD_REDIS_PASSWORD:}
       client-name: redis-client
       timeout: 5000
       ssl:
-        enabled: true
+        enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           use_get_generated_keys: true
           statement_cache_size: 0
