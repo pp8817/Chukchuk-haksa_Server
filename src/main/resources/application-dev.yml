@@ -15,10 +15,10 @@ spring:
       connection-test-query: SELECT 1
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
+      host: ${DEV_REDIS_HOST}
+      port: ${DEV_REDIS_PORT}
+      username: ${DEV_REDIS_USERNAME}
+      password: ${DEV_REDIS_PASSWORD}
       client-name: redis-client
       timeout: 5000
       ssl:
@@ -46,3 +46,6 @@ server:
 logging:
   level:
     root: info
+
+swagger:
+  server-url: https://dev.api.cchaksa.com

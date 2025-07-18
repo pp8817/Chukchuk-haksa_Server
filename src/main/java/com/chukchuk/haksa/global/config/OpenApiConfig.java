@@ -1,21 +1,17 @@
 package com.chukchuk.haksa.global.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
-@OpenAPIDefinition(
-        info = @Info(title = "척척학사 API", version = "v1", description = "API 명세서"),
-//        security = @SecurityRequirement(name = "bearerAuth"), // 모든 API에 인증 기본 적용
-        servers = {
-                @Server(url = "https://dev.api.cchaksa.com", description = "Dev Server"),
-                @Server(url = "http://localhost:8080", description = "Local Server")
-        }
-)
 @SecurityScheme(
         name = "bearerAuth",
         type = SecuritySchemeType.HTTP,
@@ -25,4 +21,22 @@ import org.springframework.context.annotation.Configuration;
 )
 public class OpenApiConfig {
 
+        @Value("${swagger.server-url}")
+        private String serverUrl;
+
+        @Value("${spring.profiles.active:default}")
+        private String activeProfile;
+
+        @Bean
+        public OpenAPI customOpenAPI() {
+                Server server = new Server()
+                        .url(serverUrl)
+                        .description(activeProfile.substring(0, 1).toUpperCase() + activeProfile.substring(1) + " Server");
+
+                return new OpenAPI()
+                        .info(new Info().title("척척학사 API")
+                                .version("v1")
+                                .description("API 명세서"))
+                        .servers(List.of(server));
+        }
 }
