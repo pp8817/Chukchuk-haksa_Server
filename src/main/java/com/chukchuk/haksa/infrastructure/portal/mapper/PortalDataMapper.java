@@ -171,7 +171,25 @@ public class PortalDataMapper {
     }
 
     private static Ranking parseRanking(String ordp) {
+        if (ordp == null || ordp.isBlank()) {
+            log.warn("parseRanking: 입력이 null이거나 공백입니다. → '{}'", ordp);
+            return null;
+        }
+
         String[] split = ordp.split("/");
-        return new Ranking(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+
+        if (split.length != 2 || split[0].isBlank() || split[1].isBlank()) {
+            log.warn("parseRanking: 올바르지 않은 포맷입니다. → '{}'", ordp);
+            return null;
+        }
+
+        try {
+            int rank = Integer.parseInt(split[0].trim());
+            int total = Integer.parseInt(split[1].trim());
+            return new Ranking(rank, total);
+        } catch (NumberFormatException e) {
+            log.warn("parseRanking: 숫자 파싱 실패 → '{}'", ordp);
+            return null;
+        }
     }
 }
