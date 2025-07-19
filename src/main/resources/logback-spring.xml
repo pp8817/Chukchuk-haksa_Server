@@ -28,4 +28,20 @@
             <appender-ref ref="FILE" />
         </root>
     </springProfile>
+
+    <springProfile name="prod">
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>/home/ubuntu/monitoring/logs/app.log</file>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>/home/ubuntu/monitoring/logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
 </configuration>
