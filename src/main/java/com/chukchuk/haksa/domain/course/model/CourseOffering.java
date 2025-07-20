@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.Instant;
 
 @Entity
@@ -43,9 +44,6 @@ public class CourseOffering extends BaseEntity {
     @Column(name = "original_area_code")
     private Integer originalAreaCode;
 
-    @Column(name = "area_code")
-    private Integer areaCode;
-
     @Column(name = "points")
     private Integer points;
 
@@ -72,6 +70,10 @@ public class CourseOffering extends BaseEntity {
     @JoinColumn(name = "professor_id")
     private Professor professor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_code", referencedColumnName = "code")
+    private LiberalArtsAreaCode liberalArtsAreaCode;
+
     public CourseOffering(
             Integer subjectEstablishmentSemester,
             Boolean isVideoLecture,
@@ -81,13 +83,13 @@ public class CourseOffering extends BaseEntity {
             String classSection,
             String scheduleSummary,
             Integer originalAreaCode,
-            Integer areaCode,
             Integer points,
             EvaluationType evaluationTypeCode,
             FacultyDivision facultyDivisionName,
             Course course,
             Professor professor,
-            Department department
+            Department department,
+            LiberalArtsAreaCode liberalArtsAreaCode
     ) {
         this.subjectEstablishmentSemester = subjectEstablishmentSemester;
         this.isVideoLecture = isVideoLecture;
@@ -97,12 +99,12 @@ public class CourseOffering extends BaseEntity {
         this.classSection = classSection;
         this.scheduleSummary = scheduleSummary;
         this.originalAreaCode = originalAreaCode;
-        this.areaCode = areaCode;
         this.points = points;
         this.evaluationTypeCode = evaluationTypeCode;
         this.facultyDivisionName = facultyDivisionName;
         this.course = course;
         this.professor = professor;
         this.department = department;
+        this.liberalArtsAreaCode = liberalArtsAreaCode;
     }
 }
