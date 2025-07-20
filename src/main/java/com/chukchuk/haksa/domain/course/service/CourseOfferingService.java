@@ -1,12 +1,10 @@
 package com.chukchuk.haksa.domain.course.service;
 
 import com.chukchuk.haksa.domain.course.dto.CreateOfferingCommand;
-import com.chukchuk.haksa.domain.course.model.Course;
-import com.chukchuk.haksa.domain.course.model.CourseOffering;
-import com.chukchuk.haksa.domain.course.model.EvaluationType;
-import com.chukchuk.haksa.domain.course.model.FacultyDivision;
+import com.chukchuk.haksa.domain.course.model.*;
 import com.chukchuk.haksa.domain.course.repository.CourseOfferingRepository;
 import com.chukchuk.haksa.domain.course.repository.CourseRepository;
+import com.chukchuk.haksa.domain.course.repository.LiberalArtsAreaCodeRepository;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.department.repository.DepartmentRepository;
 import com.chukchuk.haksa.domain.professor.model.Professor;
@@ -26,6 +24,7 @@ public class CourseOfferingService {
 
     private final CourseOfferingRepository courseOfferingRepository;
     private final CourseRepository courseRepository;
+    private final LiberalArtsAreaCodeRepository liberalArtsAreaCodeRepository;
     private final ProfessorRepository professorRepository;
     private final DepartmentRepository departmentRepository;
 
@@ -45,6 +44,12 @@ public class CourseOfferingService {
                 ? departmentRepository.getReferenceById(cmd.departmentId())
                 : null;
 
+        LiberalArtsAreaCode liberalArtsAreaCode = null;
+
+        if (cmd.areaCode() != null && cmd.areaCode() != 0) {
+            liberalArtsAreaCode = liberalArtsAreaCodeRepository.getReferenceById(cmd.areaCode());
+        }
+
         CourseOffering newOffering = new CourseOffering(
                 cmd.subjectEstablishmentSemester(),
                 cmd.isVideoLecture(),
@@ -54,13 +59,13 @@ public class CourseOfferingService {
                 cmd.classSection(),
                 cmd.scheduleSummary(),
                 cmd.originalAreaCode(),
-                cmd.areaCode(),
                 cmd.points(),
                 EvaluationType.valueOf(cmd.evaluationType()),
                 FacultyDivision.valueOf(cmd.facultyDivisionName()),
                 course,
                 professor,
-                department
+                department,
+                liberalArtsAreaCode
         );
 
         return courseOfferingRepository.save(newOffering);

@@ -45,7 +45,9 @@ server:
 
 logging:
   level:
-    root: info
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql.BasicBinder: off
+    root: warn
 
 swagger:
   server-url: https://dev.api.cchaksa.com

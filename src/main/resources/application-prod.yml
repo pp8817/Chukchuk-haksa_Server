@@ -18,8 +18,6 @@ spring:
     redis:
       host: ${PROD_REDIS_HOST}
       port: ${PROD_REDIS_PORT}
-      username: ${PROD_REDIS_USERNAME:}
-      password: ${PROD_REDIS_PASSWORD:}
       client-name: redis-client
       timeout: 5000
       ssl:
@@ -28,7 +26,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         jdbc:
@@ -40,7 +38,9 @@ server:
 
 logging:
   level:
-    root: info
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql.BasicBinder: off
+    root: warn
 
 swagger:
   server-url: https://api.cchaksa.com
