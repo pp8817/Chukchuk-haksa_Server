@@ -34,13 +34,10 @@ public class AcademicRecordMapperFromPortal {
                 .map(grade -> new SemesterGrade(
                         grade.year(),
                         grade.semester(),
-                        // String을 int로 변환
                         parseToInt(grade.appliedCredits()),
-                        // String을 int로 변환
                         parseToInt(grade.earnedCredits()),
-                        // String을 double로 변환
                         parseToDouble(grade.semesterGpa()),
-                        grade.score(),
+                        grade.score(), // TODO: 필드명 semesterPercentile으로 명확하게 변경
                         null,
                         grade.ranking() != null ? grade.ranking().rank() : null,
                         grade.ranking() != null ? grade.ranking().total() : null
@@ -66,19 +63,17 @@ public class AcademicRecordMapperFromPortal {
 
     private static int parseToInt(String value) {
         try {
-            return Integer.parseInt(value);
+            return (value == null || value.isBlank()) ? 0 : Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            // 적절한 기본값을 반환하거나 예외를 던짐
-            return 0; // 또는 throw new InvalidDataException("Invalid integer value");
+            return 0;
         }
     }
 
     private static double parseToDouble(String value) {
         try {
-            return Double.parseDouble(value);
+            return (value == null || value.isBlank()) ? 0.0 : Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            // 적절한 기본값을 반환하거나 예외를 던짐
-            return 0.0; // 또는 throw new InvalidDataException("Invalid double value");
+            return 0.0;
         }
     }
 }

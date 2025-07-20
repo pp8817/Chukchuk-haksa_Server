@@ -31,8 +31,8 @@ public class PortalDataMapper {
                 s.the2MjorCd() != null ? new CodeName(s.the2MjorCd(), s.the2MjorNm()) : null,
                 s.scrgStatNm(),
                 new AdmissionInfo(
-                        parseIntSafe(s.enscYear()),
-                        parseIntSafe(s.enscSmrCd()),
+                        parseIntOrZero(s.enscYear()),
+                        parseIntOrZero(s.enscSmrCd()),
                         s.enscDvcd()
                 ),
                 new PortalAcademicInfo(
@@ -57,8 +57,8 @@ public class PortalDataMapper {
 
         for (RawPortalSemesterDTO sem : semesters) {
             String[] parts = sem.semester().split("-");
-            int year = parseIntSafe(parts[0]);
-            int semester = parseIntSafe(parts[1]);
+            int year = parseIntOrZero(parts[0]);
+            int semester = parseIntOrZero(parts[1]);
 
             List<CourseInfo> courses = new ArrayList<>();
             for (RawPortalCourseDTO c : sem.courses()) {
@@ -78,12 +78,12 @@ public class PortalDataMapper {
             log.debug("grade year = {}, semester = '{}'", g.cretGainYear(), g.cretSmrCd());
 
             grades.add(new SemesterGrade(
-                    parseIntSafe(g.cretGainYear()),
-                    parseIntSafe(g.cretSmrCd()),
+                    parseIntOrZero(g.cretGainYear()),
+                    parseIntOrZero(g.cretSmrCd()),
                     g.gainPoint(),
                     g.applPoint(),
                     g.gainAvmk(),
-                    parseDoubleSafe(g.gainTavgPont()),
+                    parseDoubleOrZero(g.gainTavgPont()),
                     g.dpmjOrdp() != null ? parseRanking(g.dpmjOrdp()) : null
             ));
         }
@@ -92,11 +92,12 @@ public class PortalDataMapper {
     }
 
     private static AcademicSummary createAcademicSummary(RawPortalGradeResponseDTO academicRecords) {
+        RawPortalGradeSummaryDTO summary = academicRecords.selectSmrCretSumTabSjTotal();
         return new AcademicSummary(
-                parseIntSafe(academicRecords.selectSmrCretSumTabSjTotal().applPoint()),
-                parseIntSafe(academicRecords.selectSmrCretSumTabSjTotal().gainPoint()),
-                parseDoubleSafe(academicRecords.selectSmrCretSumTabSjTotal().gainAvmk()),
-                parseDoubleSafe(academicRecords.selectSmrCretSumTabSjTotal().gainTavgPont())
+                parseIntOrZero(summary.applPoint()),
+                parseIntOrZero(summary.gainPoint()),
+                parseDoubleOrZero(summary.gainAvmk()),
+                parseDoubleOrZero(summary.gainTavgPont())
         );
     }
 
@@ -111,10 +112,10 @@ public class PortalDataMapper {
                 !"-".equals(c.refacYearSmr()),
                 c.timtSmryCn(),
                 c.facDvnm(),
-                parseIntSafe(c.cltTerrNm()),
-                parseIntSafe(c.cltTerrCd()),
-                parseIntSafe(c.subjtEstbSmrCd()),
-                parseDoubleSafe(c.gainPont())
+                parseIntOrZero(c.cltTerrNm()),
+                parseIntOrZero(c.cltTerrCd()),
+                parseIntOrZero(c.subjtEstbSmrCd()),
+                parseDoubleOrZero(c.gainPont())
         );
     }
 
@@ -124,8 +125,8 @@ public class PortalDataMapper {
         List<OfferingInfo> offerings = new ArrayList<>();
 
         for (RawPortalSemesterDTO sem : semesters) {
-            int year = parseIntSafe(sem.semester().split("-")[0]);
-            int semester = parseIntSafe(sem.semester().split("-")[1]);
+            int year = parseIntOrZero(sem.semester().split("-")[0]);
+            int semester = parseIntOrZero(sem.semester().split("-")[1]);
 
             for (RawPortalCourseDTO c : sem.courses()) {
                 courses.add(createCourseInfo(c));
@@ -135,17 +136,16 @@ public class PortalDataMapper {
                         c.subjtCd(),
                         year,
                         semester,
-//                        parseIntSafe(c.subjtEstbSmrCd()),
                         c.diclNo(),
                         c.ltrPrfsNm(),
                         c.timtSmryCn(),
                         c.point(),
                         c.estbDpmjNm(),
                         c.facDvnm(),
-                        parseIntSafe(c.subjtEstbSmrCd()), // subjectEstablishmentSemester
-                        parseIntSafe(c.cltTerrNm()),
-                        parseIntSafe(c.cltTerrCd()),
-                        "UNKNOWN", // TODO: 우선 기본값 처리, 추후 변경 필요
+                        parseIntOrZero(c.subjtEstbSmrCd()),
+                        parseIntOrZero(c.cltTerrNm()),
+                        parseIntOrZero(c.cltTerrCd()),
+                        "UNKNOWN", // TODO: 변경 필요 시 필드 추가
                         false
                 ));
             }
@@ -154,32 +154,34 @@ public class PortalDataMapper {
         return new PortalCurriculumData(courses, professors, offerings);
     }
 
-    private static Integer parseIntSafe(String str) {
+    // 기본값 0 반환
+    private static int parseIntOrZero(String str) {
         try {
-            return (str != null && !str.isBlank()) ? Integer.parseInt(str) : null;
+            return (str != null && !str.isBlank()) ? Integer.parseInt(str) : 0;
         } catch (NumberFormatException e) {
-            return null;
+            log.debug("parseInt 실패: {}", str);
+            return 0;
         }
     }
 
-    private static Double parseDoubleSafe(String str) {
+    private static double parseDoubleOrZero(String str) {
         try {
-            return (str != null && !str.isBlank()) ? Double.parseDouble(str) : null;
+            return (str != null && !str.isBlank()) ? Double.parseDouble(str) : 0.0;
         } catch (NumberFormatException e) {
-            return null;
+            log.debug("parseDouble 실패: {}", str);
+            return 0.0;
         }
     }
 
     private static Ranking parseRanking(String ordp) {
         if (ordp == null || ordp.isBlank()) {
-            log.warn("parseRanking: 입력이 null이거나 공백입니다. → '{}'", ordp);
+            log.debug("parseRanking: 입력이 null이거나 공백입니다. → '{}'", ordp);
             return null;
         }
 
         String[] split = ordp.split("/");
-
         if (split.length != 2 || split[0].isBlank() || split[1].isBlank()) {
-            log.warn("parseRanking: 올바르지 않은 포맷입니다. → '{}'", ordp);
+            log.debug("parseRanking: 올바르지 않은 포맷입니다. → '{}'", ordp);
             return null;
         }
 
@@ -188,7 +190,7 @@ public class PortalDataMapper {
             int total = Integer.parseInt(split[1].trim());
             return new Ranking(rank, total);
         } catch (NumberFormatException e) {
-            log.warn("parseRanking: 숫자 파싱 실패 → '{}'", ordp);
+            log.debug("parseRanking: 숫자 파싱 실패 → '{}'", ordp);
             return null;
         }
     }
