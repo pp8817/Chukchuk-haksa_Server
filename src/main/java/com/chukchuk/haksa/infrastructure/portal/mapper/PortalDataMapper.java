@@ -143,7 +143,7 @@ public class PortalDataMapper {
                         c.estbDpmjNm(),
                         c.facDvnm(),
                         parseIntOrZero(c.subjtEstbSmrCd()),
-                        parseIntOrZero(c.cltTerrNm()),
+                        extractLeadingDigit(c.cltTerrNm()), // cltTerrNm: 선교 영역 (ex. '6영역'처럼 데이터가 넘어옴) -> 영역 숫자만 추출
                         parseIntOrZero(c.cltTerrCd()),
                         "UNKNOWN", // TODO: 변경 필요 시 필드 추가
                         false
@@ -193,5 +193,12 @@ public class PortalDataMapper {
             log.debug("parseRanking: 숫자 파싱 실패 → '{}'", ordp);
             return null;
         }
+    }
+
+    private static int extractLeadingDigit(String input) {
+        if (input != null && !input.isBlank() && Character.isDigit(input.charAt(0))) {
+            return Character.getNumericValue(input.charAt(0));
+        }
+        return 0;
     }
 }
