@@ -75,8 +75,9 @@
 ---
 
 ## 5. 🛠 아키텍처
-
-> 📌 아키텍처 다이어그램은 추후 업데이트될 예정입니다.
+<p align="center">
+  <img width="636" height="744" alt="Image" src="https://github.com/user-attachments/assets/43076c12-de91-479a-9152-7748dca0ea33" />
+</p>
 
 ---
 
