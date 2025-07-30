@@ -100,7 +100,6 @@ public class SyncAcademicRecordService {
         for (MergedOfferingAcademic item : mergedList.values()) {
             PortalOfferingCreationData offering = item.getOffering();
             PortalCourseInfo academic = item.getAcademic();
-            log.info(">>>>> academic={}", academic);
 
             // 과목 ID 및 교수 ID 구하기
             Long courseId = courseMap.get(offering.getCourseCode());
