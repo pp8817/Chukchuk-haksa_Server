@@ -1,47 +1,52 @@
-name: Deploy to Dev EC2         # GitHub Actions 워크플로우 이름
+name: Deploy to Dev EC2
 
 on:
   push:
-    branches: [ "dev" ]         # dev 브랜치에 push 될 때만 이 워크플로우가 트리거됨
+    branches: [ "dev" ]
 
 jobs:
-  deploy:                       # Job 이름 (변경 가능)
-    runs-on: ubuntu-latest     # GitHub에서 제공하는 Ubuntu 가상머신에서 실행됨
+  deploy:
+    runs-on: ubuntu-latest
 
-    steps:                      # 하나의 Job 안에서 실행될 step 목록
+    steps:
       - name: Checkout source code
-        uses: actions/checkout@v4  # 현재 Repository의 코드를 체크아웃함 (필수)
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4 # Java 설치
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'        # 사용할 Java 버전
-          distribution: 'temurin'   # AdoptOpenJDK 기반의 Temurin 배포판 사용
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Grant execute permission for Gradle
-        run: chmod +x ./gradlew     # gradlew 실행 권한 부여 (리눅스에서 필수)
+        run: chmod +x ./gradlew
 
       - name: Build jar with Gradle
-        run: ./gradlew clean bootJar  # Gradle로 Spring Boot 실행 JAR 빌드
+        run: ./gradlew clean bootJar
 
-      - name: Copy jar to EC2
-        uses: appleboy/scp-action@v0.1.7  # EC2 서버에 파일 복사하는 Action 사용
+      - name: Rename jar to app.jar
+        run: |
+          mkdir -p deploy
+          cp build/libs/*.jar deploy/app.jar
+
+      - name: Copy app.jar to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}      # EC2 퍼블릭 IP (GitHub Secrets에 저장)
-          username: ${{ secrets.EC2_USER }}  # EC2 접속 유저
-          key: ${{ secrets.EC2_KEY }}        # pem 키 (GitHub Secrets에 멀티라인으로 저장)
-          source: "build/libs/*.jar"         # 복사할 파일 경로 (로컬)
-          target: "/home/ubuntu/app"         # 복사될 EC2 내 경로
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "deploy/app.jar"
+          target: "/home/ubuntu/app"
 
       - name: Restart Spring Boot app on EC2
-        uses: appleboy/ssh-action@v1.0.3     # EC2 서버에서 SSH 명령 실행하는 Action
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}      # EC2 IP
-          username: ${{ secrets.EC2_USER }}  # EC2 접속 유저
-          key: ${{ secrets.EC2_KEY }}        # pem 키
-          script: |                          # EC2 내부에서 실행할 쉘 스크립트
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
             echo "[✔] Stop old app"
-            pkill -f 'java -jar' || true     # 기존 jar 실행 중지 (없으면 무시)
+            pkill -f 'java -jar' || true
 
             echo "[✔] Start new app with profile=dev"
-            nohup java -jar /home/ubuntu/app/*.jar --spring.profiles.active=dev > /dev/null 2>&1 &
+            nohup java -jar /home/ubuntu/app/app.jar --spring.profiles.active=dev > /dev/null 2>&1 &
