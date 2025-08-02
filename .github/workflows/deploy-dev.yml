@@ -45,10 +45,11 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
+          envs: JWT_SECRET,JWT_ACCESS_EXPIRATION,JWT_REFRESH_EXPIRATION,APP_KEY
           script: |
             echo "[✔] Stop old app"
             pkill -f 'java -jar' || true
 
-            echo "[✔] Start new app with .env loaded"
+            echo "[✔] Start new app with GitHub Secrets"
             cd /home/ubuntu/app
-            nohup bash -c 'export $(grep -v "^#" /home/ubuntu/.env | xargs) && java -jar app.jar --spring.profiles.active=dev' > app.log 2>&1 &
+            nohup java -jar app.jar --spring.profiles.active=dev > app.log 2>&1 &
