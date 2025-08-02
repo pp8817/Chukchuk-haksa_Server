@@ -50,9 +50,7 @@ jobs:
             pkill -f 'java -jar' || true
 
             echo "[✔] Load .env variables"
-            set -a
-            source /home/ubuntu/.env
-            set +a
+            export $(grep -v '^#' /home/ubuntu/.env | xargs)
 
             echo "[✔] Start new app with profile=dev"
             nohup java -jar /home/ubuntu/app/app.jar --spring.profiles.active=dev > /dev/null 2>&1 &
