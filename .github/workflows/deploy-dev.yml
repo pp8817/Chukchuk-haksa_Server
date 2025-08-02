@@ -37,6 +37,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: "deploy/app.jar"
           target: "/home/ubuntu/app"
+          strip_components: 1
 
       - name: Restart Spring Boot app on EC2
         uses: appleboy/ssh-action@v1.0.3
