@@ -49,8 +49,6 @@ jobs:
             echo "[✔] Stop old app"
             pkill -f 'java -jar' || true
 
-            echo "[✔] Load .env variables"
-            export $(grep -v '^#' /home/ubuntu/.env | xargs)
-
-            echo "[✔] Start new app with profile=dev"
-            nohup java -jar /home/ubuntu/app/app.jar --spring.profiles.active=dev > /dev/null 2>&1 &
+            echo "[✔] Start new app with .env loaded"
+            cd /home/ubuntu/app
+            nohup bash -c 'export $(grep -v "^#" /home/ubuntu/.env | xargs) && java -jar app.jar --spring.profiles.active=dev' > app.log 2>&1 &
