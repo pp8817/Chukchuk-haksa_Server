@@ -17,10 +17,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
+import java.time.Duration;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class PortalClient {
+    private static final Duration LOGIN_REQUEST_TIMEOUT = Duration.ofSeconds(90);
+
     @Value("${crawler.base-url}")
     private String baseUrl;
 
@@ -37,7 +41,7 @@ public class PortalClient {
                     .bodyValue(new LoginRequest(username, password))
                     .retrieve()
                     .toBodilessEntity()
-                    .block();
+                    .block(LOGIN_REQUEST_TIMEOUT);
 
         } catch (WebClientResponseException e) {
             logHttpError(uri, t0, e);
