@@ -11,19 +11,48 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
+import java.time.Duration;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class PortalClient {
+    private static final Duration LOGIN_REQUEST_TIMEOUT = Duration.ofSeconds(90);
+
     @Value("${crawler.base-url}")
     private String baseUrl;
 
     private final RestTemplate restTemplate;
+    private final RestTemplate loginRestTemplate = new RestTemplate(loginRequestFactory());
+
+    public void validateLogin(String username, String password) {
+        String uri = "/login";
+        long t0 = LogTime.start();
+
+        try {
+            RequestEntity<LoginRequest> request = RequestEntity
+                    .post(URI.create(baseUrl + uri))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new LoginRequest(username, password));
+
+            loginRestTemplate.exchange(request, Void.class);
+
+        } catch (RestClientResponseException e) {
+            logHttpError(uri, t0, e);
+            throw new PortalScrapeException(mapHttpStatus(e.getStatusCode()), e);
+
+        } catch (Exception e) {
+            long tookMs = LogTime.elapsedMs(t0);
+            log.warn("[EXT] method=POST uri={} unexpected_error took_ms={}", uri, tookMs, e);
+            throw new PortalScrapeException(ErrorCode.PORTAL_SCRAPE_FAILED, e);
+        }
+    }
 
     public RawPortalData scrapeAll(String username, String password) {
         String uri = "/scrape";
@@ -52,6 +81,12 @@ public class PortalClient {
     }
 
     private record LoginRequest(String username, String password) {}
+
+    private static SimpleClientHttpRequestFactory loginRequestFactory() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setReadTimeout((int) LOGIN_REQUEST_TIMEOUT.toMillis());
+        return requestFactory;
+    }
 
     private void logHttpError(String uri, long t0, RestClientResponseException e) {
         long tookMs = LogTime.elapsedMs(t0);

@@ -141,6 +141,10 @@ logging:
       - ^/internal/.*
       - /docs
 
+portal:
+  login-verification:
+    secret: ${PORTAL_LOGIN_VERIFICATION_SECRET:${JWT_SECRET}}
+    ttl-seconds: ${PORTAL_LOGIN_VERIFICATION_TTL_SECONDS:300}
 lecture-evaluation:
   target-year: ${LECTURE_EVALUATION_TARGET_YEAR:2026}
   target-semester: ${LECTURE_EVALUATION_TARGET_SEMESTER:10}
