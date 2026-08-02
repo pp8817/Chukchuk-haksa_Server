@@ -3,7 +3,6 @@ package com.chukchuk.haksa.infrastructure.portal.client;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.logging.annotation.LogTime;
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
-import com.chukchuk.haksa.infrastructure.portal.exception.PortalLoginException;
 import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,28 +29,28 @@ public class PortalClient {
     private String baseUrl;
 
     private final RestTemplate restTemplate;
+    private final RestTemplate loginRestTemplate = new RestTemplate(loginRequestFactory());
 
     public void validateLogin(String username, String password) {
         String uri = "/login";
         long t0 = LogTime.start();
 
         try {
-            webClient.post()
-                    .uri(baseUrl + uri)
-                    .header("Content-Type", "application/json")
-                    .bodyValue(new LoginRequest(username, password))
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block(LOGIN_REQUEST_TIMEOUT);
+            RequestEntity<LoginRequest> request = RequestEntity
+                    .post(URI.create(baseUrl + uri))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new LoginRequest(username, password));
 
-        } catch (WebClientResponseException e) {
+            loginRestTemplate.exchange(request, Void.class);
+
+        } catch (RestClientResponseException e) {
             logHttpError(uri, t0, e);
-            throw new PortalLoginException(mapHttpStatus(e.getStatusCode()), e);
+            throw new PortalScrapeException(mapHttpStatus(e.getStatusCode()), e);
 
         } catch (Exception e) {
             long tookMs = LogTime.elapsedMs(t0);
             log.warn("[EXT] method=POST uri={} unexpected_error took_ms={}", uri, tookMs, e);
-            throw new PortalLoginException(ErrorCode.PORTAL_SCRAPE_FAILED, e);
+            throw new PortalScrapeException(ErrorCode.PORTAL_SCRAPE_FAILED, e);
         }
     }
 
@@ -81,6 +81,12 @@ public class PortalClient {
     }
 
     private record LoginRequest(String username, String password) {}
+
+    private static SimpleClientHttpRequestFactory loginRequestFactory() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setReadTimeout((int) LOGIN_REQUEST_TIMEOUT.toMillis());
+        return requestFactory;
+    }
 
     private void logHttpError(String uri, long t0, RestClientResponseException e) {
         long tookMs = LogTime.elapsedMs(t0);

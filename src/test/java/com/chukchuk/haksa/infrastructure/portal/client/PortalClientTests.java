@@ -2,12 +2,13 @@
 package com.chukchuk.haksa.infrastructure.portal.client;
 
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
-import com.chukchuk.haksa.infrastructure.portal.exception.PortalLoginException;
+import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -44,8 +45,8 @@ class PortalClientTests {
         PortalClient client = clientWithServer(401, new AtomicReference<>());
 
         assertThatThrownBy(() -> client.validateLogin("17019013", "wrong"))
-                .isInstanceOf(PortalLoginException.class)
-                .satisfies(ex -> assertThat(((PortalLoginException) ex).getCode()).isEqualTo(ErrorCode.PORTAL_LOGIN_FAILED.code()));
+                .isInstanceOf(PortalScrapeException.class)
+                .satisfies(ex -> assertThat(((PortalScrapeException) ex).getCode()).isEqualTo(ErrorCode.PORTAL_LOGIN_FAILED.code()));
     }
 
     private PortalClient clientWithServer(int status, AtomicReference<String> requestBody) throws IOException {
@@ -53,7 +54,7 @@ class PortalClientTests {
         server.createContext("/login", exchange -> respond(exchange, status, requestBody));
         server.start();
 
-        PortalClient client = new PortalClient();
+        PortalClient client = new PortalClient(new RestTemplate());
         ReflectionTestUtils.setField(client, "baseUrl", "http://localhost:" + server.getAddress().getPort());
         return client;
     }
