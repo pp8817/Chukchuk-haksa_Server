@@ -25,6 +25,7 @@
 - 새 작업에는 기존 Spec Kit 파일인 `spec-lite.md`, `spec.md`, `clarify.md`, `tasks.md`, `checklist.md`, `context-notes.md`를 만들지 않습니다.
 - 커밋과 PR 작업 전 `CONTRIBUTING.md`의 커밋·PR 규칙을 확인합니다.
 - PR 생성 시 `.github/PULL_REQUEST_TEMPLATE.md`를 기반으로 본문을 작성하고, 연결 이슈, 변경 범위, 검증 결과, Wiki 갱신 여부와 남은 위험을 포함합니다.
+- PR 생성 시 PR 작성자를 Assignee로 지정하고, 변경 유형에 맞는 릴리즈 노트 분류 라벨을 하나 이상 붙입니다. 릴리즈 노트에서 제외할 변경에는 `skip-release-notes` 라벨을 붙입니다.
 
 ## Branch Rules
 - `feat/{이슈 번호}`는 `dev`에서 생성해 `dev`로 병합합니다.
