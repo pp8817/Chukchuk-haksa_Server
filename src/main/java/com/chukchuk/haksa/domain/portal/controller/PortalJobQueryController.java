@@ -18,32 +18,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PortalJobQueryController implements PortalLinkQueryControllerDocs {
 
-    private final PortalLinkJobQueryService portalLinkJobQueryService;
+  private final PortalLinkJobQueryService portalLinkJobQueryService;
 
-    @GetMapping("/{jobId}")
-    public ResponseEntity<SuccessResponse<PortalLinkDto.JobStatusResponse>> getJobStatus(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable String jobId
-    ) {
-        PortalLinkDto.JobStatusResponse response = portalLinkJobQueryService.getJobStatus(userDetails.getId(), jobId);
-        return ResponseEntity.ok(SuccessResponse.of(response));
-    }
+  @GetMapping("/{jobId}")
+  public ResponseEntity<SuccessResponse<PortalLinkDto.JobStatusResponse>> getJobStatus(
+      @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId) {
+    PortalLinkDto.JobStatusResponse response =
+        portalLinkJobQueryService.getJobStatus(userDetails.getId(), jobId);
+    return ResponseEntity.ok(SuccessResponse.of(response));
+  }
 
-    @GetMapping("/{jobId}/summary")
-    public ResponseEntity<SuccessResponse<PortalLinkDto.JobSummaryResponse>> getJobSummary(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable String jobId
-    ) {
-        PortalLinkDto.JobSummaryResponse response = portalLinkJobQueryService.getJobSummary(userDetails.getId(), jobId);
-        return ResponseEntity.ok(SuccessResponse.of(response));
-    }
+  @GetMapping("/{jobId}/summary")
+  public ResponseEntity<SuccessResponse<PortalLinkDto.JobSummaryResponse>> getJobSummary(
+      @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId) {
+    PortalLinkDto.JobSummaryResponse response =
+        portalLinkJobQueryService.getJobSummary(userDetails.getId(), jobId);
+    return ResponseEntity.ok(SuccessResponse.of(response));
+  }
 
-    @GetMapping("/{jobId}/duration")
-    public ResponseEntity<SuccessResponse<PortalLinkDto.JobDurationResponse>> getJobDuration(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable String jobId
-    ) {
-        PortalLinkDto.JobDurationResponse response = portalLinkJobQueryService.getJobDuration(userDetails.getId(), jobId);
-        return ResponseEntity.ok(SuccessResponse.of(response));
-    }
+  @GetMapping("/{jobId}/duration")
+  public ResponseEntity<SuccessResponse<PortalLinkDto.JobDurationResponse>> getJobDuration(
+      @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId) {
+    PortalLinkDto.JobDurationResponse response =
+        portalLinkJobQueryService.getJobDuration(userDetails.getId(), jobId);
+    return ResponseEntity.ok(SuccessResponse.of(response));
+  }
 }

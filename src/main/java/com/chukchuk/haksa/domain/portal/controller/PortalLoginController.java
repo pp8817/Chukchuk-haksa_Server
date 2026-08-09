@@ -20,14 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PortalLoginController implements PortalLoginControllerDocs {
 
-    private final PortalLoginService portalLoginService;
+  private final PortalLoginService portalLoginService;
 
-    @PostMapping("/login")
-    public ResponseEntity<SuccessResponse<PortalLinkDto.LoginResponse>> verifyPortalLogin(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody PortalLinkDto.LoginRequest request
-    ) {
-        PortalLinkDto.LoginResponse response = portalLoginService.login(userDetails.getId(), request);
-        return ResponseEntity.ok(SuccessResponse.of(response));
-    }
+  @PostMapping("/login")
+  public ResponseEntity<SuccessResponse<PortalLinkDto.LoginResponse>> verifyPortalLogin(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody PortalLinkDto.LoginRequest request) {
+    PortalLinkDto.LoginResponse response = portalLoginService.login(userDetails.getId(), request);
+    return ResponseEntity.ok(SuccessResponse.of(response));
+  }
 }

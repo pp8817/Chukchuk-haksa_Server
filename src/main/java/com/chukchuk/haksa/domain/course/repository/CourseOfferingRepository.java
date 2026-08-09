@@ -2,16 +2,16 @@ package com.chukchuk.haksa.domain.course.repository;
 
 import com.chukchuk.haksa.domain.course.model.CourseOffering;
 import com.chukchuk.haksa.domain.course.model.FacultyDivision;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 public interface CourseOfferingRepository extends JpaRepository<CourseOffering, Long> {
-    @Query("""
+  @Query(
+"""
     SELECT o FROM CourseOffering o
     WHERE o.course.id = :courseId
       AND o.year = :year
@@ -21,23 +21,28 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
       AND o.facultyDivisionName = :facultyDivisionName
       AND o.hostDepartment = :hostDepartment
 """)
-    Optional<CourseOffering> findByCourseIdAndYearAndSemesterAndClassSectionAndProfessorIdAndFacultyDivisionNameAndHostDepartment(
-            Long courseId, Integer year, Integer semester, String classSection, Long professorId, FacultyDivision facultyDivisionName, String hostDepartment
-    );
+  Optional<CourseOffering>
+      findByCourseIdAndYearAndSemesterAndClassSectionAndProfessorIdAndFacultyDivisionNameAndHostDepartment(
+          Long courseId,
+          Integer year,
+          Integer semester,
+          String classSection,
+          Long professorId,
+          FacultyDivision facultyDivisionName,
+          String hostDepartment);
 
-    @Query("""
+  @Query(
+"""
     SELECT o FROM CourseOffering o
     WHERE o.course.id IN :courseIds
       AND o.year IN :years
       AND o.semester IN :semesters
 """)
-    List<CourseOffering> findByCourseIdInAndYearInAndSemesterIn(
-            Collection<Long> courseIds,
-            Collection<Integer> years,
-            Collection<Integer> semesters
-    );
+  List<CourseOffering> findByCourseIdInAndYearInAndSemesterIn(
+      Collection<Long> courseIds, Collection<Integer> years, Collection<Integer> semesters);
 
-    @Query("""
+  @Query(
+      """
         SELECT o FROM CourseOffering o
         JOIN FETCH o.course c
         LEFT JOIN FETCH o.department d
@@ -54,15 +59,11 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
                OR o.hostDepartment = :departmentName)
         ORDER BY o.year DESC, o.semester DESC, c.courseName ASC
     """)
-    List<CourseOffering> searchAdminCandidates(
-            String keyword,
-            FacultyDivision area,
-            Integer year,
-            Integer semester,
-            String departmentName
-    );
+  List<CourseOffering> searchAdminCandidates(
+      String keyword, FacultyDivision area, Integer year, Integer semester, String departmentName);
 
-    @Query("""
+  @Query(
+      """
         SELECT o FROM CourseOffering o
         JOIN FETCH o.course c
         JOIN FETCH o.professor p
@@ -73,10 +74,12 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
           AND o.semester = :semester
         ORDER BY c.courseName ASC, p.professorName ASC, o.id ASC
     """)
-    List<CourseOffering> findReusableLectureEvaluationTestOfferings(Integer year, Integer semester);
+  List<CourseOffering> findReusableLectureEvaluationTestOfferings(Integer year, Integer semester);
 
-    @Modifying
-    @Query(value = """
+  @Modifying
+  @Query(
+      value =
+          """
         UPDATE course_offerings
         SET evaluation_type_code = 'UNKNOWN'
         WHERE deleted_at IS NULL
@@ -86,6 +89,7 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
               evaluation_type_code IS NULL
               OR evaluation_type_code NOT IN ('ABSOLUTE', 'RELATIVE', 'UNKNOWN')
           )
-    """, nativeQuery = true)
-    int normalizeUnsupportedEvaluationTypes(Integer year, Integer semester);
+    """,
+      nativeQuery = true)
+  int normalizeUnsupportedEvaluationTypes(Integer year, Integer semester);
 }

@@ -7,20 +7,16 @@ import org.slf4j.MDC;
 
 public final class GraduationMdcContext {
 
-    private GraduationMdcContext() {
-    }
+  private GraduationMdcContext() {}
 
-    public static void bind(
-            Student student,
-            Long primaryMajorId,
-            Long secondaryMajorId,
-            int admissionYear
-    ) {
-        MDC.put("studentCodeHash", HashUtil.sha256Short(student.getStudentCode()));
-        MDC.put("admissionYear", String.valueOf(admissionYear));
-        MDC.put("departmentId", String.valueOf(primaryMajorId));
-        MDC.put("secondaryDepartmentId",
-                secondaryMajorId == null ? "NONE" : String.valueOf(secondaryMajorId));
-        MDC.put("majorType", secondaryMajorId == null ? "SINGLE" : "DUAL");
-    }
+  public static void bind(
+      Student student, Long primaryMajorId, Long secondaryMajorId, int admissionYear) {
+    MDC.put("studentCodeHash", HashUtil.sha256Short(student.getStudentCode()));
+    MDC.put("admissionYear", String.valueOf(admissionYear));
+    MDC.put("departmentId", String.valueOf(primaryMajorId));
+    MDC.put(
+        "secondaryDepartmentId",
+        secondaryMajorId == null ? "NONE" : String.valueOf(secondaryMajorId));
+    MDC.put("majorType", secondaryMajorId == null ? "SINGLE" : "DUAL");
+  }
 }

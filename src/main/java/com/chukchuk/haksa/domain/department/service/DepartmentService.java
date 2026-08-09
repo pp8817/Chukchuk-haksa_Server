@@ -10,15 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class DepartmentService {
-    private final DepartmentRepository departmentRepository;
+  private final DepartmentRepository departmentRepository;
 
-    // 학과 코드로 조회하고, 없으면 새로 생성
-    @Transactional
-    public Department getOrCreateDepartment(String departmentCode, String establishedDepartmentName) {
-        return departmentRepository.findByDepartmentCode(departmentCode)
-                .orElseGet(() -> {
-                    Department department = new Department(departmentCode, establishedDepartmentName);
-                    return departmentRepository.save(department);
-                });
-    }
+  // 학과 코드로 조회하고, 없으면 새로 생성
+  @Transactional
+  public Department getOrCreateDepartment(String departmentCode, String establishedDepartmentName) {
+    return departmentRepository
+        .findByDepartmentCode(departmentCode)
+        .orElseGet(
+            () -> {
+              Department department = new Department(departmentCode, establishedDepartmentName);
+              return departmentRepository.save(department);
+            });
+  }
 }

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "ErrorResponseWrapper", description = "API 에러 응답 포맷")
 public class ErrorResponseWrapper extends ErrorResponse {
 
-    public ErrorResponseWrapper() {
-        super(new ErrorDetail("ERROR_CODE", "에러 메시지", null));
-    }
+  public ErrorResponseWrapper() {
+    super(new ErrorDetail("ERROR_CODE", "에러 메시지", null));
+  }
 }

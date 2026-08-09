@@ -1,6 +1,7 @@
 package com.chukchuk.haksa.infrastructure.scrapejob;
 
 import com.chukchuk.haksa.global.config.ScrapingProperties;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
@@ -9,42 +10,48 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
-import java.time.Duration;
-
 @Component
 @RequiredArgsConstructor
 public class SqsScrapeJobPublisher {
 
-    private final ScrapingProperties scrapingProperties;
-    private volatile SqsClient sqsClient;
+  private final ScrapingProperties scrapingProperties;
+  private volatile SqsClient sqsClient;
 
-    public String publish(String payloadJson) {
-        String queueUrl = scrapingProperties.getJob().getQueueUrl();
-        if (queueUrl == null || queueUrl.isBlank()) {
-            throw new IllegalStateException("scraping.job.queue-url must not be blank");
-        }
-
-        SendMessageResponse response = sqsClient().sendMessage(SendMessageRequest.builder()
-                .queueUrl(queueUrl)
-                .messageBody(payloadJson)
-                .build());
-        return response.messageId();
+  public String publish(String payloadJson) {
+    String queueUrl = scrapingProperties.getJob().getQueueUrl();
+    if (queueUrl == null || queueUrl.isBlank()) {
+      throw new IllegalStateException("scraping.job.queue-url must not be blank");
     }
 
-    private SqsClient sqsClient() {
+    SendMessageResponse response =
+        sqsClient()
+            .sendMessage(
+                SendMessageRequest.builder().queueUrl(queueUrl).messageBody(payloadJson).build());
+    return response.messageId();
+  }
+
+  private SqsClient sqsClient() {
+    if (sqsClient == null) {
+      synchronized (this) {
         if (sqsClient == null) {
-            synchronized (this) {
-                if (sqsClient == null) {
-                    sqsClient = SqsClient.builder()
-                            .overrideConfiguration(ClientOverrideConfiguration.builder()
-                                    .apiCallTimeout(Duration.ofSeconds(scrapingProperties.getPublisher().getApiCallTimeoutSeconds()))
-                                    .apiCallAttemptTimeout(Duration.ofSeconds(scrapingProperties.getPublisher().getApiCallAttemptTimeoutSeconds()))
-                                    .retryStrategy(RetryMode.STANDARD)
-                                    .build())
-                            .build();
-                }
-            }
+          sqsClient =
+              SqsClient.builder()
+                  .overrideConfiguration(
+                      ClientOverrideConfiguration.builder()
+                          .apiCallTimeout(
+                              Duration.ofSeconds(
+                                  scrapingProperties.getPublisher().getApiCallTimeoutSeconds()))
+                          .apiCallAttemptTimeout(
+                              Duration.ofSeconds(
+                                  scrapingProperties
+                                      .getPublisher()
+                                      .getApiCallAttemptTimeoutSeconds()))
+                          .retryStrategy(RetryMode.STANDARD)
+                          .build())
+                  .build();
         }
-        return sqsClient;
+      }
     }
+    return sqsClient;
+  }
 }

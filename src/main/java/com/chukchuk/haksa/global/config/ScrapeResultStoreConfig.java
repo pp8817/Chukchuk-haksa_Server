@@ -11,17 +11,19 @@ import software.amazon.awssdk.services.s3.S3Client;
 @RequiredArgsConstructor
 public class ScrapeResultStoreConfig {
 
-    private final ScrapingProperties scrapingProperties;
+  private final ScrapingProperties scrapingProperties;
 
-    @Bean
-    public S3Client scrapeResultStoreS3Client() {
-        ScrapingProperties.ResultStore store = scrapingProperties.getResultStore();
-        return S3Client.builder()
-                .region(Region.of(store.getRegion()))
-                .overrideConfiguration(ClientOverrideConfiguration.builder()
-                        .apiCallTimeout(java.time.Duration.ofSeconds(store.getApiCallTimeoutSeconds()))
-                        .apiCallAttemptTimeout(java.time.Duration.ofSeconds(store.getApiCallAttemptTimeoutSeconds()))
-                        .build())
-                .build();
-    }
+  @Bean
+  public S3Client scrapeResultStoreS3Client() {
+    ScrapingProperties.ResultStore store = scrapingProperties.getResultStore();
+    return S3Client.builder()
+        .region(Region.of(store.getRegion()))
+        .overrideConfiguration(
+            ClientOverrideConfiguration.builder()
+                .apiCallTimeout(java.time.Duration.ofSeconds(store.getApiCallTimeoutSeconds()))
+                .apiCallAttemptTimeout(
+                    java.time.Duration.ofSeconds(store.getApiCallAttemptTimeoutSeconds()))
+                .build())
+        .build();
+  }
 }

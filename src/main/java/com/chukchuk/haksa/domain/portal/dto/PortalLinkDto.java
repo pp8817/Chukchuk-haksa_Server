@@ -4,137 +4,90 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-
 import java.time.Instant;
 
 public class PortalLinkDto {
 
-    @Schema(description = "포털 로그인 검증 요청")
-    public record LoginRequest(
-            @NotBlank
-            @JsonProperty("portal_type")
-            @Schema(description = "포털 타입", example = "suwon")
-            String portal_type,
-            @NotBlank
-            @Schema(description = "포털 아이디", example = "17019013")
-            String username,
-            @NotBlank
-            @Schema(description = "포털 비밀번호", example = "pw")
-            String password
-    ) {}
+  @Schema(description = "포털 로그인 검증 요청")
+  public record LoginRequest(
+      @NotBlank @JsonProperty("portal_type") @Schema(description = "포털 타입", example = "suwon")
+          String portal_type,
+      @NotBlank @Schema(description = "포털 아이디", example = "17019013") String username,
+      @NotBlank @Schema(description = "포털 비밀번호", example = "pw") String password) {}
 
-    @Schema(description = "포털 로그인 검증 응답")
-    public record LoginResponse(
-            @JsonProperty("portal_verification_token")
-            @Schema(description = "포털 로그인 검증 token", example = "token")
-            String portal_verification_token
-    ) {}
+  @Schema(description = "포털 로그인 검증 응답")
+  public record LoginResponse(
+      @JsonProperty("portal_verification_token")
+          @Schema(description = "포털 로그인 검증 token", example = "token")
+          String portal_verification_token) {}
 
-    @Schema(description = "포털 연동 job 생성 요청")
-    public record LinkRequest(
-            @NotBlank
-            @JsonProperty("portal_type")
-            @Schema(description = "포털 타입", example = "suwon")
-            String portal_type,
-            @NotBlank
-            @Schema(description = "포털 아이디", example = "17019013")
-            String username,
-            @NotBlank
-            @Schema(description = "포털 비밀번호", example = "pw")
-            String password,
-            @NotBlank
-            @JsonProperty("portal_verification_token")
-            @Schema(description = "포털 로그인 검증 token", example = "token")
-            String portal_verification_token
-    ) {}
+  @Schema(description = "포털 연동 job 생성 요청")
+  public record LinkRequest(
+      @NotBlank @JsonProperty("portal_type") @Schema(description = "포털 타입", example = "suwon")
+          String portal_type,
+      @NotBlank @Schema(description = "포털 아이디", example = "17019013") String username,
+      @NotBlank @Schema(description = "포털 비밀번호", example = "pw") String password,
+      @NotBlank
+          @JsonProperty("portal_verification_token")
+          @Schema(description = "포털 로그인 검증 token", example = "token")
+          String portal_verification_token) {}
 
-    @Schema(description = "스크래핑 job 수락 응답")
-    public record AcceptedResponse(
-            @JsonProperty("job_id")
-            @Schema(description = "job id", example = "job-123")
-            String job_id,
-            @Schema(description = "수락 상태", example = "accepted")
-            String status,
-            @JsonProperty("polling_endpoint")
-            @Schema(description = "상태 조회 경로", example = "/portal/link/jobs/job-123")
-            String polling_endpoint
-    ) {}
+  @Schema(description = "스크래핑 job 수락 응답")
+  public record AcceptedResponse(
+      @JsonProperty("job_id") @Schema(description = "job id", example = "job-123") String job_id,
+      @Schema(description = "수락 상태", example = "accepted") String status,
+      @JsonProperty("polling_endpoint")
+          @Schema(description = "상태 조회 경로", example = "/portal/link/jobs/job-123")
+          String polling_endpoint) {}
 
-    @Schema(description = "스크래핑 job 상태 응답")
-    public record JobStatusResponse(
-            @JsonProperty("job_id")
-            String job_id,
-            @JsonProperty("portal_type")
-            String portal_type,
-            String status,
-            @JsonProperty("error_code")
-            String error_code,
-            @JsonProperty("error_message")
-            String error_message,
-            Boolean retryable,
-            @JsonProperty("created_at")
-            Instant created_at,
-            @JsonProperty("updated_at")
-            Instant updated_at,
-            @JsonProperty("finished_at")
-            Instant finished_at
-    ) {}
+  @Schema(description = "스크래핑 job 상태 응답")
+  public record JobStatusResponse(
+      @JsonProperty("job_id") String job_id,
+      @JsonProperty("portal_type") String portal_type,
+      String status,
+      @JsonProperty("error_code") String error_code,
+      @JsonProperty("error_message") String error_message,
+      Boolean retryable,
+      @JsonProperty("created_at") Instant created_at,
+      @JsonProperty("updated_at") Instant updated_at,
+      @JsonProperty("finished_at") Instant finished_at) {}
 
-    @Schema(description = "스크래핑 job 요약 응답")
-    public record JobSummaryResponse(
-            @JsonProperty("job_id")
-            String job_id,
-            String status,
-            @JsonProperty("studentInfo")
-            StudentInfoSummary studentInfo,
-            @JsonProperty("finished_at")
-            Instant finished_at
-    ) {}
+  @Schema(description = "스크래핑 job 요약 응답")
+  public record JobSummaryResponse(
+      @JsonProperty("job_id") String job_id,
+      String status,
+      @JsonProperty("studentInfo") StudentInfoSummary studentInfo,
+      @JsonProperty("finished_at") Instant finished_at) {}
 
-    @Schema(description = "스크래핑 job 소요 시간 응답")
-    public record JobDurationResponse(
-            @JsonProperty("job_id")
-            String job_id,
-            String status,
-            Boolean success,
-            @JsonProperty("started_at")
-            Instant started_at,
-            @JsonProperty("ended_at")
-            Instant ended_at,
-            @JsonProperty("elapsed_millis")
-            Long elapsed_millis,
-            @JsonProperty("elapsed_time")
-            String elapsed_time
-    ) {}
+  @Schema(description = "스크래핑 job 소요 시간 응답")
+  public record JobDurationResponse(
+      @JsonProperty("job_id") String job_id,
+      String status,
+      Boolean success,
+      @JsonProperty("started_at") Instant started_at,
+      @JsonProperty("ended_at") Instant ended_at,
+      @JsonProperty("elapsed_millis") Long elapsed_millis,
+      @JsonProperty("elapsed_time") String elapsed_time) {}
 
-    @Schema(description = "포털 학생 요약 정보")
-    public record StudentInfoSummary(
-            String name,
-            String school,
-            String majorName,
-            String studentCode,
-            int gradeLevel,
-            String status,
-            int completedSemesterType
-    ) {}
+  @Schema(description = "포털 학생 요약 정보")
+  public record StudentInfoSummary(
+      String name,
+      String school,
+      String majorName,
+      String studentCode,
+      int gradeLevel,
+      String status,
+      int completedSemesterType) {}
 
-    public record ScrapeResultCallbackRequest(
-            @JsonProperty("job_id")
-            String job_id,
-            String status,
-            Integer attempt,
-            @JsonProperty("result_s3_key")
-            String result_s3_key,
-            @JsonProperty("result_checksum")
-            String resultChecksum,
-            @JsonProperty("error_code")
-            String error_code,
-            @JsonProperty("error_message")
-            String error_message,
-            Boolean retryable,
-            @JsonProperty("finished_at")
-            Instant finished_at,
-            @JsonProperty("metadata")
-            JsonNode metadata
-    ) {}
+  public record ScrapeResultCallbackRequest(
+      @JsonProperty("job_id") String job_id,
+      String status,
+      Integer attempt,
+      @JsonProperty("result_s3_key") String result_s3_key,
+      @JsonProperty("result_checksum") String resultChecksum,
+      @JsonProperty("error_code") String error_code,
+      @JsonProperty("error_message") String error_message,
+      Boolean retryable,
+      @JsonProperty("finished_at") Instant finished_at,
+      @JsonProperty("metadata") JsonNode metadata) {}
 }

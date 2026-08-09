@@ -10,11 +10,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LiberalArtsAreaCodeRepository extends JpaRepository<LiberalArtsAreaCode, Integer> {
 
-    @Modifying
-    @Query(value = """
+  @Modifying
+  @Query(
+      value =
+          """
             INSERT INTO liberal_arts_area_codes (code, area_name, is_active)
             VALUES (:code, :areaName, TRUE)
             ON CONFLICT (code) DO NOTHING
-            """, nativeQuery = true)
-    int insertIfAbsent(@Param("code") Integer code, @Param("areaName") String areaName);
+            """,
+      nativeQuery = true)
+  int insertIfAbsent(@Param("code") Integer code, @Param("areaName") String areaName);
 }

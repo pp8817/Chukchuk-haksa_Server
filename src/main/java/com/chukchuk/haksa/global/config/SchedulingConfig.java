@@ -11,13 +11,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @ConditionalOnProperty(prefix = "scraping.scheduler", name = "enabled", havingValue = "true")
 public class SchedulingConfig {
 
-    @Bean
-    public ThreadPoolTaskScheduler taskScheduler() {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(2);
-        taskScheduler.setThreadNamePrefix("scheduler-");
-        taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
-        taskScheduler.setAwaitTerminationSeconds(30);
-        return taskScheduler;
-    }
+  @Bean
+  public ThreadPoolTaskScheduler taskScheduler() {
+    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    taskScheduler.setPoolSize(2);
+    taskScheduler.setThreadNamePrefix("scheduler-");
+    taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
+    taskScheduler.setAwaitTerminationSeconds(30);
+    return taskScheduler;
+  }
 }

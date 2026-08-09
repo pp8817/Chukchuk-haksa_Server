@@ -12,13 +12,12 @@ import com.chukchuk.haksa.domain.user.service.UserService;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.global.exception.type.EntityNotFoundException;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -26,114 +25,124 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class StudentService {
 
-    private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
-    private final UserService userService;
-    private final StudentAcademicRecordRepository studentAcademicRecordRepository;
-    private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
-    private final StudentCourseRepository studentCourseRepository;
+  private final StudentRepository studentRepository;
+  private final UserRepository userRepository;
+  private final UserService userService;
+  private final StudentAcademicRecordRepository studentAcademicRecordRepository;
+  private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
+  private final StudentCourseRepository studentCourseRepository;
 
-    public Student getStudentById(UUID studentId) {
-        return studentRepository.findById(studentId)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
+  public Student getStudentById(UUID studentId) {
+    return studentRepository
+        .findById(studentId)
+        .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
+  }
+
+  public Student getStudentByUserId(UUID userId) {
+    User user = userService.getUserById(userId);
+
+    return user.getStudent();
+  }
+
+  public Optional<Student> findByStudentCode(String studentCode) {
+    return studentRepository.findByStudentCode(studentCode);
+  }
+
+  public Optional<Student> findPortalPendingStudent(UUID userId) {
+    return studentRepository.findPortalPendingStudent(userId);
+  }
+
+  public UUID getRequiredStudentIdByUserId(UUID userId) {
+    Student student = getStudentByUserId(userId);
+    if (student == null) {
+      throw new CommonException(ErrorCode.USER_NOT_CONNECTED);
     }
 
-    public Student getStudentByUserId(UUID userId) {
-        User user = userService.getUserById(userId);
-
-        return user.getStudent();
+    UUID studentId = student.getId();
+    if (studentId == null) {
+      throw new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND);
     }
 
-    public Optional<Student> findByStudentCode(String studentCode) {
-        return studentRepository.findByStudentCode(studentCode);
+    return studentId;
+  }
+
+  @Transactional
+  public void markReconnectedByUser(User user) {
+    Student student =
+        studentRepository
+            .findByUser(user)
+            .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
+    student.markReconnected();
+    studentRepository.save(student);
+  }
+
+  @Transactional
+  public void save(Student student) {
+    studentRepository.save(student);
+  }
+
+  public StudentDto.StudentProfileResponse getStudentProfile(UUID studentId) {
+    Student student =
+        studentRepository
+            .findProfileByIdWithAssociations(studentId)
+            .orElseThrow(() -> new CommonException(ErrorCode.STUDENT_NOT_FOUND));
+
+    return buildStudentProfileResponse(student, student.getUser());
+  }
+
+  public StudentDto.StudentProfileResponse getStudentProfileByUserId(UUID userId) {
+    User user =
+        userRepository
+            .findProfileByIdWithAssociations(userId)
+            .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+
+    Student student = user.getStudent();
+    if (student == null) {
+      throw new CommonException(ErrorCode.USER_NOT_CONNECTED);
     }
 
-    public Optional<Student> findPortalPendingStudent(UUID userId) {
-        return studentRepository.findPortalPendingStudent(userId);
+    return buildStudentProfileResponse(student, user);
+  }
+
+  @Transactional
+  public void resetBy(UUID studentId) {
+    studentCourseRepository.deleteByStudentId(studentId);
+    semesterAcademicRecordRepository.deleteByStudentId(studentId);
+    studentAcademicRecordRepository.deleteByStudentId(studentId);
+
+    log.info("[BIZ] student.reset.done studentId={}", studentId);
+  }
+
+  @Transactional
+  public void setStudentTargetGpa(UUID studentId, Double targetGpa) {
+    studentRepository.updateTargetGpaByStudentId(studentId, targetGpa);
+  }
+
+  private static int getCurrentSemester(Integer gradeLevel, Integer completedSemesters) {
+
+    int safeGradeLevel = (gradeLevel != null) ? gradeLevel : 0;
+    int safeCompletedSemesters = (completedSemesters != null) ? completedSemesters : 0;
+
+    int expectedCompleted = (safeGradeLevel - 1) * 2;
+    int effectiveCompleted = Math.max(safeCompletedSemesters, expectedCompleted);
+    int currentSemester = effectiveCompleted - expectedCompleted + 1;
+
+    if (currentSemester < 1) {
+      return 1;
+    } else if (currentSemester > 2) {
+      return 2;
     }
+    return currentSemester;
+  }
 
-    public UUID getRequiredStudentIdByUserId(UUID userId) {
-        Student student = getStudentByUserId(userId);
-        if (student == null) {
-            throw new CommonException(ErrorCode.USER_NOT_CONNECTED);
-        }
+  private StudentDto.StudentProfileResponse buildStudentProfileResponse(
+      Student student, User user) {
+    StudentDto.StudentInfoDto studentInfo = StudentDto.StudentInfoDto.from(student);
+    int currentSemester =
+        getCurrentSemester(studentInfo.gradeLevel(), studentInfo.completedSemesters());
+    String lastSyncedAt =
+        user != null && user.getLastSyncedAt() != null ? user.getLastSyncedAt().toString() : "";
 
-        UUID studentId = student.getId();
-        if (studentId == null) {
-            throw new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND);
-        }
-
-        return studentId;
-    }
-
-    @Transactional
-    public void markReconnectedByUser(User user) {
-        Student student = studentRepository.findByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
-        student.markReconnected();
-        studentRepository.save(student);
-    }
-
-    @Transactional
-    public void save(Student student) {
-        studentRepository.save(student);
-    }
-
-    public StudentDto.StudentProfileResponse getStudentProfile(UUID studentId) {
-        Student student = studentRepository.findProfileByIdWithAssociations(studentId)
-                .orElseThrow(() -> new CommonException(ErrorCode.STUDENT_NOT_FOUND));
-
-        return buildStudentProfileResponse(student, student.getUser());
-    }
-
-    public StudentDto.StudentProfileResponse getStudentProfileByUserId(UUID userId) {
-        User user = userRepository.findProfileByIdWithAssociations(userId)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
-
-        Student student = user.getStudent();
-        if (student == null) {
-            throw new CommonException(ErrorCode.USER_NOT_CONNECTED);
-        }
-
-        return buildStudentProfileResponse(student, user);
-    }
-
-    @Transactional
-    public void resetBy(UUID studentId) {
-        studentCourseRepository.deleteByStudentId(studentId);
-        semesterAcademicRecordRepository.deleteByStudentId(studentId);
-        studentAcademicRecordRepository.deleteByStudentId(studentId);
-
-        log.info("[BIZ] student.reset.done studentId={}", studentId);
-    }
-
-    @Transactional
-    public void setStudentTargetGpa(UUID studentId, Double targetGpa) {
-        studentRepository.updateTargetGpaByStudentId(studentId, targetGpa);
-    }
-
-    private static int getCurrentSemester(Integer gradeLevel, Integer completedSemesters) {
-
-        int safeGradeLevel = (gradeLevel != null) ? gradeLevel : 0;
-        int safeCompletedSemesters = (completedSemesters != null) ? completedSemesters : 0;
-
-        int expectedCompleted = (safeGradeLevel - 1) * 2;
-        int effectiveCompleted = Math.max(safeCompletedSemesters, expectedCompleted);
-        int currentSemester = effectiveCompleted - expectedCompleted + 1;
-
-        if (currentSemester < 1) {
-            return 1;
-        } else if (currentSemester > 2) {
-            return 2;
-        }
-        return currentSemester;
-    }
-
-    private StudentDto.StudentProfileResponse buildStudentProfileResponse(Student student, User user) {
-        StudentDto.StudentInfoDto studentInfo = StudentDto.StudentInfoDto.from(student);
-        int currentSemester = getCurrentSemester(studentInfo.gradeLevel(), studentInfo.completedSemesters());
-        String lastSyncedAt = user != null && user.getLastSyncedAt() != null ? user.getLastSyncedAt().toString() : "";
-
-        return StudentDto.StudentProfileResponse.from(studentInfo, currentSemester, lastSyncedAt);
-    }
+    return StudentDto.StudentProfileResponse.from(studentInfo, currentSemester, lastSyncedAt);
+  }
 }

@@ -10,89 +10,76 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.util.List;
 
 public class LectureEvaluationDto {
 
-    public record RequiredResponse(
-            @Schema(
-                    description = "강의평가 상태",
-                    allowableValues = {"NOT_RELEASED", "PENDING", "SKIPPED", "COMPLETED"},
-                    nullable = true
-            )
-            LectureEvaluationStatus evaluationStatus,
-            @Schema(description = "강의평가 대상 연도") Integer year,
-            @Schema(description = "강의평가 대상 학기 코드") Integer semester,
-            @Schema(description = "성적 카드 목록") List<GradeCard> grades
-    ) {
-        public static RequiredResponse withoutGrades(LectureEvaluationStatus evaluationStatus, Integer year, Integer semester) {
-            return new RequiredResponse(evaluationStatus, year, semester, List.of());
-        }
+  public record RequiredResponse(
+      @Schema(
+              description = "강의평가 상태",
+              allowableValues = {"NOT_RELEASED", "PENDING", "SKIPPED", "COMPLETED"},
+              nullable = true)
+          LectureEvaluationStatus evaluationStatus,
+      @Schema(description = "강의평가 대상 연도") Integer year,
+      @Schema(description = "강의평가 대상 학기 코드") Integer semester,
+      @Schema(description = "성적 카드 목록") List<GradeCard> grades) {
+    public static RequiredResponse withoutGrades(
+        LectureEvaluationStatus evaluationStatus, Integer year, Integer semester) {
+      return new RequiredResponse(evaluationStatus, year, semester, List.of());
+    }
+  }
+
+  public record GradeCard(
+      String courseName,
+      String courseCode,
+      Long courseId,
+      FacultyDivision areaType,
+      Integer credits,
+      String professor,
+      Long professorId,
+      String grade,
+      Integer score,
+      @JsonInclude(JsonInclude.Include.NON_NULL) Integer liberalAreaCode) {
+    public static GradeCard from(StudentCourse studentCourse) {
+      return new GradeCard(
+          studentCourse.getOffering().getCourse().getCourseName(),
+          studentCourse.getOffering().getCourse().getCourseCode(),
+          studentCourse.getOffering().getCourse().getId(),
+          studentCourse.getOffering().getFacultyDivisionName(),
+          studentCourse.getOffering().getPoints(),
+          studentCourse.getOffering().getProfessor() != null
+              ? studentCourse.getOffering().getProfessor().getProfessorName()
+              : "미지정",
+          studentCourse.getOffering().getProfessor() != null
+              ? studentCourse.getOffering().getProfessor().getId()
+              : null,
+          studentCourse.getGrade() != null && studentCourse.getGrade().getValue() != null
+              ? studentCourse.getGrade().getValue().getValue()
+              : null,
+          studentCourse.getOriginalScore(),
+          missionLiberalAreaCode(studentCourse));
     }
 
-    public record GradeCard(
-            String courseName,
-            String courseCode,
-            Long courseId,
-            FacultyDivision areaType,
-            Integer credits,
-            String professor,
-            Long professorId,
-            String grade,
-            Integer score,
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            Integer liberalAreaCode
-    ) {
-        public static GradeCard from(StudentCourse studentCourse) {
-            return new GradeCard(
-                    studentCourse.getOffering().getCourse().getCourseName(),
-                    studentCourse.getOffering().getCourse().getCourseCode(),
-                    studentCourse.getOffering().getCourse().getId(),
-                    studentCourse.getOffering().getFacultyDivisionName(),
-                    studentCourse.getOffering().getPoints(),
-                    studentCourse.getOffering().getProfessor() != null
-                            ? studentCourse.getOffering().getProfessor().getProfessorName()
-                            : "미지정",
-                    studentCourse.getOffering().getProfessor() != null
-                            ? studentCourse.getOffering().getProfessor().getId()
-                            : null,
-                    studentCourse.getGrade() != null && studentCourse.getGrade().getValue() != null
-                            ? studentCourse.getGrade().getValue().getValue()
-                            : null,
-                    studentCourse.getOriginalScore(),
-                    missionLiberalAreaCode(studentCourse)
-            );
-        }
+    private static Integer missionLiberalAreaCode(StudentCourse studentCourse) {
+      if (studentCourse.getOffering().getFacultyDivisionName() != FacultyDivision.선교) {
+        return null;
+      }
 
-        private static Integer missionLiberalAreaCode(StudentCourse studentCourse) {
-            if (studentCourse.getOffering().getFacultyDivisionName() != FacultyDivision.선교) {
-                return null;
-            }
-
-            LiberalArtsAreaCode areaCode = studentCourse.getOffering().getLiberalArtsAreaCode();
-            return areaCode != null ? areaCode.getCode() : null;
-        }
+      LiberalArtsAreaCode areaCode = studentCourse.getOffering().getLiberalArtsAreaCode();
+      return areaCode != null ? areaCode.getCode() : null;
     }
+  }
 
-    public record SubmitRequest(
-            @NotNull Integer year,
-            @NotNull Integer semester,
-            @Valid
-            @NotNull
-            @Size(min = 1)
-            List<SubmitEvaluation> evaluations
-    ) {}
+  public record SubmitRequest(
+      @NotNull Integer year,
+      @NotNull Integer semester,
+      @Valid @NotNull @Size(min = 1) List<SubmitEvaluation> evaluations) {}
 
-    public record SubmitEvaluation(
-            @NotNull Long courseId,
-            @NotNull Long professorId,
-            @NotNull List<LectureEvaluationTag> selectedTags,
-            @Size(max = 2000) String review
-    ) {}
+  public record SubmitEvaluation(
+      @NotNull Long courseId,
+      @NotNull Long professorId,
+      @NotNull List<LectureEvaluationTag> selectedTags,
+      @Size(max = 2000) String review) {}
 
-    public record SkipRequest(
-            @NotNull Integer year,
-            @NotNull Integer semester
-    ) {}
+  public record SkipRequest(@NotNull Integer year, @NotNull Integer semester) {}
 }

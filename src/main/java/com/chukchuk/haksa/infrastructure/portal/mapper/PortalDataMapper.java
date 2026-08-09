@@ -2,236 +2,227 @@ package com.chukchuk.haksa.infrastructure.portal.mapper;
 
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.*;
 import com.chukchuk.haksa.infrastructure.portal.model.*;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PortalDataMapper {
 
-    private static final Integer DEFAULT_TOTAL_CREDITS = 0;
-    private static final Double DEFAULT_GPA = 0.0;
-    private static final Pattern AREA_NAME_PATTERN = Pattern.compile("^\\s*(\\d+)\\s*영역\\s*$");
+  private static final Integer DEFAULT_TOTAL_CREDITS = 0;
+  private static final Double DEFAULT_GPA = 0.0;
+  private static final Pattern AREA_NAME_PATTERN = Pattern.compile("^\\s*(\\d+)\\s*영역\\s*$");
 
-    public static PortalData toPortalData(RawPortalData raw) {
-        return new PortalData(
-                toPortalStudentInfo(raw.student()),
-                toPortalAcademicInfo(raw.semesters(), raw.academicRecords()),
-                toPortalCurriculumInfo(raw.semesters())
-        );
+  public static PortalData toPortalData(RawPortalData raw) {
+    return new PortalData(
+        toPortalStudentInfo(raw.student()),
+        toPortalAcademicInfo(raw.semesters(), raw.academicRecords()),
+        toPortalCurriculumInfo(raw.semesters()));
+  }
+
+  private static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDTO s) {
+    return new PortalStudentInfo(
+        s.sno(),
+        s.studNm(),
+        new CodeName(s.univCd(), s.univNm()),
+        new CodeName(s.dpmjCd(), s.dpmjNm()),
+        new CodeName(s.mjorCd(), s.mjorNm()),
+        s.the2MjorCd() != null ? new CodeName(s.the2MjorCd(), s.the2MjorNm()) : null,
+        s.scrgStatNm(),
+        new AdmissionInfo(
+            parseIntOrZero(s.enscYear()), parseIntOrZero(s.enscSmrCd()), s.enscDvcd()),
+        new PortalAcademicInfo(s.studGrde(), s.facSmrCnt(), DEFAULT_TOTAL_CREDITS, DEFAULT_GPA),
+        parseLanguageCertFulfilled(s.flangPassGb()));
+  }
+
+  private static PortalAcademicData toPortalAcademicInfo(
+      List<RawPortalSemesterDTO> semesters, RawPortalGradeResponseDTO academicRecords) {
+    List<SemesterCourseInfo> semesterCourses = extractSemesterCourses(semesters);
+    List<SemesterGrade> grades = extractSemesterGrades(academicRecords);
+    AcademicSummary summary = createAcademicSummary(academicRecords);
+
+    return new PortalAcademicData(semesterCourses, new GradeSummary(grades, summary), summary);
+  }
+
+  private static List<SemesterCourseInfo> extractSemesterCourses(
+      List<RawPortalSemesterDTO> semesters) {
+    List<SemesterCourseInfo> semesterCourses = new ArrayList<>();
+
+    for (RawPortalSemesterDTO sem : semesters) {
+      String[] parts = sem.semester().split("-");
+      int year = parseIntOrZero(parts[0]);
+      int semester = parseIntOrZero(parts[1]);
+
+      List<CourseInfo> courses = new ArrayList<>();
+      for (RawPortalCourseDTO c : sem.courses()) {
+        courses.add(createCourseInfo(c));
+      }
+
+      semesterCourses.add(new SemesterCourseInfo(year, semester, courses));
     }
 
-    private static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDTO s) {
-        return new PortalStudentInfo(
-                s.sno(),
-                s.studNm(),
-                new CodeName(s.univCd(), s.univNm()),
-                new CodeName(s.dpmjCd(), s.dpmjNm()),
-                new CodeName(s.mjorCd(), s.mjorNm()),
-                s.the2MjorCd() != null ? new CodeName(s.the2MjorCd(), s.the2MjorNm()) : null,
-                s.scrgStatNm(),
-                new AdmissionInfo(
-                        parseIntOrZero(s.enscYear()),
-                        parseIntOrZero(s.enscSmrCd()),
-                        s.enscDvcd()
-                ),
-                new PortalAcademicInfo(
-                        s.studGrde(),
-                        s.facSmrCnt(),
-                        DEFAULT_TOTAL_CREDITS,
-                        DEFAULT_GPA
-                ),
-                parseLanguageCertFulfilled(s.flangPassGb())
-        );
+    return semesterCourses;
+  }
+
+  private static List<SemesterGrade> extractSemesterGrades(
+      RawPortalGradeResponseDTO academicRecords) {
+    List<SemesterGrade> grades = new ArrayList<>();
+
+    for (RawPortalSemesterGradeDTO g : academicRecords.listSmrCretSumTabYearSmr()) {
+      log.debug("grade year = {}, semester = '{}'", g.cretGainYear(), g.cretSmrCd());
+
+      grades.add(
+          new SemesterGrade(
+              parseIntOrZero(g.cretGainYear()),
+              parseIntOrZero(g.cretSmrCd()),
+              g.gainPoint(),
+              g.applPoint(),
+              g.gainAvmk(),
+              parseDoubleOrZero(g.gainTavgPont()),
+              g.dpmjOrdp() != null ? parseRanking(g.dpmjOrdp()) : null));
     }
 
-    private static PortalAcademicData toPortalAcademicInfo(List<RawPortalSemesterDTO> semesters, RawPortalGradeResponseDTO academicRecords) {
-        List<SemesterCourseInfo> semesterCourses = extractSemesterCourses(semesters);
-        List<SemesterGrade> grades = extractSemesterGrades(academicRecords);
-        AcademicSummary summary = createAcademicSummary(academicRecords);
+    return grades;
+  }
 
-        return new PortalAcademicData(semesterCourses, new GradeSummary(grades, summary), summary);
-    }
+  private static AcademicSummary createAcademicSummary(RawPortalGradeResponseDTO academicRecords) {
+    RawPortalGradeSummaryDTO summary = academicRecords.selectSmrCretSumTabSjTotal();
+    return new AcademicSummary(
+        parseIntOrZero(summary.applPoint()),
+        parseIntOrZero(summary.gainPoint()),
+        parseDoubleOrZero(summary.gainAvmk()),
+        parseDoubleOrZero(summary.gainTavgPont()));
+  }
 
-    private static List<SemesterCourseInfo> extractSemesterCourses(List<RawPortalSemesterDTO> semesters) {
-        List<SemesterCourseInfo> semesterCourses = new ArrayList<>();
+  private static CourseInfo createCourseInfo(RawPortalCourseDTO c) {
+    boolean isRetakeDeleted =
+        c.cretDelNm()
+            .map(val -> val.trim().equals("재수강 삭제") || val.trim().equals("재수강삭제"))
+            .orElse(false);
+    Integer credits = c.point() != null ? c.point() : c.gainPoint();
+    return new CourseInfo(
+        c.subjtCd(),
+        c.subjtNm(),
+        c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수",
+        c.estbDpmjNm(),
+        credits,
+        c.cretGrdCd(),
+        !"-".equals(c.refacYearSmr()), // pick: 기존 is_Retake 처리
+        c.timtSmryCn(),
+        c.facDvnm(),
+        parseIntOrZero(c.cltTerrNm()),
+        parseIntOrZero(c.cltTerrCd()),
+        parseIntOrZero(c.subjtEstbSmrCd()),
+        parseDoubleOrZero(c.gainPont()),
+        isRetakeDeleted);
+  }
 
-        for (RawPortalSemesterDTO sem : semesters) {
-            String[] parts = sem.semester().split("-");
-            int year = parseIntOrZero(parts[0]);
-            int semester = parseIntOrZero(parts[1]);
+  private static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDTO> semesters) {
+    List<CourseInfo> courses = new ArrayList<>();
+    List<ProfessorInfo> professors = new ArrayList<>();
+    List<OfferingInfo> offerings = new ArrayList<>();
 
-            List<CourseInfo> courses = new ArrayList<>();
-            for (RawPortalCourseDTO c : sem.courses()) {
-                courses.add(createCourseInfo(c));
-            }
+    for (RawPortalSemesterDTO sem : semesters) {
+      int year = parseIntOrZero(sem.semester().split("-")[0]);
+      int semester = parseIntOrZero(sem.semester().split("-")[1]);
 
-            semesterCourses.add(new SemesterCourseInfo(year, semester, courses));
-        }
+      for (RawPortalCourseDTO c : sem.courses()) {
+        courses.add(createCourseInfo(c));
+        professors.add(new ProfessorInfo(c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수"));
 
-        return semesterCourses;
-    }
-
-    private static List<SemesterGrade> extractSemesterGrades(RawPortalGradeResponseDTO academicRecords) {
-        List<SemesterGrade> grades = new ArrayList<>();
-
-        for (RawPortalSemesterGradeDTO g : academicRecords.listSmrCretSumTabYearSmr()) {
-            log.debug("grade year = {}, semester = '{}'", g.cretGainYear(), g.cretSmrCd());
-
-            grades.add(new SemesterGrade(
-                    parseIntOrZero(g.cretGainYear()),
-                    parseIntOrZero(g.cretSmrCd()),
-                    g.gainPoint(),
-                    g.applPoint(),
-                    g.gainAvmk(),
-                    parseDoubleOrZero(g.gainTavgPont()),
-                    g.dpmjOrdp() != null ? parseRanking(g.dpmjOrdp()) : null
-            ));
-        }
-
-        return grades;
-    }
-
-    private static AcademicSummary createAcademicSummary(RawPortalGradeResponseDTO academicRecords) {
-        RawPortalGradeSummaryDTO summary = academicRecords.selectSmrCretSumTabSjTotal();
-        return new AcademicSummary(
-                parseIntOrZero(summary.applPoint()),
-                parseIntOrZero(summary.gainPoint()),
-                parseDoubleOrZero(summary.gainAvmk()),
-                parseDoubleOrZero(summary.gainTavgPont())
-        );
-    }
-
-    private static CourseInfo createCourseInfo(RawPortalCourseDTO c) {
-        boolean isRetakeDeleted = c.cretDelNm()
-                .map(val -> val.trim().equals("재수강 삭제") || val.trim().equals("재수강삭제"))
-                .orElse(false);
-        Integer credits = c.point() != null ? c.point() : c.gainPoint();
-        return new CourseInfo(
+        offerings.add(
+            new OfferingInfo(
                 c.subjtCd(),
-                c.subjtNm(),
-                c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수",
-                c.estbDpmjNm(),
-                credits,
-                c.cretGrdCd(),
-                !"-".equals(c.refacYearSmr()), // pick: 기존 is_Retake 처리
+                year,
+                semester,
+                c.diclNo(),
+                c.ltrPrfsNm(),
                 c.timtSmryCn(),
+                c.point() != null ? c.point() : c.gainPoint(),
+                c.estbDpmjNm(),
                 c.facDvnm(),
-                parseIntOrZero(c.cltTerrNm()),
-                parseIntOrZero(c.cltTerrCd()),
                 parseIntOrZero(c.subjtEstbSmrCd()),
-                parseDoubleOrZero(c.gainPont()),
-                isRetakeDeleted
-        );
+                extractAreaCode(c.cltTerrNm()),
+                parseIntOrZero(c.cltTerrCd()),
+                "UNKNOWN",
+                false));
+      }
     }
 
-    private static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDTO> semesters) {
-        List<CourseInfo> courses = new ArrayList<>();
-        List<ProfessorInfo> professors = new ArrayList<>();
-        List<OfferingInfo> offerings = new ArrayList<>();
+    return new PortalCurriculumData(courses, professors, offerings);
+  }
 
-        for (RawPortalSemesterDTO sem : semesters) {
-            int year = parseIntOrZero(sem.semester().split("-")[0]);
-            int semester = parseIntOrZero(sem.semester().split("-")[1]);
+  // 기본값 0 반환
+  private static int parseIntOrZero(String str) {
+    try {
+      return (str != null && !str.isBlank()) ? Integer.parseInt(str) : 0;
+    } catch (NumberFormatException e) {
+      log.debug("parseInt 실패: {}", str);
+      return 0;
+    }
+  }
 
-            for (RawPortalCourseDTO c : sem.courses()) {
-                courses.add(createCourseInfo(c));
-                professors.add(new ProfessorInfo(c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수"));
+  private static double parseDoubleOrZero(String str) {
+    try {
+      return (str != null && !str.isBlank()) ? Double.parseDouble(str) : 0.0;
+    } catch (NumberFormatException e) {
+      log.debug("parseDouble 실패: {}", str);
+      return 0.0;
+    }
+  }
 
-                offerings.add(new OfferingInfo(
-                        c.subjtCd(),
-                        year,
-                        semester,
-                        c.diclNo(),
-                        c.ltrPrfsNm(),
-                        c.timtSmryCn(),
-                        c.point() != null ? c.point() : c.gainPoint(),
-                        c.estbDpmjNm(),
-                        c.facDvnm(),
-                        parseIntOrZero(c.subjtEstbSmrCd()),
-                        extractAreaCode(c.cltTerrNm()),
-                        parseIntOrZero(c.cltTerrCd()),
-                        "UNKNOWN",
-                        false
-                ));
-            }
-        }
-
-        return new PortalCurriculumData(courses, professors, offerings);
+  private static Boolean parseLanguageCertFulfilled(String flangPassGb) {
+    if (flangPassGb == null || flangPassGb.isBlank()) {
+      return null;
     }
 
-    // 기본값 0 반환
-    private static int parseIntOrZero(String str) {
-        try {
-            return (str != null && !str.isBlank()) ? Integer.parseInt(str) : 0;
-        } catch (NumberFormatException e) {
-            log.debug("parseInt 실패: {}", str);
-            return 0;
-        }
+    String normalized = flangPassGb.trim();
+    if ("통과".equals(normalized)) {
+      return true;
+    }
+    if ("미통과".equals(normalized)) {
+      return false;
     }
 
-    private static double parseDoubleOrZero(String str) {
-        try {
-            return (str != null && !str.isBlank()) ? Double.parseDouble(str) : 0.0;
-        } catch (NumberFormatException e) {
-            log.debug("parseDouble 실패: {}", str);
-            return 0.0;
-        }
+    throw new IllegalArgumentException("알 수 없는 외국어 인증 값: " + flangPassGb);
+  }
+
+  private static Ranking parseRanking(String ordp) {
+    if (ordp == null || ordp.isBlank()) {
+      log.debug("parseRanking: 입력이 null이거나 공백입니다. → '{}'", ordp);
+      return null;
     }
 
-    private static Boolean parseLanguageCertFulfilled(String flangPassGb) {
-        if (flangPassGb == null || flangPassGb.isBlank()) {
-            return null;
-        }
-
-        String normalized = flangPassGb.trim();
-        if ("통과".equals(normalized)) {
-            return true;
-        }
-        if ("미통과".equals(normalized)) {
-            return false;
-        }
-
-        throw new IllegalArgumentException("알 수 없는 외국어 인증 값: " + flangPassGb);
+    String[] split = ordp.split("/");
+    if (split.length != 2 || split[0].isBlank() || split[1].isBlank()) {
+      log.debug("parseRanking: 올바르지 않은 포맷입니다. → '{}'", ordp);
+      return null;
     }
 
-    private static Ranking parseRanking(String ordp) {
-        if (ordp == null || ordp.isBlank()) {
-            log.debug("parseRanking: 입력이 null이거나 공백입니다. → '{}'", ordp);
-            return null;
-        }
-
-        String[] split = ordp.split("/");
-        if (split.length != 2 || split[0].isBlank() || split[1].isBlank()) {
-            log.debug("parseRanking: 올바르지 않은 포맷입니다. → '{}'", ordp);
-            return null;
-        }
-
-        try {
-            int rank = Integer.parseInt(split[0].trim());
-            int total = Integer.parseInt(split[1].trim());
-            return new Ranking(rank, total);
-        } catch (NumberFormatException e) {
-            log.debug("parseRanking: 숫자 파싱 실패 → '{}'", ordp);
-            return null;
-        }
+    try {
+      int rank = Integer.parseInt(split[0].trim());
+      int total = Integer.parseInt(split[1].trim());
+      return new Ranking(rank, total);
+    } catch (NumberFormatException e) {
+      log.debug("parseRanking: 숫자 파싱 실패 → '{}'", ordp);
+      return null;
     }
+  }
 
-    private static int extractAreaCode(String input) {
-        if (input == null) {
-            return 0;
-        }
-        Matcher matcher = AREA_NAME_PATTERN.matcher(input);
-        if (!matcher.matches()) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(matcher.group(1));
-        } catch (NumberFormatException exception) {
-            return 0;
-        }
+  private static int extractAreaCode(String input) {
+    if (input == null) {
+      return 0;
     }
+    Matcher matcher = AREA_NAME_PATTERN.matcher(input);
+    if (!matcher.matches()) {
+      return 0;
+    }
+    try {
+      return Integer.parseInt(matcher.group(1));
+    } catch (NumberFormatException exception) {
+      return 0;
+    }
+  }
 }

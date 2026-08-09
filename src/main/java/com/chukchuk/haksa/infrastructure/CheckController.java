@@ -14,23 +14,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class CheckController {
 
-    @Operation(
-            responses = @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE,
-                            schema = @Schema(implementation = String.class)))
-    )
-    @GetMapping("/health")
-    public String health() {
-        return "ok";
-    }
+  @Operation(
+      responses =
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              content =
+                  @Content(
+                      mediaType = MediaType.TEXT_PLAIN_VALUE,
+                      schema = @Schema(implementation = String.class))))
+  @GetMapping("/health")
+  public String health() {
+    return "ok";
+  }
 
-    @Operation(
-            responses = @ApiResponse(responseCode = "500", description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ErrorResponseWrapper.class)))
-    )
-    @GetMapping("/sentry-test")
-    public void sentryTest() {
-        throw new RuntimeException("SENTRY_TEST_DEV");
-    }
+  @Operation(
+      responses =
+          @ApiResponse(
+              responseCode = "500",
+              description = "서버 내부 오류 (ErrorCode: INTERNAL_ERROR)",
+              content =
+                  @Content(
+                      mediaType = MediaType.APPLICATION_JSON_VALUE,
+                      schema = @Schema(implementation = ErrorResponseWrapper.class))))
+  @GetMapping("/sentry-test")
+  public void sentryTest() {
+    throw new RuntimeException("SENTRY_TEST_DEV");
+  }
 }

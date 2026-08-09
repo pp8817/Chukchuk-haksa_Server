@@ -2,13 +2,13 @@
 package com.chukchuk.haksa.domain.graduation.repository;
 
 import com.chukchuk.haksa.domain.graduation.model.StudentGraduationProgress;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StudentGraduationProgressRepository extends JpaRepository<StudentGraduationProgress, UUID> {
-    Optional<StudentGraduationProgress> findByStudentId(UUID studentId);
+public interface StudentGraduationProgressRepository
+    extends JpaRepository<StudentGraduationProgress, UUID> {
+  Optional<StudentGraduationProgress> findByStudentId(UUID studentId);
 
-    void deleteByStudentId(UUID studentId);
+  void deleteByStudentId(UUID studentId);
 }

@@ -5,44 +5,47 @@ import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.graduation.model.StudentGraduationProgress;
 import com.chukchuk.haksa.domain.graduation.repository.StudentGraduationProgressRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StudentGraduationProgressService {
 
-    private final StudentGraduationProgressRepository repository;
-    private final AcademicCache academicCache;
+  private final StudentGraduationProgressRepository repository;
+  private final AcademicCache academicCache;
 
-    @Transactional
-    public void syncLanguageCert(Student student, Boolean languageCertFulfilled) {
-        if (languageCertFulfilled == null) {
-            return;
-        }
+  @Transactional
+  public void syncLanguageCert(Student student, Boolean languageCertFulfilled) {
+    if (languageCertFulfilled == null) {
+      return;
+    }
 
-        UUID studentId = student.getId();
-        StudentGraduationProgress progress = repository.findByStudentId(studentId)
-                .map(existing -> {
-                    existing.updateLanguageCert(languageCertFulfilled);
-                    return existing;
+    UUID studentId = student.getId();
+    StudentGraduationProgress progress =
+        repository
+            .findByStudentId(studentId)
+            .map(
+                existing -> {
+                  existing.updateLanguageCert(languageCertFulfilled);
+                  return existing;
                 })
-                .orElseGet(() -> StudentGraduationProgress.createForLanguageCert(
-                        student,
-                        languageCertFulfilled
-                ));
+            .orElseGet(
+                () ->
+                    StudentGraduationProgress.createForLanguageCert(
+                        student, languageCertFulfilled));
 
-        repository.save(progress);
-        academicCache.deleteAllByStudentId(studentId);
-    }
+    repository.save(progress);
+    academicCache.deleteAllByStudentId(studentId);
+  }
 
-    public Optional<Boolean> getLanguageCertFulfilled(UUID studentId) {
-        return repository.findByStudentId(studentId)
-                .map(StudentGraduationProgress::getLanguageCertFulfilled);
-    }
+  public Optional<Boolean> getLanguageCertFulfilled(UUID studentId) {
+    return repository
+        .findByStudentId(studentId)
+        .map(StudentGraduationProgress::getLanguageCertFulfilled);
+  }
 }

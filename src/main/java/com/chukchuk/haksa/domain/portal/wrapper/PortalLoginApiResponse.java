@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "PortalLoginApiResponse", description = "포털 로그인 검증 응답")
 public class PortalLoginApiResponse extends SuccessResponse<PortalLinkDto.LoginResponse> {
 
-    public PortalLoginApiResponse() {
-        super(new PortalLinkDto.LoginResponse("portal-verification-token"), "요청 성공");
-    }
+  public PortalLoginApiResponse() {
+    super(new PortalLinkDto.LoginResponse("portal-verification-token"), "요청 성공");
+  }
 }

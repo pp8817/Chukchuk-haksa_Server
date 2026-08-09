@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PortalLinkController implements PortalLinkCommandControllerDocs {
 
-    private final PortalLinkJobService portalLinkJobService;
+  private final PortalLinkJobService portalLinkJobService;
 
-    @PostMapping
-    public ResponseEntity<SuccessResponse<PortalLinkDto.AcceptedResponse>> createPortalLinkJob(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
-            @Valid @RequestBody PortalLinkDto.LinkRequest request
-    ) {
-        PortalLinkDto.AcceptedResponse response = portalLinkJobService.acceptJob(userDetails.getId(), idempotencyKey, request);
-        return ResponseEntity.accepted().body(SuccessResponse.of(response));
-    }
+  @PostMapping
+  public ResponseEntity<SuccessResponse<PortalLinkDto.AcceptedResponse>> createPortalLinkJob(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestHeader("Idempotency-Key") String idempotencyKey,
+      @Valid @RequestBody PortalLinkDto.LinkRequest request) {
+    PortalLinkDto.AcceptedResponse response =
+        portalLinkJobService.acceptJob(userDetails.getId(), idempotencyKey, request);
+    return ResponseEntity.accepted().body(SuccessResponse.of(response));
+  }
 }

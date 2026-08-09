@@ -10,13 +10,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class ChukchukHaksaApplication extends SpringBootServletInitializer {
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(ChukchukHaksaApplication.class);
-    }
+  @Override
+  protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    return application.sources(ChukchukHaksaApplication.class);
+  }
 
-    public static void main(String[] args) {
-        SpringApplication.run(ChukchukHaksaApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(ChukchukHaksaApplication.class, args);
+  }
 }

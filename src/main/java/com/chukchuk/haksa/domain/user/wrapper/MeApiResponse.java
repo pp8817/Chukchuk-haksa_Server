@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "MeApiResponse", description = "내 사용자 정보 조회 응답")
 public class MeApiResponse extends SuccessResponse<UserDto.MeResponse> {
 
-    public MeApiResponse() {
-        super(new UserDto.MeResponse(true), "요청 성공");
-    }
+  public MeApiResponse() {
+    super(new UserDto.MeResponse(true), "요청 성공");
+  }
 }

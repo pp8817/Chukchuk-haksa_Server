@@ -3,15 +3,15 @@ package com.chukchuk.haksa.global.logging.annotation;
 import java.time.Duration;
 
 public final class LogTime {
-    private LogTime() {}
+  private LogTime() {}
 
-    /** 현재 시각 (ns) */
-    public static long start() {
-        return System.nanoTime();
-    }
+  /** 현재 시각 (ns) */
+  public static long start() {
+    return System.nanoTime();
+  }
 
-    /** 경과 시간 (ms) */
-    public static long elapsedMs(long startNanos) {
-        return Duration.ofNanos(System.nanoTime() - startNanos).toMillis();
-    }
+  /** 경과 시간 (ms) */
+  public static long elapsedMs(long startNanos) {
+    return Duration.ofNanos(System.nanoTime() - startNanos).toMillis();
+  }
 }

@@ -3,5 +3,5 @@ package com.chukchuk.haksa.application.portal;
 
 public interface PortalLoginVerifier {
 
-    void verify(String portalType, String username, String password);
+  void verify(String portalType, String username, String password);
 }

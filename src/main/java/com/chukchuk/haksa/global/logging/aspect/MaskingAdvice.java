@@ -12,13 +12,15 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class MaskingAdvice {
-    private static final Logger LOG = LoggerFactory.getLogger(MaskingAdvice.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MaskingAdvice.class);
 
-    @AfterReturning(pointcut = "execution(* org.slf4j.Logger.info(..)) && args(msg,..)", returning = "ret")
-    public void afterInfo(JoinPoint jp, Object msg, Object ret) {
-        // NOTE: 실제 운영에선 로거 프록시/레이퍼로 적용하는 편이 더 안전합니다.
-        if (msg instanceof String s) {
-            LOG.debug("sanitized={}", LogSanitizer.clean(s));
-        }
+  @AfterReturning(
+      pointcut = "execution(* org.slf4j.Logger.info(..)) && args(msg,..)",
+      returning = "ret")
+  public void afterInfo(JoinPoint jp, Object msg, Object ret) {
+    // NOTE: 실제 운영에선 로거 프록시/레이퍼로 적용하는 편이 더 안전합니다.
+    if (msg instanceof String s) {
+      LOG.debug("sanitized={}", LogSanitizer.clean(s));
     }
+  }
 }

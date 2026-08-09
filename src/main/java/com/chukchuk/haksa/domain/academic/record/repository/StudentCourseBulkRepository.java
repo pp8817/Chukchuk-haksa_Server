@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface StudentCourseBulkRepository {
 
-    void insertAll(List<StudentCourseBulkRow> rows);
+  void insertAll(List<StudentCourseBulkRow> rows);
 }

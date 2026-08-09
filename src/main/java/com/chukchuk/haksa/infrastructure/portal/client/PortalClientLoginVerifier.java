@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PortalClientLoginVerifier implements PortalLoginVerifier {
 
-    private final PortalClient portalClient;
+  private final PortalClient portalClient;
 
-    @Override
-    public void verify(String portalType, String username, String password) {
-        portalClient.validateLogin(username, password);
-    }
+  @Override
+  public void verify(String portalType, String username, String password) {
+    portalClient.validateLogin(username, password);
+  }
 }

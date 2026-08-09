@@ -2,13 +2,13 @@
 package com.chukchuk.haksa.domain.graduation.model;
 
 public enum LanguageCertTestType {
-    TOEIC,
-    TOEFL_IBT,
-    TEPS,
-    OPIC,
-    TOEIC_SPEAKING,
-    JPT_JLPT,
-    NEW_HSK,
-    TORFL_FLEX,
-    DELF
+  TOEIC,
+  TOEFL_IBT,
+  TEPS,
+  OPIC,
+  TOEIC_SPEAKING,
+  JPT_JLPT,
+  NEW_HSK,
+  TORFL_FLEX,
+  DELF
 }

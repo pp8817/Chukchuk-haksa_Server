@@ -12,22 +12,22 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class OidcJwksClient {
 
-    private static final String CACHE_NAME = "oidcKeys";
+  private static final String CACHE_NAME = "oidcKeys";
 
-    private final RestTemplate restTemplate;
-    private final CacheManager cacheManager;
+  private final RestTemplate restTemplate;
+  private final CacheManager cacheManager;
 
-    @Cacheable(cacheNames = CACHE_NAME, key = "#cacheKey")
-    public JsonNode fetchKeys(String cacheKey, String url) {
-        return restTemplate.getForObject(url, JsonNode.class);
+  @Cacheable(cacheNames = CACHE_NAME, key = "#cacheKey")
+  public JsonNode fetchKeys(String cacheKey, String url) {
+    return restTemplate.getForObject(url, JsonNode.class);
+  }
+
+  public JsonNode refreshKeys(String cacheKey, String url) {
+    JsonNode keys = restTemplate.getForObject(url, JsonNode.class);
+    Cache cache = cacheManager.getCache(CACHE_NAME);
+    if (cache != null) {
+      cache.put(cacheKey, keys);
     }
-
-    public JsonNode refreshKeys(String cacheKey, String url) {
-        JsonNode keys = restTemplate.getForObject(url, JsonNode.class);
-        Cache cache = cacheManager.getCache(CACHE_NAME);
-        if (cache != null) {
-            cache.put(cacheKey, keys);
-        }
-        return keys;
-    }
+    return keys;
+  }
 }

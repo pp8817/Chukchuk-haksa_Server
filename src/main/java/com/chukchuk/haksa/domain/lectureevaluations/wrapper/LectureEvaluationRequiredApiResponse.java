@@ -4,13 +4,16 @@ import com.chukchuk.haksa.domain.academic.record.model.LectureEvaluationStatus;
 import com.chukchuk.haksa.domain.lectureevaluations.dto.LectureEvaluationDto;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.List;
 
 @Schema(name = "LectureEvaluationRequiredApiResponse", description = "강의평가 상태 응답")
-public class LectureEvaluationRequiredApiResponse extends SuccessResponse<LectureEvaluationDto.RequiredResponse> {
+public class LectureEvaluationRequiredApiResponse
+    extends SuccessResponse<LectureEvaluationDto.RequiredResponse> {
 
-    public LectureEvaluationRequiredApiResponse() {
-        super(new LectureEvaluationDto.RequiredResponse(LectureEvaluationStatus.PENDING, 2026, 10, List.of()), "요청 성공");
-    }
+  public LectureEvaluationRequiredApiResponse() {
+    super(
+        new LectureEvaluationDto.RequiredResponse(
+            LectureEvaluationStatus.PENDING, 2026, 10, List.of()),
+        "요청 성공");
+  }
 }

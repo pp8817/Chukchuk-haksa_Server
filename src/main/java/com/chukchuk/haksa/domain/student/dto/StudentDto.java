@@ -3,70 +3,69 @@ package com.chukchuk.haksa.domain.student.dto;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.Instant;
 import java.util.Objects;
 
 public class StudentDto {
 
-    public record StudentInfoDto(
-            String studentCode,
-            String name,
-            String departmentName,
-            String majorName,
-            String dualMajorName,
-            Integer gradeLevel,
-            StudentStatus status,
-            Integer completedSemesters,
-            Instant updatedAt,
-            boolean reconnectionRequired
-    ) {
-        public static StudentInfoDto from(Student student) {
-            return new StudentInfoDto(
-                    student.getStudentCode(),
-                    student.getName(),
-                    student.getDepartment() != null ? student.getDepartment().getEstablishedDepartmentName() : null,
-                    student.getMajor() != null ? student.getMajor().getEstablishedDepartmentName() : null,
-                    student.getSecondaryMajor() != null ? student.getSecondaryMajor().getEstablishedDepartmentName() : null,
-                    student.getAcademicInfo().getGradeLevel(),
-                    student.getAcademicInfo().getStatus(),
-                    student.getAcademicInfo().getCompletedSemesters(),
-                    student.getUpdatedAt(),
-                    student.isReconnectionRequired()
-            );
-        }
+  public record StudentInfoDto(
+      String studentCode,
+      String name,
+      String departmentName,
+      String majorName,
+      String dualMajorName,
+      Integer gradeLevel,
+      StudentStatus status,
+      Integer completedSemesters,
+      Instant updatedAt,
+      boolean reconnectionRequired) {
+    public static StudentInfoDto from(Student student) {
+      return new StudentInfoDto(
+          student.getStudentCode(),
+          student.getName(),
+          student.getDepartment() != null
+              ? student.getDepartment().getEstablishedDepartmentName()
+              : null,
+          student.getMajor() != null ? student.getMajor().getEstablishedDepartmentName() : null,
+          student.getSecondaryMajor() != null
+              ? student.getSecondaryMajor().getEstablishedDepartmentName()
+              : null,
+          student.getAcademicInfo().getGradeLevel(),
+          student.getAcademicInfo().getStatus(),
+          student.getAcademicInfo().getCompletedSemesters(),
+          student.getUpdatedAt(),
+          student.isReconnectionRequired());
     }
+  }
 
-    @Schema(description = "학생 프로필 정보")
-    public record StudentProfileResponse(
-            @Schema(description = "이름", required = true) String name,
-            @Schema(description = "학번", required = true) String studentCode,
-            @Schema(description = "학과 이름", required = true) String departmentName,
-            @Schema(description = "전공 이름", required = true) String majorName,
-            @Schema(description = "복수전공 이름", required = false) String dualMajorName,
-            @Schema(description = "학년", required = true) int gradeLevel,
-            @Schema(description = "현재 학기", required = true) int currentSemester,
-            @Schema(description = "재학 상태", required = true, implementation = StudentStatus.class) StudentStatus status,
-            @Schema(description = "마지막 업데이트 일시", required = true) String lastUpdatedAt,
-            @Schema(description = "학사 정보 마지막 연동 일시", required = true) String lastSyncedAt,
-            @Schema(description = "재연동 필요 여부", required = true) boolean reconnectionRequired
-    ) {
-        public static StudentProfileResponse from(StudentDto.StudentInfoDto studentInfoDto, int currentSemester, String lastSyncedAt) {
-            return new StudentProfileResponse(
-                    Objects.requireNonNullElse(studentInfoDto.name(), ""),
-                    Objects.requireNonNullElse(studentInfoDto.studentCode(), ""),
-                    Objects.requireNonNullElse(studentInfoDto.departmentName(), ""),
-                    Objects.requireNonNullElse(studentInfoDto.majorName(), ""),
-                    Objects.requireNonNullElse(studentInfoDto.dualMajorName(), ""),
-                    studentInfoDto.gradeLevel() != null ? studentInfoDto.gradeLevel() : 0,
-                    currentSemester,
-                    studentInfoDto.status(),
-                    studentInfoDto.updatedAt() != null ? studentInfoDto.updatedAt().toString() : "",
-                    lastSyncedAt,
-                    studentInfoDto.reconnectionRequired()
-            );
-        }
+  @Schema(description = "학생 프로필 정보")
+  public record StudentProfileResponse(
+      @Schema(description = "이름", required = true) String name,
+      @Schema(description = "학번", required = true) String studentCode,
+      @Schema(description = "학과 이름", required = true) String departmentName,
+      @Schema(description = "전공 이름", required = true) String majorName,
+      @Schema(description = "복수전공 이름", required = false) String dualMajorName,
+      @Schema(description = "학년", required = true) int gradeLevel,
+      @Schema(description = "현재 학기", required = true) int currentSemester,
+      @Schema(description = "재학 상태", required = true, implementation = StudentStatus.class)
+          StudentStatus status,
+      @Schema(description = "마지막 업데이트 일시", required = true) String lastUpdatedAt,
+      @Schema(description = "학사 정보 마지막 연동 일시", required = true) String lastSyncedAt,
+      @Schema(description = "재연동 필요 여부", required = true) boolean reconnectionRequired) {
+    public static StudentProfileResponse from(
+        StudentDto.StudentInfoDto studentInfoDto, int currentSemester, String lastSyncedAt) {
+      return new StudentProfileResponse(
+          Objects.requireNonNullElse(studentInfoDto.name(), ""),
+          Objects.requireNonNullElse(studentInfoDto.studentCode(), ""),
+          Objects.requireNonNullElse(studentInfoDto.departmentName(), ""),
+          Objects.requireNonNullElse(studentInfoDto.majorName(), ""),
+          Objects.requireNonNullElse(studentInfoDto.dualMajorName(), ""),
+          studentInfoDto.gradeLevel() != null ? studentInfoDto.gradeLevel() : 0,
+          currentSemester,
+          studentInfoDto.status(),
+          studentInfoDto.updatedAt() != null ? studentInfoDto.updatedAt().toString() : "",
+          lastSyncedAt,
+          studentInfoDto.reconnectionRequired());
     }
-
-
+  }
 }

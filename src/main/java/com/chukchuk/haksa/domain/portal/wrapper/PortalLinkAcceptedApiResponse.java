@@ -8,11 +8,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "PortalLinkAcceptedApiResponse", description = "포털 링크 job 생성 수락 응답")
 public class PortalLinkAcceptedApiResponse extends SuccessResponse<PortalLinkDto.AcceptedResponse> {
 
-    public PortalLinkAcceptedApiResponse() {
-        super(new PortalLinkDto.AcceptedResponse(
-                "job-123",
-                "accepted",
-                "/portal/link/jobs/job-123"
-        ), "요청 성공");
-    }
+  public PortalLinkAcceptedApiResponse() {
+    super(
+        new PortalLinkDto.AcceptedResponse("job-123", "accepted", "/portal/link/jobs/job-123"),
+        "요청 성공");
+  }
 }

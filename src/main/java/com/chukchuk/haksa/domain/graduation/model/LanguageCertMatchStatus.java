@@ -2,7 +2,7 @@
 package com.chukchuk.haksa.domain.graduation.model;
 
 public enum LanguageCertMatchStatus {
-    VERIFIED,
-    INFERRED,
-    UNMAPPED
+  VERIFIED,
+  INFERRED,
+  UNMAPPED
 }

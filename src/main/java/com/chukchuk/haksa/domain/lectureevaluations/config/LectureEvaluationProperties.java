@@ -7,30 +7,29 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "lecture-evaluation")
 public class LectureEvaluationProperties {
 
-    private Integer targetYear;
-    private Integer targetSemester;
+  private Integer targetYear;
+  private Integer targetSemester;
 
-    public LectureEvaluationProperties() {
-    }
+  public LectureEvaluationProperties() {}
 
-    public LectureEvaluationProperties(Integer targetYear, Integer targetSemester) {
-        this.targetYear = targetYear;
-        this.targetSemester = targetSemester;
-    }
+  public LectureEvaluationProperties(Integer targetYear, Integer targetSemester) {
+    this.targetYear = targetYear;
+    this.targetSemester = targetSemester;
+  }
 
-    public Integer getTargetYear() {
-        return targetYear;
-    }
+  public Integer getTargetYear() {
+    return targetYear;
+  }
 
-    public void setTargetYear(Integer targetYear) {
-        this.targetYear = targetYear;
-    }
+  public void setTargetYear(Integer targetYear) {
+    this.targetYear = targetYear;
+  }
 
-    public Integer getTargetSemester() {
-        return targetSemester;
-    }
+  public Integer getTargetSemester() {
+    return targetSemester;
+  }
 
-    public void setTargetSemester(Integer targetSemester) {
-        this.targetSemester = targetSemester;
-    }
+  public void setTargetSemester(Integer targetSemester) {
+    this.targetSemester = targetSemester;
+  }
 }

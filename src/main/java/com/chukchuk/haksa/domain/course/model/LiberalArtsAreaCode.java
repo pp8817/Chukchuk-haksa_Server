@@ -12,15 +12,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "liberal_arts_area_codes")
 public class LiberalArtsAreaCode extends BaseEntity {
 
-    @Id
-    private Integer code;
+  @Id private Integer code;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+  @Column(name = "is_active")
+  private Boolean isActive;
 
-    @Column(name = "area_name", nullable = false)
-    private String areaName;
+  @Column(name = "area_name", nullable = false)
+  private String areaName;
 
-    @Column(name = "description")
-    private String description;
+  @Column(name = "description")
+  private String description;
 }

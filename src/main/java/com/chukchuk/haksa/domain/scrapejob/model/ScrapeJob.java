@@ -9,257 +9,263 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-        name = "scrape_jobs",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_scrape_jobs_user_idempotency", columnNames = {"user_id", "idempotency_key"})
-        }
-)
+    name = "scrape_jobs",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uk_scrape_jobs_user_idempotency",
+          columnNames = {"user_id", "idempotency_key"})
+    })
 public class ScrapeJob extends BaseEntity {
 
-    @Id
-    @Column(name = "job_id", nullable = false, updatable = false)
-    private String jobId;
+  @Id
+  @Column(name = "job_id", nullable = false, updatable = false)
+  private String jobId;
 
-    @Column(name = "user_id", nullable = false, updatable = false)
-    private UUID userId;
+  @Column(name = "user_id", nullable = false, updatable = false)
+  private UUID userId;
 
-    @Column(name = "portal_type", nullable = false, updatable = false)
-    private String portalType;
+  @Column(name = "portal_type", nullable = false, updatable = false)
+  private String portalType;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "operation_type", nullable = false, updatable = false)
-    private ScrapeJobOperationType operationType;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "operation_type", nullable = false, updatable = false)
+  private ScrapeJobOperationType operationType;
 
-    @Column(name = "idempotency_key", nullable = false, updatable = false)
-    private String idempotencyKey;
+  @Column(name = "idempotency_key", nullable = false, updatable = false)
+  private String idempotencyKey;
 
-    @Column(name = "request_fingerprint", nullable = false, updatable = false, length = 64)
-    private String requestFingerprint;
+  @Column(name = "request_fingerprint", nullable = false, updatable = false, length = 64)
+  private String requestFingerprint;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ScrapeJobStatus status;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private ScrapeJobStatus status;
 
-    @Lob
-    @Column(name = "request_payload_json", nullable = false, columnDefinition = "TEXT")
-    private String requestPayloadJson;
+  @Lob
+  @Column(name = "request_payload_json", nullable = false, columnDefinition = "TEXT")
+  private String requestPayloadJson;
 
-    @Lob
-    @Column(name = "result_payload_json", columnDefinition = "TEXT")
-    private String resultPayloadJson;
+  @Lob
+  @Column(name = "result_payload_json", columnDefinition = "TEXT")
+  private String resultPayloadJson;
 
-    @Column(name = "result_s3_key")
-    private String resultS3Key;
+  @Column(name = "result_s3_key")
+  private String resultS3Key;
 
-    @Column(name = "result_checksum")
-    private String resultChecksum;
+  @Column(name = "result_checksum")
+  private String resultChecksum;
 
-    @Column(name = "callback_attempt")
-    private Integer callbackAttempt;
+  @Column(name = "callback_attempt")
+  private Integer callbackAttempt;
 
-    @Column(name = "callback_received_at")
-    private Instant callbackReceivedAt;
+  @Column(name = "callback_received_at")
+  private Instant callbackReceivedAt;
 
-    @Lob
-    @Column(name = "callback_metadata_json", columnDefinition = "TEXT")
-    private String callbackMetadataJson;
+  @Lob
+  @Column(name = "callback_metadata_json", columnDefinition = "TEXT")
+  private String callbackMetadataJson;
 
-    @Column(name = "error_code")
-    private String errorCode;
+  @Column(name = "error_code")
+  private String errorCode;
 
-    @Column(name = "error_message", columnDefinition = "TEXT")
-    private String errorMessage;
+  @Column(name = "error_message", columnDefinition = "TEXT")
+  private String errorMessage;
 
-    @Column(name = "retryable")
-    private Boolean retryable;
+  @Column(name = "retryable")
+  private Boolean retryable;
 
-    @Column(name = "finished_at")
-    private Instant finishedAt;
+  @Column(name = "finished_at")
+  private Instant finishedAt;
 
-    @Column(name = "link_started_at", nullable = false, updatable = false)
-    private Instant linkStartedAt;
+  @Column(name = "link_started_at", nullable = false, updatable = false)
+  private Instant linkStartedAt;
 
-    @Column(name = "link_ended_at")
-    private Instant linkEndedAt;
+  @Column(name = "link_ended_at")
+  private Instant linkEndedAt;
 
-    private ScrapeJob(
-            String jobId,
-            UUID userId,
-            String portalType,
-            ScrapeJobOperationType operationType,
-            String idempotencyKey,
-            String requestFingerprint,
-            ScrapeJobStatus status,
-            String requestPayloadJson,
-            Instant linkStartedAt
-    ) {
-        this.jobId = jobId;
-        this.userId = userId;
-        this.portalType = portalType;
-        this.operationType = operationType;
-        this.idempotencyKey = idempotencyKey;
-        this.requestFingerprint = requestFingerprint;
-        this.status = status;
-        this.requestPayloadJson = requestPayloadJson;
-        this.linkStartedAt = linkStartedAt;
+  private ScrapeJob(
+      String jobId,
+      UUID userId,
+      String portalType,
+      ScrapeJobOperationType operationType,
+      String idempotencyKey,
+      String requestFingerprint,
+      ScrapeJobStatus status,
+      String requestPayloadJson,
+      Instant linkStartedAt) {
+    this.jobId = jobId;
+    this.userId = userId;
+    this.portalType = portalType;
+    this.operationType = operationType;
+    this.idempotencyKey = idempotencyKey;
+    this.requestFingerprint = requestFingerprint;
+    this.status = status;
+    this.requestPayloadJson = requestPayloadJson;
+    this.linkStartedAt = linkStartedAt;
+  }
+
+  public static ScrapeJob createQueued(
+      UUID userId,
+      String portalType,
+      ScrapeJobOperationType operationType,
+      String idempotencyKey,
+      String requestFingerprint,
+      String requestPayloadJson) {
+    return createQueued(
+        userId,
+        portalType,
+        operationType,
+        idempotencyKey,
+        requestFingerprint,
+        requestPayloadJson,
+        Instant.now());
+  }
+
+  public static ScrapeJob createQueued(
+      UUID userId,
+      String portalType,
+      ScrapeJobOperationType operationType,
+      String idempotencyKey,
+      String requestFingerprint,
+      String requestPayloadJson,
+      Instant linkStartedAt) {
+    return new ScrapeJob(
+        UUID.randomUUID().toString(),
+        userId,
+        portalType,
+        operationType,
+        idempotencyKey,
+        requestFingerprint,
+        ScrapeJobStatus.QUEUED,
+        requestPayloadJson,
+        linkStartedAt);
+  }
+
+  public boolean hasSameFingerprint(String requestFingerprint) {
+    return this.requestFingerprint.equals(requestFingerprint);
+  }
+
+  public boolean isCompleted() {
+    return status == ScrapeJobStatus.SUCCEEDED || status == ScrapeJobStatus.FAILED;
+  }
+
+  public boolean hasWorkerResult() {
+    return resultPayloadJson != null;
+  }
+
+  public boolean hasProcessedAttempt(int attempt) {
+    return callbackAttempt != null && attempt <= callbackAttempt;
+  }
+
+  public void markRunning() {
+    if (!isCompleted()) {
+      this.status = ScrapeJobStatus.RUNNING;
     }
+  }
 
-    public static ScrapeJob createQueued(
-            UUID userId,
-            String portalType,
-            ScrapeJobOperationType operationType,
-            String idempotencyKey,
-            String requestFingerprint,
-            String requestPayloadJson
-    ) {
-        return createQueued(
-                userId,
-                portalType,
-                operationType,
-                idempotencyKey,
-                requestFingerprint,
-                requestPayloadJson,
-                Instant.now()
-        );
-    }
+  public void markPostProcessing(
+      String resultS3Key,
+      String resultChecksum,
+      String callbackMetadataJson,
+      int attempt,
+      Instant receivedAt) {
+    this.status = ScrapeJobStatus.POST_PROCESSING;
+    this.resultS3Key = resultS3Key;
+    this.resultChecksum = resultChecksum;
+    this.callbackMetadataJson = callbackMetadataJson;
+    this.errorCode = null;
+    this.errorMessage = null;
+    this.retryable = null;
+    recordCallbackAttempt(attempt, receivedAt);
+  }
 
-    public static ScrapeJob createQueued(
-            UUID userId,
-            String portalType,
-            ScrapeJobOperationType operationType,
-            String idempotencyKey,
-            String requestFingerprint,
-            String requestPayloadJson,
-            Instant linkStartedAt
-    ) {
-        return new ScrapeJob(
-                UUID.randomUUID().toString(),
-                userId,
-                portalType,
-                operationType,
-                idempotencyKey,
-                requestFingerprint,
-                ScrapeJobStatus.QUEUED,
-                requestPayloadJson,
-                linkStartedAt
-        );
-    }
+  public void markSucceeded(String resultPayloadJson, Instant finishedAt) {
+    markSucceeded(resultPayloadJson, finishedAt, Instant.now());
+  }
 
-    public boolean hasSameFingerprint(String requestFingerprint) {
-        return this.requestFingerprint.equals(requestFingerprint);
-    }
+  public void markSucceeded(String resultPayloadJson, Instant finishedAt, Instant linkEndedAt) {
+    recordWorkerResult(resultPayloadJson, finishedAt);
+    this.status = ScrapeJobStatus.SUCCEEDED;
+    this.linkEndedAt = linkEndedAt;
+  }
 
-    public boolean isCompleted() {
-        return status == ScrapeJobStatus.SUCCEEDED || status == ScrapeJobStatus.FAILED;
-    }
+  public void recordWorkerResult(String resultPayloadJson, Instant finishedAt) {
+    this.resultPayloadJson = resultPayloadJson;
+    this.errorCode = null;
+    this.errorMessage = null;
+    this.retryable = null;
+    this.finishedAt = finishedAt;
+  }
 
-    public boolean hasWorkerResult() {
-        return resultPayloadJson != null;
-    }
+  public void recordCallbackAttempt(int attempt, Instant receivedAt) {
+    this.callbackAttempt = attempt;
+    this.callbackReceivedAt = receivedAt;
+  }
 
-    public boolean hasProcessedAttempt(int attempt) {
-        return callbackAttempt != null && attempt <= callbackAttempt;
-    }
+  public void recordResultLocation(String resultS3Key, int attempt, Instant receivedAt) {
+    recordCallbackAttempt(attempt, receivedAt);
+    this.resultS3Key = resultS3Key;
+  }
 
-    public void markRunning() {
-        if (!isCompleted()) {
-            this.status = ScrapeJobStatus.RUNNING;
-        }
-    }
+  public void recordFailedCallback(
+      int attempt,
+      Instant receivedAt,
+      String callbackMetadataJson,
+      String errorCode,
+      String errorMessage,
+      Boolean retryable,
+      Instant finishedAt) {
+    recordFailedCallback(
+        attempt,
+        receivedAt,
+        callbackMetadataJson,
+        errorCode,
+        errorMessage,
+        retryable,
+        finishedAt,
+        Instant.now());
+  }
 
-    public void markPostProcessing(
-            String resultS3Key,
-            String resultChecksum,
-            String callbackMetadataJson,
-            int attempt,
-            Instant receivedAt
-    ) {
-        this.status = ScrapeJobStatus.POST_PROCESSING;
-        this.resultS3Key = resultS3Key;
-        this.resultChecksum = resultChecksum;
-        this.callbackMetadataJson = callbackMetadataJson;
-        this.errorCode = null;
-        this.errorMessage = null;
-        this.retryable = null;
-        recordCallbackAttempt(attempt, receivedAt);
-    }
+  public void recordFailedCallback(
+      int attempt,
+      Instant receivedAt,
+      String callbackMetadataJson,
+      String errorCode,
+      String errorMessage,
+      Boolean retryable,
+      Instant finishedAt,
+      Instant linkEndedAt) {
+    recordCallbackAttempt(attempt, receivedAt);
+    this.callbackMetadataJson = callbackMetadataJson;
+    markFailed(errorCode, errorMessage, retryable, finishedAt, linkEndedAt);
+  }
 
-    public void markSucceeded(String resultPayloadJson, Instant finishedAt) {
-        markSucceeded(resultPayloadJson, finishedAt, Instant.now());
-    }
+  public void markFailed(
+      String errorCode, String errorMessage, Boolean retryable, Instant finishedAt) {
+    markFailed(errorCode, errorMessage, retryable, finishedAt, Instant.now());
+  }
 
-    public void markSucceeded(String resultPayloadJson, Instant finishedAt, Instant linkEndedAt) {
-        recordWorkerResult(resultPayloadJson, finishedAt);
-        this.status = ScrapeJobStatus.SUCCEEDED;
-        this.linkEndedAt = linkEndedAt;
-    }
-
-    public void recordWorkerResult(String resultPayloadJson, Instant finishedAt) {
-        this.resultPayloadJson = resultPayloadJson;
-        this.errorCode = null;
-        this.errorMessage = null;
-        this.retryable = null;
-        this.finishedAt = finishedAt;
-    }
-
-    public void recordCallbackAttempt(int attempt, Instant receivedAt) {
-        this.callbackAttempt = attempt;
-        this.callbackReceivedAt = receivedAt;
-    }
-
-    public void recordResultLocation(String resultS3Key, int attempt, Instant receivedAt) {
-        recordCallbackAttempt(attempt, receivedAt);
-        this.resultS3Key = resultS3Key;
-    }
-
-    public void recordFailedCallback(
-            int attempt,
-            Instant receivedAt,
-            String callbackMetadataJson,
-            String errorCode,
-            String errorMessage,
-            Boolean retryable,
-            Instant finishedAt
-    ) {
-        recordFailedCallback(attempt, receivedAt, callbackMetadataJson, errorCode, errorMessage, retryable, finishedAt, Instant.now());
-    }
-
-    public void recordFailedCallback(
-            int attempt,
-            Instant receivedAt,
-            String callbackMetadataJson,
-            String errorCode,
-            String errorMessage,
-            Boolean retryable,
-            Instant finishedAt,
-            Instant linkEndedAt
-    ) {
-        recordCallbackAttempt(attempt, receivedAt);
-        this.callbackMetadataJson = callbackMetadataJson;
-        markFailed(errorCode, errorMessage, retryable, finishedAt, linkEndedAt);
-    }
-
-    public void markFailed(String errorCode, String errorMessage, Boolean retryable, Instant finishedAt) {
-        markFailed(errorCode, errorMessage, retryable, finishedAt, Instant.now());
-    }
-
-    public void markFailed(String errorCode, String errorMessage, Boolean retryable, Instant finishedAt, Instant linkEndedAt) {
-        this.status = ScrapeJobStatus.FAILED;
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-        this.retryable = retryable;
-        this.finishedAt = finishedAt;
-        this.linkEndedAt = linkEndedAt;
-    }
+  public void markFailed(
+      String errorCode,
+      String errorMessage,
+      Boolean retryable,
+      Instant finishedAt,
+      Instant linkEndedAt) {
+    this.status = ScrapeJobStatus.FAILED;
+    this.errorCode = errorCode;
+    this.errorMessage = errorMessage;
+    this.retryable = retryable;
+    this.finishedAt = finishedAt;
+    this.linkEndedAt = linkEndedAt;
+  }
 }
