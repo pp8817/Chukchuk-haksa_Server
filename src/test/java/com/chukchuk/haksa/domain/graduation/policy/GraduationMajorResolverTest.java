@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,10 +28,8 @@ class GraduationMajorResolverTest {
 
     @Mock
     private GraduationQueryRepository graduationQueryRepository;
-
     @Mock
     private DepartmentRepository departmentRepository;
-
     @InjectMocks
     private GraduationMajorResolver resolver;
 
@@ -41,8 +40,8 @@ class GraduationMajorResolverTest {
 
     @Test
     void 졸업요건이_없으면_학번_해시와_학과_문맥을_남긴다() {
-        Student student = org.mockito.Mockito.mock(Student.class);
-        Department department = org.mockito.Mockito.mock(Department.class);
+        Student student = mock(Student.class);
+        Department department = mock(Department.class);
         when(student.getStudentCode()).thenReturn("17015080");
         when(student.getDepartment()).thenReturn(department);
         when(department.getId()).thenReturn(38L);

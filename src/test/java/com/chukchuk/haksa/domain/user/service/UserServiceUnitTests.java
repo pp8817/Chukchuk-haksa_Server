@@ -260,8 +260,8 @@ class UserServiceUnitTests {
     }
 
     @Test
-    @DisplayName("회원 탈퇴 시 학생 캐시/토큰/소셜계정을 정리한 뒤 사용자를 삭제한다")
-    void deleteUserById_cleansUpAndDeletesUser() {
+    @DisplayName("회원 탈퇴 시 학생 캐시와 인증 정보를 정리한 뒤 사용자를 익명화한다")
+    void deleteUserById_cleansUpAndAnonymizesUser() {
         UUID userId = UUID.randomUUID();
         UUID studentId = UUID.randomUUID();
 
@@ -283,7 +283,9 @@ class UserServiceUnitTests {
         verify(academicCache).deleteAllByStudentId(studentId);
         verify(authTokenCache).evictByUserId(userId.toString());
         verify(socialAccountRepository).deleteByUser(user);
-        verify(userRepository).delete(user);
+        verify(refreshTokenService).deleteAllByUserId(userId.toString());
+        verify(userRepository, never()).delete(user);
+        verify(userRepository).save(user);
     }
 
     @Test
@@ -299,7 +301,7 @@ class UserServiceUnitTests {
     }
 
     @Test
-    @DisplayName("소셜 계정이 이미 존재하면 기존 사용자로 로그인 토큰을 발급한다")
+    @DisplayName("소셜 계정이 이미 존재하면 이메일 claim 없이도 기존 사용자로 로그인한다")
     void signIn_whenSocialAccountExists_returnsTokensForExistingUser() {
         User existingUser = User.builder()
                 .id(UUID.randomUUID())
@@ -316,7 +318,6 @@ class UserServiceUnitTests {
 
         Claims claims = Jwts.claims();
         claims.setSubject("social-sub");
-        claims.put("email", "existing@example.com");
 
         UserService userService = createService();
         when(oidcService.verifyIdToken("id-token", "nonce")).thenReturn(claims);
@@ -375,6 +376,37 @@ class UserServiceUnitTests {
         assertThat(response.refreshToken()).isEqualTo("new-refresh-token");
         assertThat(response.isPortalLinked()).isFalse();
         verify(refreshTokenService).save(eq("new-session"), eq(savedUser.getId().toString()), eq("new-refresh-token"), any(Date.class));
+    }
+
+    @Test
+    @DisplayName("이메일 claim이 없는 신규 사용자는 null 이메일로 가입하고 로그인한다")
+    void signIn_withoutEmail_createsNullableUserAndSocialAccount() {
+        UUID newUserId = UUID.randomUUID();
+        User savedUser = User.builder()
+                .id(newUserId)
+                .email(null)
+                .profileNickname("Unknown User")
+                .build();
+        Claims claims = Jwts.claims().setSubject("email-less-sub");
+        UserService userService = createService();
+
+        when(oidcService.verifyIdToken("id-token", "nonce")).thenReturn(claims);
+        when(socialAccountRepository.findByProviderAndSocialId(OidcProvider.KAKAO, "email-less-sub"))
+                .thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        when(jwtProvider.createAccessToken(newUserId.toString(), null, "USER")).thenReturn("access-token");
+        when(jwtProvider.createRefreshToken(newUserId.toString()))
+                .thenReturn(new AuthDto.RefreshTokenWithExpiry("refresh-token", new Date(), "session"));
+
+        userService.signIn(new UserDto.SignInRequest(OidcProvider.KAKAO, "id-token", "nonce"));
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<SocialAccount> socialCaptor = ArgumentCaptor.forClass(SocialAccount.class);
+        verify(userRepository).save(userCaptor.capture());
+        verify(socialAccountRepository).save(socialCaptor.capture());
+        assertThat(userCaptor.getValue().getEmail()).isNull();
+        assertThat(socialCaptor.getValue().getEmail()).isNull();
+        verify(refreshTokenService).save(eq("session"), eq(newUserId.toString()), eq("refresh-token"), any(Date.class));
     }
 
     @Test

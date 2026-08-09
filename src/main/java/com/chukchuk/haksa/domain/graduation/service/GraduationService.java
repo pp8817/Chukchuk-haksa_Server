@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.graduation.service;
 import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.graduation.dto.AreaProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
+import com.chukchuk.haksa.domain.graduation.policy.GraduationMdcContext;
 import com.chukchuk.haksa.domain.graduation.policy.GraduationMajorResolver;
 import com.chukchuk.haksa.domain.graduation.policy.MajorResolutionResult;
 import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
@@ -63,14 +64,26 @@ public class GraduationService {
         MajorResolutionResult majorResolution =
                 graduationMajorResolver.resolve(student, admissionYear);
 
-        List<AreaProgressDto> areaProgress =
-                resolveAreaProgress(
+        List<AreaProgressDto> areaProgress;
+        try {
+            areaProgress = resolveAreaProgress(
+                    student,
+                    studentId,
+                    majorResolution.primaryMajorId(),
+                    majorResolution.secondaryMajorId(),
+                    admissionYear
+            );
+        } catch (CommonException e) {
+            if (ErrorCode.GRADUATION_REQUIREMENTS_DATA_NOT_FOUND.code().equals(e.getCode())) {
+                GraduationMdcContext.bind(
                         student,
-                        studentId,
                         majorResolution.primaryMajorId(),
                         majorResolution.secondaryMajorId(),
                         admissionYear
                 );
+            }
+            throw e;
+        }
 
         GraduationProgressResponse response =
                 new GraduationProgressResponse(
