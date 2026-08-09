@@ -31,7 +31,7 @@
 - Consumes: Gradle Java source sets `main`, `test`와 기존 `check` lifecycle task.
 - Produces: `spotlessApply`, `spotlessCheck`, `checkstyleMain`, `checkstyleTest` task와 `check` 통합 품질 게이트.
 
-- [ ] **Step 1: 도입 전 검사 task 부재를 확인한다.**
+- [x] **Step 1: 도입 전 검사 task 부재를 확인한다.**
 
 Run:
 
@@ -41,7 +41,7 @@ Run:
 
 Expected: 일치하는 task가 없어 `rg`가 exit 1을 반환한다.
 
-- [ ] **Step 2: Gradle 플러그인과 버전을 설정한다.**
+- [x] **Step 2: Gradle 플러그인과 버전을 설정한다.**
 
 `build.gradle`의 plugins 블록에 다음 항목을 추가한다.
 
@@ -74,7 +74,7 @@ tasks.withType(Checkstyle).configureEach {
 }
 ```
 
-- [ ] **Step 3: Google Checks 설정 파일을 추가한다.**
+- [x] **Step 3: Google Checks 설정 파일을 추가한다.**
 
 `config/checkstyle/google_checks.xml`은 Java 17을 지원하는 Checkstyle 12.3.1의 공식 Google Checks를 기준으로 저장한다. 다음 로컬 정책만 반영한다.
 
@@ -90,7 +90,7 @@ tasks.withType(Checkstyle).configureEach {
 
 공식 Google Checks에 포함된 규칙별 내장 예외는 유지한다. 별도 suppression 파일, 기존 척척학사 코드 경로를 대상으로 한 프로젝트 전용 suppression 또는 위반 baseline은 추가하지 않는다. 공식 설정의 wildcard import 금지, 명명, 줄 길이, 한 파일의 최상위 타입 규칙은 유지한다.
 
-- [ ] **Step 4: 새 task가 등록되고 기존 위반을 탐지하는지 확인한다.**
+- [x] **Step 4: 새 task가 등록되고 기존 위반을 탐지하는지 확인한다.**
 
 Run:
 
@@ -101,7 +101,7 @@ Run:
 
 Expected: 네 task가 출력된다. 품질 검사는 기존 소스 위반으로 실패하며 `build/reports/checkstyle/main.html`, `build/reports/checkstyle/test.html` 또는 콘솔에 실제 파일과 규칙이 표시된다.
 
-- [ ] **Step 5: 설정 변경을 커밋한다.**
+- [x] **Step 5: 설정 변경을 커밋한다.**
 
 ```bash
 git add build.gradle config/checkstyle/google_checks.xml
@@ -120,7 +120,7 @@ git commit -m "327 chore: Google Java Style 검사 도구 설정"
 - Consumes: Task 1의 `spotlessApply`, `spotlessCheck` task.
 - Produces: google-java-format 1.35.0과 일치하는 전체 Java 기준선.
 
-- [ ] **Step 1: 포맷 위반이 있는 현재 기준선을 확인한다.**
+- [x] **Step 1: 포맷 위반이 있는 현재 기준선을 확인한다.**
 
 Run:
 
@@ -130,7 +130,7 @@ Run:
 
 Expected: 기존 Java 소스의 포맷 위반으로 실패하고 변경 대상 파일이 출력된다.
 
-- [ ] **Step 2: 전체 Java 소스에 자동 포맷을 적용한다.**
+- [x] **Step 2: 전체 Java 소스에 자동 포맷을 적용한다.**
 
 Run:
 
@@ -140,7 +140,7 @@ Run:
 
 Expected: main/test Java 파일만 google-java-format 결과로 변경된다.
 
-- [ ] **Step 3: 포맷 diff가 기계적 변경에 한정되는지 확인한다.**
+- [x] **Step 3: 포맷 diff가 기계적 변경에 한정되는지 확인한다.**
 
 Run:
 
@@ -152,7 +152,7 @@ git diff --word-diff=porcelain -- 'src/main/java/**/*.java' 'src/test/java/**/*.
 
 Expected: Java 소스의 공백, 줄바꿈, import 배치 변화만 존재하고 식별자, 문자열, 수식, annotation 값은 바뀌지 않는다.
 
-- [ ] **Step 4: 포맷과 회귀 테스트를 검증한다.**
+- [x] **Step 4: 포맷과 회귀 테스트를 검증한다.**
 
 Run:
 
@@ -163,7 +163,7 @@ Run:
 
 Expected: 두 명령 모두 `BUILD SUCCESSFUL`이다.
 
-- [ ] **Step 5: 자동 포맷만 커밋한다.**
+- [x] **Step 5: 자동 포맷만 커밋한다.**
 
 ```bash
 git add src/main/java src/test/java
@@ -181,7 +181,7 @@ git commit -m "327 refactor: 기존 Java 소스 자동 포맷 적용"
 - Consumes: `build/reports/checkstyle/main.html`과 Task 2의 포맷 기준선.
 - Produces: `checkstyleMain`을 통과하는 운영 소스와 실제 동작에 맞는 public/protected 계약 문서.
 
-- [ ] **Step 1: main 위반 보고서를 생성하고 규칙별 개수를 기록한다.**
+- [x] **Step 1: main 위반 보고서를 생성하고 규칙별 개수를 기록한다.**
 
 Run:
 
@@ -192,7 +192,7 @@ rg -o 'source="[^"]+"' build/reports/checkstyle/main.xml | sort | uniq -c | sort
 
 Expected: 첫 명령은 위반으로 실패한다. 두 번째 명령은 `MissingJavadocType`, `MissingJavadocMethod`, `Javadoc*`, `MethodName`, `LineLength`, `OneTopLevelClass` 등 실제 위반 규칙과 개수를 보여준다.
 
-- [ ] **Step 2: public/protected 타입 계약을 문서화한다.**
+- [x] **Step 2: public/protected 타입 계약을 문서화한다.**
 
 보고서의 `MissingJavadocType` 위치를 모두 수정한다. 클래스·interface·enum·record의 선언 위에 다음 형식으로 책임과 경계를 작성한다.
 
@@ -217,7 +217,7 @@ public record DepartmentResponse(UUID id, String name) {}
 
 실제 문장은 각 타입의 구현, 생성자 주입 의존성, 호출부를 읽고 책임을 반영한다. 위 예문의 도메인명은 그대로 복사하지 않는다.
 
-- [ ] **Step 3: public/protected 메서드 계약을 문서화한다.**
+- [x] **Step 3: public/protected 메서드 계약을 문서화한다.**
 
 보고서의 `MissingJavadocMethod`와 `Javadoc*` 위치를 모두 수정한다. 매개변수, 반환값, 호출자가 처리해야 하는 예외를 빠짐없이 기록한다.
 
@@ -234,7 +234,7 @@ public GraduationResult getGraduationResult(UUID userId) {
 
 Lombok이 생성하는 접근자, `@Override` 메서드, 프레임워크 callback은 중복 설명을 만들지 않는다. 명시적으로 선언된 public/protected 생성자는 생성 책임과 모든 인자를 문서화한다.
 
-- [ ] **Step 4: Javadoc 이외의 main 위반을 동작 보존 방식으로 수정한다.**
+- [x] **Step 4: Javadoc 이외의 main 위반을 동작 보존 방식으로 수정한다.**
 
 - wildcard import는 실제 사용 타입의 명시 import로 바꾼다.
 - `LineLength`는 문자열 값이나 로직을 바꾸지 않고 줄바꿈한다.
@@ -242,7 +242,7 @@ Lombok이 생성하는 접근자, `@Override` 메서드, 프레임워크 callbac
 - 지역변수와 private 심볼은 참조 전체를 함께 바꿀 수 있을 때만 명명 규칙에 맞춘다.
 - public/protected 심볼의 이름 변경이 필요하면 중단하고 `design.md`의 API 비변경 원칙과 대조한다.
 
-- [ ] **Step 5: main 검사와 전체 테스트를 반복 실행한다.**
+- [x] **Step 5: main 검사와 전체 테스트를 반복 실행한다.**
 
 Run:
 
@@ -253,7 +253,7 @@ Run:
 
 Expected: `checkstyleMain`과 전체 테스트가 `BUILD SUCCESSFUL`이다. `src/test/java` 이외 파일의 실패는 남아 있을 수 있지만 main 보고서에는 위반이 없다.
 
-- [ ] **Step 6: main 계약 문서와 스타일 수정을 커밋한다.**
+- [x] **Step 6: main 계약 문서와 스타일 수정을 커밋한다.**
 
 ```bash
 git add src/main/java
@@ -271,7 +271,7 @@ git commit -m "327 refactor: 운영 코드 스타일 및 Javadoc 정리"
 - Consumes: `build/reports/checkstyle/test.html`, JUnit 5의 `@Test`, Task 2의 포맷 기준선.
 - Produces: `checkstyleTest`를 통과하면서 테스트 동작과 의미를 보존한 테스트 소스.
 
-- [ ] **Step 1: test 위반 보고서를 생성하고 규칙별 개수를 기록한다.**
+- [x] **Step 1: test 위반 보고서를 생성하고 규칙별 개수를 기록한다.**
 
 Run:
 
@@ -282,13 +282,13 @@ rg -o 'source="[^"]+"' build/reports/checkstyle/test.xml | sort | uniq -c | sort
 
 Expected: 첫 명령은 남은 위반으로 실패하고 두 번째 명령은 test 소스의 실제 규칙별 개수를 출력한다.
 
-- [ ] **Step 2: 테스트 타입과 helper 계약을 문서화한다.**
+- [x] **Step 2: 테스트 타입과 helper 계약을 문서화한다.**
 
 - public/protected 테스트 타입에는 검증 대상과 경계를 Javadoc으로 설명한다.
 - `@Test`, `@Override` 메서드는 Javadoc을 중복 작성하지 않는다.
 - public/protected fixture, extension, helper 메서드는 매개변수, 반환값, 실패 조건을 실제 동작에 맞게 문서화한다.
 
-- [ ] **Step 3: 테스트 명명과 구조 위반을 수정한다.**
+- [x] **Step 3: 테스트 명명과 구조 위반을 수정한다.**
 
 - 한글, underscore 또는 공백 기반 메서드명이 `MethodName`에 걸리면 lowerCamelCase로 바꾸고 기존 의미를 `@DisplayName`에 보존한다.
 - wildcard import는 명시 import로 바꾼다.
@@ -303,7 +303,7 @@ Expected: 첫 명령은 남은 위반으로 실패하고 두 번째 명령은 te
 void rejectsGraduationQueryForMissingUser() {
 ```
 
-- [ ] **Step 4: test 검사와 전체 테스트를 통과시킨다.**
+- [x] **Step 4: test 검사와 전체 테스트를 통과시킨다.**
 
 Run:
 
@@ -314,7 +314,7 @@ Run:
 
 Expected: 두 명령 모두 `BUILD SUCCESSFUL`이고 테스트 수와 실패 수가 변경 전 기준선과 일치한다.
 
-- [ ] **Step 5: 테스트 문서와 스타일 수정을 커밋한다.**
+- [x] **Step 5: 테스트 문서와 스타일 수정을 커밋한다.**
 
 ```bash
 git add src/test/java
@@ -337,7 +337,7 @@ git commit -m "327 refactor: 테스트 코드 스타일 규칙 적용"
 - Consumes: 승인된 `docs/tasks/327/design.md`, 실제 Gradle task 이름, 기존 척척학사 브랜치·Wiki 규칙.
 - Produces: 사람, 코딩 에이전트, PR 작성자가 같은 스타일·검증·커밋 기준을 찾을 수 있는 문서 진입점.
 
-- [ ] **Step 1: Java 스타일 가이드를 작성한다.**
+- [x] **Step 1: Java 스타일 가이드를 작성한다.**
 
 `docs/development/java-style.md`에 다음 섹션을 실제 명령과 함께 작성한다.
 
@@ -354,7 +354,7 @@ git commit -m "327 refactor: 테스트 코드 스타일 규칙 적용"
 
 `spotlessApply`, `spotlessCheck`, `checkstyleMain checkstyleTest`, `test`, `check`의 목적을 구분한다. public/protected Javadoc의 `@param`, `@return`, `@throws`, record `@param`, `@Override`/`@Test` 예외와 private Javadoc 기준을 예시로 설명한다.
 
-- [ ] **Step 2: 작업 문서 가이드를 작성한다.**
+- [x] **Step 2: 작업 문서 가이드를 작성한다.**
 
 `docs/tasks/README.md`에는 다음 계약을 기록한다.
 
@@ -364,7 +364,7 @@ git commit -m "327 refactor: 테스트 코드 스타일 규칙 적용"
 - 새 작업에 `spec-lite.md`, `spec.md`, `clarify.md`, `tasks.md`, `checklist.md`, `context-notes.md`를 만들지 않는다.
 - 발견, 계획 변경, 검증 결과는 기존 `design.md` 또는 `plan.md`에 반영한다.
 
-- [ ] **Step 3: 공통 규칙을 AGENTS와 CONTRIBUTING에 반영한다.**
+- [x] **Step 3: 공통 규칙을 AGENTS와 CONTRIBUTING에 반영한다.**
 
 - 코드·설정 변경의 최종 검증을 `./gradlew check --stacktrace --no-daemon`으로 통일한다.
 - 자동 수정은 `spotlessApply`, 개별 진단은 `spotlessCheck`, `checkstyleMain checkstyleTest`, `test`로 설명한다.
@@ -372,7 +372,7 @@ git commit -m "327 refactor: 테스트 코드 스타일 규칙 적용"
 - 커밋 type 목록과 한 논리 변경 원칙을 `CONTRIBUTING.md`에 기록한다.
 - 기존 이슈 번호 형식, `feat/{이슈 번호}`와 `dev`, Wiki `master`, Flyway, Lambda 배포 규칙은 변경하지 않는다.
 
-- [ ] **Step 4: README와 PR 템플릿의 진입점을 갱신한다.**
+- [x] **Step 4: README와 PR 템플릿의 진입점을 갱신한다.**
 
 README의 문서 목록에 `docs/development/java-style.md`, `docs/tasks/README.md` 링크를 추가한다. PR 템플릿은 다음 제목을 포함하게 정리한다.
 
@@ -388,7 +388,7 @@ README의 문서 목록에 `docs/development/java-style.md`, `docs/tasks/README.
 스크린샷은 API 백엔드의 모든 PR에 필수로 요구하지 않는다.
 이번 변경은 아키텍처, API, 인증, DB, 배포, 운영 절차를 바꾸지 않으므로 Wiki 갱신은 불필요하다고 기록한다.
 
-- [ ] **Step 5: 문서 계약과 링크를 검증한다.**
+- [x] **Step 5: 문서 계약과 링크를 검증한다.**
 
 Run:
 
@@ -401,7 +401,7 @@ git diff --check
 
 Expected: 각 명령이 요구한 계약을 모두 찾고 `git diff --check`가 출력 없이 성공한다.
 
-- [ ] **Step 6: 개발 문서를 커밋한다.**
+- [x] **Step 6: 개발 문서를 커밋한다.**
 
 ```bash
 git add AGENTS.md CONTRIBUTING.md README.md .github/PULL_REQUEST_TEMPLATE.md docs/development/java-style.md docs/tasks/README.md
@@ -420,7 +420,7 @@ git commit -m "327 docs: Java 개발 및 커밋 규칙 정립"
 - Consumes: Task 1의 Gradle task와 Task 2~5의 기준선.
 - Produces: 실패 원인을 포맷, Checkstyle, 테스트로 구분하는 CI와 이슈 #327 완료 증거.
 
-- [ ] **Step 1: CI의 단일 검사 단계를 확인한다.**
+- [x] **Step 1: CI의 단일 검사 단계를 확인한다.**
 
 Run:
 
@@ -430,7 +430,7 @@ rg -n -C 3 './gradlew check' .github/workflows/ci.yml
 
 Expected: 현재 하나의 `check` 실행 단계가 표시된다.
 
-- [ ] **Step 2: CI 검사를 세 단계로 분리한다.**
+- [x] **Step 2: CI 검사를 세 단계로 분리한다.**
 
 기존 Gradle 검사 step을 다음 세 step으로 교체한다.
 
@@ -447,7 +447,7 @@ Expected: 현재 하나의 `check` 실행 단계가 표시된다.
 
 Java 17 설정, Gradle cache, 기존 결과 요약과 다른 workflow는 변경하지 않는다.
 
-- [ ] **Step 3: 개별 품질 게이트를 검증한다.**
+- [x] **Step 3: 개별 품질 게이트를 검증한다.**
 
 Run:
 
@@ -459,7 +459,7 @@ Run:
 
 Expected: 세 명령 모두 `BUILD SUCCESSFUL`이다.
 
-- [ ] **Step 4: 통합 품질 게이트를 재실행한다.**
+- [x] **Step 4: 통합 품질 게이트를 재실행한다.**
 
 Run:
 
@@ -469,7 +469,7 @@ Run:
 
 Expected: `spotlessCheck`, `checkstyleMain`, `checkstyleTest`, `test`가 실행되고 최종 결과가 `BUILD SUCCESSFUL`이다.
 
-- [ ] **Step 5: 최종 diff와 범위를 검토한다.**
+- [x] **Step 5: 최종 diff와 범위를 검토한다.**
 
 Run:
 
@@ -483,7 +483,7 @@ git status --short
 
 Expected: DB migration과 환경 설정 변경이 없고, 커밋이 설계·도구·포맷·Javadoc·문서·CI의 논리 단위로 나뉜다. 아직 커밋하지 않은 CI와 계획 문서만 status에 표시된다.
 
-- [ ] **Step 6: CI 변경을 커밋한다.**
+- [x] **Step 6: CI 변경을 커밋한다.**
 
 ```bash
 git add .github/workflows/ci.yml docs/tasks/327/plan.md
@@ -493,7 +493,7 @@ git status --short
 
 Expected: 커밋이 성공하고 worktree가 clean이다.
 
-- [ ] **Step 7: 독립 리뷰를 수행하고 지적 사항을 검증한다.**
+- [x] **Step 7: 독립 리뷰를 수행하고 지적 사항을 검증한다.**
 
 독립 리뷰어에게 `origin/dev...HEAD` diff와 다음 증거를 제공한다.
 
@@ -502,3 +502,15 @@ Expected: 커밋이 성공하고 worktree가 clean이다.
 - Javadoc이 구현과 일치하는지 표본이 아니라 전체 public/protected 계약 기준으로 검토해 달라는 요청.
 
 차단 지적이 있으면 수정하고 관련 개별 검사와 통합 `check`를 다시 실행한다. 남은 차단 지적이 없어야 완료한다.
+
+## 완료 기록
+
+- 2026-08-09 기준 최신 `origin/dev`로 rebase했으며 브랜치 분기는 `0 behind`다.
+- Java 내부 record 구성요소와 accessor는 camelCase로 변경하고 `@JsonProperty`로 기존 snake_case JSON 계약을 유지했다.
+- Controller 구현 메서드는 `@Override`를 사용하고 API Javadoc은 `*ControllerDocs` 계약에만 유지했다.
+- google-java-format과 Checkstyle의 multiline record 닫는 괄호 들여쓰기 차이는 해당 AST 노드에만 한정한 `SuppressionXpathSingleFilter`로 조정했다.
+- Wiki 대상인 공개 API, 인증, DB 스키마, 아키텍처, 배포·운영 절차는 변경하지 않아 Wiki 갱신은 불필요하다.
+- `./gradlew spotlessApply checkstyleMain checkstyleTest --no-daemon`: 성공.
+- `./gradlew check --rerun-tasks --stacktrace --no-daemon`: 성공.
+- `./gradlew test --stacktrace --no-daemon`: 성공.
+- `git diff --check`: 성공.
