@@ -14,12 +14,14 @@ import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
 import com.chukchuk.haksa.domain.student.service.StudentService;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.CommonException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +53,12 @@ class GraduationServiceTests {
 
     private static final UUID STUDENT_ID = UUID.randomUUID();
     private static final int ADMISSION_YEAR = 2022;
+
+    @AfterEach
+    void clearMdc() {
+        MDC.clear();
+    }
+
     @Test
     @DisplayName("전공 학과가 존재하면 전공 학과 ID로 졸업요건을 조회한다")
     void getGraduationProgressUsesMajorDepartmentIdFirst() {
@@ -88,6 +96,25 @@ class GraduationServiceTests {
         assertThatThrownBy(() -> graduationService.getGraduationProgress(STUDENT_ID))
                 .isInstanceOf(CommonException.class)
                 .hasMessage(ErrorCode.GRADUATION_REQUIREMENTS_DATA_NOT_FOUND.message());
+
+        assertGraduationContext("1", "NONE", "SINGLE");
+    }
+
+    @Test
+    @DisplayName("복수전공 진행률 조회가 실패하면 최종 전공 문맥을 남긴다")
+    void getGraduationProgressAddsContextWhenDualMajorProgressMissing() {
+        Student student = mockStudent(60L, 71L);
+        when(studentService.getStudentById(STUDENT_ID)).thenReturn(student);
+        when(graduationMajorResolver.resolve(student, ADMISSION_YEAR))
+                .thenReturn(new MajorResolutionResult(60L, 71L));
+        when(graduationQueryRepository.getDualMajorAreaProgress(STUDENT_ID, 60L, 71L, ADMISSION_YEAR))
+                .thenThrow(new CommonException(ErrorCode.GRADUATION_REQUIREMENTS_DATA_NOT_FOUND));
+
+        assertThatThrownBy(() -> graduationService.getGraduationProgress(STUDENT_ID))
+                .isInstanceOf(CommonException.class)
+                .hasMessage(ErrorCode.GRADUATION_REQUIREMENTS_DATA_NOT_FOUND.message());
+
+        assertGraduationContext("60", "71", "DUAL");
     }
 
     @Test
@@ -272,6 +299,7 @@ class GraduationServiceTests {
     private Student mockStudent(Long majorId, Long secondaryId, int admissionYear, boolean transferStudent) {
         Student student = mock(Student.class);
         lenient().when(student.isTransferStudent()).thenReturn(transferStudent);
+        lenient().when(student.getStudentCode()).thenReturn("20221234");
 
         AcademicInfo info = AcademicInfo.builder()
                 .admissionYear(admissionYear)
@@ -296,6 +324,14 @@ class GraduationServiceTests {
         }
 
         return student;
+    }
+
+    private void assertGraduationContext(String departmentId, String secondaryDepartmentId, String majorType) {
+        assertThat(MDC.get("studentCodeHash")).isEqualTo("LUJPiDE6PY");
+        assertThat(MDC.get("admissionYear")).isEqualTo("2022");
+        assertThat(MDC.get("departmentId")).isEqualTo(departmentId);
+        assertThat(MDC.get("secondaryDepartmentId")).isEqualTo(secondaryDepartmentId);
+        assertThat(MDC.get("majorType")).isEqualTo(majorType);
     }
 
     private List<AreaProgressDto> sampleProgress() {
