@@ -10,7 +10,7 @@
 
 ## 현재 상태
 
-- `src/main/java`와 `src/test/java`에 Java 소스가 277개 있으나 Javadoc 주석(`/**`)이 있는 파일은 17개다.
+- `src/main/java`에 Java 소스 277개, `src/test/java`에 87개가 있으며 Javadoc 주석(`/**`)이 있는 파일은 전체 364개 중 20개다.
 - Gradle에 Spotless와 Checkstyle이 설정되어 있지 않다.
 - CI는 `./gradlew check --stacktrace --no-daemon`을 실행하지만 `AGENTS.md`와 `CONTRIBUTING.md`는 코드 변경 후 `test`만 요구한다.
 - 커밋 형식과 브랜치 전략은 척척학사 규칙이 이미 있으므로 유지한다.
@@ -19,7 +19,7 @@
 
 1. 기능, 공개 API 계약, DB 스키마, 도메인 동작은 변경하지 않는다.
 2. 신규 코드뿐 아니라 기존 main/test Java 소스 전체를 한 번에 기준선에 맞춘다.
-3. 기존 위반을 숨기는 suppression이나 baseline 파일은 만들지 않는다.
+3. 기존 위반을 숨기는 프로젝트 전용 suppression이나 baseline 파일은 만들지 않는다. 공식 Google Checks 자체의 규칙별 내장 예외는 유지한다.
 4. 자동 포맷 변경과 의미가 있는 Javadoc·스타일 수정을 논리적으로 분리한다.
 5. Java 17, Spring Boot 3.2.5, Gradle, 기존 패키지 구조와 Lambda/SQS 운영 구조를 유지한다.
 6. Landit의 검증 방식과 문서 구조를 참고하되 척척학사의 이슈 번호, 브랜치, 커밋 규칙을 우선한다.
@@ -35,10 +35,10 @@
 
 ### Checkstyle
 
-- Gradle Checkstyle 플러그인과 Checkstyle 13.8.0을 사용한다.
+- Gradle Checkstyle 플러그인과 Java 17을 지원하는 Checkstyle 12.3.1을 사용한다.
 - 공식 Google Checks를 저장소의 `config/checkstyle/google_checks.xml`로 관리한다.
 - main/test 소스를 모두 검사하고 경고가 아닌 오류로 처리한다.
-- 기존 위반도 예외 처리하지 않고 실제 코드를 수정한다.
+- 기존 위반도 프로젝트 전용 예외로 숨기지 않고 실제 코드를 수정한다.
 - Google Checks를 척척학사 규칙과 충돌 없이 적용하기 위한 최소 설정만 문서화해 관리한다.
 
 ## Javadoc 기준
@@ -124,7 +124,7 @@ CI에서 실패 원인을 바로 구분할 수 있도록 다음 검사를 별도
 - Java 또는 Spring Boot 버전 업그레이드.
 - DB migration, 공개 API 동작, Lambda/SQS 동작 변경.
 - SpotBugs, PMD 등 추가 분석 도구 도입.
-- 기존 위반을 허용하는 suppression 또는 baseline 도입.
+- 기존 위반을 허용하는 프로젝트 전용 suppression 또는 baseline 도입.
 
 ## 완료 조건
 
