@@ -89,11 +89,8 @@ class FlywayMigrationTest {
       try (var statement = connection.createStatement();
           var resultSet =
               statement.executeQuery(
-                  """
-                         SELECT area_name, is_active
-                         FROM public.liberal_arts_area_codes
-                         WHERE code = 8
-                         """)) {
+                  "SELECT area_name, is_active FROM public.liberal_arts_area_codes "
+                      + "WHERE code = 8")) {
         assertThat(resultSet.next()).isTrue();
         assertThat(resultSet.getString("area_name")).isEqualTo("8영역");
         assertThat(resultSet.getBoolean("is_active")).isTrue();

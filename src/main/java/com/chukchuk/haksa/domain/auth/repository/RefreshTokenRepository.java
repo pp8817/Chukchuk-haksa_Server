@@ -16,5 +16,11 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Stri
    */
   int deleteByExpiryBefore(Date now);
 
+  /**
+   * 사용자의 모든 refresh token을 삭제한다.
+   *
+   * @param userId 사용자 식별자
+   * @return 삭제된 token 수
+   */
   int deleteByUserId(String userId);
 }

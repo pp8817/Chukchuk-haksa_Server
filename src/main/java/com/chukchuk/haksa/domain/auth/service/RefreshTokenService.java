@@ -128,6 +128,11 @@ public class RefreshTokenService {
         .orElseThrow(() -> new TokenException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
   }
 
+  /**
+   * 사용자의 모든 refresh token을 폐기한다.
+   *
+   * @param userId 사용자 식별자
+   */
   @Transactional
   public void deleteAllByUserId(String userId) {
     int deleted = refreshTokenRepository.deleteByUserId(userId);

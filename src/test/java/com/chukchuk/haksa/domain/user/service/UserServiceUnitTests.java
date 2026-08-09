@@ -66,7 +66,7 @@ class UserServiceUnitTests {
     User user =
         User.builder().id(userId).email("found@example.com").profileNickname("found").build();
 
-    UserService userService = createService();
+    final UserService userService = createService();
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
     User found = userService.getUserById(userId);
@@ -398,7 +398,7 @@ class UserServiceUnitTests {
     User savedUser =
         User.builder().id(newUserId).email(null).profileNickname("Unknown User").build();
     Claims claims = Jwts.claims().setSubject("email-less-sub");
-    UserService userService = createService();
+    final UserService userService = createService();
 
     when(oidcService.verifyIdToken("id-token", "nonce")).thenReturn(claims);
     when(socialAccountRepository.findByProviderAndSocialId(OidcProvider.KAKAO, "email-less-sub"))

@@ -79,7 +79,7 @@ class PortalConnectionGuardTests {
   @Test
   void refreshReturnsFailureWhenPortalStudentIsMissing() {
     UUID userId = UUID.randomUUID();
-    RefreshPortalConnectionService service =
+    final RefreshPortalConnectionService service =
         new RefreshPortalConnectionService(
             userPortalConnectionRepository,
             userService,
@@ -97,7 +97,7 @@ class PortalConnectionGuardTests {
   @Test
   void refreshReturnsFailureWhenStudentCodeDiffersFromCurrentStudent() {
     UUID userId = UUID.randomUUID();
-    RefreshPortalConnectionService service =
+    final RefreshPortalConnectionService service =
         new RefreshPortalConnectionService(
             userPortalConnectionRepository,
             userService,
@@ -122,7 +122,7 @@ class PortalConnectionGuardTests {
   @Test
   void refreshUpdatesCurrentStudentWhenStudentCodeMatches() {
     UUID userId = UUID.randomUUID();
-    RefreshPortalConnectionService service =
+    final RefreshPortalConnectionService service =
         new RefreshPortalConnectionService(
             userPortalConnectionRepository,
             userService,

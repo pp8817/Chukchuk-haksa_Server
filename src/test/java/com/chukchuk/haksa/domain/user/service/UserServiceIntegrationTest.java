@@ -154,7 +154,7 @@ class UserServiceIntegrationTest {
     Student student = createStudent(user, studentCode);
     Course course = courseRepository.save(new Course("CS102", "알고리즘"));
     Professor professor = professorRepository.save(new Professor("홍길동"));
-    CourseEvaluation evaluation =
+    final CourseEvaluation evaluation =
         courseEvaluationRepository.save(
             new CourseEvaluation(
                 student,
@@ -206,7 +206,7 @@ class UserServiceIntegrationTest {
     entityManager.clear();
 
     assertThat(rejoinedStudent.getId()).isNotEqualTo(student.getId());
-    assertThat(userRepository.findByStudent_StudentCode(studentCode))
+    assertThat(userRepository.findByStudentStudentCode(studentCode))
         .map(User::getId)
         .contains(rejoinedUser.getId());
     assertThat(

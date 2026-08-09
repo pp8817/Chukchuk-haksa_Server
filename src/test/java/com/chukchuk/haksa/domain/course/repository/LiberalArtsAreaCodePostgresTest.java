@@ -1,4 +1,5 @@
 // 실제 PostgreSQL에서 교양 영역 자동 등록의 동시성과 FK 저장을 검증한다.
+
 package com.chukchuk.haksa.domain.course.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,20 +31,14 @@ class LiberalArtsAreaCodePostgresTest {
     try (Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(
-          """
-                    CREATE TABLE liberal_arts_area_codes (
-                        code INTEGER PRIMARY KEY,
-                        area_name VARCHAR(255) NOT NULL,
-                        is_active BOOLEAN NOT NULL
-                    )
-                    """);
+          "CREATE TABLE liberal_arts_area_codes ("
+              + "code INTEGER PRIMARY KEY,"
+              + "area_name VARCHAR(255) NOT NULL,"
+              + "is_active BOOLEAN NOT NULL)");
       statement.execute(
-          """
-                    CREATE TABLE course_offerings (
-                        id BIGSERIAL PRIMARY KEY,
-                        area_code INTEGER REFERENCES liberal_arts_area_codes(code)
-                    )
-                    """);
+          "CREATE TABLE course_offerings ("
+              + "id BIGSERIAL PRIMARY KEY,"
+              + "area_code INTEGER REFERENCES liberal_arts_area_codes(code))");
     }
   }
 

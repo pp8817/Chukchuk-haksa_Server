@@ -120,8 +120,9 @@ class PortalDataMapperTests {
         payloadWithLanguageCert("통과")
             .replace(
                 "\"semesters\":[]",
-                "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{\"subjtCd\":\"C101\",\"cltTerrNm\":%s,\"cretDelNm\":null}]}]"
-                    .formatted(rawAreaName));
+                "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{"
+                    + "\"subjtCd\":\"C101\",\"cltTerrNm\":%s,\"cretDelNm\":null}]}]"
+                        .formatted(rawAreaName));
     return objectMapper.readValue(payload, RawPortalData.class);
   }
 }
