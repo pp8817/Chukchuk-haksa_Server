@@ -32,8 +32,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Run Gradle check (tests included)
-        run: ./gradlew check --stacktrace --no-daemon
+      - name: Check Java formatting
+        run: ./gradlew spotlessCheck --no-daemon
+
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest --no-daemon
+
+      - name: Run tests
+        run: ./gradlew test --stacktrace --no-daemon
 
       - name: Publish CI summary
         if: ${{ always() }}
@@ -47,7 +53,7 @@ jobs:
             echo "- Event: $GITHUB_EVENT_NAME"
             if [ "${JOB_STATUS}" = "failure" ]; then
               printf '\n### Next steps\n'
-              echo "- 확인: 'Run unit tests'와 'Run static checks' 로그에서 첫 실패 원인을 찾아 수정"
+              echo "- 확인: 포맷, Checkstyle, 테스트 단계에서 첫 실패 원인을 찾아 수정"
               echo "- 재시도: 문제 해결 후 PR 업데이트 혹은 rerun"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
