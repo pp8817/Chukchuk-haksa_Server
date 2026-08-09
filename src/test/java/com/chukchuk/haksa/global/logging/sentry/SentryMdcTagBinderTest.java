@@ -41,7 +41,7 @@ class SentryMdcTagBinderTest {
                 .containsEntry("departmentId", "38")
                 .containsEntry("majorType", "SINGLE")
                 .containsEntry("traceId", "trace-1")
-                .doesNotContainKey("student_code")
-                .doesNotContainKey("secondaryDepartmentId");
+                .doesNotContainKey("secondaryDepartmentId")
+                .doesNotContainKeys("student_code", "primary_department_id");
     }
 }
