@@ -1,4 +1,5 @@
 // 포털 연동 데이터 경계의 방어 처리를 검증한다.
+
 package com.chukchuk.haksa.application.portal;
 
 import static org.assertj.core.api.Assertions.assertThat;

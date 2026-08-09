@@ -6,9 +6,11 @@ import com.chukchuk.haksa.domain.student.model.StudentStatus;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/** 척척학사의 학생 프로필 api 응답 데이터를 전달한다. */
 @Schema(name = "StudentProfileApiResponse", description = "학생 프로필 응답")
 public class StudentProfileApiResponse extends SuccessResponse<StudentProfileResponse> {
 
+  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
   public StudentProfileApiResponse() {
     super(
         new StudentProfileResponse(

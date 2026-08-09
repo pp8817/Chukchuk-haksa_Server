@@ -1,4 +1,5 @@
 // dev 테스트 데이터 수정을 현재 인증 계정 범위로 처리한다
+
 package com.chukchuk.haksa.domain.admin.service;
 
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 admin test mutation 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -45,6 +47,12 @@ public class AdminTestMutationService {
   private final StudentCourseRepository studentCourseRepository;
   private final AcademicCache academicCache;
 
+  /**
+   * 척척학사의 update 졸업 courses 대상을 갱신한다.
+   *
+   * @param userId 사용자 식별자
+   * @param request 요청 정보
+   */
   public void updateGraduationCourses(
       UUID userId, AdminTestDto.UpdateGraduationCoursesRequest request) {
     Student student = getRequiredStudent(userId);
@@ -75,6 +83,12 @@ public class AdminTestMutationService {
     academicCache.deleteAllByStudentId(student.getId());
   }
 
+  /**
+   * 척척학사의 update 전공 대상을 갱신한다.
+   *
+   * @param userId 사용자 식별자
+   * @param request 요청 정보
+   */
   public void updateMajor(UUID userId, AdminTestDto.UpdateMajorRequest request) {
     Student student = getRequiredStudent(userId);
     Department major =
@@ -98,6 +112,11 @@ public class AdminTestMutationService {
     academicCache.deleteAllByStudentId(student.getId());
   }
 
+  /**
+   * 관리자 테스트 계정의 학사 데이터를 초기화한다.
+   *
+   * @param userId 사용자 식별자
+   */
   public void resetCurrentAccount(UUID userId) {
     Student student = getRequiredStudent(userId);
 
@@ -107,6 +126,13 @@ public class AdminTestMutationService {
     academicCache.deleteAllByStudentId(student.getId());
   }
 
+  /**
+   * 척척학사의 create test 과목 대상을 생성한다.
+   *
+   * @param userId 사용자 식별자
+   * @param request 요청 정보
+   * @return 생성된
+   */
   public AdminTestDto.TestCourseResponse createTestCourse(
       UUID userId, AdminTestDto.CreateTestCourseRequest request) {
     if (request == null || request.area() == null) {

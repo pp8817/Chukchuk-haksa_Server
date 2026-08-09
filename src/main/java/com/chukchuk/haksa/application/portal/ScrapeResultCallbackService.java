@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/** 스크래핑 결과 콜백 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +44,15 @@ public class ScrapeResultCallbackService {
   private final MeterRegistry meterRegistry;
   private final ObjectMapper objectMapper;
 
+  /**
+   * 척척학사의 handle 콜백 대상을 처리한다.
+   *
+   * @param rawBody 서명 검증 대상 요청 본문
+   * @param timestamp 요청 타임스탬프
+   * @param signature 요청 서명
+   * @param attemptHeader attempt header 값
+   * @param workerRequestId 워커 요청 식별자
+   */
   public void handleCallback(
       String rawBody,
       String timestamp,
@@ -59,7 +69,11 @@ public class ScrapeResultCallbackService {
       HmacSignatureVerifier.VerificationDiagnostics diagnostics =
           hmacSignatureVerifier.diagnostics(timestamp, rawBody, signature);
       log.warn(
-          "[BIZ] scrape.job.callback.invalid_signature jobId={} signatureValid=false reason={} timestamp={} parsedTimestamp={} timestampDeltaSeconds={} rawBodyHash={} actualSignatureEncoding={} actualSignatureLength={} actualSignatureHash={} expectedUtf8SignatureHash={} expectedHexSignatureHash={}",
+          "[BIZ] scrape.job.callback.invalid_signature jobId={} "
+              + "signatureValid=false reason={} timestamp={} parsedTimestamp={} "
+              + "timestampDeltaSeconds={} rawBodyHash={} actualSignatureEncoding={} "
+              + "actualSignatureLength={} actualSignatureHash={} "
+              + "expectedUtf8SignatureHash={} expectedHexSignatureHash={}",
           hintedJobId,
           diagnostics.reason(),
           timestamp,
@@ -80,13 +94,13 @@ public class ScrapeResultCallbackService {
     String callbackMetadataJson = writeJson(request.metadata());
     String normalizedStatus = normalize(request.status());
     Instant callbackReceivedAt = Instant.now();
-    Instant finishedAt = request.finished_at() == null ? Instant.now() : request.finished_at();
+    Instant finishedAt = request.finishedAt() == null ? Instant.now() : request.finishedAt();
     logStage(
         "validated",
-        request.job_id(),
+        request.jobId(),
         attempt,
         normalizedStatus,
-        request.result_s3_key(),
+        request.resultS3Key(),
         normalizedWorkerRequestId,
         elapsedMillis(startedAt));
 
@@ -140,7 +154,7 @@ public class ScrapeResultCallbackService {
       String workerRequestId,
       String bodyHash,
       long startedAt) {
-    validateResultKey(request.job_id(), request.result_s3_key());
+    validateResultKey(request.jobId(), request.resultS3Key());
     long receiptStartedAt = System.nanoTime();
     ScrapeResultCallbackTxService.CallbackReceipt receipt =
         receiveSuccessCallback(
@@ -153,24 +167,24 @@ public class ScrapeResultCallbackService {
           receipt.jobId(),
           attempt,
           receipt.status(),
-          request.result_s3_key(),
+          request.resultS3Key(),
           workerRequestId,
           elapsedMillis(receiptStartedAt));
       if (receipt.duplicate()) {
-        handleDuplicate(receipt, attempt, workerRequestId, request.result_s3_key());
+        handleDuplicate(receipt, attempt, workerRequestId, request.resultS3Key());
         return;
       }
 
       try {
         long s3StartedAt = System.nanoTime();
-        PayloadBundle payloadBundle = fetchAndNormalizePayload(request.result_s3_key());
+        PayloadBundle payloadBundle = fetchAndNormalizePayload(request.resultS3Key());
         verifyChecksum(request.resultChecksum(), payloadBundle.rawPayloadJson());
         logStage(
             "payload_ready",
             receipt.jobId(),
             attempt,
             receipt.status(),
-            request.result_s3_key(),
+            request.resultS3Key(),
             workerRequestId,
             elapsedMillis(s3StartedAt));
 
@@ -199,7 +213,7 @@ public class ScrapeResultCallbackService {
             receipt.jobId(),
             attempt,
             "succeeded",
-            request.result_s3_key(),
+            request.resultS3Key(),
             workerRequestId,
             elapsedMillis(postProcessStartedAt));
       } catch (CommonException exception) {
@@ -224,7 +238,7 @@ public class ScrapeResultCallbackService {
         log.warn(
             "[BIZ] scrape.job.s3.fail jobId={} key={} attempt={} reason={}",
             receipt.jobId(),
-            request.result_s3_key(),
+            request.resultS3Key(),
             attempt,
             exception.getMessage());
         throw new CommonException(ErrorCode.SCRAPE_RESULT_S3_FAILED, exception);
@@ -237,9 +251,10 @@ public class ScrapeResultCallbackService {
             exception.getOriginalMessage(),
             false);
         log.warn(
-            "[BIZ] scrape.job.callback.invalid_payload stage=result_payload_parse jobId={} resultS3Key={} message={}",
+            "[BIZ] scrape.job.callback.invalid_payload stage=result_payload_parse "
+                + "jobId={} resultS3Key={} message={}",
             receipt.jobId(),
-            request.result_s3_key(),
+            request.resultS3Key(),
             exception.getOriginalMessage());
         throw new CommonException(ErrorCode.SCRAPE_RESULT_SCHEMA_INVALID, exception);
       } finally {
@@ -248,7 +263,7 @@ public class ScrapeResultCallbackService {
             receipt.jobId(),
             attempt,
             normalizedStatus(request.status()),
-            request.result_s3_key(),
+            request.resultS3Key(),
             workerRequestId,
             elapsedMillis(startedAt));
       }
@@ -271,13 +286,13 @@ public class ScrapeResultCallbackService {
     SentryMdcContext.bindToCurrentRequest(context);
     try (SentryMdcContext.MdcScope ignored = SentryMdcContext.open(context)) {
       if (receipt.duplicate()) {
-        handleDuplicate(receipt, attempt, workerRequestId, request.result_s3_key());
+        handleDuplicate(receipt, attempt, workerRequestId, request.resultS3Key());
         return;
       }
       log.info(
           "[BIZ] scrape.job.failed jobId={} errorCode={} retryable={} attempt={} requestId={}",
           receipt.jobId(),
-          request.error_code(),
+          request.errorCode(),
           request.retryable(),
           attempt,
           workerRequestId);
@@ -286,7 +301,7 @@ public class ScrapeResultCallbackService {
           receipt.jobId(),
           attempt,
           receipt.status(),
-          request.result_s3_key(),
+          request.resultS3Key(),
           workerRequestId,
           elapsedMillis(startedAt));
     }
@@ -313,7 +328,8 @@ public class ScrapeResultCallbackService {
       String resultS3Key) {
     meterRegistry.counter("scrape.job.callback.duplicate", "status", receipt.status()).increment();
     log.info(
-        "[BIZ] scrape.job.callback.duplicate jobId={} status={} attempt={} requestId={} resultS3Key={}",
+        "[BIZ] scrape.job.callback.duplicate jobId={} status={} attempt={} "
+            + "requestId={} resultS3Key={}",
         receipt.jobId(),
         receipt.status(),
         attempt,
@@ -410,16 +426,16 @@ public class ScrapeResultCallbackService {
       String bodyHash) {
     try {
       return scrapeResultCallbackTxService.receiveSuccessCallback(
-          request.job_id(),
+          request.jobId(),
           attempt,
-          request.result_s3_key(),
+          request.resultS3Key(),
           request.resultChecksum(),
           callbackMetadataJson,
           callbackReceivedAt);
     } catch (EntityNotFoundException exception) {
       log.warn(
           "[BIZ] scrape.job.callback.job_not_found jobId={} signatureValid=true rawBodyHash={}",
-          request.job_id(),
+          request.jobId(),
           bodyHash);
       throw exception;
     }
@@ -434,18 +450,18 @@ public class ScrapeResultCallbackService {
       String bodyHash) {
     try {
       return scrapeResultCallbackTxService.receiveFailedCallback(
-          request.job_id(),
+          request.jobId(),
           attempt,
           callbackMetadataJson,
-          request.error_code(),
-          request.error_message(),
+          request.errorCode(),
+          request.errorMessage(),
           request.retryable(),
           callbackReceivedAt,
           finishedAt);
     } catch (EntityNotFoundException exception) {
       log.warn(
           "[BIZ] scrape.job.callback.job_not_found jobId={} signatureValid=true rawBodyHash={}",
-          request.job_id(),
+          request.jobId(),
           bodyHash);
       throw exception;
     }
@@ -463,7 +479,8 @@ public class ScrapeResultCallbackService {
         .timer("scrape.job.callback.stage", "stage", stage)
         .record(Duration.ofMillis(elapsedMs));
     log.info(
-        "[BIZ] scrape.job.callback.stage stage={} jobId={} attempt={} status={} resultS3Key={} requestId={} elapsed_ms={}",
+        "[BIZ] scrape.job.callback.stage stage={} jobId={} attempt={} status={} "
+            + "resultS3Key={} requestId={} elapsed_ms={}",
         stage,
         jobId,
         attempt,

@@ -24,8 +24,23 @@ import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.service.StudentService;
 import com.chukchuk.haksa.global.logging.annotation.LogTime;
 import com.chukchuk.haksa.infrastructure.portal.mapper.AcademicRecordMapperFromPortal;
-import com.chukchuk.haksa.infrastructure.portal.model.*;
-import java.util.*;
+import com.chukchuk.haksa.infrastructure.portal.model.CourseInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.MergedOfferingAcademic;
+import com.chukchuk.haksa.infrastructure.portal.model.OfferingInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalAcademicData;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalCourseInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalCurriculumData;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalOfferingCreationData;
+import com.chukchuk.haksa.infrastructure.portal.model.SemesterCourseInfo;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /* 학업 이력 동기화 유스케이스 실행 */
+/** 척척학사의 sync 학사 record 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -49,6 +65,13 @@ public class SyncAcademicRecordService {
   private final StudentCourseBulkRepository studentCourseBulkRepository;
   private static final String DEFAULT_PROFESSOR_NAME = "미확인 교수";
 
+  /**
+   * 척척학사의 execute with 포털 data 대상을 처리한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalData 포털 학사 데이터
+   * @return sync 학사 record 결과
+   */
   @Transactional
   public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
     long t0 = LogTime.start();
@@ -71,6 +94,13 @@ public class SyncAcademicRecordService {
     }
   }
 
+  /**
+   * 척척학사의 execute for refresh 포털 data 대상을 처리한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalData 포털 학사 데이터
+   * @return sync 학사 record 결과
+   */
   @Transactional
   public SyncAcademicRecordResult executeForRefreshPortalData(UUID userId, PortalData portalData) {
     long t0 = LogTime.start();
@@ -94,7 +124,7 @@ public class SyncAcademicRecordService {
   }
 
   private SyncStats sync(UUID userId, PortalData portalData, boolean isInitial) {
-    long totalStartNs = System.nanoTime();
+    final long totalStartNs = System.nanoTime();
     Student student = studentService.getStudentByUserId(userId);
     UUID studentId = student.getId();
 
@@ -106,7 +136,7 @@ public class SyncAcademicRecordService {
     } else {
       academicRecordRepository.updateChangedAcademicRecords(academicRecord, student);
     }
-    long academicMs = elapsedMs(academicStartNs);
+    final long academicMs = elapsedMs(academicStartNs);
 
     // 1) 포털 수강 기록 수집
     CurriculumProcessingResult processingResult =
@@ -172,7 +202,7 @@ public class SyncAcademicRecordService {
     // 4) 포털에 없는 offeringId는 제거 (기존 로직 유지)
     long deleteStartNs = System.nanoTime();
     int removed = removeDeletedEnrollments(student, newEnrollments, existingEnrollments);
-    long deleteMs = elapsedMs(deleteStartNs);
+    final long deleteMs = elapsedMs(deleteStartNs);
 
     SyncStats stats = new SyncStats();
     stats.inserted += newStudentCourses.size();
@@ -181,7 +211,10 @@ public class SyncAcademicRecordService {
 
     long totalMs = elapsedMs(totalStartNs);
     log.info(
-        "[PERF] portal.sync studentId={} academic_ms={} professor_map_ms={} course_map_ms={} curriculum_merge_ms={} course_get_or_create_ms={} offering_fetch_ms={} insert_ms={} delete_ms={} total_ms={} ins_cnt={} upd_cnt={} del_cnt={}",
+        "[PERF] portal.sync studentId={} academic_ms={} professor_map_ms={} "
+            + "course_map_ms={} curriculum_merge_ms={} course_get_or_create_ms={} "
+            + "offering_fetch_ms={} insert_ms={} delete_ms={} total_ms={} ins_cnt={} "
+            + "upd_cnt={} del_cnt={}",
         studentId,
         academicMs,
         processingResult.professorMapMs(),
@@ -203,7 +236,7 @@ public class SyncAcademicRecordService {
     long curriculumMergeStartNs = System.nanoTime();
     Map<SimpleOfferingKey, MergedOfferingAcademic> mergedOfferings =
         mergeOfferingsAndAcademic(curriculumData, academicData);
-    long curriculumMergeMs = elapsedMs(curriculumMergeStartNs);
+    final long curriculumMergeMs = elapsedMs(curriculumMergeStartNs);
 
     Set<String> professorNames =
         mergedOfferings.values().stream()
@@ -547,7 +580,9 @@ public class SyncAcademicRecordService {
   }
 
   private static class SyncStats {
-    int inserted, updated, deleted;
+    int inserted;
+    int updated;
+    int deleted;
   }
 
   private record SemesterKey(int year, int semester) {}

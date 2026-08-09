@@ -1,4 +1,5 @@
 // 포털 로그인 검증 token의 발급과 검증 규칙을 검증하는 테스트
+
 package com.chukchuk.haksa.application.portal;
 
 import static org.assertj.core.api.Assertions.assertThat;

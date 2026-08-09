@@ -1,4 +1,5 @@
 // CodeRabbit 자동 리뷰 정책과 경로별 검토 범위를 검증하는 테스트
+
 package com.chukchuk.haksa.global.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -29,7 +31,8 @@ class CodeRabbitConfigTest {
   }
 
   @Test
-  void 백엔드_자동_리뷰_정책을_유지한다() {
+  @DisplayName("백엔드 자동 리뷰 정책을 유지한다")
+  void keepsBackendAutomaticReviewPolicy() {
     assertThat(config.get("language")).isEqualTo("ko-KR");
     assertThat(config.get("tone_instructions"))
         .asString()
@@ -45,7 +48,8 @@ class CodeRabbitConfigTest {
   }
 
   @Test
-  void 백엔드_위험_영역별_리뷰_지침을_유지한다() {
+  @DisplayName("백엔드 위험 영역별 리뷰 지침을 유지한다")
+  void keepsBackendRiskAreaReviewInstructions() {
     Object rawPathInstructions = reviews.get("path_instructions");
     assertThat(rawPathInstructions).isInstanceOf(List.class);
     List<Map<String, Object>> pathInstructions = list(rawPathInstructions);

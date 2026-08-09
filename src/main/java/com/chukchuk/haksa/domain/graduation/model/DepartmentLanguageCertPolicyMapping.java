@@ -1,4 +1,5 @@
 // 학과 코드와 입학년도 구간을 외국어 인증 정책 그룹에 연결하는 엔티티
+
 package com.chukchuk.haksa.domain.graduation.model;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -22,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 학과 language cert policy mapping 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -77,6 +79,16 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
     this.note = note;
   }
 
+  /**
+   * 검증된 학과별 어학 인증 정책 매핑을 생성한다.
+   *
+   * @param departmentCode 학과 코드
+   * @param admissionYearFrom admission year from 값
+   * @param admissionYearTo admission year to 값
+   * @param policyGroup 정책 그룹
+   * @param note note 값
+   * @return 학과 language cert policy mapping 결과
+   */
   public static DepartmentLanguageCertPolicyMapping verified(
       String departmentCode,
       Integer admissionYearFrom,
@@ -92,6 +104,16 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
         note);
   }
 
+  /**
+   * 추론된 학과별 어학 인증 정책 매핑을 생성한다.
+   *
+   * @param departmentCode 학과 코드
+   * @param admissionYearFrom admission year from 값
+   * @param admissionYearTo admission year to 값
+   * @param policyGroup 정책 그룹
+   * @param note note 값
+   * @return 학과 language cert policy mapping 결과
+   */
   public static DepartmentLanguageCertPolicyMapping inferred(
       String departmentCode,
       Integer admissionYearFrom,
@@ -107,6 +129,15 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
         note);
   }
 
+  /**
+   * 학과 정책이 연결되지 않은 응답을 생성한다.
+   *
+   * @param departmentCode 학과 코드
+   * @param admissionYearFrom admission year from 값
+   * @param admissionYearTo admission year to 값
+   * @param note note 값
+   * @return 학과 language cert policy mapping 결과
+   */
   public static DepartmentLanguageCertPolicyMapping unmapped(
       String departmentCode, Integer admissionYearFrom, Integer admissionYearTo, String note) {
     return new DepartmentLanguageCertPolicyMapping(
@@ -118,6 +149,13 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
         note);
   }
 
+  /**
+   * 학과와 입학연도가 이 정책의 적용 범위인지 확인한다.
+   *
+   * @param departmentCode 학과 코드
+   * @param admissionYear admission 연도
+   * @return 조건 충족 여부
+   */
   public boolean appliesTo(String departmentCode, int admissionYear) {
     return Objects.equals(this.departmentCode, departmentCode)
         && admissionYear >= admissionYearFrom

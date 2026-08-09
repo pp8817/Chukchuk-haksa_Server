@@ -1,4 +1,5 @@
 // Sentry 이슈 제목 정규화 콜백을 검증하는 테스트
+
 package com.chukchuk.haksa.global.logging.sentry;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,6 +8,7 @@ import io.sentry.Hint;
 import io.sentry.SentryEvent;
 import io.sentry.protocol.SentryException;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class SentryEventTitleCallbackTest {
@@ -14,7 +16,8 @@ class SentryEventTitleCallbackTest {
   private final SentryEventTitleCallback callback = new SentryEventTitleCallback();
 
   @Test
-  void errorTitleTag가_있으면_최상위_예외_제목을_교체한다() {
+  @DisplayName("error.title 태그가 있으면 최상위 예외 제목을 교체한다")
+  void replacesTopLevelExceptionTitleWhenErrorTitleTagExists() {
     SentryException cause = exception("DataAccessException", "constraint violation");
     SentryException outer = exception("CommonException", "기존 메시지");
     SentryEvent event = new SentryEvent();
@@ -30,7 +33,8 @@ class SentryEventTitleCallbackTest {
   }
 
   @Test
-  void errorTitleTag가_없으면_예외를_변경하지_않는다() {
+  @DisplayName("error.title 태그가 없으면 예외를 변경하지 않는다")
+  void keepsExceptionWhenErrorTitleTagIsMissing() {
     SentryException exception = exception("RuntimeException", "boom");
     SentryEvent event = new SentryEvent();
     event.setExceptions(List.of(exception));
@@ -42,7 +46,8 @@ class SentryEventTitleCallbackTest {
   }
 
   @Test
-  void 예외_목록이_없으면_이벤트를_그대로_반환한다() {
+  @DisplayName("예외 목록이 없으면 이벤트를 그대로 반환한다")
+  void keepsEventWhenExceptionListIsEmpty() {
     SentryEvent event = new SentryEvent();
     event.setTag("error.title", "[G02] 졸업요건 데이터 없음");
 

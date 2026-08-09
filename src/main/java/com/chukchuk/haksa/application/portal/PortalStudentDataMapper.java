@@ -1,4 +1,5 @@
 // 포털 학생 정보를 학생 초기화 데이터와 응답 요약으로 변환한다.
+
 package com.chukchuk.haksa.application.portal;
 
 import com.chukchuk.haksa.domain.department.model.Department;

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 스크래핑 작업 아웃박스 dispatch tx 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,6 +33,14 @@ public class ScrapeJobOutboxDispatchTxService {
   private final ScrapingProperties scrapingProperties;
   private final MeterRegistry meterRegistry;
 
+  /**
+   * 지정한 아웃박스를 우선 발행 대상으로 예약한다.
+   *
+   * @param preferredOutboxId preferred 아웃박스 식별자
+   * @param publishableStatuses publishable statuses 값
+   * @param now now 값
+   * @return 스크래핑 작업 아웃박스 dispatch plan 결과
+   */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ScrapeJobOutboxDispatchPlan reservePreferred(
       String preferredOutboxId,
@@ -46,6 +55,14 @@ public class ScrapeJobOutboxDispatchTxService {
     return buildPlan(List.of(preferred.get()), now, "sync_request");
   }
 
+  /**
+   * 발행 가능한 아웃박스를 배치 단위로 예약한다.
+   *
+   * @param publishableStatuses publishable statuses 값
+   * @param now now 값
+   * @param batchSize batch size 값
+   * @return 스크래핑 작업 아웃박스 dispatch plan 결과
+   */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ScrapeJobOutboxDispatchPlan reserveBatch(
       Collection<ScrapeJobOutboxStatus> publishableStatuses, Instant now, int batchSize) {
@@ -55,6 +72,14 @@ public class ScrapeJobOutboxDispatchTxService {
     return buildPlan(outboxes, now, "scheduled");
   }
 
+  /**
+   * 아웃박스 발행 성공과 연결된 작업 상태를 기록한다.
+   *
+   * @param outboxId 아웃박스 식별자
+   * @param queueMessageId 큐 메시지 식별자
+   * @param attemptedAt 발행 시도 시각
+   * @param trigger trigger 값
+   */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void markSent(
       String outboxId, String queueMessageId, Instant attemptedAt, String trigger) {
@@ -74,7 +99,8 @@ public class ScrapeJobOutboxDispatchTxService {
     job.markRunning();
     meterRegistry.counter("scrape.outbox.publish.success").increment();
     log.info(
-        "[BIZ] scrape.outbox.sent trigger={} outboxId={} jobId={} attempt={} outboxStatus={} queueMessageId={}",
+        "[BIZ] scrape.outbox.sent trigger={} outboxId={} jobId={} attempt={} "
+            + "outboxStatus={} queueMessageId={}",
         trigger,
         outbox.getOutboxId(),
         outbox.getJobId(),
@@ -83,6 +109,14 @@ public class ScrapeJobOutboxDispatchTxService {
         queueMessageId);
   }
 
+  /**
+   * 처리 실패 상태와 원인을 기록한다.
+   *
+   * @param outboxId 아웃박스 식별자
+   * @param attemptedAt 발행 시도 시각
+   * @param trigger trigger 값
+   * @param exception exception 값
+   */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void markFailed(
       String outboxId, Instant attemptedAt, String trigger, RuntimeException exception) {
@@ -116,7 +150,8 @@ public class ScrapeJobOutboxDispatchTxService {
       }
       meterRegistry.counter("scrape.outbox.dead").increment();
       log.error(
-          "[BIZ] scrape.outbox.dead trigger={} outboxId={} jobId={} attempt={} outboxStatus={} queueMessageId={} reason={}",
+          "[BIZ] scrape.outbox.dead trigger={} outboxId={} jobId={} attempt={} "
+              + "outboxStatus={} queueMessageId={} reason={}",
           trigger,
           outbox.getOutboxId(),
           outbox.getJobId(),
@@ -132,7 +167,8 @@ public class ScrapeJobOutboxDispatchTxService {
     outbox.markRetryableFailure(summary, attemptedAt, nextAttemptAt);
     meterRegistry.counter("scrape.outbox.retry").increment();
     log.warn(
-        "[BIZ] scrape.outbox.retry trigger={} outboxId={} jobId={} attempt={} outboxStatus={} queueMessageId={} nextAttemptAt={} reason={}",
+        "[BIZ] scrape.outbox.retry trigger={} outboxId={} jobId={} attempt={} "
+            + "outboxStatus={} queueMessageId={} nextAttemptAt={} reason={}",
         trigger,
         outbox.getOutboxId(),
         outbox.getJobId(),
@@ -173,7 +209,8 @@ public class ScrapeJobOutboxDispatchTxService {
     meterRegistry.counter("scrape.outbox.publish.fail").increment();
     meterRegistry.counter("scrape.outbox.dead").increment();
     log.error(
-        "[BIZ] scrape.outbox.dead trigger={} outboxId={} jobId={} attempt={} outboxStatus={} queueMessageId={} reason=missing_job",
+        "[BIZ] scrape.outbox.dead trigger={} outboxId={} jobId={} attempt={} "
+            + "outboxStatus={} queueMessageId={} reason=missing_job",
         trigger,
         outbox.getOutboxId(),
         outbox.getJobId(),

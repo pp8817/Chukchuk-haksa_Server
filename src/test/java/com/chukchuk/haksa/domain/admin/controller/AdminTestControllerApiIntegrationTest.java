@@ -1,4 +1,5 @@
 // dev 테스트 어드민 API 컨트롤러 동작을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.admin.controller;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -75,8 +76,8 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
                                   "departmentId": 1,
                                   "majorId": 1,
                                   "admissionYear": 2024
-                                }
-                                """))
+                    }
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.userId").value(userId.toString()))
@@ -163,8 +164,8 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
                                   "removeStudentCourseIds": [20],
                                   "grade": "A+",
                                   "points": 3
-                                }
-                                """))
+                    }
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.message").value("강의 데이터가 수정되었습니다."));
@@ -187,8 +188,8 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
                                   "majorDepartmentId": 1,
                                   "dualMajorEnabled": true,
                                   "secondaryMajorDepartmentId": 2
-                                }
-                                """))
+                    }
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.message").value("전공 상태가 수정되었습니다."));
@@ -233,8 +234,8 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
                                   "semester": 10,
                                   "credits": 3,
                                   "grade": "A+"
-                                }
-                                """))
+                    }
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.studentCourseId").value(40))

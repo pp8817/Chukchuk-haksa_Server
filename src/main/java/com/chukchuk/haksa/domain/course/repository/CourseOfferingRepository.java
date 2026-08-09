@@ -9,9 +9,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+/** 과목 offering repository 기능의 계약을 정의한다. */
 public interface CourseOfferingRepository extends JpaRepository<CourseOffering, Long> {
+  /**
+   * 척척학사의 find by 과목 id and year and 학기 and class section and professor id and faculty division
+   * name and host 학과 대상을 조회한다.
+   *
+   * @param courseId 과목 식별자
+   * @param year 연도
+   * @param semester 학기 값
+   * @param classSection 분반
+   * @param professorId 교수 식별자
+   * @param facultyDivisionName faculty division 이름
+   * @param hostDepartment 주관 학과
+   * @return 조회
+   */
   @Query(
-"""
+      """
     SELECT o FROM CourseOffering o
     WHERE o.course.id = :courseId
       AND o.year = :year
@@ -20,27 +34,44 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
       AND o.professor.id = :professorId
       AND o.facultyDivisionName = :facultyDivisionName
       AND o.hostDepartment = :hostDepartment
-""")
-  Optional<CourseOffering>
-      findByCourseIdAndYearAndSemesterAndClassSectionAndProfessorIdAndFacultyDivisionNameAndHostDepartment(
-          Long courseId,
-          Integer year,
-          Integer semester,
-          String classSection,
-          Long professorId,
-          FacultyDivision facultyDivisionName,
-          String hostDepartment);
+      """)
+  Optional<CourseOffering> findMatchingOffering(
+      Long courseId,
+      Integer year,
+      Integer semester,
+      String classSection,
+      Long professorId,
+      FacultyDivision facultyDivisionName,
+      String hostDepartment);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param courseIds 과목 ids 식별자
+   * @param years years 값
+   * @param semesters semesters 값
+   * @return 조회
+   */
   @Query(
-"""
+      """
     SELECT o FROM CourseOffering o
     WHERE o.course.id IN :courseIds
       AND o.year IN :years
       AND o.semester IN :semesters
-""")
+      """)
   List<CourseOffering> findByCourseIdInAndYearInAndSemesterIn(
       Collection<Long> courseIds, Collection<Integer> years, Collection<Integer> semesters);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param keyword 검색어
+   * @param area area 값
+   * @param year 연도
+   * @param semester 학기 값
+   * @param departmentName 학과 이름
+   * @return 조회
+   */
   @Query(
       """
         SELECT o FROM CourseOffering o
@@ -58,10 +89,17 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
                OR d.establishedDepartmentName = :departmentName
                OR o.hostDepartment = :departmentName)
         ORDER BY o.year DESC, o.semester DESC, c.courseName ASC
-    """)
+      """)
   List<CourseOffering> searchAdminCandidates(
       String keyword, FacultyDivision area, Integer year, Integer semester, String departmentName);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param year 연도
+   * @param semester 학기 값
+   * @return 조회
+   */
   @Query(
       """
         SELECT o FROM CourseOffering o
@@ -73,9 +111,16 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
           AND o.year = :year
           AND o.semester = :semester
         ORDER BY c.courseName ASC, p.professorName ASC, o.id ASC
-    """)
+      """)
   List<CourseOffering> findReusableLectureEvaluationTestOfferings(Integer year, Integer semester);
 
+  /**
+   * 대상 학기의 과목 개설 강의평가 유형을 미확인 상태로 초기화한다.
+   *
+   * @param year 연도
+   * @param semester 학기 값
+   * @return int
+   */
   @Modifying
   @Query(
       value =
@@ -89,7 +134,7 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
               evaluation_type_code IS NULL
               OR evaluation_type_code NOT IN ('ABSOLUTE', 'RELATIVE', 'UNKNOWN')
           )
-    """,
+          """,
       nativeQuery = true)
   int normalizeUnsupportedEvaluationTypes(Integer year, Integer semester);
 }

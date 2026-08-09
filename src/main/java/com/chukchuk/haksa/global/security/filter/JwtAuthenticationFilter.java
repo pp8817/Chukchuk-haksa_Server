@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/** 척척학사의 jwt authentication 요청 처리 과정의 필터링을 담당한다. */
 @Component
 @RequiredArgsConstructor
 @Slf4j

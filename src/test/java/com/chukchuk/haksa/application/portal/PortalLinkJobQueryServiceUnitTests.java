@@ -58,11 +58,11 @@ class PortalLinkJobQueryServiceUnitTests {
 
     PortalLinkDto.JobSummaryResponse response = service.getJobSummary(userId, job.getJobId());
 
-    assertThat(response.job_id()).isEqualTo(job.getJobId());
+    assertThat(response.jobId()).isEqualTo(job.getJobId());
     assertThat(response.studentInfo().majorName()).isEqualTo("소프트웨어학과");
     assertThat(response.studentInfo().completedSemesterType()).isEqualTo(2);
     assertThat(response.status()).isEqualTo("succeeded");
-    assertThat(response.finished_at()).isEqualTo(finishedAt);
+    assertThat(response.finishedAt()).isEqualTo(finishedAt);
   }
 
   @Test
@@ -113,13 +113,13 @@ class PortalLinkJobQueryServiceUnitTests {
 
     PortalLinkDto.JobDurationResponse response = service.getJobDuration(userId, job.getJobId());
 
-    assertThat(response.job_id()).isEqualTo(job.getJobId());
+    assertThat(response.jobId()).isEqualTo(job.getJobId());
     assertThat(response.status()).isEqualTo("pending");
     assertThat(response.success()).isNull();
-    assertThat(response.started_at()).isEqualTo(startedAt);
-    assertThat(response.ended_at()).isNull();
-    assertThat(response.elapsed_millis()).isNull();
-    assertThat(response.elapsed_time()).isNull();
+    assertThat(response.startedAt()).isEqualTo(startedAt);
+    assertThat(response.endedAt()).isNull();
+    assertThat(response.elapsedMillis()).isNull();
+    assertThat(response.elapsedTime()).isNull();
   }
 
   @Test
@@ -149,10 +149,10 @@ class PortalLinkJobQueryServiceUnitTests {
 
     assertThat(response.status()).isEqualTo("succeeded");
     assertThat(response.success()).isTrue();
-    assertThat(response.started_at()).isEqualTo(startedAt);
-    assertThat(response.ended_at()).isEqualTo(serverEndedAt);
-    assertThat(response.elapsed_millis()).isEqualTo(12_345L);
-    assertThat(response.elapsed_time()).isEqualTo("12s 345ms");
+    assertThat(response.startedAt()).isEqualTo(startedAt);
+    assertThat(response.endedAt()).isEqualTo(serverEndedAt);
+    assertThat(response.elapsedMillis()).isEqualTo(12_345L);
+    assertThat(response.elapsedTime()).isEqualTo("12s 345ms");
   }
 
   @Test
@@ -182,9 +182,9 @@ class PortalLinkJobQueryServiceUnitTests {
 
     assertThat(response.status()).isEqualTo("failed");
     assertThat(response.success()).isFalse();
-    assertThat(response.ended_at()).isEqualTo(serverEndedAt);
-    assertThat(response.elapsed_millis()).isEqualTo(3_120L);
-    assertThat(response.elapsed_time()).isEqualTo("3s 120ms");
+    assertThat(response.endedAt()).isEqualTo(serverEndedAt);
+    assertThat(response.elapsedMillis()).isEqualTo(3_120L);
+    assertThat(response.elapsedTime()).isEqualTo("3s 120ms");
   }
 
   @Test
@@ -212,10 +212,10 @@ class PortalLinkJobQueryServiceUnitTests {
 
     assertThat(response.status()).isEqualTo("failed");
     assertThat(response.success()).isFalse();
-    assertThat(response.started_at()).isNull();
-    assertThat(response.ended_at()).isNull();
-    assertThat(response.elapsed_millis()).isNull();
-    assertThat(response.elapsed_time()).isNull();
+    assertThat(response.startedAt()).isNull();
+    assertThat(response.endedAt()).isNull();
+    assertThat(response.elapsedMillis()).isNull();
+    assertThat(response.elapsedTime()).isNull();
   }
 
   @Test
@@ -245,8 +245,8 @@ class PortalLinkJobQueryServiceUnitTests {
 
     assertThat(response.status()).isEqualTo("succeeded");
     assertThat(response.success()).isTrue();
-    assertThat(response.elapsed_millis()).isZero();
-    assertThat(response.elapsed_time()).isEqualTo("0s 0ms");
+    assertThat(response.elapsedMillis()).isZero();
+    assertThat(response.elapsedTime()).isEqualTo("0s 0ms");
   }
 
   @Test

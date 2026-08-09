@@ -13,6 +13,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 // 인증 실패 (401 Unauthorized)
+/** 인증되지 않은 요청의 공통 오류 응답을 작성한다. */
 @Slf4j
 @Component
 @RequiredArgsConstructor

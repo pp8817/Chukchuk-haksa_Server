@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/** 유지보수 task 요청 또는 이벤트 처리를 담당한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -14,6 +15,12 @@ public class MaintenanceTaskHandler {
   private final ScrapeJobStaleReconciler scrapeJobStaleReconciler;
   private final RefreshTokenService refreshTokenService;
 
+  /**
+   * 척척학사의 handle 대상을 처리한다.
+   *
+   * @param request 요청 정보
+   * @return 유지보수 task 결과
+   */
   public MaintenanceTaskResult handle(MaintenanceTaskRequest request) {
     long startedAt = System.nanoTime();
     MaintenanceTaskType taskType = MaintenanceTaskType.from(request.task());

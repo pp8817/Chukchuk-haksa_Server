@@ -1,14 +1,17 @@
 // 외국어 인증 기준 조회 성공 응답의 OpenAPI wrapper
+
 package com.chukchuk.haksa.domain.graduation.wrapper;
 
 import com.chukchuk.haksa.domain.graduation.dto.LanguageCertRequirementResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/** 계층 간 전달할 데이터를 표현한다. */
 @Schema(name = "LanguageCertRequirementApiResponse", description = "외국어 인증 기준 조회 응답")
 public class LanguageCertRequirementApiResponse
     extends SuccessResponse<LanguageCertRequirementResponse> {
 
+  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
   public LanguageCertRequirementApiResponse() {
     super(
         LanguageCertRequirementResponse.unmapped("2000763", "자유전공학부", 2025, "기준표에 직접 행이 없음"),

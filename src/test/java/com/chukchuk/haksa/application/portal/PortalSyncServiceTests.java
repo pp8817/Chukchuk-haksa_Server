@@ -1,4 +1,5 @@
 // 포털 동기화 분기와 외국어 졸업 인증 저장을 함께 검증하는 테스트
+
 package com.chukchuk.haksa.application.portal;
 
 import static org.assertj.core.api.Assertions.assertThat;

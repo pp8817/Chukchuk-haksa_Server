@@ -152,7 +152,7 @@ class UserServiceUnitTests {
 
     UserService userService = createService();
     when(userRepository.findById(currentUserId)).thenReturn(Optional.of(currentUser));
-    when(userRepository.findByStudent_StudentCode("20201234")).thenReturn(Optional.empty());
+    when(userRepository.findByStudentStudentCode("20201234")).thenReturn(Optional.empty());
 
     User merged = userService.tryMergeWithExistingUser(currentUserId, "20201234");
 
@@ -202,8 +202,7 @@ class UserServiceUnitTests {
 
     UserService userService = createService();
     when(userRepository.findById(currentUserId)).thenReturn(Optional.of(currentUser));
-    when(userRepository.findByStudent_StudentCode("20201234"))
-        .thenReturn(Optional.of(existingUser));
+    when(userRepository.findByStudentStudentCode("20201234")).thenReturn(Optional.of(existingUser));
     when(socialAccountRepository.findAllByUserId(existingUserId))
         .thenReturn(List.of(first, second));
 
@@ -232,7 +231,7 @@ class UserServiceUnitTests {
 
     UserService userService = createService();
     when(userRepository.findById(currentUserId)).thenReturn(Optional.of(currentUser));
-    when(userRepository.findByStudent_StudentCode("20201234")).thenReturn(Optional.of(currentUser));
+    when(userRepository.findByStudentStudentCode("20201234")).thenReturn(Optional.of(currentUser));
 
     User merged = userService.tryMergeWithExistingUser(currentUserId, "20201234");
 
@@ -306,7 +305,7 @@ class UserServiceUnitTests {
             .profileNickname("existing")
             .build();
 
-    SocialAccount existingAccount =
+    final SocialAccount existingAccount =
         SocialAccount.builder()
             .provider(OidcProvider.KAKAO)
             .socialId("social-sub")
@@ -347,7 +346,7 @@ class UserServiceUnitTests {
   @DisplayName("소셜 계정이 없으면 사용자와 소셜 계정을 새로 생성하고 로그인 토큰을 발급한다")
   void signIn_whenSocialAccountMissing_createsUserAndSocialAccount() {
     UUID newUserId = UUID.randomUUID();
-    User savedUser =
+    final User savedUser =
         User.builder()
             .id(newUserId)
             .email("new@example.com")

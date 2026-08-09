@@ -2,7 +2,14 @@ package com.chukchuk.haksa.domain.user.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.student.model.Student;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -10,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 척척학사의 사용자 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,6 +56,13 @@ public class User extends BaseEntity {
   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
   private Student student;
 
+  /**
+   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   *
+   * @param id id 식별자
+   * @param email 이메일 값
+   * @param profileNickname 프로필 nick이름
+   */
   @Builder
   public User(UUID id, String email, String profileNickname) {
     this.id = id;
@@ -61,16 +76,31 @@ public class User extends BaseEntity {
     this.student = student;
   }
 
+  /**
+   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   *
+   * @param time time 값
+   */
   public void updateLastSyncedAt(Instant time) {
     this.lastSyncedAt = time;
   }
 
+  /**
+   * 사용자의 포털 연결 완료 시각을 기록한다.
+   *
+   * @param now now 값
+   */
   public void markPortalConnected(Instant now) {
     this.portalConnected = true;
     this.connectedAt = now;
     this.lastSyncedAt = now;
   }
 
+  /**
+   * 사용자를 탈퇴 상태로 전환하고 개인정보와 포털 연결 정보를 제거한다.
+   *
+   * @param now 탈퇴 처리 시각
+   */
   public void withdraw(Instant now) {
     this.email = null;
     this.profileNickname = null;
@@ -82,6 +112,11 @@ public class User extends BaseEntity {
     this.lastSyncedAt = null;
   }
 
+  /**
+   * 다른 사용자 계정의 연결 정보를 현재 계정에 병합한다.
+   *
+   * @param origin 병합할 원본 사용자
+   */
   public void absorbFrom(User origin) {
     this.email = origin.email;
     this.profileNickname = origin.profileNickname;

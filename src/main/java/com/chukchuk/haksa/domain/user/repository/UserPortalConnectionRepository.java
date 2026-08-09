@@ -11,12 +11,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 사용자 포털 연동 데이터 조회와 저장 기능을 제공한다. */
 @Repository
 @RequiredArgsConstructor
 public class UserPortalConnectionRepository {
   private final UserService userService;
   private final StudentService studentService;
 
+  /**
+   * 사용자와 포털에서 조회한 학생 정보를 연결한다.
+   *
+   * @param user 사용자 값
+   * @param studentData 학생 응답 데이터
+   */
   @Transactional
   public void initializePortalConnection(User user, StudentInitializationDataType studentData) {
     Student existingStudent =
@@ -78,6 +85,12 @@ public class UserPortalConnectionRepository {
     userService.evictUserDetailsCache(user.getId());
   }
 
+  /**
+   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   *
+   * @param user 사용자 값
+   * @param studentData 학생 응답 데이터
+   */
   @Transactional
   public void refreshPortalConnection(User user, StudentInitializationDataType studentData) {
     // 학생 정보 조회

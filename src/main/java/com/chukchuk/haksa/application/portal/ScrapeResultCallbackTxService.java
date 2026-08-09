@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 스크래핑 결과 콜백 tx 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +27,17 @@ public class ScrapeResultCallbackTxService {
   private final PortalSyncService portalSyncService;
   private final MeterRegistry meterRegistry;
 
+  /**
+   * 성공 콜백을 검증하고 후처리할 작업 정보를 반환한다.
+   *
+   * @param jobId 작업 식별자
+   * @param attempt attempt 값
+   * @param resultS3Key 결과 S3 key 값
+   * @param resultChecksum 결과 checksum 값
+   * @param callbackMetadataJson 콜백 메타데이터 JSON
+   * @param receivedAt 수신 시각
+   * @return 콜백 receipt 결과
+   */
   @Transactional
   public CallbackReceipt receiveSuccessCallback(
       String jobId,
@@ -43,6 +55,19 @@ public class ScrapeResultCallbackTxService {
     return CallbackReceipt.accepted(job);
   }
 
+  /**
+   * 실패 콜백을 검증하고 작업 실패 정보를 기록한다.
+   *
+   * @param jobId 작업 식별자
+   * @param attempt attempt 값
+   * @param callbackMetadataJson 콜백 메타데이터 JSON
+   * @param errorCode 오류 코드
+   * @param errorMessage 오류 응답 메시지
+   * @param retryable retryable 값
+   * @param receivedAt 수신 시각
+   * @param finishedAt 처리 종료 시각
+   * @return 콜백 receipt 결과
+   */
   @Transactional
   public CallbackReceipt receiveFailedCallback(
       String jobId,
@@ -71,6 +96,18 @@ public class ScrapeResultCallbackTxService {
     return CallbackReceipt.accepted(job);
   }
 
+  /**
+   * 콜백 후처리 성공 결과를 작업에 반영한다.
+   *
+   * @param jobId 작업 식별자
+   * @param userId 사용자 식별자
+   * @param operationType 작업 유형
+   * @param portalData 포털 학사 데이터
+   * @param payloadJson JSON payload
+   * @param finishedAt 처리 종료 시각
+   * @param queuedAgeSeconds queued age seconds 값
+   * @param payloadHash payload hash 값
+   */
   @Transactional
   public void completeSuccess(
       String jobId,
@@ -104,6 +141,16 @@ public class ScrapeResultCallbackTxService {
         resolvedFinishedAt);
   }
 
+  /**
+   * 처리 실패 상태와 원인을 기록한다.
+   *
+   * @param jobId 작업 식별자
+   * @param finishedAt 처리 종료 시각
+   * @param queuedAgeSeconds queued age seconds 값
+   * @param errorCode 오류 코드
+   * @param message 응답 메시지
+   * @param retryable retryable 값
+   */
   @Transactional
   public void markFailed(
       String jobId,
@@ -155,6 +202,16 @@ public class ScrapeResultCallbackTxService {
     return finishedAt != null ? finishedAt : Instant.now();
   }
 
+  /**
+   * 콜백 receipt 데이터를 전달한다.
+   *
+   * @param duplicate duplicate 값
+   * @param jobId 작업 식별자
+   * @param userId 사용자 식별자
+   * @param operationType 작업 유형
+   * @param status 상태
+   * @param queuedAgeSeconds queued age seconds 값
+   */
   public record CallbackReceipt(
       boolean duplicate,
       String jobId,
@@ -162,6 +219,12 @@ public class ScrapeResultCallbackTxService {
       ScrapeJobOperationType operationType,
       String status,
       Double queuedAgeSeconds) {
+    /**
+     * 처리가 수락된 콜백 응답을 생성한다.
+     *
+     * @param job 작업 값
+     * @return 콜백 receipt 결과
+     */
     public static CallbackReceipt accepted(ScrapeJob job) {
       return new CallbackReceipt(
           false,
@@ -172,6 +235,12 @@ public class ScrapeResultCallbackTxService {
           calculateQueuedAgeSeconds(job));
     }
 
+    /**
+     * 중복 수신된 콜백 응답을 생성한다.
+     *
+     * @param job 작업 값
+     * @return 콜백 receipt 결과
+     */
     public static CallbackReceipt duplicate(ScrapeJob job) {
       return new CallbackReceipt(
           true,

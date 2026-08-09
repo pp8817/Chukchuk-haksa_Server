@@ -17,8 +17,15 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+/** 학기 controller docs 기능의 계약을 정의한다. */
 public interface SemesterControllerDocs {
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "사용자 학기 목록 조회",
       description = "사용자의 모든 학기 정보를 조회합니다.",
@@ -41,6 +48,12 @@ public interface SemesterControllerDocs {
   ResponseEntity<SuccessResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "사용자 학기 별 성적 조회",
       description = "사용자의 학기 별 성적 정보를 조회합니다.",

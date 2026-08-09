@@ -8,12 +8,18 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/** 척척학사의 캐시 애플리케이션 설정을 제공한다. */
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
   private static final String OIDC_KEYS_CACHE = "oidcKeys";
 
+  /**
+   * 로컬 캐시 정책이 적용된 캐시 관리자를 생성한다.
+   *
+   * @return 캐시 manager 결과
+   */
   @Bean
   public CacheManager cacheManager() {
     CaffeineCacheManager cacheManager = new CaffeineCacheManager(OIDC_KEYS_CACHE);

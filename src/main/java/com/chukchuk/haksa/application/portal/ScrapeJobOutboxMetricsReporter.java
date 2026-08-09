@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+/** 스크래핑 아웃박스 적체 상태를 주기적으로 메트릭에 반영한다. */
 @Component
 @ConditionalOnBean(TaskScheduler.class)
 @RequiredArgsConstructor

@@ -96,7 +96,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
                                   "id_token":"dummy-id-token",
                                   "nonce":"dummy-nonce"
                                 }
-                                """))
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.accessToken").value("access-token"))
@@ -133,7 +133,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
                                   "id_token":"invalid-id-token",
                                   "nonce":"dummy-nonce"
                                 }
-                                """))
+                    """))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("T10"));

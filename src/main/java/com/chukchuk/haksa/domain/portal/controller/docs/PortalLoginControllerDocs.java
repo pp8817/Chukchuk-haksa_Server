@@ -1,4 +1,5 @@
 // 포털 로그인 검증 API의 Swagger 문서 계약
+
 package com.chukchuk.haksa.domain.portal.controller.docs;
 
 import com.chukchuk.haksa.domain.portal.dto.PortalLinkDto;
@@ -18,9 +19,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/** 포털 로그인 controller docs 기능의 계약을 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내")
 public interface PortalLoginControllerDocs {
 
+  /**
+   * 척척학사의 verify 포털 로그인 대상을 검증한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @param request 요청 정보
+   * @return 응답 entity success 응답 포털 link dto 로그인 응답 결과
+   */
   @Operation(
       summary = "포털 로그인 검증",
       description = "포털 ID/PW를 검증하고 포털 연동 job 생성에 사용할 verification token을 반환합니다.",

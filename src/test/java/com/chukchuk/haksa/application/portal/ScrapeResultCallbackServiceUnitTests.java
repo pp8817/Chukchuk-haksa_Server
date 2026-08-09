@@ -103,12 +103,12 @@ class ScrapeResultCallbackServiceUnitTests {
   @Test
   @DisplayName("성공 callback은 S3를 읽어 후처리를 동기 실행한다")
   void handleCallback_fetchesS3Synchronously() {
-    ScrapeResultCallbackService service = createService();
+    final ScrapeResultCallbackService service = createService();
     UUID userId = UUID.randomUUID();
-    String timestamp = Instant.now().toString();
+    final String timestamp = Instant.now().toString();
     ScrapeJob job = createJob(userId);
 
-    String rawBody =
+    final String rawBody =
         """
                 {
                   \"job_id\":\"%s\",
@@ -116,7 +116,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"result_s3_key\":\"callbacks/%s/result.json\",
                   \"finished_at\":\"2026-03-14T10:01:00Z\"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -129,7 +129,7 @@ class ScrapeResultCallbackServiceUnitTests {
                           \"semesters\":[{\"semester\":\"2024-10\",\"courses\":[{\"subjt_cd\":\"C101\",\"subjt_nm\":\"자료구조\"}]}],
                           \"academic_records\":{\"listSmrCretSumTabYearSmr\":[{\"cretGainYear\":\"2024\",\"gainPoint\":\"18\"}]}
                         }
-                        """);
+            """);
     doAnswer(
             invocation -> {
               assertThat(MDC.get("userId")).isEqualTo(userId.toString());
@@ -168,7 +168,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   "semesters":[],
                   "academic_records":{"list_smry":[]}
                 }
-                """;
+        """;
     String checksum = "sha256:" + sha256(rawPayload);
     String rawBody =
         """
@@ -178,7 +178,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   "result_s3_key":"callbacks/%s/result.json",
                   "result_checksum":"%s"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId(), checksum);
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -194,7 +194,7 @@ class ScrapeResultCallbackServiceUnitTests {
   @Test
   @DisplayName("이미 처리된 attempt면 중복으로 간주한다")
   void handleCallback_ignoresDuplicateAttempt() {
-    ScrapeResultCallbackService service = createService();
+    final ScrapeResultCallbackService service = createService();
     ScrapeJob job = createJob(UUID.randomUUID());
     job.recordCallbackAttempt(1, Instant.now());
     job.markFailed("FAILED_S3_READ", "fail", true, Instant.now());
@@ -207,7 +207,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"status\":\"succeeded\",
                   \"result_s3_key\":\"callbacks/%s/result.json\"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -235,12 +235,12 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"retryable\":false,
                   \"finished_at\":\"2026-03-14T10:01:00Z\"
                 }
-                """
+        """
             .formatted(job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
 
-    Instant beforeHandle = Instant.now();
+    final Instant beforeHandle = Instant.now();
     service.handleCallback(rawBody, timestamp, sign(timestamp, rawBody), null, null);
 
     assertThat(job.getStatus().name()).isEqualTo("FAILED");
@@ -265,7 +265,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"job_id\":\"%s\",
                   \"status\":\"succeeded\"
                 }
-                """
+        """
             .formatted(job.getJobId());
 
     assertThatThrownBy(
@@ -290,7 +290,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"status\":\"succeeded\",
                   \"result_s3_key\":\"invalid/key.json\"
                 }
-                """
+        """
             .formatted(job.getJobId());
 
     when(resultStoreClient.validateLocation("invalid/key.json"))
@@ -319,7 +319,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   "status":"succeeded",
                   "result_s3_key":"callbacks/not-%s/result.json"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(resultStoreClient.validateLocation(
@@ -352,7 +352,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"status\":\"succeeded\",
                   \"result_s3_key\":\"callbacks/%s/result.json\"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -383,7 +383,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   \"status\":\"succeeded\",
                   \"result_s3_key\":\"callbacks/%s/result.json\"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -416,7 +416,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   "status":"succeeded",
                   "result_s3_key":"callbacks/%s/result.json"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -431,7 +431,7 @@ class ScrapeResultCallbackServiceUnitTests {
                             "select_smr_cret_sum_tab_sj_total":{"gain_point":"120","appl_point":"130","gain_avmk":"3.8","gain_tavg_pont":"90"}
                           }
                         }
-                        """);
+            """);
 
     assertThatThrownBy(
             () ->
@@ -462,7 +462,7 @@ class ScrapeResultCallbackServiceUnitTests {
                   "status":"succeeded",
                   "result_s3_key":"callbacks/%s/result.json"
                 }
-                """
+        """
             .formatted(job.getJobId(), job.getJobId());
 
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
@@ -477,7 +477,7 @@ class ScrapeResultCallbackServiceUnitTests {
                             "select_smr_cret_sum_tab_sj_total":{"gain_point":"120","appl_point":"130","gain_avmk":"3.8","gain_tavg_pont":"90"}
                           }
                         }
-                        """);
+            """);
 
     assertThatThrownBy(
             () ->

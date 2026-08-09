@@ -1,4 +1,5 @@
 // JWT 토큰 발급과 파싱 동작을 검증하는 테스트
+
 package com.chukchuk.haksa.global.security.service;
 
 import static org.assertj.core.api.Assertions.assertThat;

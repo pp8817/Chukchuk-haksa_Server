@@ -4,13 +4,26 @@ import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.course.model.Course;
 import com.chukchuk.haksa.domain.professor.model.Professor;
 import com.chukchuk.haksa.domain.student.model.Student;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 과목 evaluation 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -56,6 +69,17 @@ public class CourseEvaluation extends BaseEntity {
   @OneToMany(mappedBy = "courseEvaluation", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<CourseEvaluationTag> tags = new ArrayList<>();
 
+  /**
+   * 과목 evaluation 인스턴스를 생성한다.
+   *
+   * @param student 학생 값
+   * @param course 과목 값
+   * @param professor 교수
+   * @param year 연도
+   * @param semester 학기 값
+   * @param review review 값
+   * @param selectedTags selected tags 값
+   */
   public CourseEvaluation(
       Student student,
       Course course,

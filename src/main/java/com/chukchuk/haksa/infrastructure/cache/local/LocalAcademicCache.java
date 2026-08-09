@@ -15,13 +15,14 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
+/** 학사 조회 결과를 애플리케이션 메모리에 캐시한다. */
 @Component
 public class LocalAcademicCache implements AcademicCache {
 
   private static final Duration DEFAULT_TTL = Duration.ofDays(30);
 
   /**
-   * 주(Local) 캐시로 사용하기 위한 Caffeine 설정
+   * 주(Local) 캐시로 사용하기 위한 Caffeine 설정.
    *
    * <p>- maximumSize : OOM 방지 (가장 중요) - expireAfterWrite: 오래된 캐시 자동 정리 - recordStats : 필요 시 캐시 히트율
    * 관찰 가능
@@ -73,7 +74,7 @@ public class LocalAcademicCache implements AcademicCache {
     return get(AcademicCacheKeys.graduation(studentId));
   }
 
-  /** 졸업요건 / 복수전공 요건은 사실상 "정적 데이터" 성격 → TTL은 걸려 있지만 size + LRU로 충분히 보호됨 */
+  /** 졸업요건 / 복수전공 요건은 사실상 "정적 데이터" 성격 → TTL은 걸려 있지만 size + LRU로 충분히 보호됨. */
   @Override
   public void setGraduationRequirements(
       Long departmentId, Integer admissionYear, List<AreaRequirementDto> requirements) {
@@ -116,7 +117,7 @@ public class LocalAcademicCache implements AcademicCache {
     return get(AcademicCacheKeys.semesterSummaries(studentId));
   }
 
-  /** student 단위 무효화 - Caffeine에서는 keySet 순회가 합리적인 선택 */
+  /** 학생 단위 캐시를 무효화한다. Caffeine에서는 keySet 순회가 합리적인 선택이다. */
   @Override
   public void deleteAllByStudentId(UUID studentId) {
     String prefix = AcademicCacheKeys.studentPrefix(studentId);

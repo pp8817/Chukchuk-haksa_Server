@@ -42,7 +42,7 @@ class AuthControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
                                 {
                                   "refreshToken":"valid-refresh-token"
                                 }
-                                """))
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.accessToken").value("new-access-token"))
@@ -64,7 +64,7 @@ class AuthControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
                                 {
                                   "refreshToken":"mismatch-token"
                                 }
-                                """))
+                    """))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("T11"));

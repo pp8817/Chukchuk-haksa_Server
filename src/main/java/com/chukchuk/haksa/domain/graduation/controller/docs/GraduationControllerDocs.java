@@ -16,13 +16,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+/** 졸업 controller docs 기능의 계약을 정의한다. */
 @Tag(name = "Graduation", description = "졸업 요건 및 진행 현황 관련 API")
 public interface GraduationControllerDocs {
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "졸업 요건 진행 상황 조회",
       description =
-          "로그인된 사용자의 졸업 요건 충족 여부와 외국어 졸업 인증 통과 여부를 조회합니다. areaType이 선교인 영역의 courses[] 과목은 liberalAreaCode를 포함할 수 있습니다. areaType이 선교가 아닌 영역의 courses[] 과목은 liberalAreaCode 키가 응답에 포함되지 않습니다.",
+          "로그인된 사용자의 졸업 요건 충족 여부와 외국어 졸업 인증 통과 여부를 조회합니다. areaType이 선교인 영역의 "
+              + "courses[] 과목은 liberalAreaCode를 포함할 수 있습니다. areaType이 선교가 아닌 영역의 "
+              + "courses[] 과목은 liberalAreaCode 키가 응답에 포함되지 않습니다.",
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -42,6 +51,12 @@ public interface GraduationControllerDocs {
   ResponseEntity<SuccessResponse<GraduationProgressResponse>> getGraduationProgress(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "외국어 인증 기준 조회",
       description = "로그인된 사용자의 학과 코드와 입학년도에 적용되는 외국어 인증 기준을 조회합니다. 미매핑 학과도 200 응답으로 반환됩니다.",

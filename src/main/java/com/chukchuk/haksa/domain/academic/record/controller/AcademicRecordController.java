@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 학사 record HTTP 요청을 처리한다. */
 @Slf4j
 @RestController
 @RequestMapping("/api/academic")
@@ -31,6 +32,7 @@ public class AcademicRecordController implements AcademicRecordControllerDocs {
   private final StudentAcademicRecordService studentAcademicRecordService;
   private final StudentService studentService;
 
+  @Override
   @GetMapping("/record")
   public ResponseEntity<SuccessResponse<AcademicRecordResponse>> getAcademicRecord(
       @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -55,6 +57,7 @@ public class AcademicRecordController implements AcademicRecordControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @GetMapping("/summary")
   public ResponseEntity<SuccessResponse<AcademicSummaryResponse>> getAcademicSummary(
       @AuthenticationPrincipal CustomUserDetails userDetails) {

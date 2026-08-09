@@ -73,7 +73,7 @@ class PortalLinkJobServiceUnitTests {
 
     PortalLinkDto.AcceptedResponse response = service.acceptJob(userId, "idem-1", request);
 
-    assertThat(response.job_id()).isEqualTo("job-1");
+    assertThat(response.jobId()).isEqualTo("job-1");
     assertThat(response.status()).isEqualTo("accepted");
     verify(tokenService).verify(userId, "suwon", "17019013", "pw", "verification-token");
     verify(scrapeJobOutboxDispatcher).dispatchOnce("outbox-1");
@@ -163,7 +163,7 @@ class PortalLinkJobServiceUnitTests {
 
     PortalLinkDto.AcceptedResponse response = service.acceptJob(userId, "idem-1", request);
 
-    assertThat(response.job_id()).isEqualTo("job-1");
+    assertThat(response.jobId()).isEqualTo("job-1");
     verify(scrapeJobOutboxDispatcher, never()).dispatchOnce(any());
   }
 
@@ -241,7 +241,7 @@ class PortalLinkJobServiceUnitTests {
 
     PortalLinkDto.AcceptedResponse response = service.acceptJob(userId, "idem-1", request);
 
-    assertThat(response.job_id()).isEqualTo("job-1");
+    assertThat(response.jobId()).isEqualTo("job-1");
     verify(scrapeJobOutboxDispatcher).dispatchOnce("outbox-1");
   }
 

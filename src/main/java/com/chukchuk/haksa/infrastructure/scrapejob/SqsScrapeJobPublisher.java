@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
+/** 스크래핑 작업 메시지를 SQS에 발행한다. */
 @Component
 @RequiredArgsConstructor
 public class SqsScrapeJobPublisher {
@@ -17,6 +18,12 @@ public class SqsScrapeJobPublisher {
   private final ScrapingProperties scrapingProperties;
   private volatile SqsClient sqsClient;
 
+  /**
+   * 스크래핑 작업 메시지를 큐에 발행하고 메시지 식별자를 반환한다.
+   *
+   * @param payloadJson JSON payload
+   * @return string
+   */
   public String publish(String payloadJson) {
     String queueUrl = scrapingProperties.getJob().getQueueUrl();
     if (queueUrl == null || queueUrl.isBlank()) {

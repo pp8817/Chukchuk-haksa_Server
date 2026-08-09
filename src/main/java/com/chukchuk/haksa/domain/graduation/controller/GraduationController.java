@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 졸업 HTTP 요청을 처리한다. */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,19 +31,21 @@ public class GraduationController implements GraduationControllerDocs {
   private final LanguageCertRequirementService languageCertRequirementService;
   private final StudentService studentService;
 
+  @Override
   @GetMapping("/progress")
   public ResponseEntity<SuccessResponse<GraduationProgressResponse>> getGraduationProgress(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     long t0 = LogTime.start();
     UUID studentId = studentService.getRequiredStudentIdByUserId(userDetails.getId());
     GraduationProgressResponse response = graduationService.getGraduationProgress(studentId);
-    long tookMS = LogTime.elapsedMs(t0);
-    if (tookMS >= SLOW_MS) {
-      log.info("[BIZ] graduation.progress.done took_ms={}", tookMS);
+    long tookMs = LogTime.elapsedMs(t0);
+    if (tookMs >= SLOW_MS) {
+      log.info("[BIZ] graduation.progress.done took_ms={}", tookMs);
     }
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @GetMapping("/language-cert/requirement")
   public ResponseEntity<SuccessResponse<LanguageCertRequirementResponse>>
       getLanguageCertRequirement(@AuthenticationPrincipal CustomUserDetails userDetails) {

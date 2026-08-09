@@ -135,7 +135,7 @@ class StreamLambdaHandlerTest {
                   "task": "REFRESH_TOKEN_CLEANUP",
                   "scheduled_at": "2026-04-26T00:00:00Z"
                 }
-                """;
+        """;
 
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     new StreamLambdaHandler()
@@ -159,7 +159,7 @@ class StreamLambdaHandlerTest {
                   "source": "eventbridge.scheduler",
                   "task": "REFRESH_TOKEN_CLEANUP"
                 }
-                """;
+        """;
 
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     new StreamLambdaHandler()

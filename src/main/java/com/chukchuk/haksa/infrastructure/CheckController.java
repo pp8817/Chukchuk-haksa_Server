@@ -10,10 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 척척학사의 check HTTP 요청을 처리한다. */
 @RestController
 @RequestMapping
 public class CheckController {
 
+  /**
+   * 애플리케이션의 정상 동작 여부를 반환한다.
+   *
+   * @return string
+   */
   @Operation(
       responses =
           @ApiResponse(
@@ -28,6 +34,7 @@ public class CheckController {
     return "ok";
   }
 
+  /** Sentry 오류 수집 연동을 확인하기 위한 예외를 발생시킨다. */
   @Operation(
       responses =
           @ApiResponse(

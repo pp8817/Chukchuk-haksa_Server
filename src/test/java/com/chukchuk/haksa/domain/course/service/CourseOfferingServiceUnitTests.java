@@ -2,7 +2,12 @@ package com.chukchuk.haksa.domain.course.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.chukchuk.haksa.domain.course.dto.CreateOfferingCommand;
 import com.chukchuk.haksa.domain.course.model.Course;
@@ -373,7 +378,7 @@ class CourseOfferingServiceUnitTests {
   @DisplayName("T3 backfill: 비-선교(전핵) cmd + 비-선교 existing → backfill 호출 안 됨")
   void getOrCreateAll_nonMissionFacultyDivision_skipsBackfill() {
     // 키가 매칭되어 기존 row reuse 가 되도록 cmd·existing 모두 비-선교(전핵)로 정렬
-    CreateOfferingCommand cmd = command(52L, 62L, null, 6); // facultyDivisionName="전핵"
+    final CreateOfferingCommand cmd = command(52L, 62L, null, 6); // facultyDivisionName="전핵"
     CourseOffering existing = mock(CourseOffering.class);
     Course course = mock(Course.class);
     Professor professor = mock(Professor.class);

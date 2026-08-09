@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 제한 시간을 넘긴 대기 상태의 스크래핑 작업을 정리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,6 +30,11 @@ public class ScrapeJobStaleReconciler {
   private final ScrapingProperties scrapingProperties;
   private final MeterRegistry meterRegistry;
 
+  /**
+   * 대기 제한 시간을 넘긴 스크래핑 작업을 실패 처리한다.
+   *
+   * @return int
+   */
   @Transactional
   public int reconcileStaleQueuedJobs() {
     if (!scrapingProperties.getStale().isEnabled()) {
@@ -62,7 +68,8 @@ public class ScrapeJobStaleReconciler {
         recordQueuedAge(job, now);
         affectedCount++;
         log.warn(
-            "[BIZ] scrape.job.callback.timeout jobId={} outboxId={} attempt={} outboxStatus={} queueMessageId={}",
+            "[BIZ] scrape.job.callback.timeout jobId={} outboxId={} attempt={} "
+                + "outboxStatus={} queueMessageId={}",
             job.getJobId(),
             outbox.getOutboxId(),
             outbox.getAttemptCount(),

@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 척척학사의 스크래핑 작업 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -114,6 +115,17 @@ public class ScrapeJob extends BaseEntity {
     this.linkStartedAt = linkStartedAt;
   }
 
+  /**
+   * 입력 값을 사용해 결과 객체를 생성한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalType 포털 유형
+   * @param operationType 작업 유형
+   * @param idempotencyKey 멱등성 키
+   * @param requestFingerprint 요청 fingerprint 정보
+   * @param requestPayloadJson 요청 payload json 정보
+   * @return 생성된
+   */
   public static ScrapeJob createQueued(
       UUID userId,
       String portalType,
@@ -131,6 +143,18 @@ public class ScrapeJob extends BaseEntity {
         Instant.now());
   }
 
+  /**
+   * 입력 값을 사용해 결과 객체를 생성한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalType 포털 유형
+   * @param operationType 작업 유형
+   * @param idempotencyKey 멱등성 키
+   * @param requestFingerprint 요청 fingerprint 정보
+   * @param requestPayloadJson 요청 payload json 정보
+   * @param linkStartedAt link started at 값
+   * @return 생성된
+   */
   public static ScrapeJob createQueued(
       UUID userId,
       String portalType,
@@ -151,6 +175,12 @@ public class ScrapeJob extends BaseEntity {
         linkStartedAt);
   }
 
+  /**
+   * 현재 상태가 조건을 충족하는지 반환한다.
+   *
+   * @param requestFingerprint 요청 fingerprint 정보
+   * @return 조건 충족 여부
+   */
   public boolean hasSameFingerprint(String requestFingerprint) {
     return this.requestFingerprint.equals(requestFingerprint);
   }
@@ -159,20 +189,41 @@ public class ScrapeJob extends BaseEntity {
     return status == ScrapeJobStatus.SUCCEEDED || status == ScrapeJobStatus.FAILED;
   }
 
+  /**
+   * 현재 상태가 조건을 충족하는지 반환한다.
+   *
+   * @return 조건 충족 여부
+   */
   public boolean hasWorkerResult() {
     return resultPayloadJson != null;
   }
 
+  /**
+   * 현재 상태가 조건을 충족하는지 반환한다.
+   *
+   * @param attempt attempt 값
+   * @return 조건 충족 여부
+   */
   public boolean hasProcessedAttempt(int attempt) {
     return callbackAttempt != null && attempt <= callbackAttempt;
   }
 
+  /** 스크래핑 작업을 실행 중 상태로 전환한다. */
   public void markRunning() {
     if (!isCompleted()) {
       this.status = ScrapeJobStatus.RUNNING;
     }
   }
 
+  /**
+   * 스크래핑 작업을 후처리 상태로 전환한다.
+   *
+   * @param resultS3Key 결과 S3 key 값
+   * @param resultChecksum 결과 checksum 값
+   * @param callbackMetadataJson 콜백 메타데이터 JSON
+   * @param attempt attempt 값
+   * @param receivedAt 수신 시각
+   */
   public void markPostProcessing(
       String resultS3Key,
       String resultChecksum,
@@ -189,16 +240,35 @@ public class ScrapeJob extends BaseEntity {
     recordCallbackAttempt(attempt, receivedAt);
   }
 
+  /**
+   * 스크래핑 작업의 성공 결과와 종료 시각을 기록한다.
+   *
+   * @param resultPayloadJson 결과 JSON payload
+   * @param finishedAt 처리 종료 시각
+   */
   public void markSucceeded(String resultPayloadJson, Instant finishedAt) {
     markSucceeded(resultPayloadJson, finishedAt, Instant.now());
   }
 
+  /**
+   * 스크래핑 작업의 성공 결과와 종료 시각을 기록한다.
+   *
+   * @param resultPayloadJson 결과 JSON payload
+   * @param finishedAt 처리 종료 시각
+   * @param linkEndedAt link ended at 값
+   */
   public void markSucceeded(String resultPayloadJson, Instant finishedAt, Instant linkEndedAt) {
     recordWorkerResult(resultPayloadJson, finishedAt);
     this.status = ScrapeJobStatus.SUCCEEDED;
     this.linkEndedAt = linkEndedAt;
   }
 
+  /**
+   * 워커가 생성한 결과와 종료 시각을 기록한다.
+   *
+   * @param resultPayloadJson 결과 JSON payload
+   * @param finishedAt 처리 종료 시각
+   */
   public void recordWorkerResult(String resultPayloadJson, Instant finishedAt) {
     this.resultPayloadJson = resultPayloadJson;
     this.errorCode = null;
@@ -207,16 +277,40 @@ public class ScrapeJob extends BaseEntity {
     this.finishedAt = finishedAt;
   }
 
+  /**
+   * 콜백 수신 시도 횟수와 시각을 기록한다.
+   *
+   * @param attempt attempt 값
+   * @param receivedAt 수신 시각
+   */
   public void recordCallbackAttempt(int attempt, Instant receivedAt) {
     this.callbackAttempt = attempt;
     this.callbackReceivedAt = receivedAt;
   }
 
+  /**
+   * 스크래핑 결과 저장 위치와 콜백 정보를 기록한다.
+   *
+   * @param resultS3Key 결과 S3 key 값
+   * @param attempt attempt 값
+   * @param receivedAt 수신 시각
+   */
   public void recordResultLocation(String resultS3Key, int attempt, Instant receivedAt) {
     recordCallbackAttempt(attempt, receivedAt);
     this.resultS3Key = resultS3Key;
   }
 
+  /**
+   * 실패 콜백의 원인과 처리 정보를 기록한다.
+   *
+   * @param attempt attempt 값
+   * @param receivedAt 수신 시각
+   * @param callbackMetadataJson 콜백 메타데이터 JSON
+   * @param errorCode 오류 코드
+   * @param errorMessage 오류 응답 메시지
+   * @param retryable retryable 값
+   * @param finishedAt 처리 종료 시각
+   */
   public void recordFailedCallback(
       int attempt,
       Instant receivedAt,
@@ -236,6 +330,18 @@ public class ScrapeJob extends BaseEntity {
         Instant.now());
   }
 
+  /**
+   * 실패 콜백의 원인과 처리 정보를 기록한다.
+   *
+   * @param attempt attempt 값
+   * @param receivedAt 수신 시각
+   * @param callbackMetadataJson 콜백 메타데이터 JSON
+   * @param errorCode 오류 코드
+   * @param errorMessage 오류 응답 메시지
+   * @param retryable retryable 값
+   * @param finishedAt 처리 종료 시각
+   * @param linkEndedAt link ended at 값
+   */
   public void recordFailedCallback(
       int attempt,
       Instant receivedAt,
@@ -250,11 +356,28 @@ public class ScrapeJob extends BaseEntity {
     markFailed(errorCode, errorMessage, retryable, finishedAt, linkEndedAt);
   }
 
+  /**
+   * 처리 실패 상태와 원인을 기록한다.
+   *
+   * @param errorCode 오류 코드
+   * @param errorMessage 오류 응답 메시지
+   * @param retryable retryable 값
+   * @param finishedAt 처리 종료 시각
+   */
   public void markFailed(
       String errorCode, String errorMessage, Boolean retryable, Instant finishedAt) {
     markFailed(errorCode, errorMessage, retryable, finishedAt, Instant.now());
   }
 
+  /**
+   * 처리 실패 상태와 원인을 기록한다.
+   *
+   * @param errorCode 오류 코드
+   * @param errorMessage 오류 응답 메시지
+   * @param retryable retryable 값
+   * @param finishedAt 처리 종료 시각
+   * @param linkEndedAt link ended at 값
+   */
   public void markFailed(
       String errorCode,
       String errorMessage,

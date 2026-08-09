@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 학생 학사 record 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,6 +29,12 @@ public class StudentAcademicRecordService {
   private static final String AREA_MAJOR_ELECTIVE = "전선";
   private static final String AREA_GENERAL_ELECTIVE = "일선";
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID studentId) {
     try {
       StudentAcademicRecordDto.AcademicSummaryResponse cached =
@@ -74,6 +81,12 @@ public class StudentAcademicRecordService {
     return response;
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID studentId) {
     return studentAcademicRecordRepository
         .findByStudentId(studentId)
@@ -84,7 +97,7 @@ public class StudentAcademicRecordService {
             });
   }
 
-  /** 복수 전공을 고려한 졸업 필요 학점 계산 메서드 */
+  /** 복수 전공을 고려한 졸업 필요 학점 계산 메서드. */
   private Integer getGraduationCreditsWithCache(
       Long primaryMajorId, Long secondaryMajorId, Integer admissionYear) {
     // 단일 전공 케이스

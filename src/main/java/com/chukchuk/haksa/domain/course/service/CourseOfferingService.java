@@ -1,7 +1,11 @@
 package com.chukchuk.haksa.domain.course.service;
 
 import com.chukchuk.haksa.domain.course.dto.CreateOfferingCommand;
-import com.chukchuk.haksa.domain.course.model.*;
+import com.chukchuk.haksa.domain.course.model.Course;
+import com.chukchuk.haksa.domain.course.model.CourseOffering;
+import com.chukchuk.haksa.domain.course.model.EvaluationType;
+import com.chukchuk.haksa.domain.course.model.FacultyDivision;
+import com.chukchuk.haksa.domain.course.model.LiberalArtsAreaCode;
 import com.chukchuk.haksa.domain.course.repository.CourseOfferingRepository;
 import com.chukchuk.haksa.domain.course.repository.CourseRepository;
 import com.chukchuk.haksa.domain.course.repository.LiberalArtsAreaCodeRepository;
@@ -20,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 과목 offering 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 public class CourseOfferingService {
@@ -30,11 +35,23 @@ public class CourseOfferingService {
   private final ProfessorRepository professorRepository;
   private final DepartmentRepository departmentRepository;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param cmd cmd 값
+   * @return 조회
+   */
   @Transactional
   public CourseOffering getOrCreateOffering(CreateOfferingCommand cmd) {
     return getOrCreateAll(List.of(cmd)).get(CourseOfferingKey.from(cmd));
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param commands commands 값
+   * @return 조회
+   */
   @Transactional
   public Map<CourseOfferingKey, CourseOffering> getOrCreateAll(
       List<CreateOfferingCommand> commands) {
@@ -85,6 +102,12 @@ public class CourseOfferingService {
     return result;
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param offeringIds offering ids 식별자
+   * @return 조회
+   */
   @Transactional(readOnly = true)
   public Map<Long, CourseOffering> getOfferingMapByIds(List<Long> offeringIds) {
     return courseOfferingRepository.findAllById(offeringIds).stream()
@@ -155,7 +178,7 @@ public class CourseOfferingService {
    *   <li>{@code cmd.areaCode() != 0} (영역 코드 파싱 실패 시 0 반환을 거름)
    * </ol>
    *
-   * 가드 통과 시 {@code @Transactional} dirty checking 으로 자동 UPDATE flush.
+   * <p>가드 통과 시 {@code @Transactional} dirty checking 으로 자동 UPDATE flush.
    */
   private void backfillMissionAreaCodeIfNeeded(CourseOffering existing, CreateOfferingCommand cmd) {
     if (!shouldBackfillMissionAreaCode(existing, cmd)) {
@@ -173,6 +196,18 @@ public class CourseOfferingService {
         && cmd.areaCode() != 0;
   }
 
+  /**
+   * 과목 offering key 데이터를 전달한다.
+   *
+   * @param courseId 과목 식별자
+   * @param year 연도
+   * @param semester 학기 값
+   * @param classSection 분반
+   * @param professorId 교수 식별자
+   * @param facultyDivisionName faculty division 이름
+   * @param rawFacultyDivisionName raw faculty division 이름
+   * @param hostDepartment 주관 학과
+   */
   public record CourseOfferingKey(
       Long courseId,
       Integer year,
@@ -182,6 +217,12 @@ public class CourseOfferingService {
       String facultyDivisionName,
       String rawFacultyDivisionName,
       String hostDepartment) {
+    /**
+     * 과목 개설 명령에서 중복 판별 키를 생성한다.
+     *
+     * @param cmd cmd 값
+     * @return 과목 offering key 결과
+     */
     public static CourseOfferingKey from(CreateOfferingCommand cmd) {
       FacultyDivisionResolution facultyDivision =
           FacultyDivisionResolution.from(cmd.facultyDivisionName());
@@ -196,6 +237,12 @@ public class CourseOfferingService {
           normalizeBlank(cmd.hostDepartment()));
     }
 
+    /**
+     * 과목 개설 엔티티에서 중복 판별 키를 생성한다.
+     *
+     * @param offering offering 값
+     * @return 과목 offering key 결과
+     */
     public static CourseOfferingKey from(CourseOffering offering) {
       return new CourseOfferingKey(
           offering.getCourse().getId(),

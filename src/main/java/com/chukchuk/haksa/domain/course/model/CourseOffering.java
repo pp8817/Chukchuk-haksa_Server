@@ -3,12 +3,23 @@ package com.chukchuk.haksa.domain.course.model;
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.professor.model.Professor;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 과목 offering 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -76,6 +87,25 @@ public class CourseOffering extends BaseEntity {
   @JoinColumn(name = "area_code", referencedColumnName = "code")
   private LiberalArtsAreaCode liberalArtsAreaCode;
 
+  /**
+   * 과목 offering 인스턴스를 생성한다.
+   *
+   * @param subjectEstablishmentSemester subject establishment 학기 값
+   * @param isVideoLecture is video lecture 여부
+   * @param year 연도
+   * @param semester 학기 값
+   * @param hostDepartment 주관 학과
+   * @param classSection 분반
+   * @param scheduleSummary schedule summary 값
+   * @param originalAreaCode original area code 값
+   * @param points 학점
+   * @param evaluationTypeCode evaluation type code 값
+   * @param facultyDivisionName faculty division 이름
+   * @param course 과목 값
+   * @param professor 교수
+   * @param department 학과 값
+   * @param liberalArtsAreaCode liberal arts area code 값
+   */
   public CourseOffering(
       Integer subjectEstablishmentSemester,
       Boolean isVideoLecture,
@@ -111,6 +141,26 @@ public class CourseOffering extends BaseEntity {
         liberalArtsAreaCode);
   }
 
+  /**
+   * 과목 offering 인스턴스를 생성한다.
+   *
+   * @param subjectEstablishmentSemester subject establishment 학기 값
+   * @param isVideoLecture is video lecture 여부
+   * @param year 연도
+   * @param semester 학기 값
+   * @param hostDepartment 주관 학과
+   * @param classSection 분반
+   * @param scheduleSummary schedule summary 값
+   * @param originalAreaCode original area code 값
+   * @param points 학점
+   * @param evaluationTypeCode evaluation type code 값
+   * @param facultyDivisionName faculty division 이름
+   * @param rawFacultyDivisionName raw faculty division 이름
+   * @param course 과목 값
+   * @param professor 교수
+   * @param department 학과 값
+   * @param liberalArtsAreaCode liberal arts area code 값
+   */
   public CourseOffering(
       Integer subjectEstablishmentSemester,
       Boolean isVideoLecture,
@@ -180,6 +230,11 @@ public class CourseOffering extends BaseEntity {
     this.liberalArtsAreaCode = area;
   }
 
+  /**
+   * 학점이 비어 있을 때 보정 학점을 반영한다.
+   *
+   * @param points 학점
+   */
   public void backfillPoints(Integer points) {
     if (this.points == null && points != null) {
       this.points = points;

@@ -1,13 +1,34 @@
 package com.chukchuk.haksa.infrastructure.portal.mapper;
 
-import com.chukchuk.haksa.infrastructure.portal.dto.raw.*;
-import com.chukchuk.haksa.infrastructure.portal.model.*;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalCourseDto;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalGradeResponseDto;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalGradeSummaryDto;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalSemesterDto;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalSemesterGradeDto;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalStudentDto;
+import com.chukchuk.haksa.infrastructure.portal.model.AcademicSummary;
+import com.chukchuk.haksa.infrastructure.portal.model.AdmissionInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.CodeName;
+import com.chukchuk.haksa.infrastructure.portal.model.CourseInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.GradeSummary;
+import com.chukchuk.haksa.infrastructure.portal.model.OfferingInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalAcademicData;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalAcademicInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalCurriculumData;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalStudentInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.ProfessorInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.Ranking;
+import com.chukchuk.haksa.infrastructure.portal.model.SemesterCourseInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.SemesterGrade;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 
+/** 척척학사의 포털 data 도메인 데이터 간 변환을 담당한다. */
 @Slf4j
 public class PortalDataMapper {
 
@@ -15,6 +36,12 @@ public class PortalDataMapper {
   private static final Double DEFAULT_GPA = 0.0;
   private static final Pattern AREA_NAME_PATTERN = Pattern.compile("^\\s*(\\d+)\\s*영역\\s*$");
 
+  /**
+   * 포털 원본 응답을 내부 포털 데이터로 변환한다.
+   *
+   * @param raw raw 값
+   * @return 포털 data 결과
+   */
   public static PortalData toPortalData(RawPortalData raw) {
     return new PortalData(
         toPortalStudentInfo(raw.student()),
@@ -22,7 +49,7 @@ public class PortalDataMapper {
         toPortalCurriculumInfo(raw.semesters()));
   }
 
-  private static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDTO s) {
+  private static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDto s) {
     return new PortalStudentInfo(
         s.sno(),
         s.studNm(),
@@ -38,7 +65,7 @@ public class PortalDataMapper {
   }
 
   private static PortalAcademicData toPortalAcademicInfo(
-      List<RawPortalSemesterDTO> semesters, RawPortalGradeResponseDTO academicRecords) {
+      List<RawPortalSemesterDto> semesters, RawPortalGradeResponseDto academicRecords) {
     List<SemesterCourseInfo> semesterCourses = extractSemesterCourses(semesters);
     List<SemesterGrade> grades = extractSemesterGrades(academicRecords);
     AcademicSummary summary = createAcademicSummary(academicRecords);
@@ -47,16 +74,16 @@ public class PortalDataMapper {
   }
 
   private static List<SemesterCourseInfo> extractSemesterCourses(
-      List<RawPortalSemesterDTO> semesters) {
+      List<RawPortalSemesterDto> semesters) {
     List<SemesterCourseInfo> semesterCourses = new ArrayList<>();
 
-    for (RawPortalSemesterDTO sem : semesters) {
+    for (RawPortalSemesterDto sem : semesters) {
       String[] parts = sem.semester().split("-");
       int year = parseIntOrZero(parts[0]);
       int semester = parseIntOrZero(parts[1]);
 
       List<CourseInfo> courses = new ArrayList<>();
-      for (RawPortalCourseDTO c : sem.courses()) {
+      for (RawPortalCourseDto c : sem.courses()) {
         courses.add(createCourseInfo(c));
       }
 
@@ -67,10 +94,10 @@ public class PortalDataMapper {
   }
 
   private static List<SemesterGrade> extractSemesterGrades(
-      RawPortalGradeResponseDTO academicRecords) {
+      RawPortalGradeResponseDto academicRecords) {
     List<SemesterGrade> grades = new ArrayList<>();
 
-    for (RawPortalSemesterGradeDTO g : academicRecords.listSmrCretSumTabYearSmr()) {
+    for (RawPortalSemesterGradeDto g : academicRecords.listSmrCretSumTabYearSmr()) {
       log.debug("grade year = {}, semester = '{}'", g.cretGainYear(), g.cretSmrCd());
 
       grades.add(
@@ -87,8 +114,8 @@ public class PortalDataMapper {
     return grades;
   }
 
-  private static AcademicSummary createAcademicSummary(RawPortalGradeResponseDTO academicRecords) {
-    RawPortalGradeSummaryDTO summary = academicRecords.selectSmrCretSumTabSjTotal();
+  private static AcademicSummary createAcademicSummary(RawPortalGradeResponseDto academicRecords) {
+    RawPortalGradeSummaryDto summary = academicRecords.selectSmrCretSumTabSjTotal();
     return new AcademicSummary(
         parseIntOrZero(summary.applPoint()),
         parseIntOrZero(summary.gainPoint()),
@@ -96,7 +123,7 @@ public class PortalDataMapper {
         parseDoubleOrZero(summary.gainTavgPont()));
   }
 
-  private static CourseInfo createCourseInfo(RawPortalCourseDTO c) {
+  private static CourseInfo createCourseInfo(RawPortalCourseDto c) {
     boolean isRetakeDeleted =
         c.cretDelNm()
             .map(val -> val.trim().equals("재수강 삭제") || val.trim().equals("재수강삭제"))
@@ -119,16 +146,16 @@ public class PortalDataMapper {
         isRetakeDeleted);
   }
 
-  private static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDTO> semesters) {
+  private static PortalCurriculumData toPortalCurriculumInfo(List<RawPortalSemesterDto> semesters) {
     List<CourseInfo> courses = new ArrayList<>();
     List<ProfessorInfo> professors = new ArrayList<>();
     List<OfferingInfo> offerings = new ArrayList<>();
 
-    for (RawPortalSemesterDTO sem : semesters) {
+    for (RawPortalSemesterDto sem : semesters) {
       int year = parseIntOrZero(sem.semester().split("-")[0]);
       int semester = parseIntOrZero(sem.semester().split("-")[1]);
 
-      for (RawPortalCourseDTO c : sem.courses()) {
+      for (RawPortalCourseDto c : sem.courses()) {
         courses.add(createCourseInfo(c));
         professors.add(new ProfessorInfo(c.ltrPrfsNm() != null ? c.ltrPrfsNm() : "미확인 교수"));
 

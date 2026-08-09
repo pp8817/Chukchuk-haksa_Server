@@ -1,4 +1,5 @@
 // 학과 코드와 입학년도에 적용되는 외국어 인증 정책 매핑을 조회하는 Repository
+
 package com.chukchuk.haksa.domain.graduation.repository;
 
 import com.chukchuk.haksa.domain.graduation.model.DepartmentLanguageCertPolicyMapping;
@@ -8,9 +9,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+/** 학과 language cert policy mapping repository 기능의 계약을 정의한다. */
 public interface DepartmentLanguageCertPolicyMappingRepository
     extends JpaRepository<DepartmentLanguageCertPolicyMapping, UUID> {
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param departmentCode 학과 코드
+   * @param admissionYear admission 연도
+   * @return 조회
+   */
   @Query(
       """
             select mapping
@@ -19,7 +28,7 @@ public interface DepartmentLanguageCertPolicyMappingRepository
             where mapping.departmentCode = :departmentCode
               and :admissionYear between mapping.admissionYearFrom and mapping.admissionYearTo
             order by mapping.admissionYearFrom desc
-            """)
+      """)
   List<DepartmentLanguageCertPolicyMapping> findApplicableMappings(
       @Param("departmentCode") String departmentCode,
       @Param("admissionYear") Integer admissionYear);

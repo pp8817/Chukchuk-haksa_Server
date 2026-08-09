@@ -1,4 +1,5 @@
 // dev 테스트 어드민 API 엔드포인트를 제공한다
+
 package com.chukchuk.haksa.domain.admin.controller;
 
 import com.chukchuk.haksa.domain.admin.controller.docs.AdminTestControllerDocs;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 척척학사의 admin test HTTP 요청을 처리한다. */
 @RestController
 @RequiredArgsConstructor
 @Profile({"dev", "test"})

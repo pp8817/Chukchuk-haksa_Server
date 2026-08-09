@@ -8,9 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+/** 과목 evaluation repository 기능의 계약을 정의한다. */
 @Repository
 public interface CourseEvaluationRepository extends JpaRepository<CourseEvaluation, Long> {
 
+  /**
+   * 척척학사의 delete by 학생 id and year and 학기 대상을 삭제한다.
+   *
+   * @param studentId 학생 식별자
+   * @param year 연도
+   * @param semester 학기 값
+   */
   @Modifying
   @Query(
       """
@@ -18,7 +26,7 @@ public interface CourseEvaluationRepository extends JpaRepository<CourseEvaluati
         WHERE ce.student.id = :studentId
           AND ce.year = :year
           AND ce.semester = :semester
-    """)
+      """)
   void deleteByStudentIdAndYearAndSemester(
       @Param("studentId") UUID studentId,
       @Param("year") Integer year,

@@ -18,7 +18,8 @@ class HmacSignatureVerifierUnitTests {
   @DisplayName("hex 문자열 secret으로 생성한 hex signature를 검증한다")
   void verify_acceptsHexSecretAndHexSignature() throws Exception {
     String secret =
-        "a89f20be2f4a38ee011f98d6e7ef1290fd100e82ca4605ea923c81ba80a0d35ed64ad6746f6e159cd59d1864e60cfbb8cdbdf98c79d163c8526916f9beed3a6e";
+        "a89f20be2f4a38ee011f98d6e7ef1290fd100e82ca4605ea923c81ba80a0d35ed"
+            + "64ad6746f6e159cd59d1864e60cfbb8cdbdf98c79d163c8526916f9beed3a6e";
     String timestamp = Instant.now().toString();
     String rawBody = "{\"job_id\":\"job-1\",\"status\":\"failed\"}";
     String signature = signHex(secret, timestamp + "." + rawBody);
@@ -32,7 +33,8 @@ class HmacSignatureVerifierUnitTests {
   @DisplayName("hex 형태 secret이어도 원문 UTF-8 secret으로 만든 signature를 허용한다")
   void verify_acceptsUtf8SignatureWhenSecretLooksHex() throws Exception {
     String secret =
-        "a89f20be2f4a38ee011f98d6e7ef1290fd100e82ca4605ea923c81ba80a0d35ed64ad6746f6e159cd59d1864e60cfbb8cdbdf98c79d163c8526916f9beed3a6e";
+        "a89f20be2f4a38ee011f98d6e7ef1290fd100e82ca4605ea923c81ba80a0d35ed"
+            + "64ad6746f6e159cd59d1864e60cfbb8cdbdf98c79d163c8526916f9beed3a6e";
     String timestamp = Instant.now().toString();
     String rawBody = "{\"job_id\":\"job-1\",\"status\":\"failed\"}";
     String signature =

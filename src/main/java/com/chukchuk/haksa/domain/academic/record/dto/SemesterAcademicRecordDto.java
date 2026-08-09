@@ -4,8 +4,21 @@ import com.chukchuk.haksa.domain.academic.record.model.SemesterAcademicRecord;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
+/** 학기 학사 record 계층 간 데이터를 전달한다. */
 public class SemesterAcademicRecordDto {
 
+  /**
+   * 학기 성적 응답 데이터를 전달한다.
+   *
+   * @param year 연도
+   * @param semester 학기 값
+   * @param earnedCredits 취득 학점
+   * @param attemptedCredits 신청 학점
+   * @param semesterGpa 학기 평점
+   * @param classRank class rank 값
+   * @param totalStudents total students 값
+   * @param percentile percentile 값
+   */
   @Schema(description = "학기 성적 요약 정보")
   public record SemesterGradeResponse(
       @Schema(description = "이수 연도", example = "2024", required = true) Integer year,
@@ -23,6 +36,12 @@ public class SemesterAcademicRecordDto {
       @Schema(description = "전체 학생 수", example = "150", nullable = true, required = true)
           Integer totalStudents,
       @Schema(description = "백분율", example = "92.4", required = true) BigDecimal percentile) {
+    /**
+     * 학기 학사 기록을 학기 성적 응답으로 변환한다.
+     *
+     * @param record 학기 학사 기록
+     * @return 학기 성적 응답
+     */
     public static SemesterGradeResponse from(SemesterAcademicRecord record) {
       return new SemesterGradeResponse(
           record.getYear(),

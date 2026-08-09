@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/** 과목 계층 간 데이터를 전달한다. */
 @Getter
 @AllArgsConstructor
 @Schema(description = "이수 과목 정보")
@@ -26,7 +27,8 @@ public class CourseDto {
 
   @Schema(
       description =
-          "교양/선교 영역 세부 코드 (LiberalArtsAreaCode). 선교 영역 등 sub-area가 정의된 과목에 한해 노출되며, 그 외 영역에서는 응답에서 omit된다.",
+          "교양/선교 영역 세부 코드 (LiberalArtsAreaCode). 선교 영역 등 sub-area가 정의된 과목에 한해 노출되며, "
+              + "그 외 영역에서는 응답에서 omit된다.",
       example = "7",
       nullable = true)
   @JsonInclude(JsonInclude.Include.NON_NULL)

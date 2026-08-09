@@ -1,4 +1,5 @@
 // Sentry 요청 컨텍스트 바인딩 동작을 검증하는 테스트
+
 package com.chukchuk.haksa.global.logging.sentry;
 
 import static org.assertj.core.api.Assertions.assertThat;

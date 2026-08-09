@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 포털 link 작업 query 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 public class PortalLinkJobQueryService {
@@ -25,6 +26,13 @@ public class PortalLinkJobQueryService {
   private final ScrapeJobRepository scrapeJobRepository;
   private final StudentService studentService;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @param jobId 작업 식별자
+   * @return 조회
+   */
   @Transactional(readOnly = true)
   public PortalLinkDto.JobStatusResponse getJobStatus(UUID userId, String jobId) {
     ScrapeJob job = findOwnedJob(userId, jobId);
@@ -41,6 +49,13 @@ public class PortalLinkJobQueryService {
         job.getFinishedAt());
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @param jobId 작업 식별자
+   * @return 조회
+   */
   @Transactional(readOnly = true)
   public PortalLinkDto.JobSummaryResponse getJobSummary(UUID userId, String jobId) {
     ScrapeJob job = findOwnedJob(userId, jobId);
@@ -65,6 +80,13 @@ public class PortalLinkJobQueryService {
         job.getFinishedAt());
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @param jobId 작업 식별자
+   * @return 조회
+   */
   @Transactional(readOnly = true)
   public PortalLinkDto.JobDurationResponse getJobDuration(UUID userId, String jobId) {
     ScrapeJob job = findOwnedJob(userId, jobId);

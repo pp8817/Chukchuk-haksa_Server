@@ -15,8 +15,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+/** 척척학사의 사용자 HTTP 요청을 처리한다. */
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ public class UserController implements UserControllerDocs {
 
   private final UserService userService;
 
+  @Override
   @GetMapping("/analytics-id")
   public ResponseEntity<SuccessResponse<UserDto.AnalyticsIdResponse>> getAnalyticsId(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -33,6 +40,7 @@ public class UserController implements UserControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @GetMapping("/me")
   public ResponseEntity<SuccessResponse<UserDto.MeResponse>> getMe(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -40,6 +48,7 @@ public class UserController implements UserControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @DeleteMapping("/delete")
   public ResponseEntity<SuccessResponse<MessageOnlyResponse>> deleteUser(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -53,6 +62,7 @@ public class UserController implements UserControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(new MessageOnlyResponse("회원 탈퇴가 완료되었습니다.")));
   }
 
+  @Override
   @PostMapping("/signin")
   public ResponseEntity<SuccessResponse<UserDto.SignInResponse>> signInUser(
       @RequestBody UserDto.SignInRequest signInRequest) {

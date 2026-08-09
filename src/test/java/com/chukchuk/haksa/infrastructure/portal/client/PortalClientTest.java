@@ -1,4 +1,5 @@
 // 포털 클라이언트의 HTTP 상태별 예외 매핑을 검증한다.
+
 package com.chukchuk.haksa.infrastructure.portal.client;
 
 import static org.assertj.core.api.Assertions.assertThat;

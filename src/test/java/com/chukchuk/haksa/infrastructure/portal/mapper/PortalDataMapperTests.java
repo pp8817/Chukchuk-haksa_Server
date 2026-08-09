@@ -1,4 +1,5 @@
 // 포털 raw 데이터의 외국어 인증 값을 내부 모델로 변환하는 테스트
+
 package com.chukchuk.haksa.infrastructure.portal.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,24 +91,27 @@ class PortalDataMapperTests {
   }
 
   private static String payloadWithLanguageCert(String flangPassGb) {
-    return """
-                {
-                  "studentInfo":{"sno":"17019013","studNm":"홍길동","univCd":"01","univNm":"수원대학교","dpmjCd":"D1","dpmjNm":"컴퓨터학부","mjorCd":"M1","mjorNm":"컴퓨터학과","the2MjorCd":null,"the2MjorNm":null,"scrgStatNm":"재학","enscYear":"2021","enscSmrCd":"10","enscDvcd":"신입","studGrde":4,"facSmrCnt":8,"flangPassGb":"%s"},
-                  "semesters":[],
-                  "academicRecords":{
-                    "listSmrCretSumTabYearSmr":[],
-                    "selectSmrCretSumTabSjTotal":{"gainPoint":"120","applPoint":"130","gainAvmk":"3.8","gainTavgPont":"90"}
-                  }
-                }
-                """
-        .formatted(flangPassGb);
+    return String.format(
+        """
+        {
+          "studentInfo":{"sno":"17019013","studNm":"홍길동","univCd":"01","univNm":"수원대학교","dpmjCd":"D1","dpmjNm":"컴퓨터학부","mjorCd":"M1","mjorNm":"컴퓨터학과","the2MjorCd":null,"the2MjorNm":null,"scrgStatNm":"재학","enscYear":"2021","enscSmrCd":"10","enscDvcd":"신입","studGrde":4,"facSmrCnt":8,"flangPassGb":"%s"},
+          "semesters":[],
+          "academicRecords":{
+            "listSmrCretSumTabYearSmr":[],
+            "selectSmrCretSumTabSjTotal":{"gainPoint":"120","applPoint":"130","gainAvmk":"3.8","gainTavgPont":"90"}
+          }
+        }
+        """,
+        flangPassGb);
   }
 
   private static String payloadWithNullPointAndGainPoint() {
     return payloadWithLanguageCert("통과")
         .replace(
             "\"semesters\":[]",
-            "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{\"subjtCd\":\"C101\",\"subjtNm\":\"학점보정\",\"point\":null,\"gainPoint\":4,\"cretDelNm\":null}]}]");
+            "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{\"subjtCd\":\"C101\","
+                + "\"subjtNm\":\"학점보정\",\"point\":null,\"gainPoint\":4,"
+                + "\"cretDelNm\":null}]}]");
   }
 
   private RawPortalData areaPayload(String areaName) throws Exception {

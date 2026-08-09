@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/** 척척학사의 open api 애플리케이션 설정을 제공한다. */
 @Configuration
 @SecurityScheme(
     name = "bearerAuth",
@@ -32,8 +33,13 @@ public class OpenApiConfig {
   @Value("${spring.profiles.active:default}")
   private String activeProfile;
 
-  @Bean
-  public OpenAPI customOpenAPI() {
+  /**
+   * 척척학사 OpenAPI 기본 문서를 구성한다.
+   *
+   * @return open api 결과
+   */
+  @Bean(name = "customOpenAPI")
+  public OpenAPI customOpenApi() {
     Server server =
         new Server()
             .url(serverUrl)
@@ -47,6 +53,11 @@ public class OpenApiConfig {
         .servers(List.of(server));
   }
 
+  /**
+   * 공통 API 응답 계약을 OpenAPI 문서에 반영한다.
+   *
+   * @return open api customizer 결과
+   */
   @Bean
   public OpenApiCustomizer responseContractCustomizer() {
     return openApi ->

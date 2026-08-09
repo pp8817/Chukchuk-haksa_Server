@@ -1,4 +1,5 @@
 // 외국어 인증 기준 정책 모델의 생성과 매핑 규칙을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.graduation.model;
 
 import static org.assertj.core.api.Assertions.assertThat;

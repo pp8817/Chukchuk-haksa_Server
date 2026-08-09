@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 학사 record 데이터 조회와 저장 기능을 제공한다. */
 @Slf4j
 @RequiredArgsConstructor
 @Repository
@@ -30,10 +31,10 @@ public class AcademicRecordRepository {
   private final StudentAcademicRecordRepository studentAcademicRecordRepository;
   private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
 
-  /** 포털 최초 연동 */
+  /** 포털 최초 연동. */
   @Transactional
   public void insertAllAcademicRecords(AcademicRecord academicRecord, Student student) {
-    long t0 = LogTime.start();
+    final long t0 = LogTime.start();
 
     UUID studentId = student.getId();
 
@@ -99,10 +100,10 @@ public class AcademicRecordRepository {
     }
   }
 
-  /** 포털 재연동 */
+  /** 포털 재연동. */
   @Transactional
   public void updateChangedAcademicRecords(AcademicRecord academicRecord, Student student) {
-    long t0 = LogTime.start();
+    final long t0 = LogTime.start();
 
     UUID studentId = student.getId();
 

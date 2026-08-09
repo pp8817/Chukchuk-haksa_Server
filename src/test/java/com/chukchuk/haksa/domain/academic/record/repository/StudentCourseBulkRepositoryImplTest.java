@@ -59,7 +59,7 @@ class StudentCourseBulkRepositoryImplTest {
                     is_retake_deleted BOOLEAN,
                     created_at TIMESTAMP WITH TIME ZONE
                 )
-                """);
+        """);
   }
 
   @Test

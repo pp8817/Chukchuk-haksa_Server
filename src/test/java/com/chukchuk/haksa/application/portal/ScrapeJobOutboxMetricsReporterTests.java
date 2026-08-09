@@ -11,6 +11,7 @@ import com.chukchuk.haksa.domain.scrapejob.repository.ScrapeJobOutboxRepository;
 import com.chukchuk.haksa.global.config.ScrapingProperties;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.concurrent.ScheduledFuture;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,8 @@ class ScrapeJobOutboxMetricsReporterTests {
       new ApplicationContextRunner().withUserConfiguration(BaseTestConfig.class);
 
   @Test
-  void taskSchedulerBean이_없으면_reporter를_생성하지_않는다() {
+  @DisplayName("TaskScheduler 빈이 없으면 reporter를 생성하지 않는다")
+  void doesNotCreateReporterWithoutTaskSchedulerBean() {
     contextRunner.run(
         context -> {
           assertThat(context).doesNotHaveBean(ScrapeJobOutboxMetricsReporter.class);
@@ -32,8 +34,9 @@ class ScrapeJobOutboxMetricsReporterTests {
   }
 
   @Test
+  @DisplayName("TaskScheduler가 있으면 reporter가 주기 갱신을 등록한다")
   @SuppressWarnings("unchecked")
-  void taskScheduler가_있으면_reporter가_주기_갱신을_등록한다() {
+  void registersPeriodicRefreshWhenTaskSchedulerExists() {
     ScrapeJobOutboxRepository repository = mock(ScrapeJobOutboxRepository.class);
     TaskScheduler taskScheduler = mock(TaskScheduler.class);
     ScheduledFuture<Object> future = mock(ScheduledFuture.class);

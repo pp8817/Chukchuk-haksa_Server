@@ -1,4 +1,5 @@
 // dev 테스트 계정 생성과 토큰 발급을 처리한다
+
 package com.chukchuk.haksa.domain.admin.service;
 
 import com.chukchuk.haksa.domain.admin.dto.AdminTestDto;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 admin test 계정 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -39,6 +41,12 @@ public class AdminTestAccountService {
   private final JwtProvider jwtProvider;
   private final RefreshTokenService refreshTokenService;
 
+  /**
+   * 척척학사의 create test 사용자 대상을 생성한다.
+   *
+   * @param request 요청 정보
+   * @return 생성된
+   */
   public AdminTestDto.TestUserResponse createTestUser(AdminTestDto.CreateTestUserRequest request) {
     String suffix = createSuffix();
     String email = "test_" + suffix + "@cchaksa.dev";

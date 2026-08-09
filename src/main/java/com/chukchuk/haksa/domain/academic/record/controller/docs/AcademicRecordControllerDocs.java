@@ -18,12 +18,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** 학사 record controller docs 기능의 계약을 정의한다. */
 public interface AcademicRecordControllerDocs {
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @param year 연도
+   * @param semester 학기 값
+   * @return 조회
+   */
   @Operation(
       summary = "학기별 성적 및 수강 과목 정보 조회",
       description =
-          "지정한 학기(year, semester)에 해당하는 성적 및 수강 과목 정보를 조회합니다. courses.liberal[] 중 areaType이 선교인 과목은 liberalAreaCode를 포함할 수 있습니다. areaType이 선교가 아닌 과목은 liberalAreaCode 키가 응답에 포함되지 않습니다.",
+          "지정한 학기(year, semester)에 해당하는 성적 및 수강 과목 정보를 조회합니다. courses.liberal[] 중 "
+              + "areaType이 선교인 과목은 liberalAreaCode를 포함할 수 있습니다. areaType이 선교가 아닌 과목은 "
+              + "liberalAreaCode 키가 응답에 포함되지 않습니다.",
       responses = {
         @ApiResponse(
             responseCode = "200",
@@ -49,6 +60,12 @@ public interface AcademicRecordControllerDocs {
       @RequestParam @Parameter(description = "학기", example = "10, 15, 20 ...", required = true)
           Integer semester);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "사용자 학업 요약 정보 조회",
       description = "로그인된 사용자의 학업 요약 정보를 조회합니다.",

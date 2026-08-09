@@ -16,9 +16,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+/** 포털 link 콜백 controller docs 기능의 계약을 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내 | [Internal] Callback")
 public interface PortalLinkCallbackControllerDocs {
 
+  /**
+   * 척척학사의 handle 콜백 대상을 처리한다.
+   *
+   * @param rawBody 서명 검증 대상 요청 본문
+   * @param timestamp 요청 타임스탬프
+   * @param signature 요청 서명
+   * @return 응답 entity success 응답 메시지 only 응답 결과
+   */
   @Operation(
       summary = "[Internal] 스크래핑 결과 콜백 수신",
       description =

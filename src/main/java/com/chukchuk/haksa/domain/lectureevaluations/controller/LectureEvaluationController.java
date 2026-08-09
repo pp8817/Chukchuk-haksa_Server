@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 척척학사의 lecture evaluation HTTP 요청을 처리한다. */
 @Slf4j
 @RestController
 @RequestMapping("/api/lecture-evaluations")
@@ -28,6 +29,7 @@ public class LectureEvaluationController implements LectureEvaluationControllerD
 
   private final LectureEvaluationService lectureEvaluationService;
 
+  @Override
   @GetMapping("/required")
   public ResponseEntity<SuccessResponse<LectureEvaluationDto.RequiredResponse>> getRequired(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -44,6 +46,7 @@ public class LectureEvaluationController implements LectureEvaluationControllerD
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @PostMapping
   public ResponseEntity<SuccessResponse<MessageOnlyResponse>> submit(
       @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -63,6 +66,7 @@ public class LectureEvaluationController implements LectureEvaluationControllerD
     return ResponseEntity.ok(SuccessResponse.of(new MessageOnlyResponse("강의평가 저장 완료")));
   }
 
+  @Override
   @PostMapping("/skip")
   public ResponseEntity<SuccessResponse<MessageOnlyResponse>> skip(
       @AuthenticationPrincipal CustomUserDetails userDetails,

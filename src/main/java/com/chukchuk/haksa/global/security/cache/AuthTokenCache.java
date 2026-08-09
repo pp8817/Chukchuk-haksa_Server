@@ -13,22 +13,38 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+/** 사용자별 유효 인증 토큰 해시를 캐시한다. */
 @Component
 public class AuthTokenCache {
 
   private final Cache<String, UserDetails> cache;
   private final Cache<String, Set<String>> userTokenIndex;
 
+  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
   public AuthTokenCache(@Value("${security.jwt.access-expiration}") long accessExpirationMs) {
     Duration ttl = Duration.ofMillis(accessExpirationMs);
     this.cache = Caffeine.newBuilder().maximumSize(50_000).expireAfterWrite(ttl).build();
     this.userTokenIndex = Caffeine.newBuilder().maximumSize(50_000).expireAfterWrite(ttl).build();
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param tokenHash 토큰 hash 값
+   * @return 조회
+   */
   public UserDetails get(String tokenHash) {
     return cache.getIfPresent(tokenHash);
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @param token 토큰 값
+   * @param loader loader 값
+   * @return 조회
+   */
   public UserDetails getOrLoad(String userId, String token, Supplier<UserDetails> loader) {
     String tokenHash = hashToken(token);
     return cache.get(
@@ -40,6 +56,11 @@ public class AuthTokenCache {
         });
   }
 
+  /**
+   * 사용자에게 발급된 인증 토큰 캐시를 제거한다.
+   *
+   * @param userId 사용자 식별자
+   */
   public void evictByUserId(String userId) {
     Set<String> tokenHashes = userTokenIndex.asMap().remove(userId);
     if (tokenHashes != null && !tokenHashes.isEmpty()) {

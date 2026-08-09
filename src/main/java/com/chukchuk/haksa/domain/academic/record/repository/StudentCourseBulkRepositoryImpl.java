@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+/** 학생 수강 과목을 JDBC 배치로 저장한다. */
 @Repository
 public class StudentCourseBulkRepositoryImpl implements StudentCourseBulkRepository {
 
@@ -18,10 +19,15 @@ public class StudentCourseBulkRepositoryImpl implements StudentCourseBulkReposit
             INSERT INTO student_courses
             (student_id, offering_id, grade, points, is_retake, original_score, is_retake_deleted, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+      """;
 
   private final JdbcTemplate jdbcTemplate;
 
+  /**
+   * 학생 과목 bulk repository impl 인스턴스를 생성한다.
+   *
+   * @param jdbcTemplate jdbc template 값
+   */
   public StudentCourseBulkRepositoryImpl(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
   }

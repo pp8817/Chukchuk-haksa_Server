@@ -3,6 +3,12 @@ package com.chukchuk.haksa.domain.academic.record.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
+/**
+ * 학사 record 응답 데이터를 전달한다.
+ *
+ * @param semesterGrade 학기 성적 값
+ * @param summary summary 값
+ */
 @Schema(description = "학기별 성적 및 수강 과목 응답")
 public record AcademicRecordResponse(
     @Schema(description = "학기 성적 정보", required = true)
@@ -11,6 +17,13 @@ public record AcademicRecordResponse(
     //        @Schema(description = "학업 요약 정보") Summary summary
     ) {
 
+  /**
+   * 계층 간 전달할 데이터를 표현한다.
+   *
+   * @param major 전공 값
+   * @param liberal liberal 값
+   * @param etc etc 값
+   */
   @Schema(description = "수강 과목 목록")
   public record Courses(
       @Schema(description = "전공 과목 목록", required = true)

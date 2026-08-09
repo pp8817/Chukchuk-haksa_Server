@@ -7,8 +7,29 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;
 
+/** 학생 과목 계층 간 데이터를 전달한다. */
 public class StudentCourseDto {
 
+  /**
+   * 과목 detail dto 데이터를 전달한다.
+   *
+   * @param id id 식별자
+   * @param courseName 과목 이름
+   * @param courseCode 과목 코드
+   * @param areaType area type 값
+   * @param rawAreaType raw area type 값
+   * @param credits 학점
+   * @param professor 교수
+   * @param grade 성적 값
+   * @param score 점수
+   * @param isRetake is retake 여부
+   * @param isOnline is online 여부
+   * @param year 연도
+   * @param semester 학기 값
+   * @param originalScore 원점수
+   * @param liberalAreaCode liberal area code 값
+   * @param isRetakeDelete is retake delete 여부
+   */
   @Schema(description = "수강 과목 상세 정보")
   public record CourseDetailDto(
       @Schema(description = "수강 ID") String id,
@@ -27,12 +48,19 @@ public class StudentCourseDto {
       @Schema(description = "원점수") Integer originalScore,
       @Schema(
               description =
-                  "선교 영역 세부 코드 (LiberalArtsAreaCode). areaType 이 선교인 과목에 한해 노출되며, 그 외 영역에서는 응답에서 omit된다.",
+                  "선교 영역 세부 코드 (LiberalArtsAreaCode). areaType 이 선교인 과목에 한해 노출되며, 그 외 영역에서는 "
+                      + "응답에서 omit된다.",
               example = "7",
               nullable = true)
           @JsonInclude(JsonInclude.Include.NON_NULL)
           Integer liberalAreaCode,
       @Schema(description = "재수강 삭제 과목 여부") boolean isRetakeDelete) {
+    /**
+     * 학생 수강 내역을 과목 상세 응답으로 변환한다.
+     *
+     * @param course 학생 수강 내역
+     * @return 과목 상세 응답
+     */
     public static CourseDetailDto from(StudentCourse course) {
       return new CourseDetailDto(
           String.valueOf(course.getId()),

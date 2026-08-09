@@ -1,4 +1,5 @@
 // 학생 졸업 진행 상태 중 외국어 인증 정보를 동기화하고 조회하는 서비스
+
 package com.chukchuk.haksa.domain.graduation.service;
 
 import com.chukchuk.haksa.domain.cache.AcademicCache;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 학생 졸업 progress 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,6 +21,12 @@ public class StudentGraduationProgressService {
   private final StudentGraduationProgressRepository repository;
   private final AcademicCache academicCache;
 
+  /**
+   * 학생의 어학 인증 충족 상태를 동기화한다.
+   *
+   * @param student 학생 값
+   * @param languageCertFulfilled 어학 인증 충족 여부
+   */
   @Transactional
   public void syncLanguageCert(Student student, Boolean languageCertFulfilled) {
     if (languageCertFulfilled == null) {
@@ -43,6 +51,12 @@ public class StudentGraduationProgressService {
     academicCache.deleteAllByStudentId(studentId);
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public Optional<Boolean> getLanguageCertFulfilled(UUID studentId) {
     return repository
         .findByStudentId(studentId)

@@ -1,4 +1,5 @@
 // dev 테스트 데이터 수정 서비스 동작을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,7 +113,8 @@ class AdminTestMutationServiceUnitTests {
     user.setStudent(student);
     Department major = new Department("CSE", "컴퓨터학과");
     Department secondaryMajor = new Department("BUS", "경영학과");
-    AdminTestDto.UpdateMajorRequest request = new AdminTestDto.UpdateMajorRequest(1L, true, 2L);
+    final AdminTestDto.UpdateMajorRequest request =
+        new AdminTestDto.UpdateMajorRequest(1L, true, 2L);
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(departmentRepository.findById(1L)).thenReturn(Optional.of(major));
     when(departmentRepository.findById(2L)).thenReturn(Optional.of(secondaryMajor));
@@ -224,7 +226,7 @@ class AdminTestMutationServiceUnitTests {
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
     user.setStudent(student);
-    AdminTestDto.CreateTestCourseRequest request =
+    final AdminTestDto.CreateTestCourseRequest request =
         new AdminTestDto.CreateTestCourseRequest(
             "CSE101", "프론트 테스트 강의", FacultyDivision.전선, null, "선교", 2026, 15, 3, "A+", false, 95);
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -249,7 +251,7 @@ class AdminTestMutationServiceUnitTests {
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
     user.setStudent(student);
-    AdminTestDto.CreateTestCourseRequest request =
+    final AdminTestDto.CreateTestCourseRequest request =
         new AdminTestDto.CreateTestCourseRequest(
             "CSE101", "프론트 테스트 강의", FacultyDivision.전선, null, "선교", 2026, 10, 3, null, false, 95);
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));

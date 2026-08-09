@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.lectureevaluations.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/** 강의평가 기능의 설정값을 제공한다. */
 @Component
 @ConfigurationProperties(prefix = "lecture-evaluation")
 public class LectureEvaluationProperties {
@@ -10,8 +11,15 @@ public class LectureEvaluationProperties {
   private Integer targetYear;
   private Integer targetSemester;
 
+  /** Spring 설정 바인딩에 사용할 기본 인스턴스를 생성한다. */
   public LectureEvaluationProperties() {}
 
+  /**
+   * 강의평가 대상 학기를 지정해 설정 인스턴스를 생성한다.
+   *
+   * @param targetYear 강의평가 대상 연도
+   * @param targetSemester 강의평가 대상 학기
+   */
   public LectureEvaluationProperties(Integer targetYear, Integer targetSemester) {
     this.targetYear = targetYear;
     this.targetSemester = targetSemester;

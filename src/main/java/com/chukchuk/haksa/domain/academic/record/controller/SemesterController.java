@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 학기 HTTP 요청을 처리한다. */
 @Slf4j
 @RestController
 @RequestMapping("/api/semester")
@@ -29,6 +30,7 @@ public class SemesterController implements SemesterControllerDocs {
   private final SemesterAcademicRecordService semesterAcademicRecordService;
   private final StudentService studentService;
 
+  @Override
   @GetMapping
   public ResponseEntity<SuccessResponse<List<StudentSemesterInfoResponse>>> getSemesterRecord(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -52,6 +54,7 @@ public class SemesterController implements SemesterControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @GetMapping("/grades")
   public ResponseEntity<SuccessResponse<List<SemesterSummaryResponse>>> getSemesterGrades(
       @AuthenticationPrincipal CustomUserDetails userDetails) {

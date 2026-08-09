@@ -7,8 +7,16 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
 import com.chukchuk.haksa.domain.student.model.Student;
 import java.math.BigDecimal;
 
+/** 척척학사의 학사 record 도메인 데이터 간 변환을 담당한다. */
 public class AcademicRecordMapper {
 
+  /**
+   * 입력 데이터를 영속 엔티티로 변환한다.
+   *
+   * @param student 학생 값
+   * @param summary summary 값
+   * @return 학생 학사 record 결과
+   */
   public static StudentAcademicRecord toEntity(Student student, AcademicSummary summary) {
 
     if (summary == null) {
@@ -34,6 +42,13 @@ public class AcademicRecordMapper {
         percentile);
   }
 
+  /**
+   * 입력 데이터를 영속 엔티티로 변환한다.
+   *
+   * @param student 학생 값
+   * @param grade 성적 값
+   * @return 학기 학사 record 결과
+   */
   public static SemesterAcademicRecord toEntity(Student student, SemesterGrade grade) {
     if (grade == null) {
       throw new IllegalArgumentException("SemesterGrade cannot be null");

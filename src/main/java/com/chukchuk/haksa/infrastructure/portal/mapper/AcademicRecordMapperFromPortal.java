@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/** 포털 응답을 학사 기록 도메인 모델로 변환한다. */
 public class AcademicRecordMapperFromPortal {
 
   /**

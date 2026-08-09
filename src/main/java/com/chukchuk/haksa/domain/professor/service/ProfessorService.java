@@ -13,11 +13,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 professor 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 public class ProfessorService {
   private final ProfessorRepository professorRepository;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param professorName professor 이름
+   * @return 조회
+   */
   @Transactional
   public Professor getOrCreate(String professorName) {
     return professorRepository
@@ -29,6 +36,12 @@ public class ProfessorService {
             });
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param professorNames professor names 값
+   * @return 조회
+   */
   @Transactional
   public Map<String, Professor> getOrCreateAll(Collection<String> professorNames) {
     if (professorNames == null || professorNames.isEmpty()) {

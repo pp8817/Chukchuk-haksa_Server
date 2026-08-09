@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 사용자 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -40,22 +41,45 @@ public class UserService {
 
   private final Map<OidcProvider, OidcService> oidcServices;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @return 조회
+   */
   public User getUserById(UUID userId) {
     return userRepository
         .findById(userId)
         .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @return 조회
+   */
   public UserDto.MeResponse getMe(UUID userId) {
     User user = getUserById(userId);
     return new UserDto.MeResponse(Boolean.TRUE.equals(user.getPortalConnected()));
   }
 
+  /**
+   * 전달된 데이터를 영속 저장소에 보관한다.
+   *
+   * @param user 사용자 값
+   */
   @Transactional
   public void save(User user) {
     userRepository.save(user);
   }
 
+  /**
+   * OIDC 로그인 요청을 검증하고 인증 토큰을 발급한다.
+   *
+   * @param signInRequest sign in 요청 정보
+   * @return auth dto sign in 토큰 응답 결과
+   */
   @Transactional
   public AuthDto.SignInTokenResponse signIn(UserDto.SignInRequest signInRequest) {
     OidcProvider provider = signInRequest.provider();
@@ -76,6 +100,11 @@ public class UserService {
     return response;
   }
 
+  /**
+   * 지정된 데이터를 삭제한다.
+   *
+   * @param userId 사용자 식별자
+   */
   @Transactional
   public void deleteUserById(UUID userId) {
     User user =
@@ -105,7 +134,7 @@ public class UserService {
   @Transactional
   public User tryMergeWithExistingUser(UUID currentUserId, String studentCode) {
     User currentUser = getUserById(currentUserId);
-    Optional<User> existingUserOpt = userRepository.findByStudent_StudentCode(studentCode);
+    Optional<User> existingUserOpt = userRepository.findByStudentStudentCode(studentCode);
 
     if (existingUserOpt.isEmpty()) {
       return currentUser;
@@ -141,7 +170,7 @@ public class UserService {
 
   /* private method */
   private Claims verifyToken(OidcProvider provider, UserDto.SignInRequest request) {
-    return oidcServices.get(provider).verifyIdToken(request.id_token(), request.nonce());
+    return oidcServices.get(provider).verifyIdToken(request.idToken(), request.nonce());
   }
 
   private String extractEmail(Claims claims) {
@@ -195,6 +224,11 @@ public class UserService {
     return new AuthDto.SignInTokenResponse(accessToken, refresh.token(), user.getPortalConnected());
   }
 
+  /**
+   * 사용자의 인증 상세 정보 캐시를 제거한다.
+   *
+   * @param userId 사용자 식별자
+   */
   public void evictUserDetailsCache(UUID userId) {
     authTokenCache.evictByUserId(userId.toString());
   }

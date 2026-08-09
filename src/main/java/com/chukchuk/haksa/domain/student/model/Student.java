@@ -10,7 +10,19 @@ import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
 import com.chukchuk.haksa.domain.user.model.StudentInitializationDataType;
 import com.chukchuk.haksa.domain.user.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +31,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 척척학사의 학생 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -78,6 +91,24 @@ public class Student extends BaseEntity {
       orphanRemoval = true)
   private List<StudentCourse> studentCourses = new ArrayList<>();
 
+  /**
+   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   *
+   * @param studentCode 학번
+   * @param name 이름
+   * @param department 학과 값
+   * @param major 전공 값
+   * @param secondaryMajor 복수전공
+   * @param admissionYear admission 연도
+   * @param semesterEnrolled 학기 enrolled 값
+   * @param isTransferStudent is transfer 학생 여부
+   * @param isGraduated is graduated 여부
+   * @param status 상태
+   * @param gradeLevel 학년
+   * @param completedSemesters 이수 학기 수
+   * @param admissionType admission type 값
+   * @param user 사용자 값
+   */
   @Builder
   public Student(
       String studentCode,
@@ -116,6 +147,22 @@ public class Student extends BaseEntity {
     this.user = user;
   }
 
+  /**
+   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   *
+   * @param name 이름
+   * @param department 학과 값
+   * @param major 전공 값
+   * @param secondaryMajor 복수전공
+   * @param admissionYear admission 연도
+   * @param semesterEnrolled 학기 enrolled 값
+   * @param isTransferStudent is transfer 학생 여부
+   * @param isGraduated is graduated 여부
+   * @param status 상태
+   * @param gradeLevel 학년
+   * @param completedSemesters 이수 학기 수
+   * @param admissionType admission type 값
+   */
   public void updateInfo(
       String name,
       Department department,
@@ -148,6 +195,11 @@ public class Student extends BaseEntity {
             .build();
   }
 
+  /**
+   * 현재 상태가 조건을 충족하는지 반환한다.
+   *
+   * @return 조건 충족 여부
+   */
   public boolean isTransferStudent() {
     if (this.studentCode == null
         || this.academicInfo == null
@@ -170,12 +222,22 @@ public class Student extends BaseEntity {
     return !codePrefix.equals(yearSuffix);
   }
 
+  /**
+   * 학생에게 수강 과목을 연결한다.
+   *
+   * @param course 과목 값
+   */
   public void addStudentCourse(StudentCourse course) {
     this.studentCourses.add(course);
     course.setStudent(this);
   }
 
   // 연관관계 편의 메서드
+  /**
+   * 전달된 값을 현재 객체에 설정한다.
+   *
+   * @param record record 값
+   */
   public void setAcademicRecord(StudentAcademicRecord record) {
     //        this.studentAcademicRecord = record;
     if (record != null) {
@@ -183,6 +245,11 @@ public class Student extends BaseEntity {
     }
   }
 
+  /**
+   * 학생에게 학기별 학사 기록을 연결한다.
+   *
+   * @param record record 값
+   */
   public void addSemesterRecord(SemesterAcademicRecord record) {
     this.semesterAcademicRecords.add(record);
     record.setStudent(this);
@@ -192,19 +259,43 @@ public class Student extends BaseEntity {
     this.targetGpa = targetGpa;
   }
 
+  /**
+   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   *
+   * @param major 전공 값
+   * @param secondaryMajor 복수전공
+   */
   public void updateMajors(Department major, Department secondaryMajor) {
     this.major = major;
     this.secondaryMajor = secondaryMajor;
   }
 
   // 학생 정보 업데이트 시 변경 사항 감지 메서드
+  /**
+   * 새 학적 정보로 학생 정보를 갱신해야 하는지 확인한다.
+   *
+   * @param newData new 응답 데이터
+   * @return 조건 충족 여부
+   */
   public boolean needsUpdate(StudentInitializationDataType newData) {
-    if (!equalsNullable(this.name, newData.getName())) return true;
-    if (!equalsNullable(this.department, newData.getDepartment())) return true;
-    if (!equalsNullable(this.major, newData.getMajor())) return true;
-    if (!equalsNullable(this.secondaryMajor, newData.getSecondaryMajor())) return true;
-    if (!equalsNullable(this.isGraduated, newData.isGraduated())) return true;
-    if (!equalsNullable(this.admissionType, newData.getAdmissionType())) return true;
+    if (!equalsNullable(this.name, newData.getName())) {
+      return true;
+    }
+    if (!equalsNullable(this.department, newData.getDepartment())) {
+      return true;
+    }
+    if (!equalsNullable(this.major, newData.getMajor())) {
+      return true;
+    }
+    if (!equalsNullable(this.secondaryMajor, newData.getSecondaryMajor())) {
+      return true;
+    }
+    if (!equalsNullable(this.isGraduated, newData.isGraduated())) {
+      return true;
+    }
+    if (!equalsNullable(this.admissionType, newData.getAdmissionType())) {
+      return true;
+    }
 
     AcademicInfo newInfo =
         AcademicInfo.builder()
@@ -223,15 +314,22 @@ public class Student extends BaseEntity {
     return java.util.Objects.equals(a, b);
   }
 
+  /** 학생의 포털 재연동 상태를 기록한다. */
   public void markReconnected() {
     this.reconnectionRequired = false;
   }
 
+  /** 탈퇴한 사용자의 학번과 이름을 익명화한다. */
   public void anonymize() {
     this.studentCode = "deleted_" + UUID.randomUUID();
     this.name = "탈퇴한 사용자입니다.";
   }
 
+  /**
+   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   *
+   * @param user 연결할 사용자
+   */
   public void updateUser(User user) {
     this.user = user;
   }

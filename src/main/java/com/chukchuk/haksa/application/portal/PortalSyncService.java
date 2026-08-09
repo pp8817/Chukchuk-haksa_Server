@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 포털 sync 비즈니스 흐름을 처리한다. */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,13 @@ public class PortalSyncService {
   private final StudentService studentService;
   private final StudentGraduationProgressService studentGraduationProgressService;
 
+  /**
+   * 포털 학사 데이터를 사용자 계정에 동기화한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalData 포털 학사 데이터
+   * @return 스크래핑 응답 결과
+   */
   @Transactional
   public ScrapingResponse syncWithPortal(UUID userId, PortalData portalData) {
     long t0 = LogTime.start();
@@ -86,6 +94,13 @@ public class PortalSyncService {
     return ScrapingResponse.success(UUID.randomUUID().toString(), conn.studentInfo());
   }
 
+  /**
+   * 척척학사의 refresh from 포털 대상을 갱신한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalData 포털 학사 데이터
+   * @return 스크래핑 응답 결과
+   */
   @Transactional
   public ScrapingResponse refreshFromPortal(UUID userId, PortalData portalData) {
     long t0 = LogTime.start();

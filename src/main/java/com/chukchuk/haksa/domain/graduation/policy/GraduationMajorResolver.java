@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/** 졸업 영역에서 졸업 전공 resolver 책임을 수행한다. */
 @Component
 @RequiredArgsConstructor
 public class GraduationMajorResolver {
@@ -19,6 +20,13 @@ public class GraduationMajorResolver {
   private final GraduationQueryRepository graduationQueryRepository;
   private final DepartmentRepository departmentRepository;
 
+  /**
+   * 척척학사의 resolve 대상을 계산한다.
+   *
+   * @param student 학생 값
+   * @param admissionYear admission 연도
+   * @return 전공 resolution 결과
+   */
   public MajorResolutionResult resolve(Student student, int admissionYear) {
     List<Long> primaryCandidates =
         resolveCandidateDepartmentIds(
@@ -39,7 +47,9 @@ public class GraduationMajorResolver {
   private MajorResolutionResult resolveSingleMajor(
       List<Long> primaryCandidates, int admissionYear, Student student) {
     for (Long primaryId : primaryCandidates) {
-      if (primaryId == null) continue;
+      if (primaryId == null) {
+        continue;
+      }
 
       if (hasSingleMajorRequirement(primaryId, admissionYear)) {
         return new MajorResolutionResult(primaryId, null);
@@ -60,10 +70,14 @@ public class GraduationMajorResolver {
       int admissionYear,
       Student student) {
     for (Long primaryId : primaryCandidates) {
-      if (primaryId == null) continue;
+      if (primaryId == null) {
+        continue;
+      }
 
       for (Long secondaryId : secondaryCandidates) {
-        if (secondaryId == null) continue;
+        if (secondaryId == null) {
+          continue;
+        }
 
         if (hasDualMajorRequirement(primaryId, secondaryId, admissionYear)) {
           return new MajorResolutionResult(primaryId, secondaryId);

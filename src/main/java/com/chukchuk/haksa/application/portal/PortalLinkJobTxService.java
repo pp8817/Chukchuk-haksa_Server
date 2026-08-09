@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 포털 link 작업 tx 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 public class PortalLinkJobTxService {
@@ -25,6 +26,20 @@ public class PortalLinkJobTxService {
   private final ScrapeJobOutboxRepository scrapeJobOutboxRepository;
   private final ObjectMapper objectMapper;
 
+  /**
+   * 척척학사의 create or load 작업 대상을 생성한다.
+   *
+   * @param userId 사용자 식별자
+   * @param idempotencyKey 멱등성 키
+   * @param portalType 포털 유형
+   * @param operationType 작업 유형
+   * @param requestFingerprint 요청 fingerprint 정보
+   * @param requestPayloadJson 요청 payload json 정보
+   * @param username user이름
+   * @param password 포털 비밀번호
+   * @param requestedAt requested at 정보
+   * @return 생성된
+   */
   @Transactional
   public PreparedJob createOrLoadJob(
       UUID userId,
@@ -53,6 +68,14 @@ public class PortalLinkJobTxService {
                     requestedAt));
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @param idempotencyKey 멱등성 키
+   * @param requestFingerprint 요청 fingerprint 정보
+   * @return 조회
+   */
   @Transactional(readOnly = true)
   public PreparedJob loadExistingJob(
       UUID userId, String idempotencyKey, String requestFingerprint) {
@@ -63,6 +86,12 @@ public class PortalLinkJobTxService {
     return toPreparedJob(existingJob, requestFingerprint);
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param outboxId 아웃박스 식별자
+   * @return 조회
+   */
   @Transactional(readOnly = true)
   public DispatchSnapshot loadDispatchSnapshot(String outboxId) {
     ScrapeJobOutbox outbox =
@@ -154,6 +183,14 @@ public class PortalLinkJobTxService {
             || outbox.getStatus() == ScrapeJobOutboxStatus.RETRYABLE_FAILED);
   }
 
+  /**
+   * 계층 간 전달할 데이터를 표현한다.
+   *
+   * @param jobId 작업 식별자
+   * @param outboxId 아웃박스 식별자
+   * @param reused reused 값
+   * @param dispatchRequired dispatch required 값
+   */
   public record PreparedJob(
       String jobId, String outboxId, boolean reused, boolean dispatchRequired) {
     static PreparedJob created(ScrapeJob job, ScrapeJobOutbox outbox) {
@@ -165,6 +202,16 @@ public class PortalLinkJobTxService {
     }
   }
 
+  /**
+   * 계층 간 전달할 데이터를 표현한다.
+   *
+   * @param jobId 작업 식별자
+   * @param outboxId 아웃박스 식별자
+   * @param jobStatus 작업 상태
+   * @param outboxStatus 아웃박스 상태
+   * @param queueMessageId 큐 메시지 식별자
+   * @param lastError last 오류 값
+   */
   public record DispatchSnapshot(
       String jobId,
       String outboxId,

@@ -1,4 +1,5 @@
 // HTTP 요청에서 명시적 예외 캡처와 중복되는 Logback Sentry 이벤트를 제외하는 필터
+
 package com.chukchuk.haksa.global.logging.sentry;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -6,6 +7,7 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import java.util.Map;
 
+/** 척척학사의 sentry duplicate 이벤트 요청 처리 과정의 필터링을 담당한다. */
 public class SentryDuplicateEventFilter extends Filter<ILoggingEvent> {
 
   public static final String MANAGED_REQUEST_MDC_KEY = "sentryManagedRequest";

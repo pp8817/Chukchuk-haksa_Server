@@ -1,4 +1,5 @@
 // 외국어 인증 기준 학과 매핑 Repository 조회 조건을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.graduation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;

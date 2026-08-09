@@ -81,7 +81,7 @@ class PortalLinkJobTxServiceUnitTests {
   @DisplayName("기존 QUEUED + RETRYABLE_FAILED job은 같은 idempotency key 재요청 시 다시 publish 대상이 된다")
   void loadExistingJob_marksQueuedRetryableAsDispatchRequired() {
     UUID userId = UUID.randomUUID();
-    PortalLinkJobTxService service =
+    final PortalLinkJobTxService service =
         new PortalLinkJobTxService(
             scrapeJobRepository,
             scrapeJobOutboxRepository,
@@ -131,7 +131,7 @@ class PortalLinkJobTxServiceUnitTests {
   @DisplayName("기존 QUEUED job의 outbox가 DEAD면 enqueue 실패로 처리한다")
   void loadExistingJob_throwsWhenDeadOutbox() {
     UUID userId = UUID.randomUUID();
-    PortalLinkJobTxService service =
+    final PortalLinkJobTxService service =
         new PortalLinkJobTxService(
             scrapeJobRepository,
             scrapeJobOutboxRepository,
@@ -157,7 +157,7 @@ class PortalLinkJobTxServiceUnitTests {
   @Test
   @DisplayName("dispatch snapshot은 job/outbox 현재 상태를 함께 반환한다")
   void loadDispatchSnapshot_returnsCurrentState() {
-    PortalLinkJobTxService service =
+    final PortalLinkJobTxService service =
         new PortalLinkJobTxService(
             scrapeJobRepository,
             scrapeJobOutboxRepository,

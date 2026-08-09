@@ -19,9 +19,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/** 구현체가 제공해야 할 사용자 controller docs 기능의 계약을 정의한다. */
 @Tag(name = "User", description = "사용자 관련 API")
 public interface UserControllerDocs {
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "사용자 분석 식별자 조회",
       description = "로그인된 사용자의 Amplitude 사용자 식별자를 조회합니다.",
@@ -39,6 +46,12 @@ public interface UserControllerDocs {
   ResponseEntity<SuccessResponse<UserDto.AnalyticsIdResponse>> getAnalyticsId(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "내 사용자 정보 조회",
       description = "로그인된 사용자의 포털 연동 여부를 조회합니다.",
@@ -60,6 +73,12 @@ public interface UserControllerDocs {
   ResponseEntity<SuccessResponse<UserDto.MeResponse>> getMe(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
+  /**
+   * 지정된 데이터를 삭제한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 응답 entity success 응답 메시지 only 응답 결과
+   */
   @Operation(
       summary = "회원 탈퇴",
       description = "로그인된 사용자의 계정을 삭제합니다.",
@@ -77,6 +96,12 @@ public interface UserControllerDocs {
   ResponseEntity<SuccessResponse<MessageOnlyResponse>> deleteUser(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
+  /**
+   * OIDC 토큰으로 회원가입 또는 로그인을 처리한다.
+   *
+   * @param signInRequest sign in 요청 정보
+   * @return 응답 entity success 응답 사용자 dto sign in 응답 결과
+   */
   @Operation(
       summary = "회원 가입 및 로그인",
       description = "사용자가 OIDC 소셜 로그인으로 회원가입 및 로그인을 진행합니다.",

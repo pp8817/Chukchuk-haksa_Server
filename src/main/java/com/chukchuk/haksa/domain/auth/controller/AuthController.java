@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 척척학사의 auth HTTP 요청을 처리한다. */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class AuthController implements AuthControllerDocs {
 
   private final RefreshTokenService refreshTokenService;
 
+  @Override
   @PostMapping("/refresh")
   public ResponseEntity<SuccessResponse<RefreshResponse>> refreshResponse(
       @RequestBody RefreshRequest request) {

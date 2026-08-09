@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+/** 스크래핑 아웃박스 메시지의 큐 발행과 재시도를 조정한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,10 +29,17 @@ public class ScrapeJobOutboxDispatcher {
   private final ScrapingProperties scrapingProperties;
   private final Environment environment;
 
+  /** 척척학사의 dispatch eligible outboxes 대상을 처리한다. */
   public void dispatchEligibleOutboxes() {
     dispatchBatch("scheduled");
   }
 
+  /**
+   * 척척학사의 dispatch once 대상을 처리한다.
+   *
+   * @param preferredOutboxId preferred 아웃박스 식별자
+   * @return int
+   */
   public int dispatchOnce(String preferredOutboxId) {
     return dispatchPreferredOutbox("sync_request", preferredOutboxId);
   }
@@ -39,7 +47,8 @@ public class ScrapeJobOutboxDispatcher {
   private int dispatchPreferredOutbox(String trigger, String preferredOutboxId) {
     if (!scrapingProperties.getPublisher().isEnabled()) {
       log.info(
-          "[BIZ] scrape.outbox.dispatch.skip trigger={} reason=publisher_disabled preferredOutboxId={}",
+          "[BIZ] scrape.outbox.dispatch.skip trigger={} reason=publisher_disabled "
+              + "preferredOutboxId={}",
           trigger,
           preferredOutboxId);
       return 0;
@@ -48,7 +57,8 @@ public class ScrapeJobOutboxDispatcher {
     Instant now = Instant.now();
     int batchSize = scrapingProperties.getPublisher().getBatchSize();
     log.info(
-        "[BIZ] scrape.outbox.dispatch.start trigger={} preferredOutboxId={} batchSize={} now={} activeProfiles={}",
+        "[BIZ] scrape.outbox.dispatch.start trigger={} preferredOutboxId={} "
+            + "batchSize={} now={} activeProfiles={}",
         trigger,
         preferredOutboxId,
         batchSize,
@@ -57,7 +67,8 @@ public class ScrapeJobOutboxDispatcher {
 
     try {
       log.info(
-          "[BIZ] scrape.outbox.dispatch.db_lookup.start trigger={} preferredOutboxId={} batchSize={}",
+          "[BIZ] scrape.outbox.dispatch.db_lookup.start trigger={} "
+              + "preferredOutboxId={} batchSize={}",
           trigger,
           preferredOutboxId,
           batchSize);
@@ -65,7 +76,8 @@ public class ScrapeJobOutboxDispatcher {
           dispatchTxService.reservePreferred(preferredOutboxId, PUBLISHABLE_STATUSES, now);
       if (plan.dispatchedCount() == 0) {
         log.info(
-            "[BIZ] scrape.outbox.dispatch.preferred_missing trigger={} preferredOutboxId={} foundCount=0",
+            "[BIZ] scrape.outbox.dispatch.preferred_missing trigger={} "
+                + "preferredOutboxId={} foundCount=0",
             trigger,
             preferredOutboxId);
         log.info(
@@ -76,7 +88,8 @@ public class ScrapeJobOutboxDispatcher {
       }
 
       log.info(
-          "[BIZ] scrape.outbox.dispatch.db_lookup.success trigger={} preferredOutboxId={} foundCount=1",
+          "[BIZ] scrape.outbox.dispatch.db_lookup.success trigger={} "
+              + "preferredOutboxId={} foundCount=1",
           trigger,
           preferredOutboxId);
       publishCandidates(plan.candidates(), now, trigger);
@@ -95,7 +108,8 @@ public class ScrapeJobOutboxDispatcher {
   private int dispatchBatch(String trigger) {
     if (!scrapingProperties.getPublisher().isEnabled()) {
       log.info(
-          "[BIZ] scrape.outbox.dispatch.skip trigger={} reason=publisher_disabled preferredOutboxId=null",
+          "[BIZ] scrape.outbox.dispatch.skip trigger={} reason=publisher_disabled "
+              + "preferredOutboxId=null",
           trigger);
       return 0;
     }
@@ -103,7 +117,8 @@ public class ScrapeJobOutboxDispatcher {
     Instant now = Instant.now();
     int batchSize = scrapingProperties.getPublisher().getBatchSize();
     log.info(
-        "[BIZ] scrape.outbox.dispatch.start trigger={} preferredOutboxId=null batchSize={} now={} activeProfiles={}",
+        "[BIZ] scrape.outbox.dispatch.start trigger={} preferredOutboxId=null "
+            + "batchSize={} now={} activeProfiles={}",
         trigger,
         batchSize,
         now,
@@ -111,13 +126,15 @@ public class ScrapeJobOutboxDispatcher {
 
     try {
       log.info(
-          "[BIZ] scrape.outbox.dispatch.db_lookup.start trigger={} preferredOutboxId=null batchSize={}",
+          "[BIZ] scrape.outbox.dispatch.db_lookup.start trigger={} "
+              + "preferredOutboxId=null batchSize={}",
           trigger,
           batchSize);
       ScrapeJobOutboxDispatchPlan plan =
           dispatchTxService.reserveBatch(PUBLISHABLE_STATUSES, now, batchSize);
       log.info(
-          "[BIZ] scrape.outbox.dispatch.db_lookup.success trigger={} preferredOutboxId=null foundCount={}",
+          "[BIZ] scrape.outbox.dispatch.db_lookup.success trigger={} "
+              + "preferredOutboxId=null foundCount={}",
           trigger,
           plan.dispatchedCount());
 
@@ -145,7 +162,8 @@ public class ScrapeJobOutboxDispatcher {
     try (SentryMdcContext.MdcScope ignored = SentryMdcContext.open(contextFor(candidate))) {
       try {
         log.info(
-            "[BIZ] scrape.outbox.publish.start trigger={} outboxId={} jobId={} attempt={} outboxStatus={} queueMessageId={}",
+            "[BIZ] scrape.outbox.publish.start trigger={} outboxId={} jobId={} "
+                + "attempt={} outboxStatus={} queueMessageId={}",
             trigger,
             candidate.outboxId(),
             candidate.jobId(),
@@ -182,7 +200,9 @@ public class ScrapeJobOutboxDispatcher {
 
         long delayMs = INLINE_PUBLISH_RETRY_DELAYS_MS[publishAttempt - 1];
         log.warn(
-            "[BIZ] scrape.outbox.publish.retry trigger={} outboxId={} jobId={} publishAttempt={} maxPublishAttempts={} delayMs={} exceptionClass={} message={}",
+            "[BIZ] scrape.outbox.publish.retry trigger={} outboxId={} jobId={} "
+                + "publishAttempt={} maxPublishAttempts={} delayMs={} exceptionClass={} "
+                + "message={}",
             trigger,
             candidate.outboxId(),
             candidate.jobId(),
@@ -218,7 +238,9 @@ public class ScrapeJobOutboxDispatcher {
       RuntimeException exception) {
     Throwable rootCause = rootCauseOf(exception);
     log.error(
-        "[BIZ] scrape.outbox.dispatch.fail trigger={} preferredOutboxId={} batchSize={} now={} activeProfiles={} exceptionClass={} rootCauseClass={} rootCauseMessage={}",
+        "[BIZ] scrape.outbox.dispatch.fail trigger={} preferredOutboxId={} "
+            + "batchSize={} now={} activeProfiles={} exceptionClass={} "
+            + "rootCauseClass={} rootCauseMessage={}",
         trigger,
         preferredOutboxId,
         batchSize,

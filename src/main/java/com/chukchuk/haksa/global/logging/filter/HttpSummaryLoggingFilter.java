@@ -16,7 +16,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/** HTTP 요청 요약 breadcrumb 전용 필터 (Sentry-only) */
+/** HTTP 요청 요약 breadcrumb 전용 필터 (Sentry-only). */
 @Component
 @Order(30)
 public class HttpSummaryLoggingFilter extends OncePerRequestFilter {
@@ -53,7 +53,9 @@ public class HttpSummaryLoggingFilter extends OncePerRequestFilter {
 
   private void writeSummary(HttpServletRequest req, HttpServletResponse res, long start) {
     String uriRaw = nvl(req.getRequestURI());
-    if (shouldSkip(uriRaw)) return;
+    if (shouldSkip(uriRaw)) {
+      return;
+    }
 
     String uri =
         LogSanitizer.clean(
@@ -79,7 +81,9 @@ public class HttpSummaryLoggingFilter extends OncePerRequestFilter {
   }
 
   private boolean shouldSkip(String uri) {
-    if (uri == null || uri.isBlank()) return true;
+    if (uri == null || uri.isBlank()) {
+      return true;
+    }
 
     int dot = uri.lastIndexOf('.');
     if (dot > -1 && EXCLUDE_EXTS.contains(uri.substring(dot).toLowerCase())) {
@@ -87,7 +91,9 @@ public class HttpSummaryLoggingFilter extends OncePerRequestFilter {
     }
 
     for (String p : EXCLUDE_PREFIXES) {
-      if (uri.startsWith(p)) return true;
+      if (uri.startsWith(p)) {
+        return true;
+      }
     }
 
     return uri.equals("/favicon.ico") || uri.equals("/swagger-ui.html");

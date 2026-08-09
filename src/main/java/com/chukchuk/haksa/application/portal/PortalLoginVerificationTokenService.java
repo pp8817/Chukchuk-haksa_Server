@@ -1,4 +1,5 @@
 // 포털 로그인 검증 token을 stateless 방식으로 발급하고 검증하는 서비스
+
 package com.chukchuk.haksa.application.portal;
 
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/** 포털 로그인 검증 토큰 비즈니스 흐름을 처리한다. */
 @Service
 public class PortalLoginVerificationTokenService {
 
@@ -32,6 +34,7 @@ public class PortalLoginVerificationTokenService {
   private final Duration ttl;
   private final Clock clock;
 
+  /** 포털 로그인 검증 토큰 service 인스턴스를 생성한다. */
   @Autowired
   public PortalLoginVerificationTokenService(
       @Value("${portal.login-verification.secret}") String secret,
@@ -48,6 +51,15 @@ public class PortalLoginVerificationTokenService {
     this.clock = clock;
   }
 
+  /**
+   * 척척학사의 issue 대상을 생성한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalType 포털 유형
+   * @param username user이름
+   * @param password 포털 비밀번호
+   * @return 조건 충족 여부
+   */
   public String issue(UUID userId, String portalType, String username, String password) {
     Instant now = clock.instant();
     return Jwts.builder()
@@ -61,6 +73,15 @@ public class PortalLoginVerificationTokenService {
         .compact();
   }
 
+  /**
+   * 척척학사의 verify 대상을 검증한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalType 포털 유형
+   * @param username user이름
+   * @param password 포털 비밀번호
+   * @param token 토큰 값
+   */
   public void verify(
       UUID userId, String portalType, String username, String password, String token) {
     if (token == null || token.isBlank()) {

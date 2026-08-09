@@ -1,4 +1,5 @@
 // 학업 기록 과목 응답 DTO의 포털 원본 이수구분 매핑을 검증한다
+
 package com.chukchuk.haksa.domain.academic.record.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;

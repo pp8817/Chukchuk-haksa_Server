@@ -15,8 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+/** 척척학사의 학생 HTTP 요청을 처리한다. */
 @Slf4j
 @Validated
 @RestController
@@ -26,6 +31,7 @@ public class StudentController implements StudentControllerDocs {
 
   private final StudentService studentService;
 
+  @Override
   @PostMapping("/target-gpa")
   public ResponseEntity<SuccessResponse<MessageOnlyResponse>> setTargetGpa(
       @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -44,6 +50,7 @@ public class StudentController implements StudentControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(new MessageOnlyResponse("목표 학점 저장 완료")));
   }
 
+  @Override
   @GetMapping("/profile")
   public ResponseEntity<SuccessResponse<StudentProfileResponse>> getProfile(
       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -58,6 +65,7 @@ public class StudentController implements StudentControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @PostMapping("/reset")
   public ResponseEntity<SuccessResponse<MessageOnlyResponse>> resetStudentData(
       @AuthenticationPrincipal CustomUserDetails userDetails) {

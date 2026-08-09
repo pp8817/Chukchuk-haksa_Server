@@ -67,7 +67,7 @@ class RefreshTokenServiceUnitTests {
     String userIdText = userId.toString();
     String sessionId = "session-1";
     String oldRefresh = "old-refresh";
-    Date newExpiry = new Date(System.currentTimeMillis() + 120_000);
+    final Date newExpiry = new Date(System.currentTimeMillis() + 120_000);
 
     Claims claims = Jwts.claims();
     claims.setSubject(userIdText);
@@ -106,7 +106,7 @@ class RefreshTokenServiceUnitTests {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String oldRefresh = "legacy-refresh";
-    Date newExpiry = new Date(System.currentTimeMillis() + 120_000);
+    final Date newExpiry = new Date(System.currentTimeMillis() + 120_000);
 
     Claims claims = Jwts.claims();
     claims.setSubject(userIdText);
@@ -160,7 +160,7 @@ class RefreshTokenServiceUnitTests {
     String userIdText = userId.toString();
     String sessionId = "session-1";
     String oldRefresh = "old-refresh";
-    Date savedExpiry = new Date(System.currentTimeMillis() + Duration.ofDays(8).toMillis());
+    final Date savedExpiry = new Date(System.currentTimeMillis() + Duration.ofDays(8).toMillis());
 
     Claims claims = Jwts.claims();
     claims.setSubject(userIdText);
@@ -195,7 +195,7 @@ class RefreshTokenServiceUnitTests {
     String userIdText = userId.toString();
     String sessionId = "session-1";
     String oldRefresh = "old-refresh";
-    Date newExpiry = new Date(System.currentTimeMillis() + Duration.ofDays(14).toMillis());
+    final Date newExpiry = new Date(System.currentTimeMillis() + Duration.ofDays(14).toMillis());
 
     Claims claims = Jwts.claims();
     claims.setSubject(userIdText);

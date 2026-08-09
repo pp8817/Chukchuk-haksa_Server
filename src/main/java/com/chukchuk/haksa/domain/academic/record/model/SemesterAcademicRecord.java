@@ -2,7 +2,20 @@ package com.chukchuk.haksa.domain.academic.record.model;
 
 import com.chukchuk.haksa.domain.BaseEntity;
 import com.chukchuk.haksa.domain.student.model.Student;
-import jakarta.persistence.*;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
@@ -10,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 학기 학사 record 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -59,6 +73,20 @@ public class SemesterAcademicRecord extends BaseEntity {
   @JoinColumn(name = "student_id", nullable = false)
   private Student student;
 
+  /**
+   * 학기 학사 record 인스턴스를 생성한다.
+   *
+   * @param student 학생 값
+   * @param year 연도
+   * @param semester 학기 값
+   * @param attemptedCredits 신청 학점
+   * @param earnedCredits 취득 학점
+   * @param semesterGpa 학기 평점
+   * @param semesterPercentile 학기 percentile 값
+   * @param attemptedCreditsGpa attempted credits gpa 값
+   * @param classRank class rank 값
+   * @param totalStudents total students 값
+   */
   public SemesterAcademicRecord(
       Student student,
       Integer year,
@@ -91,13 +119,25 @@ public class SemesterAcademicRecord extends BaseEntity {
   }
 
   private boolean compareBigDecimal(BigDecimal a, BigDecimal b) {
-    if (a == null && b == null) return true;
-    if (a == null || b == null) return false;
+    if (a == null && b == null) {
+      return true;
+    }
+    if (a == null || b == null) {
+      return false;
+    }
     return a.compareTo(b) == 0;
   }
 
+  /**
+   * 학기 학사 기록의 주요 내용이 같은지 비교한다.
+   *
+   * @param other other 값
+   * @return 조건 충족 여부
+   */
   public boolean equalsContentOf(SemesterAcademicRecord other) {
-    if (other == null) return false;
+    if (other == null) {
+      return false;
+    }
 
     return Objects.equals(this.year, other.year)
         && Objects.equals(this.semester, other.semester)
@@ -110,6 +150,11 @@ public class SemesterAcademicRecord extends BaseEntity {
         && compareBigDecimal(this.attemptedCreditsGpa, other.attemptedCreditsGpa);
   }
 
+  /**
+   * 척척학사의 update with 대상을 갱신한다.
+   *
+   * @param src src 값
+   */
   public void updateWith(SemesterAcademicRecord src) {
     this.year = src.year;
     this.semester = src.semester;
@@ -122,6 +167,7 @@ public class SemesterAcademicRecord extends BaseEntity {
     this.earnedCredits = src.earnedCredits;
   }
 
+  /** 강의평가 상태를 제출 대기로 변경한다. */
   public void markLectureEvaluationPending() {
     if (this.lectureEvaluationStatus == LectureEvaluationStatus.SKIPPED
         || this.lectureEvaluationStatus == LectureEvaluationStatus.COMPLETED) {
@@ -130,6 +176,7 @@ public class SemesterAcademicRecord extends BaseEntity {
     this.lectureEvaluationStatus = LectureEvaluationStatus.PENDING;
   }
 
+  /** 강의평가 상태를 미공개로 변경한다. */
   public void markLectureEvaluationNotReleased() {
     if (this.lectureEvaluationStatus != null) {
       return;
@@ -137,12 +184,14 @@ public class SemesterAcademicRecord extends BaseEntity {
     this.lectureEvaluationStatus = LectureEvaluationStatus.NOT_RELEASED;
   }
 
+  /** 강의평가 상태를 건너뜀으로 변경한다. */
   public void markLectureEvaluationSkipped() {
     if (isLectureEvaluationPending()) {
       this.lectureEvaluationStatus = LectureEvaluationStatus.SKIPPED;
     }
   }
 
+  /** 강의평가 상태를 제출 완료로 변경한다. */
   public void markLectureEvaluationCompleted() {
     this.lectureEvaluationStatus = LectureEvaluationStatus.COMPLETED;
   }

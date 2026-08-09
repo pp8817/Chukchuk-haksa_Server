@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/** 업무 처리에서 사용할 성적 type 값을 정의한다. */
 @Getter
 @Slf4j
 @RequiredArgsConstructor
@@ -36,6 +37,12 @@ public enum GradeType {
     return this != IP;
   }
 
+  /**
+   * 포털 성적 문자열에 대응하는 성적 유형을 반환한다.
+   *
+   * @param value value 값
+   * @return 성적 type 결과
+   */
   public static GradeType from(String value) {
     if (value == null || value.isBlank()) {
       return GradeType.IP; // 성적이 없는 경우 In Progress 처리

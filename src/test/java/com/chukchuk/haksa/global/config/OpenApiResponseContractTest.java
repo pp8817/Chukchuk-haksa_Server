@@ -1,4 +1,5 @@
 // 전체 API Swagger 응답 계약이 실제 공통 응답 구조와 맞는지 검증하는 테스트
+
 package com.chukchuk.haksa.global.config;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+/** 척척학사의 보안 애플리케이션 설정을 제공한다. */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -31,6 +32,14 @@ public class SecurityConfig {
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+  /**
+   * 인증과 인가 정책이 적용된 보안 필터 체인을 구성한다.
+   *
+   * @param http http 값
+   * @param corsConfigurationSource cors configuration source 값
+   * @return 보안 filter chain 결과
+   * @throws Exception exception이 발생하는 경우
+   */
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
@@ -87,6 +96,11 @@ public class SecurityConfig {
   };
 
   // ---- CORS (dev) ----
+  /**
+   * 개발 환경의 CORS 정책을 반환한다.
+   *
+   * @return cors configuration source 결과
+   */
   @Bean("corsConfigurationSource")
   @Profile("dev")
   public CorsConfigurationSource devCors() {
@@ -107,6 +121,11 @@ public class SecurityConfig {
   }
 
   // ---- CORS (prod) ----
+  /**
+   * 운영 환경의 CORS 정책을 반환한다.
+   *
+   * @return cors configuration source 결과
+   */
   @Bean("corsConfigurationSource")
   @Profile("prod")
   public CorsConfigurationSource prodCors() {
@@ -128,6 +147,11 @@ public class SecurityConfig {
     return s;
   }
 
+  /**
+   * 기본 CORS 정책을 반환한다.
+   *
+   * @return cors configuration source 결과
+   */
   @Bean("corsConfigurationSource")
   @Profile("local")
   public CorsConfigurationSource defaultCors() {
@@ -140,6 +164,11 @@ public class SecurityConfig {
     return s;
   }
 
+  /**
+   * Spring Security 인증 관리자를 반환한다.
+   *
+   * @return authentication manager 결과
+   */
   @Bean
   public AuthenticationManager authenticationManager() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

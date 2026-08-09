@@ -49,7 +49,7 @@ class PortalCallbackPostProcessorTests {
                 "selectSmrCretSumTabSjTotal":{"gainPoint":"120","applPoint":"130","gainAvmk":"3.8","gainTavgPont":"90"}
               }
             }
-            """;
+      """;
 
   @Mock private PortalSyncService portalSyncService;
 

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 학사 record 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,6 +21,14 @@ public class AcademicRecordService {
   private final StudentCourseService studentCourseService;
 
   /* 학기별 성적 및 수강 과목 정보 조회 */
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @param year 연도
+   * @param semester 학기 값
+   * @return 조회
+   */
   public AcademicRecordResponse getAcademicRecord(UUID studentId, Integer year, Integer semester) {
 
     // 학기별 성적 조회

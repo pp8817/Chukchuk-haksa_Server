@@ -1,4 +1,5 @@
 // 도메인 예외의 Sentry 이슈 제목을 오류 코드 기반으로 정규화하는 콜백
+
 package com.chukchuk.haksa.global.logging.sentry;
 
 import io.sentry.Hint;
@@ -8,6 +9,7 @@ import io.sentry.protocol.SentryException;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
+/** 오류 코드 태그를 사용해 Sentry 이벤트 제목을 정규화한다. */
 @Component
 public class SentryEventTitleCallback implements SentryOptions.BeforeSendCallback {
 

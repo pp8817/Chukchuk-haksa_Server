@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 포털 link HTTP 요청을 처리한다. */
 @RestController
 @RequestMapping("/portal/link")
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class PortalLinkController implements PortalLinkCommandControllerDocs {
 
   private final PortalLinkJobService portalLinkJobService;
 
+  @Override
   @PostMapping
   public ResponseEntity<SuccessResponse<PortalLinkDto.AcceptedResponse>> createPortalLinkJob(
       @AuthenticationPrincipal CustomUserDetails userDetails,

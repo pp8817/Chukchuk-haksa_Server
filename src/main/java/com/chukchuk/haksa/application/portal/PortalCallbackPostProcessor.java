@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+/** 포털 스크래핑 콜백 이후 학사 데이터 반영을 처리한다. */
 @Slf4j
 @Component
 public class PortalCallbackPostProcessor {
@@ -29,6 +30,13 @@ public class PortalCallbackPostProcessor {
   private final MeterRegistry meterRegistry;
   private final ScrapeResultCallbackTxService scrapeResultCallbackTxService;
 
+  /**
+   * 포털 콜백 post processor 인스턴스를 생성한다.
+   *
+   * @param objectMapper object mapper 값
+   * @param meterRegistry meter registry 값
+   * @param scrapeResultCallbackTxService 스크래핑 결과 콜백 tx service 값
+   */
   public PortalCallbackPostProcessor(
       ObjectMapper objectMapper,
       MeterRegistry meterRegistry,
@@ -38,6 +46,19 @@ public class PortalCallbackPostProcessor {
     this.scrapeResultCallbackTxService = scrapeResultCallbackTxService;
   }
 
+  /**
+   * 척척학사의 process 대상을 처리한다.
+   *
+   * @param jobId 작업 식별자
+   * @param userId 사용자 식별자
+   * @param operationType 작업 유형
+   * @param payloadJson JSON payload
+   * @param finishedAt 처리 종료 시각
+   * @param queuedAgeSeconds queued age seconds 값
+   * @param attempt attempt 값
+   * @param workerRequestId 워커 요청 식별자
+   * @param payloadHash payload hash 값
+   */
   public void process(
       String jobId,
       UUID userId,
@@ -88,7 +109,8 @@ public class PortalCallbackPostProcessor {
 
     String studentCode = portalData.student().studentCode();
     log.info(
-        "[BIZ] scrape.job.callback.postprocess.start jobId={} userId={} operationType={} studentCode={} attempt={} requestId={} payloadHash={}",
+        "[BIZ] scrape.job.callback.postprocess.start jobId={} userId={} "
+            + "operationType={} studentCode={} attempt={} requestId={} payloadHash={}",
         jobId,
         userId,
         operationType,
@@ -112,7 +134,8 @@ public class PortalCallbackPostProcessor {
           .timer("scrape.job.callback.stage", "stage", "postprocess_tx")
           .record(Duration.ofMillis(elapsedMs));
       log.info(
-          "[BIZ] scrape.job.callback.postprocess.success jobId={} userId={} operationType={} studentCode={} elapsed_ms={}",
+          "[BIZ] scrape.job.callback.postprocess.success jobId={} userId={} "
+              + "operationType={} studentCode={} elapsed_ms={}",
           jobId,
           userId,
           operationType,
@@ -141,7 +164,8 @@ public class PortalCallbackPostProcessor {
         .counter("scrape.job.callback.postprocess.fail", "reason", "invalid_payload")
         .increment();
     log.warn(
-        "[BIZ] scrape.job.callback.postprocess.fail jobId={} userId={} operationType={} reason=invalid_payload message={}",
+        "[BIZ] scrape.job.callback.postprocess.fail jobId={} userId={} "
+            + "operationType={} reason=invalid_payload message={}",
         jobId,
         userId,
         operationType,

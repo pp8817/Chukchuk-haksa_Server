@@ -1,4 +1,5 @@
 // 졸업요건 학과 판별 실패 시 Sentry 문맥을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.graduation.policy;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +16,7 @@ import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.global.logging.util.HashUtil;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,7 +37,8 @@ class GraduationMajorResolverTest {
   }
 
   @Test
-  void 졸업요건이_없으면_학번_해시와_학과_문맥을_남긴다() {
+  @DisplayName("졸업요건이 없으면 학번 해시와 학과 문맥을 남긴다")
+  void logsStudentHashAndDepartmentContextWhenRequirementsAreMissing() {
     Student student = mock(Student.class);
     Department department = mock(Department.class);
     when(student.getStudentCode()).thenReturn("17015080");

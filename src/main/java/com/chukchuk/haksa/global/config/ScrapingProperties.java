@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/** 스크래핑 작업과 콜백 처리 설정을 제공한다. */
 @Getter
 @Setter
 @Component
@@ -19,12 +20,14 @@ public class ScrapingProperties {
   private final Publisher publisher = new Publisher();
   private final Stale stale = new Stale();
 
+  /** 스크래핑 작업 발행 설정을 제공한다. */
   @Getter
   @Setter
   public static class Job {
     private String queueUrl;
   }
 
+  /** 스크래핑 콜백 검증 설정을 제공한다. */
   @Getter
   @Setter
   public static class Callback {
@@ -32,6 +35,7 @@ public class ScrapingProperties {
     private long allowedSkewSeconds = 300;
   }
 
+  /** 스크래핑 결과 저장소 설정을 제공한다. */
   @Getter
   @Setter
   public static class ResultStore {
@@ -43,12 +47,14 @@ public class ScrapingProperties {
     private long apiCallAttemptTimeoutSeconds = 3;
   }
 
+  /** 스크래핑 예약 작업 설정을 제공한다. */
   @Getter
   @Setter
   public static class Scheduler {
     private boolean enabled = true;
   }
 
+  /** 스크래핑 메시지 발행 설정을 제공한다. */
   @Getter
   @Setter
   public static class Publisher {
@@ -63,6 +69,7 @@ public class ScrapingProperties {
     private long metricsRefreshMs = 60000;
     private final AfterCommit afterCommit = new AfterCommit();
 
+    /** 트랜잭션 커밋 이후 발행 설정을 제공한다. */
     @Getter
     @Setter
     public static class AfterCommit {
@@ -75,6 +82,7 @@ public class ScrapingProperties {
     }
   }
 
+  /** 장기 대기 스크래핑 작업 정리 설정을 제공한다. */
   @Getter
   @Setter
   public static class Stale {

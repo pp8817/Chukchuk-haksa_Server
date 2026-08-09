@@ -1,7 +1,9 @@
 package com.chukchuk.haksa.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.student.model.Student;

@@ -1,4 +1,5 @@
 // 사용자 학과별 외국어 인증 기준 조회 정책을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.graduation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;

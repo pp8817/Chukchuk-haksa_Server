@@ -125,12 +125,13 @@ class FlywayMigrationTest {
         var statement = connection.createStatement()) {
       statement.execute("ALTER TABLE public.refresh_token DROP CONSTRAINT pk_refresh_token");
       statement.execute(
-          "ALTER TABLE public.refresh_token ADD CONSTRAINT refresh_token_pkey PRIMARY KEY (user_id)");
+          "ALTER TABLE public.refresh_token ADD CONSTRAINT refresh_token_pkey "
+              + "PRIMARY KEY (user_id)");
       statement.execute(
           """
                     INSERT INTO public.refresh_token (user_id, token, expiry)
                     VALUES ('user-a', 'refresh-token-a', CURRENT_TIMESTAMP)
-                    """);
+          """);
     }
 
     Flyway flyway =
@@ -174,20 +175,20 @@ class FlywayMigrationTest {
           """
                     INSERT INTO public.users (id, email, is_deleted)
                     VALUES ('%s', 'migration-test@example.com', FALSE)
-                    """
+          """
               .formatted(userId));
       statement.executeUpdate(
           """
                     INSERT INTO public.departments (id, department_code, established_department_name)
                     VALUES (1001, 'MIGRATION-TEST', '마이그레이션 테스트학과')
-                    """);
+          """);
       statement.executeUpdate(
           """
                     INSERT INTO public.students (
                         student_id, student_code, reconnection_required, admission_year, department_id, user_id
                     )
                     VALUES ('%s', 'MIGRATION-TEST-STUDENT', FALSE, 2020, 1001, '%s')
-                    """
+          """
               .formatted(studentId, userId));
       statement.executeUpdate(
           """
@@ -195,7 +196,7 @@ class FlywayMigrationTest {
                     VALUES
                         ('%s', 10, 2026, '%s'),
                         ('%s', 20, 2026, '%s')
-                    """
+          """
               .formatted(UUID.randomUUID(), studentId, UUID.randomUUID(), studentId));
       statement.executeUpdate(
           """
@@ -203,14 +204,14 @@ class FlywayMigrationTest {
                     VALUES
                         (2001, 'MIG-IP', 'IP 과목'),
                         (2002, 'MIG-A', '완료 과목')
-                    """);
+          """);
       statement.executeUpdate(
           """
                     INSERT INTO public.course_offerings (id, year, semester, points, course_id)
                     VALUES
                         (3001, 2026, 10, 3, 2001),
                         (3002, 2026, 20, 3, 2002)
-                    """);
+          """);
       statement.executeUpdate(
           """
                     INSERT INTO public.student_courses (
@@ -219,7 +220,7 @@ class FlywayMigrationTest {
                     VALUES
                         ('IP', 3, FALSE, NULL, FALSE, 3001, '%s'),
                         ('A+', 3, FALSE, 95, FALSE, 3002, '%s')
-                    """
+          """
               .formatted(studentId, studentId));
     }
 
@@ -238,7 +239,7 @@ class FlywayMigrationTest {
                     SELECT semester, lecture_evaluation_status
                     FROM public.semester_academic_records
                     ORDER BY semester
-                    """)) {
+              """)) {
         assertThat(resultSet.next()).isTrue();
         assertThat(resultSet.getInt("semester")).isEqualTo(10);
         assertThat(resultSet.getString("lecture_evaluation_status")).isEqualTo("NOT_RELEASED");
@@ -254,7 +255,8 @@ class FlywayMigrationTest {
     String migrationSql =
         Files.readString(
             Path.of(
-                "src/main/resources/db/migration/V7__add_not_released_lecture_evaluation_status.sql"));
+                "src/main/resources/db/migration/"
+                    + "V7__add_not_released_lecture_evaluation_status.sql"));
 
     assertThat(migrationSql).contains("WHERE sar.lecture_evaluation_status IS NULL\n  AND EXISTS");
     assertThat(migrationSql).doesNotContain("ELSE NULL");

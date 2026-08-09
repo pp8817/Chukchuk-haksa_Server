@@ -1,4 +1,5 @@
 // 포털 로그인 검증 API의 HTTP 계약을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.portal.controller;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,8 +48,8 @@ class PortalLoginControllerApiIntegrationTest extends ApiControllerWebMvcTestSup
                                   "portal_type":"suwon",
                                   "username":"17019013",
                                   "password":"pw"
-                                }
-                                """))
+                    }
+                    """))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.portal_verification_token").value("verification-token"));

@@ -1,4 +1,5 @@
 // 포털 링크 API의 Swagger 성공 응답 래퍼 구조를 검증하는 테스트
+
 package com.chukchuk.haksa.domain.portal.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;

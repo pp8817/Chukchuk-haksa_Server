@@ -1,4 +1,5 @@
 // 로그인 학생에게 적용되는 외국어 인증 기준을 조회하는 서비스
+
 package com.chukchuk.haksa.domain.graduation.service;
 
 import com.chukchuk.haksa.domain.department.model.Department;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 language cert 요건 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +29,12 @@ public class LanguageCertRequirementService {
   private final DepartmentLanguageCertPolicyMappingRepository mappingRepository;
   private final LanguageCertRequirementRepository requirementRepository;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public LanguageCertRequirementResponse getRequirement(UUID studentId) {
     Student student = studentService.getStudentById(studentId);
     Department baseDepartment = resolveBaseDepartment(student);

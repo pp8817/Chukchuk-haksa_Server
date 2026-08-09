@@ -1,4 +1,5 @@
 // dev 테스트 계정 생성 서비스 동작을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.admin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,7 +90,7 @@ class AdminTestAccountServiceUnitTests {
   @DisplayName("학과 ID가 없으면 기본 학과 조회를 1건으로 제한한다")
   void createTestUser_withoutDepartmentId_limitsDefaultDepartmentLookup() {
     Department department = new Department("CSE", "컴퓨터학과");
-    AdminTestDto.CreateTestUserRequest request =
+    final AdminTestDto.CreateTestUserRequest request =
         new AdminTestDto.CreateTestUserRequest("프론트테스트", null, null, null, 2024, null);
     when(departmentRepository.findAll(any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(department)));
@@ -115,7 +116,7 @@ class AdminTestAccountServiceUnitTests {
   @DisplayName("포털 미연동 옵션이면 테스트 계정을 포털 미연동 상태로 만든다")
   void createTestUser_withPortalLinkedFalse_keepsUserUnlinked() {
     Department department = new Department("CSE", "컴퓨터학과");
-    AdminTestDto.CreateTestUserRequest request =
+    final AdminTestDto.CreateTestUserRequest request =
         new AdminTestDto.CreateTestUserRequest("프론트테스트", 1L, 1L, null, 2024, false);
     when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
     when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));

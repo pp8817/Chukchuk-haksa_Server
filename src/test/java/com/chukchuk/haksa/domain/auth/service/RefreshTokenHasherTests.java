@@ -1,4 +1,5 @@
 // 리프레시 토큰 해시 계산을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;

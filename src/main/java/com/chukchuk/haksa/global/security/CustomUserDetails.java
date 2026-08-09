@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/** 인증된 사용자의 식별 정보와 권한을 제공한다. */
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
@@ -19,6 +20,11 @@ public class CustomUserDetails implements UserDetails {
   private final String profileImage;
   private final boolean isDeleted;
 
+  /**
+   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   *
+   * @param user 사용자 값
+   */
   public CustomUserDetails(User user) {
     this.id = user.getId();
     this.email = user.getEmail();

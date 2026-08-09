@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/** 척척학사의 apple oidc 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -147,7 +148,7 @@ public class AppleOidcService implements OidcService {
       throw new TokenException(ErrorCode.TOKEN_INVALID_AUD_FORMAT);
     }
 
-    String hashedNonce = hashSHA256(expectedNonce);
+    String hashedNonce = hashSha256(expectedNonce);
     String nonce = claims.get("nonce", String.class);
 
     if (!hashedNonce.equals(nonce)) {
@@ -155,7 +156,7 @@ public class AppleOidcService implements OidcService {
     }
   }
 
-  private String hashSHA256(String input) {
+  private String hashSha256(String input) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -163,7 +164,9 @@ public class AppleOidcService implements OidcService {
       StringBuilder hexString = new StringBuilder();
       for (byte b : encodedHash) {
         String hex = Integer.toHexString(0xff & b);
-        if (hex.length() == 1) hexString.append('0');
+        if (hex.length() == 1) {
+          hexString.append('0');
+        }
         hexString.append(hex);
       }
 

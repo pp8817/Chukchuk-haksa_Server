@@ -51,7 +51,7 @@ class PortalLinkControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
                                   "password":"pw",
                                   "portal_verification_token":"verification-token"
                                 }
-                                """))
+                    """))
         .andExpect(status().isAccepted())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.job_id").value("job-1"))

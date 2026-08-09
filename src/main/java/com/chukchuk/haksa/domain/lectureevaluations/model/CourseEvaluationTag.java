@@ -1,10 +1,23 @@
 package com.chukchuk.haksa.domain.lectureevaluations.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 과목 evaluation tag 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,6 +45,12 @@ public class CourseEvaluationTag {
   @Column(name = "tag", nullable = false, length = 64)
   private LectureEvaluationTag tag;
 
+  /**
+   * 과목 evaluation tag 인스턴스를 생성한다.
+   *
+   * @param courseEvaluation 과목 evaluation 값
+   * @param tag tag 값
+   */
   public CourseEvaluationTag(CourseEvaluation courseEvaluation, LectureEvaluationTag tag) {
     this.courseEvaluation = courseEvaluation;
     this.tag = tag;

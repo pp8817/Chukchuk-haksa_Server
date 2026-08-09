@@ -1,4 +1,5 @@
 // dev 테스트 조작에 필요한 선택지와 강의 후보를 조회한다
+
 package com.chukchuk.haksa.domain.admin.service;
 
 import com.chukchuk.haksa.domain.admin.dto.AdminTestDto;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 admin test option 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +25,11 @@ public class AdminTestOptionService {
   private final DepartmentRepository departmentRepository;
   private final CourseOfferingRepository courseOfferingRepository;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @return 조회
+   */
   public AdminTestDto.TestOptionsResponse getTestOptions() {
     List<AdminTestDto.DepartmentOption> departments =
         departmentRepository.findAll().stream().map(this::toDepartmentOption).toList();
@@ -33,6 +40,12 @@ public class AdminTestOptionService {
     return new AdminTestDto.TestOptionsResponse(departments, areas);
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param keyword 검색어
+   * @return 조회
+   */
   public List<AdminTestDto.DepartmentOption> searchDepartments(String keyword) {
     String normalizedKeyword = normalize(keyword);
     List<Department> departments =
@@ -42,6 +55,12 @@ public class AdminTestOptionService {
     return departments.stream().map(this::toDepartmentOption).toList();
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param request 요청 정보
+   * @return 조회
+   */
   public List<AdminTestDto.CourseOfferingOption> searchCourseOfferings(
       AdminTestDto.CourseOfferingSearchRequest request) {
     String departmentName = resolveDepartmentName(request.departmentId());

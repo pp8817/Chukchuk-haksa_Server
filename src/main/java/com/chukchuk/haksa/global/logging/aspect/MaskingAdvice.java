@@ -8,12 +8,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/** (옵션) 특정 로거 사용 시 메시지에 마스킹 적용 예시 */
+/** (옵션) 특정 로거 사용 시 메시지에 마스킹 적용 예시. */
 @Aspect
 @Component
 public class MaskingAdvice {
   private static final Logger LOG = LoggerFactory.getLogger(MaskingAdvice.class);
 
+  /**
+   * 로깅 대상 메서드의 반환값을 마스킹해 기록한다.
+   *
+   * @param jp jp 값
+   * @param msg msg 값
+   * @param ret ret 값
+   */
   @AfterReturning(
       pointcut = "execution(* org.slf4j.Logger.info(..)) && args(msg,..)",
       returning = "ret")

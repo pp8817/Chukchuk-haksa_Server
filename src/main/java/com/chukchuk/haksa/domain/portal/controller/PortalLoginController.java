@@ -1,4 +1,5 @@
 // 포털 로그인 검증 요청을 처리하는 컨트롤러
+
 package com.chukchuk.haksa.domain.portal.controller;
 
 import com.chukchuk.haksa.application.portal.PortalLoginService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 포털 로그인 HTTP 요청을 처리한다. */
 @RestController
 @RequestMapping("/portal")
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class PortalLoginController implements PortalLoginControllerDocs {
 
   private final PortalLoginService portalLoginService;
 
+  @Override
   @PostMapping("/login")
   public ResponseEntity<SuccessResponse<PortalLinkDto.LoginResponse>> verifyPortalLogin(
       @AuthenticationPrincipal CustomUserDetails userDetails,

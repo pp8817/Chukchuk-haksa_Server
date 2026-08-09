@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+/** 외부 저장소에서 스크래핑 결과 payload를 조회한다. */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -28,15 +29,34 @@ public class ScrapeResultStoreClient {
   private final S3Client s3Client;
   private final ScrapingProperties scrapingProperties;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param requestedLocation requested location 정보
+   * @return 조회
+   */
   public String fetch(String requestedLocation) {
     S3Location location = validateLocation(requestedLocation);
     return fetchWithRetry(location);
   }
 
+  /**
+   * 입력 값과 업무 처리 조건을 검증한다.
+   *
+   * @param requestedLocation requested location 정보
+   * @return S3 location 결과
+   */
   public S3Location validateLocation(String requestedLocation) {
     return resolveLocation(requestedLocation, scrapingProperties.getResultStore());
   }
 
+  /**
+   * 현재 상태가 조건을 충족하는지 반환한다.
+   *
+   * @param location location 값
+   * @param jobId 작업 식별자
+   * @return 조건 충족 여부
+   */
   public boolean isJobScopedLocation(S3Location location, String jobId) {
     if (jobId == null || jobId.isBlank()) {
       return false;
@@ -184,5 +204,11 @@ public class ScrapeResultStoreClient {
     return new S3Location(bucket, key);
   }
 
+  /**
+   * 계층 간 전달할 S3 location 데이터를 표현한다.
+   *
+   * @param bucket bucket 값
+   * @param key key 값
+   */
   public record S3Location(String bucket, String key) {}
 }

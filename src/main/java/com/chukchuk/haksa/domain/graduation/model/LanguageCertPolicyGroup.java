@@ -1,4 +1,5 @@
 // 외국어 인증 기준을 공유하는 정책 그룹 엔티티
+
 package com.chukchuk.haksa.domain.graduation.model;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -15,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 척척학사의 language cert policy group 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,6 +47,14 @@ public class LanguageCertPolicyGroup extends BaseEntity {
     this.description = description;
   }
 
+  /**
+   * 척척학사의 create 대상을 생성한다.
+   *
+   * @param groupKey group key 값
+   * @param name 이름
+   * @param description description 값
+   * @return 생성된
+   */
   public static LanguageCertPolicyGroup create(String groupKey, String name, String description) {
     return new LanguageCertPolicyGroup(groupKey, name, description);
   }

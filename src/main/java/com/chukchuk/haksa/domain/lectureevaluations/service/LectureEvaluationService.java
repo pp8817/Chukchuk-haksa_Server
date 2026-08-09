@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 lecture evaluation 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +37,12 @@ public class LectureEvaluationService {
   private final CourseEvaluationRepository courseEvaluationRepository;
   private final LectureEvaluationProperties properties;
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @return 조회
+   */
   public LectureEvaluationDto.RequiredResponse getRequired(UUID userId) {
     Student student = studentService.getStudentByUserId(userId);
     UUID studentId = student.getId();
@@ -62,6 +69,12 @@ public class LectureEvaluationService {
         LectureEvaluationStatus.PENDING, year, semester, grades);
   }
 
+  /**
+   * 강의평가를 제출하고 관련 학사 기록을 갱신한다.
+   *
+   * @param userId 사용자 식별자
+   * @param request 요청 정보
+   */
   @Transactional
   public void submit(UUID userId, LectureEvaluationDto.SubmitRequest request) {
     Student student = studentService.getStudentByUserId(userId);
@@ -94,6 +107,12 @@ public class LectureEvaluationService {
     semesterRecord.markLectureEvaluationCompleted();
   }
 
+  /**
+   * 강의평가를 건너뛰고 관련 학사 기록을 갱신한다.
+   *
+   * @param userId 사용자 식별자
+   * @param request 요청 정보
+   */
   @Transactional
   public void skip(UUID userId, LectureEvaluationDto.SkipRequest request) {
     Student student = studentService.getStudentByUserId(userId);

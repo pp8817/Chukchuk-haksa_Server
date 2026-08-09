@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.HandlerMapping;
 
+/** 척척학사의 global exception 요청 또는 이벤트 처리를 담당한다. */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
           ErrorCode.LECTURE_EVALUATION_NOT_REQUIRED.code(),
           ErrorCode.LECTURE_EVALUATION_COURSE_MISMATCH.code());
 
-  /** 비즈니스 예외(대부분 4xx) */
+  /** 비즈니스 예외(대부분 4xx). */
   @ExceptionHandler(BaseException.class)
   public ResponseEntity<ErrorResponse> handleBase(BaseException ex, HttpServletRequest req) {
 
@@ -69,7 +70,7 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
   }
 
-  /** 404 */
+  /** 404. */
   @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
   public ResponseEntity<ErrorResponse> handleNoHandler(
       org.springframework.web.servlet.NoHandlerFoundException ex, HttpServletRequest req) {
@@ -77,7 +78,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(ec.status()).body(ErrorResponse.of(ec.code(), ec.message(), null));
   }
 
-  /** 400 계열 */
+  /** 400 계열. */
   @ExceptionHandler({
     IllegalArgumentException.class,
     HttpMessageNotReadableException.class,
@@ -92,7 +93,7 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(ec.status()).body(ErrorResponse.of(ec.code(), ec.message(), null));
   }
 
-  /** 엔티티 없음 */
+  /** 엔티티 없음. */
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFound(
       EntityNotFoundException ex, HttpServletRequest req) {
@@ -117,7 +118,7 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
   }
 
-  /** 예상 못한 서버 오류 → Sentry 단일 캡처 */
+  /** 예상 못한 서버 오류 → Sentry 단일 캡처. */
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest req) {
     try (SentryMdcContext.MdcScope ignored = SentryMdcContext.openFromRequest(req)) {
@@ -133,7 +134,7 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of("INTERNAL_ERROR", "서버 오류가 발생했습니다.", null));
   }
 
-  /** 최후 보루 */
+  /** 최후 보루. */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleAny(Exception ex, HttpServletRequest req) {
     try (SentryMdcContext.MdcScope ignored = SentryMdcContext.openFromRequest(req)) {
@@ -166,7 +167,9 @@ public class GlobalExceptionHandler {
   }
 
   private String firstIp(String xff, String remote) {
-    if (!xff.isBlank()) return xff.split(",")[0].trim();
+    if (!xff.isBlank()) {
+      return xff.split(",")[0].trim();
+    }
     return remote;
   }
 

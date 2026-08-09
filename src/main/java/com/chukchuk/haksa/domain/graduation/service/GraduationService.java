@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 졸업 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -40,6 +41,12 @@ public class GraduationService {
   private final StudentGraduationProgressService studentGraduationProgressService;
 
   /* 졸업 요건 진행 상황 조회 */
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public GraduationProgressResponse getGraduationProgress(UUID studentId) {
     // 1. 캐시 조회
     try {

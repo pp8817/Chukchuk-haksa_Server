@@ -13,12 +13,18 @@ import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.global.logging.annotation.LogTime;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+/** 졸업 query 데이터 조회와 저장 기능을 제공한다. */
 @Repository
 @RequiredArgsConstructor
 @Slf4j
@@ -32,6 +38,13 @@ public class GraduationQueryRepository {
   private static final int ETC_REQUIRED_CREDITS = 0;
 
   /* 졸업 요건 조회 (학과 코드, 입학년도) */
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param departmentId 학과 식별자
+   * @param admissionYear admission 연도
+   * @return 조회
+   */
   public List<AreaRequirementDto> getAreaRequirements(Long departmentId, Integer admissionYear) {
     String sql =
         """
@@ -77,7 +90,7 @@ public class GraduationQueryRepository {
         WHERE ((dmr.department_id = :primaryId AND dmr.major_role = 'PRIMARY')
             OR (dmr.department_id = :secondaryId AND dmr.major_role = 'SECONDARY'))
           AND dmr.admission_year = :admissionYear
-    """;
+        """;
 
     Query query = em.createNativeQuery(sql);
     query.setParameter("primaryId", primaryMajorId);
@@ -94,9 +107,17 @@ public class GraduationQueryRepository {
         .toList();
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @param departmentId 학과 식별자
+   * @param admissionYear admission 연도
+   * @return 조회
+   */
   public List<AreaProgressDto> getStudentAreaProgress(
       UUID studentId, Long departmentId, Integer admissionYear) {
-    long t0 = LogTime.start();
+    final long t0 = LogTime.start();
 
     List<AreaRequirementDto> areaRequirements =
         getAreaRequirementsWithCache(departmentId, admissionYear);
@@ -132,24 +153,27 @@ public class GraduationQueryRepository {
 
     appendEtcAreaIfPresent(result, coursesByArea);
 
-    long tookMS = LogTime.elapsedMs(t0);
-    if (tookMS >= SLOW_MS) {
+    long tookMs = LogTime.elapsedMs(t0);
+    if (tookMs >= SLOW_MS) {
       log.info(
-          "[BIZ] graduation.progress.query.done studentId={} deptId={} admissionYear={} rows={} took_ms={}",
+          "[BIZ] graduation.progress.query.done studentId={} deptId={} "
+              + "admissionYear={} rows={} took_ms={}",
           studentId,
           departmentId,
           admissionYear,
           result.size(),
-          tookMS);
+          tookMs);
     }
 
     return result;
   }
 
-  /** 주전공의 전공 기초 교양과 과목이 겹치는 경우 테스트 필요 주전공 기존 전선 졸업 요건 -> 복수전공용 전선1로 대체 복수전공 졸업 요건 영역: 전교, 전필, 전선 */
+  /**
+   * 주전공의 전공 기초 교양과 과목이 겹치는 경우 테스트 필요 주전공 기존 전선 졸업 요건 -> 복수전공용 전선1로 대체 복수전공 졸업 요건 영역: 전교, 전필, 전선.
+   */
   public List<AreaProgressDto> getDualMajorAreaProgress(
       UUID studentId, Long primaryMajorId, Long secondaryMajorId, Integer admissionYear) {
-    long t0 = LogTime.start();
+    final long t0 = LogTime.start();
 
     // 주전공 졸업 요건 조회
     List<AreaRequirementDto> primaryReqs =
@@ -228,21 +252,28 @@ public class GraduationQueryRepository {
 
     appendEtcAreaIfPresent(result, coursesByArea);
 
-    long tookMS = LogTime.elapsedMs(t0);
-    if (tookMS >= SLOW_MS) {
+    long tookMs = LogTime.elapsedMs(t0);
+    if (tookMs >= SLOW_MS) {
       log.info(
-          "[BIZ] graduation.dual.progress.query.done studentId={} primaryDept={} secondaryDept={} year={} rows={} took_ms={}",
+          "[BIZ] graduation.dual.progress.query.done studentId={} primaryDept={} "
+              + "secondaryDept={} year={} rows={} took_ms={}",
           studentId,
           primaryMajorId,
           secondaryMajorId,
           admissionYear,
           result.size(),
-          tookMS);
+          tookMs);
     }
 
     return result;
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public List<CourseInternalDto> getLatestValidCourses(UUID studentId) {
     String sql =
         """
@@ -289,12 +320,14 @@ public class GraduationQueryRepository {
         .toList();
   }
 
-  /** 단일 전공 이수구분 별 졸업 요건 결과 캐싱 로직 학과 ID + 입학년도 */
+  /** 단일 전공 이수구분 별 졸업 요건 결과 캐싱 로직 학과 ID + 입학년도. */
   public List<AreaRequirementDto> getAreaRequirementsWithCache(Long deptId, Integer admissionYear) {
     try {
       List<AreaRequirementDto> cached =
           academicCache.getGraduationRequirements(deptId, admissionYear);
-      if (cached != null && !cached.isEmpty()) return cached;
+      if (cached != null && !cached.isEmpty()) {
+        return cached;
+      }
 
       List<AreaRequirementDto> result = getAreaRequirements(deptId, admissionYear);
       academicCache.setGraduationRequirements(deptId, admissionYear, result);
@@ -310,13 +343,15 @@ public class GraduationQueryRepository {
     }
   }
 
-  /** 복수 전공 이수구분 별 졸업 요건 결과 캐싱 로직 주전공 ID + 복수전공 ID + 입학년도 */
+  /** 복수 전공 이수구분 별 졸업 요건 결과 캐싱 로직 주전공 ID + 복수전공 ID + 입학년도. */
   public List<AreaRequirementDto> getDualMajorRequirementsWithCache(
       Long primaryMajorId, Long secondaryMajorId, Integer admissionYear) {
     try {
       List<AreaRequirementDto> cached =
           academicCache.getDualMajorRequirements(primaryMajorId, secondaryMajorId, admissionYear);
-      if (cached != null && !cached.isEmpty()) return cached;
+      if (cached != null && !cached.isEmpty()) {
+        return cached;
+      }
 
       List<AreaRequirementDto> result =
           getDualMajorRequirements(primaryMajorId, secondaryMajorId, admissionYear);
@@ -335,20 +370,28 @@ public class GraduationQueryRepository {
     }
   }
 
-  /** Number/문자열 숫자 → Integer (null 허용) */
+  /** Number/문자열 숫자 → Integer (null 허용). */
   private static Integer toInteger(Object o) {
-    if (o == null) return null;
-    if (o instanceof Number n) return n.intValue();
+    if (o == null) {
+      return null;
+    }
+    if (o instanceof Number n) {
+      return n.intValue();
+    }
     if (o instanceof String s) {
       String t = s.trim();
-      if (t.isEmpty() || t.equalsIgnoreCase("null")) return null;
+      if (t.isEmpty() || t.equalsIgnoreCase("null")) {
+        return null;
+      }
       return new java.math.BigDecimal(t).intValue(); // 안전 파싱
     }
     throw new ClassCastException("숫자 아님: " + o);
   }
 
   private FacultyDivision parseDivision(String raw) {
-    if (raw == null) return null;
+    if (raw == null) {
+      return null;
+    }
     return FacultyDivision.valueOf(raw.trim());
   }
 
@@ -418,6 +461,12 @@ public class GraduationQueryRepository {
     return (int) courses.stream().map(CourseInternalDto::getOfferingId).distinct().count();
   }
 
+  /**
+   * 내부 교과목 정보를 API 응답으로 변환한다.
+   *
+   * @param dto dto 값
+   * @return 과목 dto 결과
+   */
   public CourseDto toCourseResponseDto(CourseInternalDto dto) {
     return new CourseDto(
         dto.getYear(),

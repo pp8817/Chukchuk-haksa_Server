@@ -7,6 +7,7 @@ import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/** 비동기 포털 연동에 필요한 자격 증명을 임시 보관한다. */
 @Component
 @RequiredArgsConstructor
 public class LocalPortalCredentialStore implements PortalCredentialStore {

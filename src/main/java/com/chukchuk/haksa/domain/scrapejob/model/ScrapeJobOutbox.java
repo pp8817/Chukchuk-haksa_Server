@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 척척학사의 스크래핑 작업 아웃박스 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,11 +71,25 @@ public class ScrapeJobOutbox extends BaseEntity {
     this.nextAttemptAt = nextAttemptAt;
   }
 
+  /**
+   * 입력 값을 사용해 결과 객체를 생성한다.
+   *
+   * @param jobId 작업 식별자
+   * @param payloadJson JSON payload
+   * @param nextAttemptAt next attempt at 값
+   * @return 생성된
+   */
   public static ScrapeJobOutbox createPending(
       String jobId, String payloadJson, Instant nextAttemptAt) {
     return new ScrapeJobOutbox(UUID.randomUUID().toString(), jobId, payloadJson, nextAttemptAt);
   }
 
+  /**
+   * 아웃박스 발행 성공과 연결된 작업 상태를 기록한다.
+   *
+   * @param queueMessageId 큐 메시지 식별자
+   * @param attemptedAt 발행 시도 시각
+   */
   public void markSent(String queueMessageId, Instant attemptedAt) {
     this.status = ScrapeJobOutboxStatus.SENT;
     this.attemptCount += 1;
@@ -85,11 +100,24 @@ public class ScrapeJobOutbox extends BaseEntity {
     this.lastError = null;
   }
 
+  /**
+   * 아웃박스를 발행 예약 상태로 전환한다.
+   *
+   * @param reservedUntil reserved until 값
+   * @param attemptedAt 발행 시도 시각
+   */
   public void reserveForPublish(Instant reservedUntil, Instant attemptedAt) {
     this.nextAttemptAt = reservedUntil;
     this.lastAttemptAt = attemptedAt;
   }
 
+  /**
+   * 아웃박스 발행 실패와 다음 재시도 시각을 기록한다.
+   *
+   * @param lastError last 오류 값
+   * @param attemptedAt 발행 시도 시각
+   * @param nextAttemptAt next attempt at 값
+   */
   public void markRetryableFailure(String lastError, Instant attemptedAt, Instant nextAttemptAt) {
     this.status = ScrapeJobOutboxStatus.RETRYABLE_FAILED;
     this.attemptCount += 1;
@@ -98,6 +126,12 @@ public class ScrapeJobOutbox extends BaseEntity {
     this.lastError = lastError;
   }
 
+  /**
+   * 재시도하지 않을 아웃박스 실패를 기록한다.
+   *
+   * @param lastError last 오류 값
+   * @param attemptedAt 발행 시도 시각
+   */
   public void markDead(String lastError, Instant attemptedAt) {
     this.status = ScrapeJobOutboxStatus.DEAD;
     this.attemptCount += 1;

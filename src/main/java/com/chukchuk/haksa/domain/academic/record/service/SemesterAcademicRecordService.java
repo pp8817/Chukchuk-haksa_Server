@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 학기 학사 record 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,6 +31,14 @@ public class SemesterAcademicRecordService {
   private static final Duration SEMESTER_RECORD_TTL = Duration.ofMinutes(3);
 
   /* 특정 학생의 특정 학기 성적 조회 */
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @param year 연도
+   * @param semester 학기 값
+   * @return 조회
+   */
   public SemesterGradeResponse getSemesterGradesByYearAndSemester(
       UUID studentId, Integer year, Integer semester) {
     SemesterAcademicRecord records =
@@ -49,6 +58,12 @@ public class SemesterAcademicRecordService {
   }
 
   /* 특정 학생의 전체 학기 성적 조회 (최신순 정렬) */
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public List<SemesterSummaryResponse> getAllSemesterGrades(UUID studentId) {
     List<SemesterSummaryResponse> records = getSemesterSummaries(studentId);
 
@@ -61,6 +76,12 @@ public class SemesterAcademicRecordService {
   }
 
   /* 학생의 학기 정보 조회 */
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentId(
       UUID studentId) {
 
@@ -76,6 +97,12 @@ public class SemesterAcademicRecordService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 조회
+   */
   public List<SemesterSummaryResponse> getSemesterSummaries(UUID studentId) {
     try {
       List<SemesterSummaryResponse> cached = academicCache.getSemesterSummaries(studentId);

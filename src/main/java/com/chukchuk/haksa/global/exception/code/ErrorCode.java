@@ -2,6 +2,7 @@ package com.chukchuk.haksa.global.exception.code;
 
 import org.springframework.http.HttpStatus;
 
+/** 업무 처리에서 사용할 오류 코드을 정의한다. */
 public enum ErrorCode {
 
   // 공통(Common)
@@ -88,14 +89,29 @@ public enum ErrorCode {
     this.status = status;
   }
 
+  /**
+   * 오류 코드를 반환한다.
+   *
+   * @return string
+   */
   public String code() {
     return code;
   }
 
+  /**
+   * 오류 메시지를 반환한다.
+   *
+   * @return string
+   */
   public String message() {
     return message;
   }
 
+  /**
+   * 오류에 대응하는 HTTP 상태를 반환한다.
+   *
+   * @return http status 결과
+   */
   public HttpStatus status() {
     return status;
   }

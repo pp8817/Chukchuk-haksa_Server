@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** 포털 작업 query HTTP 요청을 처리한다. */
 @RestController
 @RequestMapping("/portal/link/jobs")
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class PortalJobQueryController implements PortalLinkQueryControllerDocs {
 
   private final PortalLinkJobQueryService portalLinkJobQueryService;
 
+  @Override
   @GetMapping("/{jobId}")
   public ResponseEntity<SuccessResponse<PortalLinkDto.JobStatusResponse>> getJobStatus(
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId) {
@@ -28,6 +30,7 @@ public class PortalJobQueryController implements PortalLinkQueryControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @GetMapping("/{jobId}/summary")
   public ResponseEntity<SuccessResponse<PortalLinkDto.JobSummaryResponse>> getJobSummary(
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId) {
@@ -36,6 +39,7 @@ public class PortalJobQueryController implements PortalLinkQueryControllerDocs {
     return ResponseEntity.ok(SuccessResponse.of(response));
   }
 
+  @Override
   @GetMapping("/{jobId}/duration")
   public ResponseEntity<SuccessResponse<PortalLinkDto.JobDurationResponse>> getJobDuration(
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId) {

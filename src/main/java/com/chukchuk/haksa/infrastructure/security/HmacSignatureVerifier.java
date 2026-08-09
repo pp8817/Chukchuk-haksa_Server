@@ -17,9 +17,11 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/** 척척학사의 hmac signature 입력 값과 인증 조건을 검증한다. */
 @Component
 public class HmacSignatureVerifier {
 
+  /** 업무 처리에서 사용할 검증 failure reason 값을 정의한다. */
   public enum VerificationFailureReason {
     OK,
     MISSING_TIMESTAMP,
@@ -31,8 +33,27 @@ public class HmacSignatureVerifier {
     SIGNATURE_MISMATCH
   }
 
+  /**
+   * 계층 간 전달할 검증 결과 데이터를 표현한다.
+   *
+   * @param valid valid 식별자
+   * @param reason reason 값
+   */
   public record VerificationResult(boolean valid, VerificationFailureReason reason) {}
 
+  /**
+   * 계층 간 전달할 검증 diagnostics 데이터를 표현한다.
+   *
+   * @param reason reason 값
+   * @param parsedTimestamp parsed 요청 타임스탬프
+   * @param timestampDeltaSeconds timestamp delta seconds 값
+   * @param rawBodyHash raw body hash 값
+   * @param actualSignatureEncoding actual signature encoding 값
+   * @param actualSignatureLength actual signature length 값
+   * @param actualSignatureHash actual signature hash 값
+   * @param expectedUtf8SignatureHash expected utf 8 signature hash 값
+   * @param expectedHexSignatureHash expected hex signature hash 값
+   */
   public record VerificationDiagnostics(
       VerificationFailureReason reason,
       String parsedTimestamp,
@@ -47,6 +68,11 @@ public class HmacSignatureVerifier {
   private final String secret;
   private final long allowedSkewSeconds;
 
+  /**
+   * 스크래핑 콜백 설정으로 서명 검증기를 생성한다.
+   *
+   * @param scrapingProperties 스크래핑 properties 값
+   */
   @Autowired
   public HmacSignatureVerifier(ScrapingProperties scrapingProperties) {
     this(
@@ -54,11 +80,24 @@ public class HmacSignatureVerifier {
         scrapingProperties.getCallback().getAllowedSkewSeconds());
   }
 
+  /**
+   * HMAC secret과 허용 시각 오차로 서명 검증기를 생성한다.
+   *
+   * @param secret secret 값
+   * @param allowedSkewSeconds allowed skew seconds 값
+   */
   public HmacSignatureVerifier(String secret, long allowedSkewSeconds) {
     this.secret = secret;
     this.allowedSkewSeconds = allowedSkewSeconds;
   }
 
+  /**
+   * 입력 값과 업무 처리 조건을 검증한다.
+   *
+   * @param timestamp 요청 타임스탬프
+   * @param rawBody 서명 검증 대상 요청 본문
+   * @param signature 요청 서명
+   */
   public void verify(String timestamp, String rawBody, String signature) {
     VerificationResult result = inspect(timestamp, rawBody, signature);
     if (!result.valid()) {
@@ -66,6 +105,14 @@ public class HmacSignatureVerifier {
     }
   }
 
+  /**
+   * HMAC 서명을 검증하고 판정 결과를 반환한다.
+   *
+   * @param timestamp 요청 타임스탬프
+   * @param rawBody 서명 검증 대상 요청 본문
+   * @param signature 요청 서명
+   * @return 검증
+   */
   public VerificationResult inspect(String timestamp, String rawBody, String signature) {
     if (isBlank(timestamp)) {
       return invalid(VerificationFailureReason.MISSING_TIMESTAMP);
@@ -100,6 +147,14 @@ public class HmacSignatureVerifier {
     return new VerificationResult(true, VerificationFailureReason.OK);
   }
 
+  /**
+   * HMAC 서명 검증에 필요한 진단 정보를 반환한다.
+   *
+   * @param timestamp 요청 타임스탬프
+   * @param rawBody 서명 검증 대상 요청 본문
+   * @param signature 요청 서명
+   * @return 검증 diagnostics 결과
+   */
   public VerificationDiagnostics diagnostics(String timestamp, String rawBody, String signature) {
     VerificationFailureReason reason;
     Instant parsedTimestamp = null;
@@ -151,10 +206,26 @@ public class HmacSignatureVerifier {
         hash(expectedHex));
   }
 
+  /**
+   * 정규화된 문자열의 HMAC 값을 계산한다.
+   *
+   * @param canonicalString canonical string 여부
+   * @return byte
+   */
   public byte[] hmac(String canonicalString) {
     try {
       Mac mac = Mac.getInstance("HmacSHA256");
       mac.init(new SecretKeySpec(preferredSecretKeyBytes(), "HmacSHA256"));
+      return mac.doFinal(canonicalString.getBytes(StandardCharsets.UTF_8));
+    } catch (Exception e) {
+      throw new CommonException(ErrorCode.INVALID_CALLBACK_SIGNATURE, e);
+    }
+  }
+
+  private byte[] hmac(String canonicalString, byte[] secretBytes) {
+    try {
+      Mac mac = Mac.getInstance("HmacSHA256");
+      mac.init(new SecretKeySpec(secretBytes, "HmacSHA256"));
       return mac.doFinal(canonicalString.getBytes(StandardCharsets.UTF_8));
     } catch (Exception e) {
       throw new CommonException(ErrorCode.INVALID_CALLBACK_SIGNATURE, e);
@@ -261,16 +332,6 @@ public class HmacSignatureVerifier {
 
   private VerificationResult invalid(VerificationFailureReason reason) {
     return new VerificationResult(false, reason);
-  }
-
-  private byte[] hmac(String canonicalString, byte[] secretBytes) {
-    try {
-      Mac mac = Mac.getInstance("HmacSHA256");
-      mac.init(new SecretKeySpec(secretBytes, "HmacSHA256"));
-      return mac.doFinal(canonicalString.getBytes(StandardCharsets.UTF_8));
-    } catch (Exception e) {
-      throw new CommonException(ErrorCode.INVALID_CALLBACK_SIGNATURE, e);
-    }
   }
 
   private byte[] safeDecode(String signature) {

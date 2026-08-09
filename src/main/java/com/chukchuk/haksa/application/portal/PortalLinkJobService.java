@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+/** 포털 link 작업 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,15 +30,23 @@ public class PortalLinkJobService {
   private final ObjectMapper objectMapper;
   private final PortalLoginVerificationTokenService tokenService;
 
+  /**
+   * 포털 연동 작업을 접수하고 비동기 처리 정보를 반환한다.
+   *
+   * @param userId 사용자 식별자
+   * @param idempotencyKey 멱등성 키
+   * @param request 요청 정보
+   * @return 포털 link dto accepted 응답 결과
+   */
   public PortalLinkDto.AcceptedResponse acceptJob(
       UUID userId, String idempotencyKey, PortalLinkDto.LinkRequest request) {
     validateRequest(idempotencyKey, request);
     tokenService.verify(
         userId,
-        request.portal_type(),
+        request.portalType(),
         request.username(),
         request.password(),
-        request.portal_verification_token());
+        request.portalVerificationToken());
 
     User user = userService.getUserById(userId);
     ScrapeJobOperationType operationType =
@@ -47,7 +56,7 @@ public class PortalLinkJobService {
 
     String requestFingerprint =
         createRequestFingerprint(
-            request.portal_type(), request.username(), request.password(), operationType);
+            request.portalType(), request.username(), request.password(), operationType);
     String requestPayloadJson = toRequestPayloadJson(request.username(), request.password());
     Instant requestedAt = Instant.now();
 
@@ -56,7 +65,7 @@ public class PortalLinkJobService {
           portalLinkJobTxService.createOrLoadJob(
               userId,
               idempotencyKey,
-              request.portal_type(),
+              request.portalType(),
               operationType,
               requestFingerprint,
               requestPayloadJson,
@@ -74,13 +83,22 @@ public class PortalLinkJobService {
       log.warn(
           "[BIZ] scrape.job.enqueue.fail userId={} portalType={} idempotencyKey={}",
           userId,
-          request.portal_type(),
+          request.portalType(),
           idempotencyKey,
           exception);
       throw new CommonException(ErrorCode.SCRAPE_JOB_ENQUEUE_FAILED, exception);
     }
   }
 
+  /**
+   * 척척학사의 create 요청 fingerprint 대상을 생성한다.
+   *
+   * @param portalType 포털 유형
+   * @param username user이름
+   * @param password 포털 비밀번호
+   * @param operationType 작업 유형
+   * @return 생성된
+   */
   public static String createRequestFingerprint(
       String portalType, String username, String password, ScrapeJobOperationType operationType) {
     try {
@@ -107,11 +125,10 @@ public class PortalLinkJobService {
         || request.password().isBlank()) {
       throw new CommonException(ErrorCode.INVALID_ARGUMENT);
     }
-    if (request.portal_verification_token() == null
-        || request.portal_verification_token().isBlank()) {
+    if (request.portalVerificationToken() == null || request.portalVerificationToken().isBlank()) {
       throw new CommonException(ErrorCode.INVALID_ARGUMENT);
     }
-    if (!"suwon".equals(normalize(request.portal_type()))) {
+    if (!"suwon".equals(normalize(request.portalType()))) {
       throw new CommonException(ErrorCode.UNSUPPORTED_PORTAL_TYPE);
     }
   }
@@ -132,23 +149,25 @@ public class PortalLinkJobService {
       ScrapeJobOperationType operationType,
       String idempotencyKey) {
     if (preparedJob.dispatchRequired()) {
-      dispatchSynchronously(preparedJob, request.portal_type(), idempotencyKey);
+      dispatchSynchronously(preparedJob, request.portalType(), idempotencyKey);
     }
 
     if (preparedJob.reused()) {
       log.info(
-          "[BIZ] scrape.job.idempotent.reuse jobId={} userId={} portalType={} operationType={} idempotencyKey={}",
+          "[BIZ] scrape.job.idempotent.reuse jobId={} userId={} portalType={} "
+              + "operationType={} idempotencyKey={}",
           preparedJob.jobId(),
           userId,
-          request.portal_type(),
+          request.portalType(),
           operationType,
           idempotencyKey);
     } else {
       log.info(
-          "[BIZ] scrape.job.accepted jobId={} userId={} portalType={} operationType={} idempotencyKey={}",
+          "[BIZ] scrape.job.accepted jobId={} userId={} portalType={} "
+              + "operationType={} idempotencyKey={}",
           preparedJob.jobId(),
           userId,
-          request.portal_type(),
+          request.portalType(),
           operationType,
           idempotencyKey);
     }
@@ -164,7 +183,9 @@ public class PortalLinkJobService {
           portalLinkJobTxService.loadDispatchSnapshot(preparedJob.outboxId());
       if (!snapshot.isSent()) {
         log.warn(
-            "[BIZ] scrape.job.enqueue.sync.fail jobId={} outboxId={} portalType={} idempotencyKey={} jobStatus={} outboxStatus={} queueMessageId={} lastError={}",
+            "[BIZ] scrape.job.enqueue.sync.fail jobId={} outboxId={} portalType={} "
+                + "idempotencyKey={} jobStatus={} outboxStatus={} queueMessageId={} "
+                + "lastError={}",
             snapshot.jobId(),
             snapshot.outboxId(),
             portalType,
@@ -179,7 +200,8 @@ public class PortalLinkJobService {
       throw exception;
     } catch (RuntimeException exception) {
       log.warn(
-          "[BIZ] scrape.job.enqueue.sync.exception jobId={} outboxId={} portalType={} idempotencyKey={}",
+          "[BIZ] scrape.job.enqueue.sync.exception jobId={} outboxId={} "
+              + "portalType={} idempotencyKey={}",
           preparedJob.jobId(),
           preparedJob.outboxId(),
           portalType,

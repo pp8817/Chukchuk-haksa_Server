@@ -58,7 +58,7 @@ class ScrapeJobOutboxDispatcherUnitTests {
   @DisplayName("publish 성공 시 outbox를 SENT로 전이한다")
   void dispatchEligibleOutboxes_marksSent() {
     ScrapingProperties properties = scrapingProperties();
-    ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
+    final ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
     ScrapeJob job = queuedJob();
     ScrapeJobOutbox outbox =
         ScrapeJobOutbox.createPending(
@@ -86,7 +86,7 @@ class ScrapeJobOutboxDispatcherUnitTests {
   @DisplayName("일시적 publish 실패 후 bounded retry 성공 시 outbox를 SENT로 전이한다")
   void dispatchEligibleOutboxes_retriesTransientFailureAndMarksSent() {
     ScrapingProperties properties = scrapingProperties();
-    ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
+    final ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
     ScrapeJob job = queuedJob();
     ScrapeJobOutbox outbox =
         ScrapeJobOutbox.createPending(
@@ -116,7 +116,7 @@ class ScrapeJobOutboxDispatcherUnitTests {
   @DisplayName("일시적 publish 실패가 bounded retry를 모두 소진하면 outbox를 RETRYABLE_FAILED로 전이한다")
   void dispatchEligibleOutboxes_marksRetryableFailedAfterBoundedRetries() {
     ScrapingProperties properties = scrapingProperties();
-    ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
+    final ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
     ScrapeJob job = queuedJob();
     ScrapeJobOutbox outbox =
         ScrapeJobOutbox.createPending(
@@ -154,7 +154,7 @@ class ScrapeJobOutboxDispatcherUnitTests {
   void dispatchEligibleOutboxes_marksDeadAndJobFailed() {
     ScrapingProperties properties = scrapingProperties();
     properties.getPublisher().setMaxAttempts(1);
-    ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
+    final ScrapeJobOutboxDispatcher dispatcher = dispatcher(properties);
     ScrapeJob job = queuedJob();
     ScrapeJobOutbox outbox =
         ScrapeJobOutbox.createPending(

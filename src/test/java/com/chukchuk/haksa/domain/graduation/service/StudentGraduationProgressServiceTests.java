@@ -1,4 +1,5 @@
 // 학생 졸업 진행 정보의 외국어 인증 저장 정책을 검증하는 테스트
+
 package com.chukchuk.haksa.domain.graduation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;

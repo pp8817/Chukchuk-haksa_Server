@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.application.academic;
 
+/** 학생의 누적 신청·취득 학점과 성적 요약을 표현한다. */
 public class AcademicSummary {
   private Integer totalAttemptedCredits; // 신청 학점
   private Integer totalEarnedCredits; // 취득 학점
@@ -7,6 +8,14 @@ public class AcademicSummary {
   private Double percentile; // 학기 백분위
 
   // 생성자
+  /**
+   * 학사 summary 인스턴스를 생성한다.
+   *
+   * @param totalAttemptedCredits total 신청 학점
+   * @param totalEarnedCredits total 취득 학점
+   * @param cumulativeGpa 누적 평점
+   * @param percentile percentile 값
+   */
   public AcademicSummary(
       Integer totalAttemptedCredits,
       Integer totalEarnedCredits,

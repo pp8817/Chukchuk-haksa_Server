@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.lectureevaluations.model;
 
+/** 척척학사의 lecture evaluation tag에서 사용할 값을 정의한다. */
 public enum LectureEvaluationTag {
   LOW_HOMEWORK("과제가 적어요"),
   LOW_TEAM_PROJECT("팀플이 적어요"),

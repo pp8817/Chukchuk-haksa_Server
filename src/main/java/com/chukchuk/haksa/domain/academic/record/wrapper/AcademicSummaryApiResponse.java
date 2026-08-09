@@ -6,9 +6,11 @@ import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
+/** 학사 summary api 응답 데이터를 전달한다. */
 @Schema(name = "AcademicSummaryApiResponse", description = "학업 요약 정보 응답")
 public class AcademicSummaryApiResponse extends SuccessResponse<AcademicSummaryResponse> {
 
+  /** 학사 summary api 응답 인스턴스를 생성한다. */
   public AcademicSummaryApiResponse() {
     super(new AcademicSummaryResponse(0, BigDecimal.ZERO, BigDecimal.ZERO, 0), "요청 성공");
   }

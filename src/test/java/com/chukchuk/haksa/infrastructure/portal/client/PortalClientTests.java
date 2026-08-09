@@ -1,4 +1,5 @@
 // PortalClient의 포털 로그인 검증 HTTP 호출과 오류 매핑을 검증하는 테스트
+
 package com.chukchuk.haksa.infrastructure.portal.client;
 
 import static org.assertj.core.api.Assertions.assertThat;

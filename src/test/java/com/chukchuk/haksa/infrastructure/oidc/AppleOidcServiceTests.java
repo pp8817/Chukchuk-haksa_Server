@@ -37,7 +37,7 @@ class AppleOidcServiceTests {
     JsonNode jwks = createJwks(kid, alg, (RSAPublicKey) keyPair.getPublic());
 
     String rawNonce = "nonce-value";
-    String hashedNonce = hashSHA256(rawNonce);
+    String hashedNonce = hashSha256(rawNonce);
 
     Date expiration = new Date(System.currentTimeMillis() + 60000);
     String idToken =
@@ -79,7 +79,7 @@ class AppleOidcServiceTests {
     JsonNode refreshedJwks = createJwks(kid, alg, publicKey);
 
     String rawNonce = "nonce-value";
-    String hashedNonce = hashSHA256(rawNonce);
+    String hashedNonce = hashSha256(rawNonce);
     Date expiration = new Date(System.currentTimeMillis() + 60000);
 
     String idToken =
@@ -121,7 +121,7 @@ class AppleOidcServiceTests {
     JsonNode jwks = createJwks(kid, alg, (RSAPublicKey) keyPair.getPublic());
 
     String rawNonce = "nonce-value";
-    String hashedNonce = hashSHA256(rawNonce);
+    String hashedNonce = hashSha256(rawNonce);
     Date expiration = new Date(System.currentTimeMillis() + 60000);
 
     String idToken =
@@ -164,7 +164,7 @@ class AppleOidcServiceTests {
     JsonNode jwks = createJwks(kid, alg, (RSAPublicKey) keyPair.getPublic());
 
     String rawNonce = "nonce-value";
-    String hashedNonce = hashSHA256(rawNonce);
+    String hashedNonce = hashSha256(rawNonce);
     Date expiration = new Date(System.currentTimeMillis() + 60000);
 
     String idToken =
@@ -201,7 +201,7 @@ class AppleOidcServiceTests {
     JsonNode jwks = createJwks(kid, alg, (RSAPublicKey) keyPair.getPublic());
 
     String rawNonce = "nonce-value";
-    String hashedNonce = hashSHA256(rawNonce);
+    String hashedNonce = hashSha256(rawNonce);
     Date expiration = new Date(System.currentTimeMillis() + 60000);
 
     String idToken =
@@ -244,7 +244,7 @@ class AppleOidcServiceTests {
     JsonNode jwks = createJwks(kid, alg, (RSAPublicKey) keyPair.getPublic());
 
     String rawNonce = "nonce-value";
-    String hashedNonce = hashSHA256(rawNonce);
+    String hashedNonce = hashSha256(rawNonce);
     Date expiration = new Date(System.currentTimeMillis() + 60000);
 
     String idToken =
@@ -315,14 +315,16 @@ class AppleOidcServiceTests {
     return mapper.readTree(jwksJson);
   }
 
-  private String hashSHA256(String input) throws Exception {
+  private String hashSha256(String input) throws Exception {
     MessageDigest digest = MessageDigest.getInstance("SHA-256");
     byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
 
     StringBuilder hexString = new StringBuilder();
     for (byte b : encodedHash) {
       String hex = Integer.toHexString(0xff & b);
-      if (hex.length() == 1) hexString.append('0');
+      if (hex.length() == 1) {
+        hexString.append('0');
+      }
       hexString.append(hex);
     }
 

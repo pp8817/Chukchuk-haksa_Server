@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/** 척척학사의 mdc 사용자 enricher 요청 처리 과정의 필터링을 담당한다. */
 @Component
 @Order(20) // SecurityFilterChain 이후, HttpSummaryLoggingFilter(30)보다 먼저
 public class MdcUserEnricherFilter extends OncePerRequestFilter {
@@ -27,7 +28,9 @@ public class MdcUserEnricherFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     try {
       String userId = resolveUserId();
-      if (userId == null || userId.isBlank()) userId = "anon";
+      if (userId == null || userId.isBlank()) {
+        userId = "anon";
+      }
 
       MDC.put("userId", userId);
       MDC.put("userIdHash", HashUtil.sha256Short(userId));
@@ -57,12 +60,20 @@ public class MdcUserEnricherFilter extends OncePerRequestFilter {
 
   private String resolveUserId() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth == null || !auth.isAuthenticated()) return null;
+    if (auth == null || !auth.isAuthenticated()) {
+      return null;
+    }
 
     Object principal = auth.getPrincipal();
-    if (principal instanceof String s && "anonymousUser".equals(s)) return null;
-    if (principal instanceof UserDetails u) return u.getUsername();
-    if (principal instanceof String s) return s;
+    if (principal instanceof String s && "anonymousUser".equals(s)) {
+      return null;
+    }
+    if (principal instanceof UserDetails u) {
+      return u.getUsername();
+    }
+    if (principal instanceof String s) {
+      return s;
+    }
 
     return auth.getName();
   }

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 척척학사의 refresh 토큰 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -35,6 +36,14 @@ public class RefreshTokenService {
   private long refreshTokenRenewalThresholdMs = 604800000L;
 
   /* Refresh Token 저장 */
+  /**
+   * 척척학사의 save 대상을 저장한다.
+   *
+   * @param sessionId 세션 식별자
+   * @param userId 사용자 식별자
+   * @param refreshToken refresh token 원문
+   * @param expiry 만료 시각
+   */
   @Transactional
   public void save(String sessionId, String userId, String refreshToken, Date expiry) {
     RefreshToken token =
@@ -44,6 +53,12 @@ public class RefreshTokenService {
   }
 
   /* 토큰 재발급 */
+  /**
+   * 유효한 refresh token으로 인증 토큰을 재발급한다.
+   *
+   * @param refreshToken refresh token 원문
+   * @return auth dto refresh 응답 결과
+   */
   @Transactional
   public AuthDto.RefreshResponse reissue(String refreshToken) {
     long t0 = LogTime.start();
@@ -101,6 +116,12 @@ public class RefreshTokenService {
     return remainingMs <= refreshTokenRenewalThresholdMs;
   }
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param sessionId 세션 식별자
+   * @return 조회
+   */
   public RefreshToken findBySessionId(String sessionId) {
     return refreshTokenRepository
         .findById(sessionId)
@@ -114,6 +135,11 @@ public class RefreshTokenService {
   }
 
   /* 유효기간이 지난 RefreshToken 정보 삭제 */
+  /**
+   * 척척학사의 deleted expired tokens 대상을 삭제한다.
+   *
+   * @return int
+   */
   @Transactional
   public int deletedExpiredTokens() {
     Date now = new Date();

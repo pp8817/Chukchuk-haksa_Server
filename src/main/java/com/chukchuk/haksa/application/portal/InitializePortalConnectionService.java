@@ -1,7 +1,8 @@
 package com.chukchuk.haksa.application.portal;
 
 import static com.chukchuk.haksa.global.logging.config.LoggingThresholds.SLOW_MS;
-import static com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult.*;
+import static com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult.failure;
+import static com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult.success;
 
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserPortalConnectionRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /* 포털 연동 초기화 유스케이스 실행 */
+/** 척척학사의 initialize 포털 연동 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +28,13 @@ public class InitializePortalConnectionService {
   private final UserService userService;
   private final PortalStudentDataMapper portalStudentDataMapper;
 
+  /**
+   * 척척학사의 execute with 포털 data 대상을 처리한다.
+   *
+   * @param userId 사용자 식별자
+   * @param portalData 포털 학사 데이터
+   * @return 포털 연동 결과
+   */
   @Transactional
   public PortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {
     long t0 = LogTime.start();

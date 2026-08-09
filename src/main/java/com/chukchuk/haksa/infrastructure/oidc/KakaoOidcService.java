@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/** 척척학사의 kakao oidc 비즈니스 흐름을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -39,6 +40,13 @@ public class KakaoOidcService implements OidcService {
   @Value("${security.nativeAppKey:}")
   private String nativeAppKey;
 
+  /**
+   * 입력 값과 업무 처리 조건을 검증한다.
+   *
+   * @param idToken ID token
+   * @param expectedNonce expected nonce 값
+   * @return claims
+   */
   public Claims verifyIdToken(String idToken, String expectedNonce) {
     try {
       JsonNode jwks = oidcJwksClient.fetchKeys(KAKAO_CACHE_KEY, KAKAO_JWKS_URL);
@@ -92,7 +100,7 @@ public class KakaoOidcService implements OidcService {
 
     validateAudience(claims.get("aud"));
 
-    String hashedNonce = hashSHA256(expectedNonce);
+    String hashedNonce = hashSha256(expectedNonce);
     String nonce = claims.get("nonce", String.class);
 
     if (!hashedNonce.equals(nonce)) {
@@ -169,7 +177,7 @@ public class KakaoOidcService implements OidcService {
     }
   }
 
-  private String hashSHA256(String input) {
+  private String hashSha256(String input) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -177,7 +185,9 @@ public class KakaoOidcService implements OidcService {
       StringBuilder hexString = new StringBuilder();
       for (byte b : encodedHash) {
         String hex = Integer.toHexString(0xff & b);
-        if (hex.length() == 1) hexString.append('0');
+        if (hex.length() == 1) {
+          hexString.append('0');
+        }
         hexString.append(hex);
       }
 

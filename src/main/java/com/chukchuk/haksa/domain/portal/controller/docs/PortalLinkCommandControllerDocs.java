@@ -20,9 +20,18 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+/** 포털 link command controller docs 기능의 계약을 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내")
 public interface PortalLinkCommandControllerDocs {
 
+  /**
+   * 척척학사의 create 포털 link 작업 대상을 생성한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @param idempotencyKey 멱등성 키
+   * @param request 요청 정보
+   * @return 생성된
+   */
   @Operation(
       summary = "포털 연동 job 생성",
       description = "포털 로그인 verification token을 검증한 뒤 비동기 스크래핑 job을 생성하고 polling endpoint를 반환합니다.",

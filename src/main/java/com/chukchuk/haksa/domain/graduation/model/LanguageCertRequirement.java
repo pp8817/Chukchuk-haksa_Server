@@ -1,4 +1,5 @@
 // 외국어 인증 정책 그룹별 시험 통과 기준 엔티티
+
 package com.chukchuk.haksa.domain.graduation.model;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -20,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 척척학사의 language cert 요건 도메인 상태를 표현한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,6 +72,16 @@ public class LanguageCertRequirement extends BaseEntity {
     this.sortOrder = sortOrder;
   }
 
+  /**
+   * 점수 기준 어학 인증 요건을 생성한다.
+   *
+   * @param policyGroup 정책 그룹
+   * @param testType test type 값
+   * @param minimumScore minimum 점수
+   * @param displayText display text 값
+   * @param sortOrder sort order 값
+   * @return language cert 요건 결과
+   */
   public static LanguageCertRequirement score(
       LanguageCertPolicyGroup policyGroup,
       LanguageCertTestType testType,
@@ -80,6 +92,16 @@ public class LanguageCertRequirement extends BaseEntity {
         policyGroup, testType, minimumScore, null, displayText, sortOrder);
   }
 
+  /**
+   * 성적 처리를 수행한다.
+   *
+   * @param policyGroup 정책 그룹
+   * @param testType test type 값
+   * @param minimumGrade minimum 성적 값
+   * @param displayText display text 값
+   * @param sortOrder sort order 값
+   * @return language cert 요건 결과
+   */
   public static LanguageCertRequirement grade(
       LanguageCertPolicyGroup policyGroup,
       LanguageCertTestType testType,
@@ -90,6 +112,15 @@ public class LanguageCertRequirement extends BaseEntity {
         policyGroup, testType, null, minimumGrade, displayText, sortOrder);
   }
 
+  /**
+   * 안내용 어학 인증 요건을 생성한다.
+   *
+   * @param policyGroup 정책 그룹
+   * @param testType test type 값
+   * @param displayText display text 값
+   * @param sortOrder sort order 값
+   * @return language cert 요건 결과
+   */
   public static LanguageCertRequirement displayOnly(
       LanguageCertPolicyGroup policyGroup,
       LanguageCertTestType testType,

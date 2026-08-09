@@ -36,7 +36,7 @@ class InternalScrapeResultControllerApiIntegrationTest extends ApiControllerWebM
                   "result_s3_key":"callbacks/job-1/result.json",
                   "finished_at":"2026-03-14T10:01:00Z"
                 }
-                """;
+        """;
 
     mockMvc
         .perform(

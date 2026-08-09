@@ -1,4 +1,5 @@
 // 포털 로그인 검증 서비스의 token 발급 흐름을 검증하는 테스트
+
 package com.chukchuk.haksa.application.portal;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +38,7 @@ class PortalLoginServiceUnitTests {
 
     PortalLinkDto.LoginResponse response = service.login(userId, request);
 
-    assertThat(response.portal_verification_token()).isEqualTo("verification-token");
+    assertThat(response.portalVerificationToken()).isEqualTo("verification-token");
     InOrder inOrder = inOrder(portalLoginVerifier, tokenService);
     inOrder.verify(portalLoginVerifier).verify("suwon", "17019013", "pw");
     inOrder.verify(tokenService).issue(userId, "suwon", "17019013", "pw");

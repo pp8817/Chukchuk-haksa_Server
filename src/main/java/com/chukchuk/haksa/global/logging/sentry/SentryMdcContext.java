@@ -1,4 +1,5 @@
 // Sentry 이벤트 검색을 위한 MDC 컨텍스트 스코프 헬퍼
+
 package com.chukchuk.haksa.global.logging.sentry;
 
 import io.sentry.ISentryLifecycleToken;
@@ -14,6 +15,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/** 스크래핑 작업 식별 정보를 MDC와 HTTP 요청 사이에 전달한다. */
 public final class SentryMdcContext {
 
   private static final String USER_ID = "userId";
@@ -25,22 +27,51 @@ public final class SentryMdcContext {
 
   private SentryMdcContext() {}
 
+  /**
+   * 지정한 MDC 문맥에서 작업을 실행한다.
+   *
+   * @param context 적용할 문맥
+   * @param action 실행할 작업
+   */
   public static void run(Context context, Runnable action) {
     try (MdcScope ignored = open(context)) {
       action.run();
     }
   }
 
+  /**
+   * 지정한 MDC 문맥에서 값을 계산해 반환한다.
+   *
+   * @param context 적용할 문맥
+   * @param supplier 실행할 값 공급자
+   * @return t
+   */
   public static <T> T supply(Context context, Supplier<T> supplier) {
     try (MdcScope ignored = open(context)) {
       return supplier.get();
     }
   }
 
+  /**
+   * 지정한 값을 적용한 MDC 범위를 연다.
+   *
+   * @param context 적용할 문맥
+   * @return mdc scope 결과
+   */
   public static MdcScope open(Context context) {
     return new MdcScope(context);
   }
 
+  /**
+   * 스크래핑 작업 식별값으로 MDC 문맥을 생성한다.
+   *
+   * @param userId 사용자 식별자
+   * @param jobId 작업 식별자
+   * @param outboxId 아웃박스 식별자
+   * @param operationType 작업 유형
+   * @param workerRequestId 워커 요청 식별자
+   * @return context
+   */
   public static Context from(
       UUID userId, String jobId, String outboxId, Enum<?> operationType, String workerRequestId) {
     return new Context(
@@ -51,6 +82,11 @@ public final class SentryMdcContext {
         workerRequestId);
   }
 
+  /**
+   * 전달된 값을 현재 객체에 설정한다.
+   *
+   * @param context 적용할 문맥
+   */
   public static void bindToCurrentRequest(Context context) {
     RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
     if (attributes instanceof ServletRequestAttributes servletAttributes) {
@@ -58,6 +94,12 @@ public final class SentryMdcContext {
     }
   }
 
+  /**
+   * 전달된 값을 현재 객체에 설정한다.
+   *
+   * @param request 요청 정보
+   * @param context 적용할 문맥
+   */
   public static void bindToRequest(HttpServletRequest request, Context context) {
     if (request == null || context == null) {
       return;
@@ -69,6 +111,12 @@ public final class SentryMdcContext {
     setAttribute(request, WORKER_REQUEST_ID, context.workerRequestId());
   }
 
+  /**
+   * HTTP 요청에 저장된 값으로 MDC 범위를 연다.
+   *
+   * @param request 요청 정보
+   * @return mdc scope 결과
+   */
   public static MdcScope openFromRequest(HttpServletRequest request) {
     Context context = contextFromRequest(request);
     if (context == null) {
@@ -77,9 +125,19 @@ public final class SentryMdcContext {
     return open(context);
   }
 
+  /**
+   * 계층 간 전달할 context 데이터를 표현한다.
+   *
+   * @param userId 사용자 식별자
+   * @param jobId 작업 식별자
+   * @param outboxId 아웃박스 식별자
+   * @param operationType 작업 유형
+   * @param workerRequestId 워커 요청 식별자
+   */
   public record Context(
       String userId, String jobId, String outboxId, String operationType, String workerRequestId) {}
 
+  /** 적용 전 MDC 값을 복원할 수 있는 문맥 범위를 관리한다. */
   public static final class MdcScope implements AutoCloseable {
     private final Map<String, String> previousValues = new LinkedHashMap<>();
     private final boolean noop;

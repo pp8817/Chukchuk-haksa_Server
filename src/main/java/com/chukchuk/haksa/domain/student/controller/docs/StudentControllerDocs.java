@@ -21,9 +21,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** 구현체가 제공해야 할 학생 controller docs 기능의 계약을 정의한다. */
 @Tag(name = "Student", description = "학생 설정 관련 API")
 public interface StudentControllerDocs {
 
+  /**
+   * 전달된 값을 현재 객체에 설정한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @param targetGpa target gpa 값
+   * @return 응답 entity success 응답 메시지 only 응답 결과
+   */
   @Operation(
       summary = "목표 GPA 설정",
       description = "로그인된 사용자의 목표 GPA를 저장합니다.",
@@ -50,6 +58,12 @@ public interface StudentControllerDocs {
           @DecimalMax(value = "4.5", inclusive = true)
           Double targetGpa);
 
+  /**
+   * 요청 조건에 맞는 데이터를 조회한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 조회
+   */
   @Operation(
       summary = "사용자 프로필 조회",
       description = "로그인된 사용자의 프로필 정보를 조회합니다.",
@@ -71,6 +85,12 @@ public interface StudentControllerDocs {
   ResponseEntity<SuccessResponse<StudentProfileResponse>> getProfile(
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
+  /**
+   * 로그인 사용자의 학생 학사 데이터를 초기화한다.
+   *
+   * @param userDetails 사용자 상세 정보
+   * @return 응답 entity success 응답 메시지 only 응답 결과
+   */
   @Operation(summary = "사용자 정보 초기화", description = "로그인된 사용자의 정보를 초기화합니다.")
   @SecurityRequirement(name = "bearerAuth")
   ResponseEntity<SuccessResponse<MessageOnlyResponse>> resetStudentData(

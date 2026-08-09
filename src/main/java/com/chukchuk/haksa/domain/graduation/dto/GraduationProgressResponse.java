@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Getter;
 
+/** 졸업 progress 응답 데이터를 전달한다. */
 @Getter
 @Schema(description = "졸업 요건 진행 상황 응답")
 public class GraduationProgressResponse {
@@ -19,10 +20,21 @@ public class GraduationProgressResponse {
   @Schema(description = "특정 학과/연도 예외로 기존과 다른 졸업요건이 적용되는지 여부", required = true)
   private boolean hasDifferentGraduationRequirement = false;
 
+  /**
+   * 졸업 progress 응답 인스턴스를 생성한다.
+   *
+   * @param graduationProgress 졸업 progress 값
+   */
   public GraduationProgressResponse(List<AreaProgressDto> graduationProgress) {
     this(graduationProgress, null);
   }
 
+  /**
+   * 졸업 progress 응답 인스턴스를 생성한다.
+   *
+   * @param graduationProgress 졸업 progress 값
+   * @param languageCertFulfilled 어학 인증 충족 여부
+   */
   public GraduationProgressResponse(
       List<AreaProgressDto> graduationProgress, Boolean languageCertFulfilled) {
     this.graduationProgress = graduationProgress;
@@ -30,6 +42,7 @@ public class GraduationProgressResponse {
     this.languageCertNeedsRefresh = languageCertFulfilled == null;
   }
 
+  /** 척척학사의 set has different 졸업 요건 대상을 설정한다. */
   public void setHasDifferentGraduationRequirement() {
     this.hasDifferentGraduationRequirement = true;
   }
