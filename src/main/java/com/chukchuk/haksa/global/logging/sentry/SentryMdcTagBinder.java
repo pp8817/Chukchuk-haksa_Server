@@ -25,7 +25,11 @@ public final class SentryMdcTagBinder {
 
   private SentryMdcTagBinder() {}
 
-  /** Collects MDC values for the configured tag keys. */
+  /**
+   * 설정된 태그 키에 대응하는 현재 MDC 값을 수집한다.
+   *
+   * @return MDC에 존재하는 키와 값의 순서 보존 map
+   */
   public static Map<String, String> collect() {
     Map<String, String> tags = new LinkedHashMap<>();
     for (String key : TAG_KEYS) {
@@ -37,12 +41,20 @@ public final class SentryMdcTagBinder {
     return tags;
   }
 
-  /** Applies MDC tags to the provided Sentry scope. */
+  /**
+   * 현재 MDC에서 수집한 태그를 Sentry scope에 적용한다.
+   *
+   * @param scope MDC 태그를 추가할 Sentry scope
+   */
   public static void bind(IScope scope) {
     collect().forEach(scope::setTag);
   }
 
-  /** Exposes tag keys for verification (e.g., configuration tests). */
+  /**
+   * MDC에서 Sentry 태그로 승격하는 키 목록을 반환한다.
+   *
+   * @return 변경할 수 없는 태그 키 목록
+   */
   public static List<String> tagKeys() {
     return TAG_KEYS;
   }

@@ -511,6 +511,8 @@ Expected: 커밋이 성공하고 worktree가 clean이다.
 - google-java-format과 Checkstyle의 multiline record 닫는 괄호 들여쓰기 차이는 해당 AST 노드에만 한정한 `SuppressionXpathSingleFilter`로 조정했다.
 - 독립 리뷰에서 확인한 이름 반복형 Javadoc을 구현·호출부 기준의 책임, 반환 의미와 실패 조건으로 다시 작성했다.
 - 이름 반복, 포괄적 요청·응답 설명과 의미 없는 `@param`·`@return` 문구는 `RegexpSinglelineJava` 품질 규칙으로 재유입을 차단했다.
+- 후속 리뷰에서 public/protected 메서드의 필수 `@param`·`@return` 검사를 활성화하고 누락된 51개 태그를 보완했다.
+- 정상적인 `값` 설명은 통과하고 `@param value value 값`은 실패하는 임시 probe로 품질 정규식의 오탐·미탐을 검증했다.
 - Wiki 대상인 공개 API, 인증, DB 스키마, 아키텍처, 배포·운영 절차는 변경하지 않아 Wiki 갱신은 불필요하다.
 - `./gradlew spotlessApply checkstyleMain checkstyleTest --no-daemon`: 성공.
 - `./gradlew check --rerun-tasks --stacktrace --no-daemon`: 성공.

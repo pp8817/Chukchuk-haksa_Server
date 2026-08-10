@@ -43,7 +43,13 @@ public class GlobalExceptionHandler {
           ErrorCode.LECTURE_EVALUATION_NOT_REQUIRED.code(),
           ErrorCode.LECTURE_EVALUATION_COURSE_MISMATCH.code());
 
-  /** 비즈니스 예외(대부분 4xx). */
+  /**
+   * 애플리케이션 예외의 오류 코드와 HTTP 상태를 공통 오류 응답으로 변환한다.
+   *
+   * @param ex 응답으로 변환할 애플리케이션 예외
+   * @param req 오류 문맥과 Sentry 태그를 구성할 HTTP 요청
+   * @return 예외의 상태·코드·메시지를 포함한 오류 응답
+   */
   @ExceptionHandler(BaseException.class)
   public ResponseEntity<ErrorResponse> handleBase(BaseException ex, HttpServletRequest req) {
 
@@ -70,7 +76,13 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
   }
 
-  /** 404. */
+  /**
+   * 매핑된 핸들러가 없는 요청을 표준 404 오류 응답으로 변환한다.
+   *
+   * @param ex Spring MVC가 전달한 핸들러 없음 예외
+   * @param req 핸들러를 찾지 못한 HTTP 요청
+   * @return 표준 not found 오류 응답
+   */
   @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
   public ResponseEntity<ErrorResponse> handleNoHandler(
       org.springframework.web.servlet.NoHandlerFoundException ex, HttpServletRequest req) {
@@ -78,7 +90,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(ec.status()).body(ErrorResponse.of(ec.code(), ec.message(), null));
   }
 
-  /** 400 계열. */
+  /**
+   * 요청 본문·파라미터·검증 오류를 표준 잘못된 요청 응답으로 변환한다.
+   *
+   * @param ex 요청을 처리할 수 없게 만든 입력 예외
+   * @param req 유효하지 않은 입력을 포함한 HTTP 요청
+   * @return 표준 invalid argument 오류 응답
+   */
   @ExceptionHandler({
     IllegalArgumentException.class,
     HttpMessageNotReadableException.class,
@@ -93,7 +111,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(ec.status()).body(ErrorResponse.of(ec.code(), ec.message(), null));
   }
 
-  /** 엔티티 없음. */
+  /**
+   * 조회 대상이 없는 예외를 해당 상태와 코드의 오류 응답으로 변환한다.
+   *
+   * @param ex 조회 실패 원인과 오류 코드를 포함한 예외
+   * @param req 조회를 요청한 HTTP 요청
+   * @return 엔티티 없음 상태·코드·메시지를 포함한 오류 응답
+   */
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFound(
       EntityNotFoundException ex, HttpServletRequest req) {
@@ -118,7 +142,13 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of(ex.getCode(), ex.getMessage(), null));
   }
 
-  /** 예상 못한 서버 오류 → Sentry 단일 캡처. */
+  /**
+   * 처리되지 않은 런타임 예외를 Sentry에 한 번 기록하고 서버 오류 응답으로 변환한다.
+   *
+   * @param ex 처리 중 발생한 예상하지 못한 런타임 예외
+   * @param req 오류 문맥과 Sentry 태그를 구성할 HTTP 요청
+   * @return 내부 구현 정보를 노출하지 않는 서버 오류 응답
+   */
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest req) {
     try (SentryMdcContext.MdcScope ignored = SentryMdcContext.openFromRequest(req)) {
@@ -134,7 +164,13 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of("INTERNAL_ERROR", "서버 오류가 발생했습니다.", null));
   }
 
-  /** 최후 보루. */
+  /**
+   * 다른 핸들러가 처리하지 않은 예외를 기록하고 일반 서버 오류 응답으로 변환한다.
+   *
+   * @param ex 다른 핸들러에서 처리하지 못한 예외
+   * @param req 오류 문맥과 Sentry 태그를 구성할 HTTP 요청
+   * @return 내부 구현 정보를 노출하지 않는 일반 서버 오류 응답
+   */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleAny(Exception ex, HttpServletRequest req) {
     try (SentryMdcContext.MdcScope ignored = SentryMdcContext.openFromRequest(req)) {

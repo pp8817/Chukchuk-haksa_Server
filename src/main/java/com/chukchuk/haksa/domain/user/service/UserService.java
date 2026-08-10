@@ -130,6 +130,10 @@ public class UserService {
    * 소셜 로그인 후 포털 연동 시, studentCode 기반으로 기존 User가 있는지 탐색하여 병합 시도. - 기존 User가 없다면: currentUser를 그대로 사용
    * - 기존 User가 있다면: - 기존 User의 SocialAccount들을 currentUser에 연결 - 기존 User의 필드값들을 currentUser에 할당 -
    * student에 연결된 기존 User를 currentUser로 변경 - 기존 User 삭제 후 currentUser 리턴
+   *
+   * @param currentUserId 소셜 로그인으로 인증된 현재 사용자 식별자
+   * @param studentCode 기존 사용자와의 중복을 판별할 학번
+   * @return 기존 계정을 병합했거나 그대로 유지한 현재 사용자
    */
   @Transactional
   public User tryMergeWithExistingUser(UUID currentUserId, String studentCode) {

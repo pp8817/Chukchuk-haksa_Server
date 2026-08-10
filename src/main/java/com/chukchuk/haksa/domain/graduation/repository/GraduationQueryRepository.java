@@ -170,6 +170,12 @@ public class GraduationQueryRepository {
 
   /**
    * 주전공의 전공 기초 교양과 과목이 겹치는 경우 테스트 필요 주전공 기존 전선 졸업 요건 -> 복수전공용 전선1로 대체 복수전공 졸업 요건 영역: 전교, 전필, 전선.
+   *
+   * @param studentId 졸업 이수 현황을 계산할 학생 식별자
+   * @param primaryMajorId 주전공 학과 식별자
+   * @param secondaryMajorId 복수전공 학과 식별자
+   * @param admissionYear 졸업 요건 적용 기준 입학 연도
+   * @return 주전공과 복수전공 요건을 함께 적용한 영역별 이수 현황
    */
   public List<AreaProgressDto> getDualMajorAreaProgress(
       UUID studentId, Long primaryMajorId, Long secondaryMajorId, Integer admissionYear) {
@@ -320,7 +326,13 @@ public class GraduationQueryRepository {
         .toList();
   }
 
-  /** 단일 전공 이수구분 별 졸업 요건 결과 캐싱 로직 학과 ID + 입학년도. */
+  /**
+   * 학과와 입학 연도에 맞는 단일 전공 졸업 요건을 캐시 우선으로 조회한다.
+   *
+   * @param deptId 졸업 요건을 조회할 학과 식별자
+   * @param admissionYear 졸업 요건 적용 기준 입학 연도
+   * @return 캐시 또는 데이터베이스에서 조회한 영역별 졸업 요건
+   */
   public List<AreaRequirementDto> getAreaRequirementsWithCache(Long deptId, Integer admissionYear) {
     try {
       List<AreaRequirementDto> cached =
@@ -343,7 +355,14 @@ public class GraduationQueryRepository {
     }
   }
 
-  /** 복수 전공 이수구분 별 졸업 요건 결과 캐싱 로직 주전공 ID + 복수전공 ID + 입학년도. */
+  /**
+   * 주전공·복수전공과 입학 연도에 맞는 졸업 요건을 캐시 우선으로 조회한다.
+   *
+   * @param primaryMajorId 주전공 학과 식별자
+   * @param secondaryMajorId 복수전공 학과 식별자
+   * @param admissionYear 졸업 요건 적용 기준 입학 연도
+   * @return 캐시 또는 데이터베이스에서 조회한 복수전공 영역별 졸업 요건
+   */
   public List<AreaRequirementDto> getDualMajorRequirementsWithCache(
       Long primaryMajorId, Long secondaryMajorId, Integer admissionYear) {
     try {

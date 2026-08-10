@@ -191,13 +191,13 @@
     </module>
     <module name="RegexpSinglelineJava">
       <property name="format"
-                value="^\s*\*\s+.*(척척학사의|비즈니스 흐름을 처리한다|기능의 계약을 정의한다|응답 데이터를 전달한다|요청 데이터를 전달한다|필수 의존성과 초기 상태를 받아 인스턴스를 생성한다|요청 조건에 맞는 데이터를 조회한다|현재 상태를 요청 내용에 맞게 갱신한다)\.?\s*$"/>
+                value="^\s*\*\s+.*(척척학사의 .* 대상을 (설정|생성|갱신|처리|삭제)한다|비즈니스 흐름을 처리한다|기능의 계약을 정의한다|응답 데이터를 전달한다|요청 데이터를 전달한다|필수 의존성과 초기 상태를 받아 인스턴스를 생성한다|요청 조건에 맞는 데이터를 조회한다|현재 상태를 요청 내용에 맞게 갱신한다)\.?\s*$"/>
       <property name="message"
                 value="Javadoc must describe the concrete responsibility or contract instead of repeating the symbol name."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="format"
-                value="^\s*\*\s+@param\s+[A-Za-z][A-Za-z0-9]*\s+.*\s값\s*$"/>
+                value="^\s*\*\s+@param\s+([A-Za-z][A-Za-z0-9]*)\s+\1\s+값\s*$"/>
       <property name="message"
                 value="Javadoc @param must explain the parameter semantic role, constraints, or use."/>
     </module>
@@ -435,9 +435,9 @@
                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
     </module>
     <module name="JavadocMethod">
-      <property name="accessModifiers" value="public"/>
-      <property name="allowMissingParamTags" value="true"/>
-      <property name="allowMissingReturnTag" value="true"/>
+      <property name="accessModifiers" value="public, protected"/>
+      <property name="allowMissingParamTags" value="false"/>
+      <property name="allowMissingReturnTag" value="false"/>
       <property name="allowedAnnotations" value="Override, Test"/>
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
     </module>

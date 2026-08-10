@@ -20,7 +20,11 @@ public class AuthTokenCache {
   private final Cache<String, UserDetails> cache;
   private final Cache<String, Set<String>> userTokenIndex;
 
-  /** 액세스 토큰 만료 시간과 같은 TTL을 사용하는 사용자 인증 캐시를 생성한다. */
+  /**
+   * 액세스 토큰 만료 시간과 같은 TTL을 사용하는 사용자 인증 캐시를 생성한다.
+   *
+   * @param accessExpirationMs 캐시 항목에 적용할 액세스 토큰 만료 시간(밀리초)
+   */
   public AuthTokenCache(@Value("${security.jwt.access-expiration}") long accessExpirationMs) {
     Duration ttl = Duration.ofMillis(accessExpirationMs);
     this.cache = Caffeine.newBuilder().maximumSize(50_000).expireAfterWrite(ttl).build();

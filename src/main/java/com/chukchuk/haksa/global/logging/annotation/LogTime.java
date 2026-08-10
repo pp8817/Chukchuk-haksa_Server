@@ -6,12 +6,21 @@ import java.time.Duration;
 public final class LogTime {
   private LogTime() {}
 
-  /** 현재 시각 (ns). */
+  /**
+   * 경과 시간 측정을 시작할 단조 증가 시각을 반환한다.
+   *
+   * @return {@link System#nanoTime()} 기준 시작 시각
+   */
   public static long start() {
     return System.nanoTime();
   }
 
-  /** 경과 시간 (ms). */
+  /**
+   * 시작 시각부터 현재까지 경과한 시간을 밀리초로 반환한다.
+   *
+   * @param startNanos {@link #start()}로 얻은 시작 시각
+   * @return 나노초 이하를 버린 경과 시간(밀리초)
+   */
   public static long elapsedMs(long startNanos) {
     return Duration.ofNanos(System.nanoTime() - startNanos).toMillis();
   }

@@ -33,6 +33,7 @@ public class SuccessResponse<T> {
   /**
    * 지정한 데이터와 메시지로 성공 API 응답을 생성한다.
    *
+   * @param <T> 응답 데이터 유형
    * @param data 응답 데이터
    * @param message 응답 메시지
    * @return 지정한 데이터와 메시지를 포함한 성공 응답
@@ -44,6 +45,7 @@ public class SuccessResponse<T> {
   /**
    * 지정한 데이터와 기본 성공 메시지로 API 응답을 생성한다.
    *
+   * @param <T> 응답 데이터 유형
    * @param data 응답 데이터
    * @return 기본 메시지 {@code 요청 성공}을 포함한 성공 응답
    */

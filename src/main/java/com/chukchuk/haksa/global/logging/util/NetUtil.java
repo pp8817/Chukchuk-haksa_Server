@@ -23,7 +23,12 @@ public final class NetUtil {
     return (ip != null && !ip.isBlank()) ? ip : req.getRemoteAddr();
   }
 
-  /** 1.2.3.4 → 1.2.*.* / 2001:db8:: → 접두만. */
+  /**
+   * 로그에 기록할 IP 주소에서 호스트를 식별할 수 있는 뒷부분을 마스킹한다.
+   *
+   * @param ip 마스킹할 IPv4·IPv6 주소
+   * @return IPv4는 앞 두 옥텟만, IPv6는 첫 접두만 남긴 문자열
+   */
   public static String shorten(String ip) {
     if (ip == null) {
       return "unknown";

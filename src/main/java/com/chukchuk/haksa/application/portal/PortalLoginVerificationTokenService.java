@@ -34,7 +34,12 @@ public class PortalLoginVerificationTokenService {
   private final Duration ttl;
   private final Clock clock;
 
-  /** 설정된 비밀키와 유효 기간으로 포털 로그인 검증 토큰 서비스를 생성한다. */
+  /**
+   * 설정된 비밀키와 유효 기간으로 포털 로그인 검증 토큰 서비스를 생성한다.
+   *
+   * @param secret 검증 토큰을 서명할 비밀키
+   * @param ttlSeconds 발급 시점부터 토큰이 유효한 시간(초)
+   */
   @Autowired
   public PortalLoginVerificationTokenService(
       @Value("${portal.login-verification.secret}") String secret,

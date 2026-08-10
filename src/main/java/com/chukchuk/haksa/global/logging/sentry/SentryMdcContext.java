@@ -42,6 +42,7 @@ public final class SentryMdcContext {
   /**
    * 지정한 MDC 문맥에서 값을 계산해 반환한다.
    *
+   * @param <T> 공급자가 계산할 값의 유형
    * @param context 적용할 문맥
    * @param supplier 실행할 값 공급자
    * @return 지정한 문맥 안에서 공급자가 계산한 값

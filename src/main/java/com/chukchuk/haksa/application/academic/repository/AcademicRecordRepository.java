@@ -31,7 +31,12 @@ public class AcademicRecordRepository {
   private final StudentAcademicRecordRepository studentAcademicRecordRepository;
   private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
 
-  /** 포털 최초 연동. */
+  /**
+   * 포털 최초 연동에서 누적·학기별 학사 기록을 학생에게 연결해 저장한다.
+   *
+   * @param academicRecord 포털에서 조회한 누적·학기별 학사 기록
+   * @param student 학사 기록을 연결할 학생
+   */
   @Transactional
   public void insertAllAcademicRecords(AcademicRecord academicRecord, Student student) {
     final long t0 = LogTime.start();
@@ -100,7 +105,12 @@ public class AcademicRecordRepository {
     }
   }
 
-  /** 포털 재연동. */
+  /**
+   * 포털 재연동에서 기존 기록과 달라진 누적·학기별 학사 기록만 갱신한다.
+   *
+   * @param academicRecord 포털에서 다시 조회한 누적·학기별 학사 기록
+   * @param student 기존 학사 기록을 보유한 학생
+   */
   @Transactional
   public void updateChangedAcademicRecords(AcademicRecord academicRecord, Student student) {
     final long t0 = LogTime.start();
