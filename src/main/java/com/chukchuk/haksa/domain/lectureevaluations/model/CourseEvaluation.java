@@ -70,7 +70,7 @@ public class CourseEvaluation extends BaseEntity {
   private List<CourseEvaluationTag> tags = new ArrayList<>();
 
   /**
-   * 과목 evaluation 인스턴스를 생성한다.
+   * 학생의 과목 후기와 선택 태그를 연결한 강의평가를 생성한다.
    *
    * @param student 기록의 소유 학생
    * @param course 연결할 수강 과목

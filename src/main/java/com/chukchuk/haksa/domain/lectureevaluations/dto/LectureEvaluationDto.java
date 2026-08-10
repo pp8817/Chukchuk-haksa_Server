@@ -12,16 +12,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-/** 계층 간 전달할 데이터를 표현한다. */
+/** 강의평가 대상 조회와 제출·건너뛰기에 사용하는 요청·응답 형식을 묶는다. */
 public class LectureEvaluationDto {
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 강의평가 대상 학기와 평가할 성적 목록을 전달한다.
    *
    * @param evaluationStatus evaluation 상태
    * @param year 연도
    * @param semester 대상 학기
-   * @param grades 응답에 포함할 grades
+   * @param grades 평가 대상 수강 과목의 성적 카드 목록
    */
   public record RequiredResponse(
       @Schema(
@@ -47,7 +47,7 @@ public class LectureEvaluationDto {
   }
 
   /**
-   * 성적 card 데이터를 전달한다.
+   * 강의평가 대상 과목과 성적 정보를 표현한다.
    *
    * @param courseName 과목 이름
    * @param courseCode 과목 코드
@@ -58,7 +58,7 @@ public class LectureEvaluationDto {
    * @param professorId 교수 식별자
    * @param grade 과목에서 취득한 성적
    * @param score 점수
-   * @param liberalAreaCode 응답에 포함할 liberal area code
+   * @param liberalAreaCode 선교 과목에 연결된 교양 영역 코드이며 그 외에는 {@code null}
    */
   public record GradeCard(
       String courseName,
@@ -108,11 +108,11 @@ public class LectureEvaluationDto {
   }
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 한 학기의 강의평가 제출 항목을 전달한다.
    *
    * @param year 연도
    * @param semester 대상 학기
-   * @param evaluations 응답에 포함할 evaluations
+   * @param evaluations 과목·교수별 평가 내용 목록
    */
   public record SubmitRequest(
       @NotNull Integer year,
@@ -120,12 +120,12 @@ public class LectureEvaluationDto {
       @Valid @NotNull @Size(min = 1) List<SubmitEvaluation> evaluations) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 한 과목과 교수에 대한 선택 태그와 후기를 전달한다.
    *
    * @param courseId 과목 식별자
    * @param professorId 교수 식별자
-   * @param selectedTags 응답에 포함할 selected tags
-   * @param review 응답에 포함할 review
+   * @param selectedTags 사용자가 선택한 강의평가 태그 목록
+   * @param review 최대 2,000자의 선택 입력 후기
    */
   public record SubmitEvaluation(
       @NotNull Long courseId,
@@ -134,7 +134,7 @@ public class LectureEvaluationDto {
       @Size(max = 2000) String review) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 강의평가를 건너뛸 대상 학기를 지정한다.
    *
    * @param year 연도
    * @param semester 대상 학기

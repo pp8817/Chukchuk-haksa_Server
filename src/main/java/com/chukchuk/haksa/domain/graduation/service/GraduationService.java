@@ -42,10 +42,10 @@ public class GraduationService {
 
   /* 졸업 요건 진행 상황 조회 */
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 학적과 수강 내역으로 영역별 졸업 진행도를 계산한다.
    *
    * @param studentId 학생 식별자
-   * @return 처리된 졸업 요건
+   * @return 영역별 이수 현황과 졸업 요건 충족 상태
    */
   public GraduationProgressResponse getGraduationProgress(UUID studentId) {
     // 1. 캐시 조회

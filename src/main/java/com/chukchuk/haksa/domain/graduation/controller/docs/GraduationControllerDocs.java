@@ -21,10 +21,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public interface GraduationControllerDocs {
 
   /**
-   * 졸업 요건에 대한 없음 작업을 수행한다.
+   * 로그인 학생의 영역별 졸업 진행도를 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
-   * @return 처리된 졸업 요건
+   * @return 영역별 이수 현황과 전체 졸업 상태 성공 응답
    */
   @Operation(
       summary = "졸업 요건 진행 상황 조회",
@@ -52,10 +52,10 @@ public interface GraduationControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
   /**
-   * 졸업 요건에 대한 없음 작업을 수행한다.
+   * 로그인 학생에게 적용되는 외국어 인증 기준을 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
-   * @return 처리된 졸업 요건
+   * @return 학생에게 적용되는 외국어 인증 기준 성공 응답
    */
   @Operation(
       summary = "외국어 인증 기준 조회",

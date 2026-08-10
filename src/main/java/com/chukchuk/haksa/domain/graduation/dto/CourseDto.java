@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** 과목 계층 간 데이터를 전달한다. */
+/** 졸업 요건 영역에 표시할 이수 과목 정보를 전달한다. */
 @Getter
 @AllArgsConstructor
 @Schema(description = "이수 과목 정보")

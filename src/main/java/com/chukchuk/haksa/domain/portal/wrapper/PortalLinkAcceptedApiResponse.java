@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "PortalLinkAcceptedApiResponse", description = "포털 링크 job 생성 수락 응답")
 public class PortalLinkAcceptedApiResponse extends SuccessResponse<PortalLinkDto.AcceptedResponse> {
 
-  /** 포털 link accepted api 응답 인스턴스를 생성한다. */
+  /** 생성된 포털 연동 작업과 폴링 경로를 담은 문서용 수락 응답을 생성한다. */
   public PortalLinkAcceptedApiResponse() {
     super(
         new PortalLinkDto.AcceptedResponse("job-123", "accepted", "/portal/link/jobs/job-123"),

@@ -15,10 +15,10 @@ public interface StudentAcademicRecordRepository
 
   // student_id(UUID)로 직접 조회
   /**
-   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 누적 성적을 학생 정보와 함께 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조건에 일치하는 학사 기록가 있으면 포함한 선택값
+   * @return 누적 성적이 있으면 포함한 선택값
    */
   @Query(
       """
@@ -29,7 +29,7 @@ public interface StudentAcademicRecordRepository
   Optional<StudentAcademicRecord> findByStudentId(@Param("studentId") UUID studentId);
 
   /**
-   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
+   * 학생의 누적 성적을 삭제한다.
    *
    * @param studentId 학생 식별자
    */

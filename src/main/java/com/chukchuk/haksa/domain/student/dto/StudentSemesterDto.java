@@ -3,12 +3,11 @@ package com.chukchuk.haksa.domain.student.dto;
 import com.chukchuk.haksa.domain.academic.record.dto.SemesterSummaryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-// year, semester를 받아오기 위한 DTO
 /** 학생이 이수한 연도·학기 목록과 현재 학기 정보를 전달한다. */
 public class StudentSemesterDto {
 
   /**
-   * 계층 간 전달할 학생 학기 info 응답 데이터를 표현한다.
+   * 학생이 이수한 연도와 학기 코드를 표현한다.
    *
    * @param year 연도
    * @param semester 대상 학기
@@ -25,7 +24,7 @@ public class StudentSemesterDto {
      * 학기 요약을 학생 학기 응답으로 변환한다.
      *
      * @param record 연결할 학사 기록
-     * @return 학생 학기 info 응답 결과
+     * @return 학기 요약에서 변환한 이수 학기 정보
      */
     public static StudentSemesterInfoResponse from(SemesterSummaryResponse record) {
       return new StudentSemesterInfoResponse(record.year(), record.semester());

@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentCourseRepository extends JpaRepository<StudentCourse, Long> {
   /**
-   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 지정 학기 수강 내역을 과목·교수 정보와 함께 조회한다.
    *
    * @param studentId 학생 식별자
    * @param year 대상 연도
    * @param semester 대상 학기
-   * @return 조건에 일치하는 학사 기록 목록
+   * @return 지정 학기의 수강 내역 목록
    */
   @Query(
       """
@@ -38,22 +38,22 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
       @Param("semester") Integer semester);
 
   /**
-   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 전체 수강 내역을 조회한다.
    *
    * @param student 대상 학생
-   * @return 조건에 일치하는 학사 기록 목록
+   * @return 학생의 전체 수강 내역 목록
    */
   List<StudentCourse> findByStudent(Student student);
 
   /**
-   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
+   * 학생의 전체 수강 내역을 삭제한다.
    *
    * @param studentId 학생 식별자
    */
   void deleteByStudentId(UUID studentId);
 
   /**
-   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
+   * 학생이 소유한 지정 식별자의 수강 내역을 삭제한다.
    *
    * @param studentId 학생 식별자
    * @param ids 삭제할 식별자 집합
@@ -64,7 +64,7 @@ public interface StudentCourseRepository extends JpaRepository<StudentCourse, Lo
       @Param("studentId") UUID studentId, @Param("ids") List<Long> ids);
 
   /**
-   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
+   * 학생의 지정 학기 수강 내역을 삭제한다.
    *
    * @param studentId 학생 식별자
    * @param year 대상 연도

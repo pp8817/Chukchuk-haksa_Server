@@ -4,7 +4,7 @@ import com.chukchuk.haksa.domain.academic.record.model.SemesterAcademicRecord;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-/** 학기 학사 record 계층 간 데이터를 전달한다. */
+/** 학기별 학사 기록을 API 성적 응답으로 변환한다. */
 public class SemesterAcademicRecordDto {
 
   /**

@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class UserDto {
 
   /**
-   * 계층 간 전달할 sign in 요청 데이터를 표현한다.
+   * OIDC 제공자 토큰과 nonce를 포함한 로그인 요청을 표현한다.
    *
    * @param provider 소셜 로그인 제공자
-   * @param idToken ID token
-   * @param nonce 응답에 포함할 nonce
+   * @param idToken OIDC 제공자가 발급한 ID 토큰
+   * @param nonce OIDC 토큰 재사용을 방지할 로그인 요청 nonce
    */
   @Schema(description = "소셜 로그인 요청 정보")
   public record SignInRequest(
@@ -24,11 +24,11 @@ public class UserDto {
           String nonce) {}
 
   /**
-   * 계층 간 전달할 sign in 응답 데이터를 표현한다.
+   * 로그인 후 발급된 토큰과 포털 연동 여부를 표현한다.
    *
-   * @param accessToken 응답에 포함할 접근 토큰
-   * @param refreshToken refresh token 원문
-   * @param isPortalLinked is 포털 linked 여부
+   * @param accessToken 로그인 후 발급된 액세스 토큰
+   * @param refreshToken 발급된 리프레시 토큰 원문
+   * @param isPortalLinked 로그인 사용자의 포털 연동 완료 여부
    */
   @Schema(description = "회원가입 및 로그인 응답")
   public record SignInResponse(
@@ -46,9 +46,9 @@ public class UserDto {
           boolean isPortalLinked) {}
 
   /**
-   * 계층 간 전달할 analytics id 응답 데이터를 표현한다.
+   * 외부 분석 도구에서 사용할 사용자 식별자를 표현한다.
    *
-   * @param analyticsId analytics id 식별자
+   * @param analyticsId 분석 도구에 전달할 사용자 식별자
    */
   @Schema(description = "사용자 분석 식별자 응답")
   public record AnalyticsIdResponse(
@@ -59,9 +59,9 @@ public class UserDto {
           String analyticsId) {}
 
   /**
-   * 계층 간 전달할 me 응답 데이터를 표현한다.
+   * 현재 사용자의 포털 연동 여부를 표현한다.
    *
-   * @param isPortalLinked is 포털 linked 여부
+   * @param isPortalLinked 현재 사용자의 포털 연동 완료 여부
    */
   @Schema(description = "내 사용자 정보 응답")
   public record MeResponse(

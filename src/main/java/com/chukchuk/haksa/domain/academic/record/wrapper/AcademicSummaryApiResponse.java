@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Schema(name = "AcademicSummaryApiResponse", description = "학업 요약 정보 응답")
 public class AcademicSummaryApiResponse extends SuccessResponse<AcademicSummaryResponse> {
 
-  /** 학사 summary api 응답 인스턴스를 생성한다. */
+  /** 모든 누적 학업 지표가 0인 문서용 성공 응답을 생성한다. */
   public AcademicSummaryApiResponse() {
     super(new AcademicSummaryResponse(0, BigDecimal.ZERO, BigDecimal.ZERO, 0), "요청 성공");
   }

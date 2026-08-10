@@ -100,13 +100,13 @@ public class Student extends BaseEntity {
    * @param major 주전공
    * @param secondaryMajor 복수전공
    * @param admissionYear admission 연도
-   * @param semesterEnrolled 응답에 포함할 학기 enrolled
-   * @param isTransferStudent is transfer 학생 여부
-   * @param isGraduated is graduated 여부
+   * @param semesterEnrolled 현재 등록 학기 차수
+   * @param isTransferStudent 편입생인지 여부
+   * @param isGraduated 졸업 상태인지 여부
    * @param status 상태
    * @param gradeLevel 학년
    * @param completedSemesters 이수 학기 수
-   * @param admissionType 응답에 포함할 admission type
+   * @param admissionType 신입학·편입학 등 입학 유형
    * @param user 연결할 사용자
    */
   @Builder
@@ -196,9 +196,9 @@ public class Student extends BaseEntity {
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 학번의 입학 연도와 학적 입학 연도가 다르거나 편입 표식이 있는지 확인한다.
    *
-   * @return 조건 충족 여부
+   * @return 편입생으로 판정되면 {@code true}
    */
   public boolean isTransferStudent() {
     if (this.studentCode == null
@@ -274,8 +274,8 @@ public class Student extends BaseEntity {
   /**
    * 새 학적 정보로 학생 정보를 갱신해야 하는지 확인한다.
    *
-   * @param newData new 응답 데이터
-   * @return 조건 충족 여부
+   * @param newData 포털에서 새로 수집한 학생 학적 정보
+   * @return 저장된 학적 필드 중 하나라도 다르면 {@code true}
    */
   public boolean needsUpdate(StudentInitializationDataType newData) {
     if (!equalsNullable(this.name, newData.getName())) {

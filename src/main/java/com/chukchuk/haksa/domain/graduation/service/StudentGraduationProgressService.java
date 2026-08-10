@@ -52,10 +52,10 @@ public class StudentGraduationProgressService {
   }
 
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 외국어 인증 충족 여부를 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조건에 일치하는 졸업 요건가 있으면 포함한 선택값
+   * @return 저장된 충족 여부가 있으면 포함한 선택값
    */
   public Optional<Boolean> getLanguageCertFulfilled(UUID studentId) {
     return repository

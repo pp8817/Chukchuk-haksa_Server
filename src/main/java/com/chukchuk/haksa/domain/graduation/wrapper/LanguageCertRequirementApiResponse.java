@@ -6,7 +6,7 @@ import com.chukchuk.haksa.domain.graduation.dto.LanguageCertRequirementResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** 계층 간 전달할 데이터를 표현한다. */
+/** 외국어 인증 기준 조회 성공 응답의 OpenAPI 예시를 제공한다. */
 @Schema(name = "LanguageCertRequirementApiResponse", description = "외국어 인증 기준 조회 응답")
 public class LanguageCertRequirementApiResponse
     extends SuccessResponse<LanguageCertRequirementResponse> {

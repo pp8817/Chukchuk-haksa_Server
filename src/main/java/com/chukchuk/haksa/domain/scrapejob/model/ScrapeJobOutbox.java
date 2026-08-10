@@ -72,12 +72,12 @@ public class ScrapeJobOutbox extends BaseEntity {
   }
 
   /**
-   * 입력 값으로 스크래핑 작업를 생성한다.
+   * 다음 발행 시각이 지정된 대기 아웃박스를 생성한다.
    *
    * @param jobId 작업 식별자
    * @param payloadJson JSON payload
    * @param nextAttemptAt 다음 발행 시도 시각
-   * @return 처리된 스크래핑 작업
+   * @return 첫 발행 시각과 payload가 설정된 대기 아웃박스
    */
   public static ScrapeJobOutbox createPending(
       String jobId, String payloadJson, Instant nextAttemptAt) {

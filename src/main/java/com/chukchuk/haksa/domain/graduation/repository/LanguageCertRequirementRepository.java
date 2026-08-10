@@ -12,10 +12,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface LanguageCertRequirementRepository
     extends JpaRepository<LanguageCertRequirement, UUID> {
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 정책 그룹의 외국어 인증 요건을 표시 순서대로 조회한다.
    *
    * @param policyGroup 정책 그룹
-   * @return 조건에 일치하는 졸업 요건 목록
+   * @return 표시 순서로 정렬된 외국어 인증 요건 목록
    */
   List<LanguageCertRequirement> findAllByPolicyGroupOrderBySortOrderAsc(
       LanguageCertPolicyGroup policyGroup);

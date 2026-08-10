@@ -23,7 +23,7 @@ public class ProfessorService {
    * 이름이 같은 교수를 반환하고, 없으면 새 교수를 저장한다.
    *
    * @param professorName professor 이름
-   * @return 처리된 교수
+   * @return 이름이 같으면 기존 교수, 없으면 새로 저장한 교수
    */
   @Transactional
   public Professor getOrCreate(String professorName) {
@@ -40,7 +40,7 @@ public class ProfessorService {
    * 교수 이름을 중복 제거해 조회하고 없는 교수는 일괄 저장한다.
    *
    * @param professorNames professor names
-   * @return 처리된 교수
+   * @return 교수 이름과 재사용하거나 새로 저장한 교수의 대응표
    */
   @Transactional
   public Map<String, Professor> getOrCreateAll(Collection<String> professorNames) {

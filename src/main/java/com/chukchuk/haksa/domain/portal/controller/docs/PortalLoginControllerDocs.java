@@ -27,7 +27,7 @@ public interface PortalLoginControllerDocs {
    * 포털 계정 자격 증명을 검증하고 연동 작업에 사용할 일회용 토큰을 발급한다.
    *
    * @param userDetails 사용자 상세 정보
-   * @param request 요청 정보
+   * @param request 검증할 포털 유형과 계정 자격 증명
    * @return 포털 자격 증명 검증 후 발급한 일회용 검증 토큰 응답
    */
   @Operation(

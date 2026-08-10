@@ -4,7 +4,7 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-/** 학생 학사 record 계층 간 데이터를 전달한다. */
+/** 학생의 누적 학사 기록을 API 요약 응답으로 변환한다. */
 public class StudentAcademicRecordDto {
 
   /**

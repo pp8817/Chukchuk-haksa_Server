@@ -35,6 +35,11 @@ public class SyncAcademicRecordResult {
     return new SyncAcademicRecordResult(false, error);
   }
 
+  /**
+   * 학사 기록 동기화가 성공했는지 확인한다.
+   *
+   * @return 동기화 결과가 성공이면 {@code true}
+   */
   public boolean isSuccess() {
     return isSuccess;
   }

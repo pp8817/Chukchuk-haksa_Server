@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
   /**
-   * 지정된 조건에 해당하는 리프레시 토큰를 삭제한다.
+   * 기준 시각 전에 만료된 리프레시 토큰을 삭제한다.
    *
    * @param now 처리 기준 시각
    * @return 기준 시각 이전에 만료되어 삭제된 리프레시 토큰 수

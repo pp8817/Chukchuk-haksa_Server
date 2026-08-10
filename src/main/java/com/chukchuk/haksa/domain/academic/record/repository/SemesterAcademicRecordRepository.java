@@ -16,12 +16,12 @@ public interface SemesterAcademicRecordRepository
     extends JpaRepository<SemesterAcademicRecord, UUID> {
 
   /**
-   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 지정 학기 성적을 조회한다.
    *
    * @param studentId 학생 식별자
    * @param year 대상 연도
    * @param semester 대상 학기
-   * @return 조건에 일치하는 학사 기록가 있으면 포함한 선택값
+   * @return 지정 학기 성적이 있으면 포함한 선택값
    */
   @Query(
       """
@@ -37,30 +37,30 @@ public interface SemesterAcademicRecordRepository
       @Param("semester") Integer semester);
 
   /**
-   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 전체 학기 성적을 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조건에 일치하는 학사 기록 목록
+   * @return 학생의 전체 학기 성적 목록
    */
   List<SemesterAcademicRecord> findByStudentId(UUID studentId); // studentID로 data 얻어오기
 
   /**
-   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 학기 성적을 최신 학기부터 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조건에 일치하는 학사 기록 목록
+   * @return 최신 학기부터 정렬된 성적 목록
    */
   List<SemesterAcademicRecord> findByStudentIdOrderByYearDescSemesterDesc(UUID studentId);
 
   /**
-   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
+   * 학생의 전체 학기 성적을 삭제한다.
    *
    * @param studentId 학생 식별자
    */
   void deleteByStudentId(UUID studentId);
 
   /**
-   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
+   * 학생의 지정 학기 성적을 삭제한다.
    *
    * @param studentId 학생 식별자
    * @param year 대상 연도

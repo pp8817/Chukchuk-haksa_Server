@@ -19,7 +19,7 @@
 
 1. 기능, 공개 API 계약, DB 스키마, 도메인 동작은 변경하지 않는다.
 2. 신규 코드뿐 아니라 기존 main/test Java 소스 전체를 한 번에 기준선에 맞춘다.
-3. 기존 위반을 숨기는 프로젝트 전용 suppression이나 baseline 파일은 만들지 않는다. 공식 Google Checks 자체의 규칙별 내장 예외는 유지한다.
+3. 기존 위반을 숨기는 프로젝트 전용 suppression이나 baseline 파일은 만들지 않는다. 공식 Google Checks 자체의 규칙별 내장 예외는 유지하며, google-java-format과 Checkstyle이 다르게 들여쓰는 multiline record의 닫는 괄호만 해당 `RPAREN` AST 노드로 한정해 예외 처리한다.
 4. 자동 포맷 변경과 의미가 있는 Javadoc·스타일 수정을 논리적으로 분리한다.
 5. Java 17, Spring Boot 3.2.5, Gradle, 기존 패키지 구조와 Lambda/SQS 운영 구조를 유지한다.
 6. Landit의 검증 방식과 문서 구조를 참고하되 척척학사의 이슈 번호, 브랜치, 커밋 규칙을 우선한다.

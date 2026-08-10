@@ -10,7 +10,7 @@ import java.util.List;
 @Schema(name = "StudentSemesterListApiResponse", description = "사용자 학기 목록 응답")
 public class StudentSemesterListApiResponse
     extends SuccessResponse<List<StudentSemesterDto.StudentSemesterInfoResponse>> {
-  /** 학생 학기 list api 응답 인스턴스를 생성한다. */
+  /** 빈 이수 학기 목록을 담은 문서용 성공 응답을 생성한다. */
   public StudentSemesterListApiResponse() {
     super(Collections.emptyList(), "요청 성공");
   }

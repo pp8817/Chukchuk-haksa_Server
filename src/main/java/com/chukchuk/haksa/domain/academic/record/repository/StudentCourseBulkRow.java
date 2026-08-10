@@ -5,15 +5,15 @@ import com.chukchuk.haksa.domain.student.model.GradeType;
 import java.util.UUID;
 
 /**
- * 학생 과목 bulk row 데이터를 전달한다.
+ * 수강 내역 일괄 삽입에 필요한 열 값을 표현한다.
  *
  * @param studentId 학생 식별자
  * @param offeringId 과목 개설 식별자
- * @param gradeType 응답에 포함할 성적 type
+ * @param gradeType 배치 저장할 성적 유형
  * @param points 학점
- * @param isRetake is retake 여부
+ * @param isRetake 재수강 과목인지 여부
  * @param originalScore 원점수
- * @param isRetakeDeleted is retake deleted 여부
+ * @param isRetakeDeleted 재수강으로 대체돼 성적 계산에서 제외되는지 여부
  */
 public record StudentCourseBulkRow(
     UUID studentId,
@@ -27,8 +27,8 @@ public record StudentCourseBulkRow(
   /**
    * 수강 정보를 JDBC 배치 저장 행으로 변환한다.
    *
-   * @param enrollment 응답에 포함할 수강
-   * @return 학생 과목 bulk row 결과
+   * @param enrollment 배치 저장할 학생 수강 정보
+   * @return 수강 내역을 일괄 삽입 열 값으로 변환한 결과
    */
   public static StudentCourseBulkRow from(CourseEnrollment enrollment) {
     Integer normalizedScore =

@@ -3,7 +3,7 @@ package com.chukchuk.haksa.domain.graduation.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** 과목 internal 계층 간 데이터를 전달한다. */
+/** 졸업 요건 계산에 필요한 수강 과목 조회 결과를 전달한다. */
 @Getter
 @AllArgsConstructor
 public class CourseInternalDto {

@@ -11,11 +11,11 @@ public class LectureEvaluationProperties {
   private Integer targetYear;
   private Integer targetSemester;
 
-  /** Spring 설정 바인딩에 사용할 기본 인스턴스를 생성한다. */
+  /** Spring이 강의평가 설정값을 바인딩할 때 사용하는 기본 생성자다. */
   public LectureEvaluationProperties() {}
 
   /**
-   * 강의평가 대상 학기를 지정해 설정 인스턴스를 생성한다.
+   * 강의평가 대상 연도와 학기로 설정을 구성한다.
    *
    * @param targetYear 강의평가 대상 연도
    * @param targetSemester 강의평가 대상 학기

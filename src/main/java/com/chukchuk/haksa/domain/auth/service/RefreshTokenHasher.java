@@ -34,6 +34,7 @@ public class RefreshTokenHasher {
    *
    * @param refreshToken 해시할 리프레시 토큰 원문
    * @return URL-safe Base64로 인코딩한 토큰 해시
+   * @throws IllegalStateException HMAC-SHA256 알고리즘을 사용할 수 없거나 비밀키가 유효하지 않은 경우
    */
   public String hash(String refreshToken) {
     try {
@@ -51,7 +52,7 @@ public class RefreshTokenHasher {
    *
    * @param refreshToken refresh token 원문
    * @param tokenHash 원문 토큰 검증에 사용할 저장된 해시
-   * @return 조건 충족 여부
+   * @return 원문 토큰이 저장된 해시와 일치하면 {@code true}
    */
   public boolean matches(String refreshToken, String tokenHash) {
     if (refreshToken == null || tokenHash == null || tokenHash.isBlank()) {

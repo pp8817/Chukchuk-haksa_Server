@@ -39,11 +39,11 @@ public class GraduationQueryRepository {
 
   /* 졸업 요건 조회 (학과 코드, 입학년도) */
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학과와 입학 연도에 적용되는 영역별 졸업 요건을 조회한다.
    *
    * @param departmentId 학과 식별자
    * @param admissionYear 입학 연도
-   * @return 조건에 일치하는 졸업 요건 목록
+   * @return 영역별 졸업 요건 목록
    */
   public List<AreaRequirementDto> getAreaRequirements(Long departmentId, Integer admissionYear) {
     String sql =
@@ -108,12 +108,12 @@ public class GraduationQueryRepository {
   }
 
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 이수 과목을 영역별 졸업 요건과 비교해 진행 상태를 조회한다.
    *
    * @param studentId 학생 식별자
    * @param departmentId 학과 식별자
    * @param admissionYear 입학 연도
-   * @return 조건에 일치하는 졸업 요건 목록
+   * @return 영역별 이수 진행 상태 목록
    */
   public List<AreaProgressDto> getStudentAreaProgress(
       UUID studentId, Long departmentId, Integer admissionYear) {
@@ -176,6 +176,7 @@ public class GraduationQueryRepository {
    * @param secondaryMajorId 복수전공 학과 식별자
    * @param admissionYear 졸업 요건 적용 기준 입학 연도
    * @return 주전공과 복수전공 요건을 함께 적용한 영역별 이수 현황
+   * @throws CommonException 주전공 또는 복수전공 졸업 요건 데이터가 없는 경우
    */
   public List<AreaProgressDto> getDualMajorAreaProgress(
       UUID studentId, Long primaryMajorId, Long secondaryMajorId, Integer admissionYear) {
@@ -275,10 +276,10 @@ public class GraduationQueryRepository {
   }
 
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 재수강·실패 과목을 제외하고 과목별 최신 유효 이수 내역을 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조건에 일치하는 졸업 요건 목록
+   * @return 과목별 최신 유효 이수 내역 목록
    */
   public List<CourseInternalDto> getLatestValidCourses(UUID studentId) {
     String sql =
@@ -484,7 +485,7 @@ public class GraduationQueryRepository {
    * 내부 교과목 정보를 API 응답으로 변환한다.
    *
    * @param dto API 과목 응답으로 변환할 내부 이수 과목
-   * @return 과목 dto 결과
+   * @return 공개 응답 형식으로 변환한 이수 과목
    */
   public CourseDto toCourseResponseDto(CourseInternalDto dto) {
     return new CourseDto(

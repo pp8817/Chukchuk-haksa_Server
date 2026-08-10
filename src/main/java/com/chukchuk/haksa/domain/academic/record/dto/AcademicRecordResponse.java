@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 한 학기의 성적과 전공·교양·기타 영역별 수강 과목을 묶는다.
  *
- * @param semesterGrade 응답에 포함할 학기 성적
+ * @param semesterGrade 조회한 학기의 성적 요약
  * @param summary 저장하거나 비교할 학사 요약
  */
 @Schema(description = "학기별 성적 및 수강 과목 응답")
@@ -18,11 +18,11 @@ public record AcademicRecordResponse(
     ) {
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 수강 과목을 전공·교양·기타 영역으로 구분해 전달한다.
    *
    * @param major 주전공
-   * @param liberal 응답에 포함할 liberal
-   * @param etc 응답에 포함할 etc
+   * @param liberal 교양 영역 수강 과목 목록
+   * @param etc 전공과 교양 외 영역의 수강 과목 목록
    */
   @Schema(description = "수강 과목 목록")
   public record Courses(

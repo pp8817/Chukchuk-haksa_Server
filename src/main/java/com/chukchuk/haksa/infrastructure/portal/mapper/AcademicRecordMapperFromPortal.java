@@ -19,6 +19,7 @@ public class AcademicRecordMapperFromPortal {
    * @param studentId - 학생의 ID
    * @param academicData - 포털에서 정제한 학업 정보 데이터
    * @return AcademicRecord 도메인 모델
+   * @throws CommonException 학생 식별자가 {@code null}인 경우
    */
   public static AcademicRecord fromPortalAcademicData(
       UUID studentId, PortalAcademicData academicData) {

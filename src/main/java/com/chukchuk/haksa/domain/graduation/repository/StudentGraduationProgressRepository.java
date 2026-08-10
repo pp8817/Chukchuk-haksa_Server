@@ -11,15 +11,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StudentGraduationProgressRepository
     extends JpaRepository<StudentGraduationProgress, UUID> {
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 졸업 부가요건 진행 상태를 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조건에 일치하는 졸업 요건가 있으면 포함한 선택값
+   * @return 저장된 진행 상태가 있으면 포함한 선택값
    */
   Optional<StudentGraduationProgress> findByStudentId(UUID studentId);
 
   /**
-   * 지정된 조건에 해당하는 졸업 요건를 삭제한다.
+   * 학생의 졸업 부가요건 진행 상태를 삭제한다.
    *
    * @param studentId 학생 식별자
    */

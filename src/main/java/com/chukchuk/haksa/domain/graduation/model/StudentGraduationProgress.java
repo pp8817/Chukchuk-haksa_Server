@@ -61,11 +61,11 @@ public class StudentGraduationProgress extends BaseEntity {
   }
 
   /**
-   * 입력 값으로 졸업 요건를 생성한다.
+   * 학생의 외국어 인증 충족 상태를 반영한 졸업 진행도를 생성한다.
    *
    * @param student 대상 학생
    * @param languageCertFulfilled 어학 인증 충족 여부
-   * @return 처리된 졸업 요건
+   * @return 외국어 인증 충족 상태를 반영한 학생 졸업 진행도
    */
   public static StudentGraduationProgress createForLanguageCert(
       Student student, boolean languageCertFulfilled) {

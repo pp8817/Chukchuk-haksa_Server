@@ -34,6 +34,7 @@ public class RefreshPortalConnectionService {
    * @param userId 사용자 식별자
    * @param portalData 최신 학생 정보가 포함된 포털 조회 결과
    * @return 갱신된 학번과 학생 정보 또는 갱신하지 못한 사유
+   * @throws RuntimeException 사용자 조회, 포털 데이터 변환 또는 연동 정보 저장 중 예상하지 못한 오류가 발생한 경우
    */
   @Transactional
   public PortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {

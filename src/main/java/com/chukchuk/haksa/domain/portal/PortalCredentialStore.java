@@ -4,10 +4,10 @@ package com.chukchuk.haksa.domain.portal;
 public interface PortalCredentialStore {
 
   /**
-   * 전달된 도메인 객체 또는 토큰을 영속 저장한다.
+   * 포털 연동이 끝날 때까지 사용할 사용자 자격 증명을 임시 저장한다.
    *
    * @param userId 사용자 식별자
-   * @param username user이름
+   * @param username 임시 저장할 포털 로그인 아이디
    * @param password 포털 비밀번호
    */
   void save(String userId, String username, String password);

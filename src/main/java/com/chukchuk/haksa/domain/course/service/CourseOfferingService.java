@@ -36,10 +36,10 @@ public class CourseOfferingService {
   private final DepartmentRepository departmentRepository;
 
   /**
-   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 개설 강의 명령과 식별 조건이 같은 강의를 재사용하고, 없으면 새로 저장한다.
    *
-   * @param cmd cmd
-   * @return 처리된 과목 및 개설 강의
+   * @param cmd 생성하거나 재사용할 개설 강의 명령
+   * @return 식별 조건이 같으면 기존 개설 강의, 없으면 새로 저장한 개설 강의
    */
   @Transactional
   public CourseOffering getOrCreateOffering(CreateOfferingCommand cmd) {
@@ -47,10 +47,10 @@ public class CourseOfferingService {
   }
 
   /**
-   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 여러 개설 강의 명령을 중복 판별 키로 묶어 일괄 재사용하거나 저장한다.
    *
-   * @param commands commands
-   * @return 처리된 과목 및 개설 강의
+   * @param commands 생성하거나 재사용할 개설 강의 명령 목록
+   * @return 각 명령의 중복 판별 키와 재사용하거나 새로 저장한 개설 강의의 대응표
    */
   @Transactional
   public Map<CourseOfferingKey, CourseOffering> getOrCreateAll(
@@ -103,10 +103,10 @@ public class CourseOfferingService {
   }
 
   /**
-   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 개설 강의 식별자 목록을 한 번에 조회해 식별자별 대응표를 만든다.
    *
-   * @param offeringIds offering ids 식별자
-   * @return 처리된 과목 및 개설 강의
+   * @param offeringIds 조회할 개설 과목 식별자 모음
+   * @return 식별자에 해당하는 개설 강의의 대응표
    */
   @Transactional(readOnly = true)
   public Map<Long, CourseOffering> getOfferingMapByIds(List<Long> offeringIds) {
@@ -197,7 +197,7 @@ public class CourseOfferingService {
   }
 
   /**
-   * 과목 offering key 데이터를 전달한다.
+   * 과목 개설 내역의 중복 판별 키를 표현한다.
    *
    * @param courseId 과목 식별자
    * @param year 연도
@@ -221,7 +221,7 @@ public class CourseOfferingService {
      * 과목 개설 명령에서 중복 판별 키를 생성한다.
      *
      * @param cmd 개설 강의를 식별하고 생성하는 명령
-     * @return 과목 offering key 결과
+     * @return 명령의 개설 과목 속성을 정규화한 중복 판별 키
      */
     public static CourseOfferingKey from(CreateOfferingCommand cmd) {
       FacultyDivisionResolution facultyDivision =
@@ -240,8 +240,8 @@ public class CourseOfferingService {
     /**
      * 과목 개설 엔티티에서 중복 판별 키를 생성한다.
      *
-     * @param offering 응답에 포함할 offering
-     * @return 과목 offering key 결과
+     * @param offering 중복 판별 키를 만들 개설 강의
+     * @return 엔티티의 개설 과목 속성을 정규화한 중복 판별 키
      */
     public static CourseOfferingKey from(CourseOffering offering) {
       return new CourseOfferingKey(

@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "PortalLinkCallbackApiResponse", description = "포털 링크 내부 콜백 처리 응답")
 public class PortalLinkCallbackApiResponse extends SuccessResponse<MessageOnlyResponse> {
 
-  /** 포털 link 콜백 api 응답 인스턴스를 생성한다. */
+  /** 콜백 처리 완료 메시지를 담은 문서용 성공 응답을 생성한다. */
   public PortalLinkCallbackApiResponse() {
     super(new MessageOnlyResponse("콜백 처리 완료"), "요청 성공");
   }

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserControllerDocs {
 
   /**
-   * 사용자 및 소셜 계정를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 로그인 사용자의 분석 식별자를 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
    * @return 처리 결과를 담은 성공 응답
@@ -47,10 +47,10 @@ public interface UserControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
   /**
-   * 사용자 및 소셜 계정에 대한 없음 작업을 수행한다.
+   * 로그인 사용자의 포털 연동 상태를 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
-   * @return 처리된 사용자 및 소셜 계정
+   * @return 로그인 사용자의 포털 연동 상태 성공 응답
    */
   @Operation(
       summary = "내 사용자 정보 조회",

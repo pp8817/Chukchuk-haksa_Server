@@ -17,7 +17,7 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, Lo
    *
    * @param provider 소셜 로그인 제공자
    * @param socialId 제공자가 발급한 사용자 식별자
-   * @return 조건에 일치하는 사용자 및 소셜 계정가 있으면 포함한 선택값
+   * @return 제공자 계정이 일치하면 포함한 선택값
    */
   Optional<SocialAccount> findByProviderAndSocialId(OidcProvider provider, String socialId);
 
@@ -25,7 +25,7 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, Lo
    * 사용자에 연결된 모든 소셜 계정을 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조건에 일치하는 사용자 및 소셜 계정 목록
+   * @return 사용자에 연결된 소셜 계정 목록
    */
   List<SocialAccount> findAllByUserId(UUID userId);
 

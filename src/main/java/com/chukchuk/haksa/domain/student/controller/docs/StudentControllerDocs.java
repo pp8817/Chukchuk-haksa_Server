@@ -59,10 +59,10 @@ public interface StudentControllerDocs {
           Double targetGpa);
 
   /**
-   * 학생에 대한 사용자 작업을 수행한다.
+   * 로그인 학생의 프로필과 포털 동기화 상태를 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
-   * @return 처리된 학생
+   * @return 로그인 학생의 이름·학적·포털 동기화 상태 성공 응답
    */
   @Operation(
       summary = "사용자 프로필 조회",

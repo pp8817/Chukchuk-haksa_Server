@@ -132,7 +132,7 @@ public class SemesterAcademicRecord extends BaseEntity {
    * 학기 학사 기록의 주요 내용이 같은지 비교한다.
    *
    * @param other 비교할 다른 학기 성적, {@code null}이면 다른 기록으로 간주함
-   * @return 조건 충족 여부
+   * @return 비교 대상 성적 필드가 모두 같으면 {@code true}
    */
   public boolean equalsContentOf(SemesterAcademicRecord other) {
     if (other == null) {
@@ -200,6 +200,11 @@ public class SemesterAcademicRecord extends BaseEntity {
     this.lectureEvaluationStatus = status;
   }
 
+  /**
+   * 강의평가를 제출하거나 건너뛰어야 하는 대기 상태인지 확인한다.
+   *
+   * @return 강의평가 상태가 {@code PENDING}이면 {@code true}
+   */
   public boolean isLectureEvaluationPending() {
     return this.lectureEvaluationStatus == LectureEvaluationStatus.PENDING;
   }

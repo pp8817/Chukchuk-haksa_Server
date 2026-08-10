@@ -88,6 +88,7 @@ public class AdminTestMutationService {
    *
    * @param userId 사용자 식별자
    * @param request 변경할 주전공과 복수전공 식별정보
+   * @throws CommonException 복수전공 학과가 없거나 주전공과 같은 학과인 경우
    */
   public void updateMajor(UUID userId, AdminTestDto.UpdateMajorRequest request) {
     Student student = getRequiredStudent(userId);
@@ -132,6 +133,7 @@ public class AdminTestMutationService {
    * @param userId 사용자 식별자
    * @param request 학생 수강 내역에 추가할 테스트 과목 정보
    * @return 생성되어 수강 내역에 추가된 테스트 과목
+   * @throws CommonException 요청 또는 졸업 요건 영역이 없는 경우
    */
   public AdminTestDto.TestCourseResponse createTestCourse(
       UUID userId, AdminTestDto.CreateTestCourseRequest request) {

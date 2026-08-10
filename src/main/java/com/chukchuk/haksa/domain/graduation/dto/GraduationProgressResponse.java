@@ -21,7 +21,7 @@ public class GraduationProgressResponse {
   private boolean hasDifferentGraduationRequirement = false;
 
   /**
-   * 졸업 progress 응답 인스턴스를 생성한다.
+   * 외국어 인증 정보가 아직 없는 영역별 졸업 진행 응답을 생성한다.
    *
    * @param graduationProgress API 응답 형태로 변환할 졸업 진행률 계산 결과
    */
@@ -30,7 +30,7 @@ public class GraduationProgressResponse {
   }
 
   /**
-   * 졸업 progress 응답 인스턴스를 생성한다.
+   * 영역별 진행 상태와 외국어 인증 충족 여부로 졸업 진행 응답을 생성한다.
    *
    * @param graduationProgress API 응답 형태로 변환할 졸업 진행률 계산 결과
    * @param languageCertFulfilled 어학 인증 충족 여부

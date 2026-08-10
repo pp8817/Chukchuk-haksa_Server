@@ -59,7 +59,7 @@ public class ScrapeResultStoreClient {
    *
    * @param location 검증이 끝난 결과 저장소 위치
    * @param jobId 작업 식별자
-   * @return 조건 충족 여부
+   * @return 허용된 prefix 아래 첫 경로가 작업 식별자와 같으면 {@code true}
    */
   public boolean isJobScopedLocation(S3Location location, String jobId) {
     if (jobId == null || jobId.isBlank()) {

@@ -41,7 +41,7 @@ public class LectureEvaluationService {
    * 현재 학생이 제출해야 하는 강의평가 과목을 반환한다.
    *
    * @param userId 사용자 식별자
-   * @return 처리된 강의평가
+   * @return 대상 학기·현재 상태와 평가할 수강 과목 목록
    */
   public LectureEvaluationDto.RequiredResponse getRequired(UUID userId) {
     Student student = studentService.getStudentByUserId(userId);
@@ -73,7 +73,8 @@ public class LectureEvaluationService {
    * 강의평가를 제출하고 관련 학사 기록을 갱신한다.
    *
    * @param userId 사용자 식별자
-   * @param request 요청 정보
+   * @param request 대상 학기와 과목·교수별 평가 내용
+   * @throws CommonException 요청 학기가 평가 대상이 아니거나 제출 과목이 평가 대상과 일치하지 않는 경우
    */
   @Transactional
   public void submit(UUID userId, LectureEvaluationDto.SubmitRequest request) {
@@ -111,7 +112,8 @@ public class LectureEvaluationService {
    * 강의평가를 건너뛰고 관련 학사 기록을 갱신한다.
    *
    * @param userId 사용자 식별자
-   * @param request 요청 정보
+   * @param request 강의평가를 건너뛸 대상 학기
+   * @throws CommonException 요청 학기가 평가 대상이 아니거나 현재 강의평가를 건너뛸 수 없는 경우
    */
   @Transactional
   public void skip(UUID userId, LectureEvaluationDto.SkipRequest request) {

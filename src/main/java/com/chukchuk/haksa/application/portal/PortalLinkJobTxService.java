@@ -222,6 +222,11 @@ public class PortalLinkJobTxService {
       ScrapeJobOutboxStatus outboxStatus,
       String queueMessageId,
       String lastError) {
+    /**
+     * 작업과 outbox가 모두 전송 완료 상태인지 확인한다.
+     *
+     * @return outbox가 전송 완료이고 작업이 실행 중이면 {@code true}
+     */
     public boolean isSent() {
       return outboxStatus == ScrapeJobOutboxStatus.SENT && jobStatus == ScrapeJobStatus.RUNNING;
     }

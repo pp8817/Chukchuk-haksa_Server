@@ -513,8 +513,18 @@ Expected: 커밋이 성공하고 worktree가 clean이다.
 - 이름 반복, 포괄적 요청·응답 설명과 의미 없는 `@param`·`@return` 문구는 `RegexpSinglelineJava` 품질 규칙으로 재유입을 차단했다.
 - 후속 리뷰에서 public/protected 메서드의 필수 `@param`·`@return` 검사를 활성화하고 누락된 51개 태그를 보완했다.
 - 정상적인 `값` 설명은 통과하고 `@param value value 값`은 실패하는 임시 probe로 품질 정규식의 오탐·미탐을 검증했다.
+- 재리뷰에서 한 줄 JavaDoc과 포괄적인 전달·처리 문구가 품질 규칙을 우회하는 문제를 확인해, 한 줄·여러 줄 형식 모두와 반복형 `@param`·`@return`을 검사하도록 보완했다.
+- `JavadocMethod.validateThrows`를 활성화하고 직접 발생시키는 예외의 누락된 `@throws` 계약을 보완했다.
+- 테스트 메서드용 `MethodName` suppression을 제거하고 밑줄이 남은 271개 테스트 메서드를 lowerCamelCase로 변경했다.
+- camelCase로 바꾼 포털·OIDC DTO가 기존 snake_case JSON을 유지하는지 요청 역직렬화와 응답·워커 메시지 필드별 assertion으로 보강했다.
+- 기계적 테스트명 변경에서 text block의 SQL 테이블명까지 바뀐 1건을 diff 감사로 발견해 원복했고, 해당 단일 테스트와 전체 테스트를 다시 통과시켰다.
+- 2차 독립 리뷰의 Spotless 위반, OpenAPI 소요 시간 예시 불일치, 상투적 생성자 JavaDoc, 과도한 `@return` 정규식과 조사 오류를 모두 수정했다.
+- 저장소 조회 조건, 응답 생성자와 DTO에 남은 자동 생성형 설명을 전수 감사하고 구체적인 조회·반환·고정 payload 계약으로 교체했다.
+- 3차 독립 리뷰에서 발견한 상투적 저장·조건 판정 문구를 품질 게이트에 추가하고, 계산형 `is*` predicate의 반환 계약을 문서화했다.
+- 위 수정 후 최신 working tree를 다시 독립 리뷰한 결과 actionable finding은 없었다.
+- 메인 에이전트와 리뷰어의 Gradle 동시 실행 중 공유 `build/` 출력 충돌로 48개 테스트가 `ClassNotFoundException`을 낸 뒤, 리뷰어 실행을 중단하고 단독 전체 테스트와 통합 검사를 재실행해 통과했다.
 - Wiki 대상인 공개 API, 인증, DB 스키마, 아키텍처, 배포·운영 절차는 변경하지 않아 Wiki 갱신은 불필요하다.
-- `./gradlew spotlessApply checkstyleMain checkstyleTest --no-daemon`: 성공.
+- `./gradlew spotlessApply checkstyleMain checkstyleTest --rerun-tasks --no-daemon`: 성공.
 - `./gradlew check --rerun-tasks --stacktrace --no-daemon`: 성공.
-- `./gradlew test --stacktrace --no-daemon`: 성공.
-- `git diff --check`: 성공.
+- `./gradlew test --rerun-tasks --stacktrace --no-daemon`: 388개 중 실패 0개, 오류 0개, 1개 skipped로 성공.
+- `git diff --check origin/dev`와 `git diff --check`: 성공.

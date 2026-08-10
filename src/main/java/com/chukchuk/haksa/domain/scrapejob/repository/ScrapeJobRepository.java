@@ -13,28 +13,28 @@ import org.springframework.data.repository.query.Param;
 public interface ScrapeJobRepository extends JpaRepository<ScrapeJob, String> {
 
   /**
-   * 스크래핑 작업를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 사용자와 멱등성 키가 일치하는 스크래핑 작업을 조회한다.
    *
    * @param userId 사용자 식별자
    * @param idempotencyKey 멱등성 키
-   * @return 조건에 일치하는 스크래핑 작업가 있으면 포함한 선택값
+   * @return 사용자와 멱등성 키가 일치하면 포함한 선택값
    */
   Optional<ScrapeJob> findByUserIdAndIdempotencyKey(UUID userId, String idempotencyKey);
 
   /**
-   * 스크래핑 작업를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 작업 식별자와 사용자가 일치하는 스크래핑 작업을 조회한다.
    *
    * @param jobId 작업 식별자
    * @param userId 사용자 식별자
-   * @return 조건에 일치하는 스크래핑 작업가 있으면 포함한 선택값
+   * @return 작업 식별자와 사용자가 일치하면 포함한 선택값
    */
   Optional<ScrapeJob> findByJobIdAndUserId(String jobId, UUID userId);
 
   /**
-   * 스크래핑 작업를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 상태 전이를 위해 스크래핑 작업을 쓰기 잠금으로 조회한다.
    *
    * @param jobId 작업 식별자
-   * @return 조건에 일치하는 스크래핑 작업가 있으면 포함한 선택값
+   * @return 잠금으로 조회한 작업이 있으면 포함한 선택값
    */
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("select job from ScrapeJob job where job.jobId = :jobId")

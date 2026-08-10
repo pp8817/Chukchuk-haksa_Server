@@ -21,10 +21,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public interface SemesterControllerDocs {
 
   /**
-   * 학사 기록에 대한 없음 작업을 수행한다.
+   * 로그인 학생이 이수한 학기별 성적 요약 목록을 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
-   * @return 처리된 학사 기록
+   * @return 학생이 이수한 학기별 성적 요약 목록 성공 응답
    */
   @Operation(
       summary = "사용자 학기 목록 조회",
@@ -49,10 +49,10 @@ public interface SemesterControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
   /**
-   * 학사 기록에 대한 없음 작업을 수행한다.
+   * 로그인 학생이 이수한 학기별 상세 성적 목록을 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
-   * @return 처리된 학사 기록
+   * @return 학생이 이수한 학기별 상세 성적 목록 성공 응답
    */
   @Operation(
       summary = "사용자 학기 별 성적 조회",

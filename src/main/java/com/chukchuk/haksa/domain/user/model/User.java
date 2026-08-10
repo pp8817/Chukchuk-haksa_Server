@@ -59,7 +59,7 @@ public class User extends BaseEntity {
   /**
    * 로그인 계정의 식별자·이메일·프로필 별명으로 사용자를 생성한다.
    *
-   * @param id id 식별자
+   * @param id 생성할 사용자 식별자
    * @param email 연락 및 로그인에 사용하는 이메일
    * @param profileNickname 프로필 nick이름
    */

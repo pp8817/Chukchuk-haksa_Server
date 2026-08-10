@@ -37,11 +37,11 @@ public class RefreshTokenService {
 
   /* Refresh Token 저장 */
   /**
-   * 전달된 도메인 객체 또는 토큰을 영속 저장한다.
+   * 세션별 리프레시 토큰 원문을 해시해 만료 시각과 함께 저장한다.
    *
    * @param sessionId 세션 식별자
    * @param userId 사용자 식별자
-   * @param refreshToken refresh token 원문
+   * @param refreshToken 저장할 리프레시 토큰 원문
    * @param expiry 만료 시각
    */
   @Transactional
@@ -57,7 +57,9 @@ public class RefreshTokenService {
    * 유효한 refresh token으로 인증 토큰을 재발급한다.
    *
    * @param refreshToken refresh token 원문
-   * @return auth dto refresh 응답 결과
+   * @return 새 액세스 토큰과 리프레시 토큰
+   * @throws TokenException 토큰이 유효하지 않거나 저장된 세션·해시와 일치하지 않는 경우
+   * @throws EntityNotFoundException 토큰의 사용자 식별자에 해당하는 사용자가 없는 경우
    */
   @Transactional
   public AuthDto.RefreshResponse reissue(String refreshToken) {
@@ -120,7 +122,8 @@ public class RefreshTokenService {
    * 세션 식별자에 대응하는 리프레시 토큰을 조회한다.
    *
    * @param sessionId 세션 식별자
-   * @return 처리된 리프레시 토큰
+   * @return 세션 식별자에 해당하는 저장된 리프레시 토큰
+   * @throws TokenException 세션 식별자에 해당하는 토큰이 없는 경우
    */
   public RefreshToken findBySessionId(String sessionId) {
     return refreshTokenRepository

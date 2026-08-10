@@ -29,10 +29,20 @@ public enum GradeType {
   private final String value;
   private final double gradePoint;
 
+  /**
+   * 학점을 취득한 통과 성적인지 확인한다.
+   *
+   * @return 실패·미통과·처리 중 성적이 아니면 {@code true}
+   */
   public boolean isPassingGrade() {
     return this != F && this != NP && this != IP;
   }
 
+  /**
+   * 성적 처리가 완료된 상태인지 확인한다.
+   *
+   * @return 성적이 {@code IP}가 아니면 {@code true}
+   */
   public boolean isCompleted() {
     return this != IP;
   }
@@ -42,6 +52,7 @@ public enum GradeType {
    *
    * @param value 성적 유형
    * @return 성적 type 결과
+   * @throws CommonException 알려진 성적 유형과 일치하지 않는 값인 경우
    */
   public static GradeType from(String value) {
     if (value == null || value.isBlank()) {

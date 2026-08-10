@@ -34,7 +34,7 @@ public class Course extends BaseEntity {
   private Instant deletedAt;
 
   /**
-   * 과목 인스턴스를 생성한다.
+   * 활성 상태의 과목을 코드와 이름으로 생성한다.
    *
    * @param courseCode 과목 코드
    * @param courseName 과목 이름

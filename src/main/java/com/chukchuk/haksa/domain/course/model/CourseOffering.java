@@ -88,10 +88,10 @@ public class CourseOffering extends BaseEntity {
   private LiberalArtsAreaCode liberalArtsAreaCode;
 
   /**
-   * 과목 offering 인스턴스를 생성한다.
+   * 표준 이수구분만 포함한 개설 과목을 생성한다.
    *
    * @param subjectEstablishmentSemester 교과목이 교육과정에 개설된 기준 학기
-   * @param isVideoLecture is video lecture 여부
+   * @param isVideoLecture 온라인 영상 강의인지 여부
    * @param year 연도
    * @param semester 대상 학기
    * @param hostDepartment 주관 학과
@@ -100,7 +100,7 @@ public class CourseOffering extends BaseEntity {
    * @param originalAreaCode 포털에서 수집한 원본 이수구분 코드
    * @param points 학점
    * @param evaluationTypeCode 절대·상대평가를 구분하는 평가 방식
-   * @param facultyDivisionName faculty division 이름
+   * @param facultyDivisionName 표준 이수구분
    * @param course 연결할 수강 과목
    * @param professor 교수
    * @param department 소속 학과
@@ -142,10 +142,10 @@ public class CourseOffering extends BaseEntity {
   }
 
   /**
-   * 과목 offering 인스턴스를 생성한다.
+   * 표준·원본 이수구분을 모두 보존하는 개설 과목을 생성한다.
    *
    * @param subjectEstablishmentSemester 교과목이 교육과정에 개설된 기준 학기
-   * @param isVideoLecture is video lecture 여부
+   * @param isVideoLecture 온라인 영상 강의인지 여부
    * @param year 연도
    * @param semester 대상 학기
    * @param hostDepartment 주관 학과
@@ -154,8 +154,8 @@ public class CourseOffering extends BaseEntity {
    * @param originalAreaCode 포털에서 수집한 원본 이수구분 코드
    * @param points 학점
    * @param evaluationTypeCode 절대·상대평가를 구분하는 평가 방식
-   * @param facultyDivisionName faculty division 이름
-   * @param rawFacultyDivisionName raw faculty division 이름
+   * @param facultyDivisionName 표준 이수구분
+   * @param rawFacultyDivisionName 포털에서 받은 원본 이수구분명
    * @param course 연결할 수강 과목
    * @param professor 교수
    * @param department 소속 학과

@@ -7,18 +7,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.UUID;
 
-/** 계층 간 전달할 데이터를 표현한다. */
+/** 개발 환경의 관리자 테스트 API에서 사용하는 요청·응답 형식을 묶는다. */
 public class AdminTestDto {
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 고정 테스트 계정 생성에 필요한 학적 조건을 전달한다.
    *
    * @param name 이름
    * @param departmentId 학과 식별자
    * @param majorId 전공 id 식별자
    * @param secondaryMajorDepartmentId secondary 전공 학과 식별자
    * @param admissionYear admission 연도
-   * @param isPortalLinked is 포털 linked 여부
+   * @param isPortalLinked 생성 직후 포털 연동 완료 상태로 둘지 여부
    */
   @Schema(description = "테스트 계정 생성 요청")
   public record CreateTestUserRequest(
@@ -49,13 +49,13 @@ public class AdminTestDto {
   }
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 생성된 테스트 계정과 인증 토큰을 전달한다.
    *
    * @param userId 사용자 식별자
    * @param studentId 학생 식별자
    * @param email 연락 및 로그인에 사용하는 이메일
    * @param studentCode 학번
-   * @param accessToken 응답에 포함할 접근 토큰
+   * @param accessToken 생성된 계정에 접근할 액세스 토큰
    * @param refreshToken refresh token 원문
    */
   @Schema(description = "테스트 계정 생성 응답")
@@ -68,10 +68,10 @@ public class AdminTestDto {
       @Schema(description = "Refresh Token") String refreshToken) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 테스트 데이터 조작 화면에서 선택할 학과와 졸업 영역을 전달한다.
    *
-   * @param departments 응답에 포함할 departments
-   * @param graduationAreas 응답에 포함할 졸업 areas
+   * @param departments 선택 가능한 학과 목록
+   * @param graduationAreas 선택 가능한 졸업 요건 영역 목록
    */
   @Schema(description = "테스트 조작 옵션 응답")
   public record TestOptionsResponse(
@@ -79,10 +79,10 @@ public class AdminTestDto {
       @Schema(description = "졸업요건 영역 목록") List<GraduationAreaOption> graduationAreas) {}
 
   /**
-   * 학과 option 데이터를 전달한다.
+   * 테스트 데이터 생성 화면에서 선택할 학과를 표현한다.
    *
-   * @param id id 식별자
-   * @param code 응답에 포함할 code
+   * @param id 학과 식별자
+   * @param code 학과 코드
    * @param name 이름
    */
   @Schema(description = "학과 선택지")
@@ -92,9 +92,9 @@ public class AdminTestDto {
       @Schema(description = "학과명") String name) {}
 
   /**
-   * 졸업 area option 데이터를 전달한다.
+   * 테스트 데이터 생성 화면에서 선택할 졸업 요건 영역을 표현한다.
    *
-   * @param code 응답에 포함할 code
+   * @param code 졸업 요건 영역 코드
    * @param name 이름
    */
   @Schema(description = "졸업요건 영역 선택지")
@@ -119,7 +119,7 @@ public class AdminTestDto {
       @Schema(description = "학과 ID. 선교처럼 학과 필터가 필요 없는 영역은 생략합니다.") Long departmentId) {}
 
   /**
-   * 과목 offering option 데이터를 전달한다.
+   * 강의평가 테스트 데이터에 연결할 개설 과목을 표현한다.
    *
    * @param offeringId 과목 개설 식별자
    * @param courseCode 과목 코드
@@ -128,7 +128,7 @@ public class AdminTestDto {
    * @param semester 대상 학기
    * @param credits 학점
    * @param area 과목 영역 필터
-   * @param rawArea 응답에 포함할 raw area
+   * @param rawArea 포털에서 받은 원본 영역명
    * @param departmentName 학과 이름
    */
   @Schema(description = "강의 후보 선택지")
@@ -144,14 +144,14 @@ public class AdminTestDto {
       @Schema(description = "개설 학과명") String departmentName) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 테스트 계정의 졸업 영역별 수강 내역 변경 내용을 전달한다.
    *
    * @param area 과목 영역 필터
-   * @param addOfferingIds add offering ids 식별자
-   * @param removeStudentCourseIds remove 학생 과목 ids 식별자
+   * @param addOfferingIds 추가할 개설 과목 식별자 모음
+   * @param removeStudentCourseIds 삭제할 학생 수강 내역 식별자 모음
    * @param grade 과목에서 취득한 성적
    * @param points 학점
-   * @param isRetake is retake 여부
+   * @param isRetake 추가 과목을 재수강으로 기록할지 여부
    * @param originalScore 원점수
    */
   @Schema(description = "현재 인증 계정 강의 데이터 수정 요청")
@@ -165,10 +165,10 @@ public class AdminTestDto {
       @Schema(description = "원점수", example = "95") Integer originalScore) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 테스트 계정의 주전공과 복수전공 상태를 전달한다.
    *
    * @param majorDepartmentId 전공 학과 식별자
-   * @param dualMajorEnabled 응답에 포함할 dual 전공 enabled
+   * @param dualMajorEnabled 복수전공 사용 여부
    * @param secondaryMajorDepartmentId secondary 전공 학과 식별자
    */
   @Schema(description = "현재 인증 계정 전공 상태 수정 요청")
@@ -178,7 +178,7 @@ public class AdminTestDto {
       @Schema(description = "복수전공 학과 ID") Long secondaryMajorDepartmentId) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 테스트 계정에 추가할 임의 수강 과목 정보를 전달한다.
    *
    * @param courseCode 과목 코드
    * @param courseName 과목 이름
@@ -189,7 +189,7 @@ public class AdminTestDto {
    * @param semester 대상 학기
    * @param credits 학점
    * @param grade 과목에서 취득한 성적
-   * @param isRetake is retake 여부
+   * @param isRetake 생성 과목을 재수강으로 기록할지 여부
    * @param originalScore 원점수
    */
   @Schema(description = "현재 인증 계정 테스트 강의 생성 요청")
@@ -207,7 +207,7 @@ public class AdminTestDto {
       @Schema(description = "원점수") Integer originalScore) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 테스트 계정에 생성된 수강 과목 식별 정보를 전달한다.
    *
    * @param studentCourseId 학생 과목 식별자
    * @param offeringId 과목 개설 식별자

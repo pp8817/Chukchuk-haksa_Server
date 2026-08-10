@@ -30,10 +30,10 @@ public class Department extends BaseEntity {
   private String establishedDepartmentName;
 
   /**
-   * 학과 인스턴스를 생성한다.
+   * 학과 코드와 표준 학과명으로 학과를 생성한다.
    *
    * @param departmentCode 학과 코드
-   * @param establishedDepartmentName established 학과 이름
+   * @param establishedDepartmentName 표준 학과명
    */
   public Department(String departmentCode, String establishedDepartmentName) {
     this.departmentCode = departmentCode;

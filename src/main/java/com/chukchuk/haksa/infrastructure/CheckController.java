@@ -34,7 +34,11 @@ public class CheckController {
     return "ok";
   }
 
-  /** Sentry 오류 수집 연동을 확인하기 위한 예외를 발생시킨다. */
+  /**
+   * Sentry 오류 수집 연동을 확인하기 위한 예외를 발생시킨다.
+   *
+   * @throws RuntimeException Sentry 수집 확인을 위해 항상 발생한다
+   */
   @Operation(
       responses =
           @ApiResponse(

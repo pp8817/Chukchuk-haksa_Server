@@ -38,10 +38,20 @@ public class Grade {
     return value;
   }
 
+  /**
+   * 성적 처리가 완료된 상태인지 확인한다.
+   *
+   * @return 성적이 {@code IP}가 아니면 {@code true}
+   */
   public boolean isCompleted() {
     return value != GradeType.IP;
   }
 
+  /**
+   * 학점을 취득한 통과 성적인지 확인한다.
+   *
+   * @return 성적 분류가 통과 상태이면 {@code true}
+   */
   public boolean isPassingGrade() {
     return value != GradeType.F && value != GradeType.NP && value != GradeType.IP;
   }

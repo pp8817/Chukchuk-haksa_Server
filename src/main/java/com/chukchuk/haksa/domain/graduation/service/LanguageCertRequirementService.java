@@ -30,10 +30,10 @@ public class LanguageCertRequirementService {
   private final LanguageCertRequirementRepository requirementRepository;
 
   /**
-   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학생의 학과와 입학 연도에 적용되는 외국어 인증 기준을 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 처리된 졸업 요건
+   * @return 학생의 학과와 입학 연도에 적용되는 외국어 인증 기준
    */
   public LanguageCertRequirementResponse getRequirement(UUID studentId) {
     Student student = studentService.getStudentById(studentId);

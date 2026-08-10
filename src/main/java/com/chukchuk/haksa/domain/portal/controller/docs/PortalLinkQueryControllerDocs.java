@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface PortalLinkQueryControllerDocs {
 
   /**
-   * 포털 연동를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 포털 연동 작업의 진행 상태를 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
    * @param jobId 작업 식별자
@@ -53,7 +53,7 @@ public interface PortalLinkQueryControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId);
 
   /**
-   * 포털 연동를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 완료된 포털 연동 작업의 학생 요약을 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
    * @param jobId 작업 식별자
@@ -83,7 +83,7 @@ public interface PortalLinkQueryControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId);
 
   /**
-   * 포털 연동를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 포털 연동 작업의 시작·종료 시각과 소요 시간을 조회한다.
    *
    * @param userDetails 인증된 사용자 정보
    * @param jobId 작업 식별자

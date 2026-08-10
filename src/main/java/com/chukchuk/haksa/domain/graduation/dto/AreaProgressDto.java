@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** 계층 간 전달할 데이터를 표현한다. */
+/** 졸업 요건 영역별 기준과 학생의 이수 진행도를 전달한다. */
 @Getter
 @AllArgsConstructor
 @Schema(description = "졸업 요건 영역별 이수 현황")

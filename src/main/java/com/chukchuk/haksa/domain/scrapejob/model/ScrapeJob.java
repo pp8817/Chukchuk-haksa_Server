@@ -116,7 +116,7 @@ public class ScrapeJob extends BaseEntity {
   }
 
   /**
-   * 입력 값으로 스크래핑 작업를 생성한다.
+   * 요청 시각을 연동 시작 시각으로 사용하는 대기 작업을 생성한다.
    *
    * @param userId 사용자 식별자
    * @param portalType 포털 유형
@@ -124,7 +124,7 @@ public class ScrapeJob extends BaseEntity {
    * @param idempotencyKey 멱등성 키
    * @param requestFingerprint 요청 fingerprint 정보
    * @param requestPayloadJson 요청 payload json 정보
-   * @return 처리된 스크래핑 작업
+   * @return 접수 시각을 시작 시각으로 사용하는 대기 작업
    */
   public static ScrapeJob createQueued(
       UUID userId,
@@ -144,7 +144,7 @@ public class ScrapeJob extends BaseEntity {
   }
 
   /**
-   * 입력 값으로 스크래핑 작업를 생성한다.
+   * 별도로 측정한 연동 시작 시각을 사용하는 대기 작업을 생성한다.
    *
    * @param userId 사용자 식별자
    * @param portalType 포털 유형
@@ -152,8 +152,8 @@ public class ScrapeJob extends BaseEntity {
    * @param idempotencyKey 멱등성 키
    * @param requestFingerprint 요청 fingerprint 정보
    * @param requestPayloadJson 요청 payload json 정보
-   * @param linkStartedAt link started at
-   * @return 처리된 스크래핑 작업
+   * @param linkStartedAt 포털 연동을 시작한 시각
+   * @return 지정한 연동 시작 시각을 사용하는 대기 작업
    */
   public static ScrapeJob createQueued(
       UUID userId,
@@ -176,33 +176,38 @@ public class ScrapeJob extends BaseEntity {
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 요청 본문에서 계산한 지문이 저장된 작업 지문과 같은지 확인한다.
    *
-   * @param requestFingerprint 요청 fingerprint 정보
-   * @return 조건 충족 여부
+   * @param requestFingerprint 비교할 요청 지문
+   * @return 저장된 요청 지문과 같으면 {@code true}
    */
   public boolean hasSameFingerprint(String requestFingerprint) {
     return this.requestFingerprint.equals(requestFingerprint);
   }
 
+  /**
+   * 작업이 성공 또는 실패의 최종 상태에 도달했는지 확인한다.
+   *
+   * @return 작업 상태가 {@code SUCCEEDED} 또는 {@code FAILED}이면 {@code true}
+   */
   public boolean isCompleted() {
     return status == ScrapeJobStatus.SUCCEEDED || status == ScrapeJobStatus.FAILED;
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 워커가 저장한 결과 payload가 있는지 확인한다.
    *
-   * @return 조건 충족 여부
+   * @return 결과 payload가 저장돼 있으면 {@code true}
    */
   public boolean hasWorkerResult() {
     return resultPayloadJson != null;
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 주어진 콜백 시도가 이미 처리한 시도보다 이전이거나 같은지 확인한다.
    *
    * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
-   * @return 조건 충족 여부
+   * @return 중복되거나 오래된 콜백 시도이면 {@code true}
    */
   public boolean hasProcessedAttempt(int attempt) {
     return callbackAttempt != null && attempt <= callbackAttempt;

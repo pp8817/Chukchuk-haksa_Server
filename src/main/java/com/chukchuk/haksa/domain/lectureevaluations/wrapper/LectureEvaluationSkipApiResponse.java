@@ -4,7 +4,7 @@ import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** 계층 간 전달할 데이터를 표현한다. */
+/** 강의평가 건너뛰기 성공 응답의 OpenAPI 예시를 제공한다. */
 @Schema(name = "LectureEvaluationSkipApiResponse", description = "강의평가 건너뛰기 응답")
 public class LectureEvaluationSkipApiResponse extends SuccessResponse<MessageOnlyResponse> {
 

@@ -98,7 +98,7 @@ public final class SentryMdcContext {
   /**
    * 지정한 HTTP 요청에 값이 있는 스크래핑 추적 식별자만 저장한다.
    *
-   * @param request 요청 정보
+   * @param request 스크래핑 추적 헤더를 읽을 HTTP 요청
    * @param context 적용할 문맥
    */
   public static void bindToRequest(HttpServletRequest request, Context context) {
@@ -115,7 +115,7 @@ public final class SentryMdcContext {
   /**
    * HTTP 요청에 저장된 값으로 MDC 범위를 연다.
    *
-   * @param request 요청 정보
+   * @param request MDC에 적용할 추적 속성이 저장된 HTTP 요청
    * @return 요청 문맥을 적용한 scope이며 저장된 값이 없으면 아무 작업도 하지 않는 scope
    */
   public static MdcScope openFromRequest(HttpServletRequest request) {

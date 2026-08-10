@@ -15,11 +15,11 @@ public class DepartmentService {
 
   // 학과 코드로 조회하고, 없으면 새로 생성
   /**
-   * 학과를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 학과 코드가 같은 학과를 재사용하고, 없으면 새로 저장한다.
    *
    * @param departmentCode 학과 코드
    * @param establishedDepartmentName established 학과 이름
-   * @return 처리된 학과
+   * @return 학과 코드가 같으면 기존 학과, 없으면 새로 저장한 학과
    */
   @Transactional
   public Department getOrCreateDepartment(String departmentCode, String establishedDepartmentName) {

@@ -105,6 +105,7 @@ public class StudentService {
    * 사용자에 연결된 학생을 포털 재연동 상태로 변경한다.
    *
    * @param user 재연동 상태로 변경할 학생의 사용자
+   * @throws EntityNotFoundException 사용자에게 연결된 학생이 없는 경우
    */
   @Transactional
   public void markReconnectedByUser(User user) {
@@ -117,7 +118,7 @@ public class StudentService {
   }
 
   /**
-   * 전달된 데이터를 영속 저장소에 보관한다.
+   * 학생을 저장한다.
    *
    * @param student 저장할 학생
    */

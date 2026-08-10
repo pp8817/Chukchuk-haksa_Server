@@ -191,25 +191,37 @@
     </module>
     <module name="RegexpSinglelineJava">
       <property name="format"
-                value="^\s*\*\s+.*(척척학사의 .* 대상을 (설정|생성|갱신|처리|삭제)한다|비즈니스 흐름을 처리한다|기능의 계약을 정의한다|응답 데이터를 전달한다|요청 데이터를 전달한다|필수 의존성과 초기 상태를 받아 인스턴스를 생성한다|요청 조건에 맞는 데이터를 조회한다|현재 상태를 요청 내용에 맞게 갱신한다)\.?\s*$"/>
+                value="^\s*(/\*\*|\*)\s+.*(척척학사의 .* 대상을 (설정|생성|갱신|처리|삭제)한다|비즈니스 흐름을 처리한다|기능의 계약을 정의한다|응답 데이터를 전달한다|요청 데이터를 전달한다|계층 간 전달할 .* 데이터를 표현한다|계층 간 데이터를 전달한다|메서드에 지정된 식별 조건과 정렬 기준으로 조회한다|에 대한 (없음|사용자|LOWER) 작업을 수행한다|입력 값으로 .*를 생성한다|전달된 데이터를 영속 저장소에 보관한다|전달된 도메인 객체 또는 토큰을 영속 저장한다|필수 의존성과 초기 상태를 받아 인스턴스를 생성한다|요청 조건에 맞는 데이터를 조회한다|현재 상태가 조건을 충족하는지 반환한다|현재 상태를 요청 내용에 맞게 갱신한다|지정된 조건에 해당하는 .*를 삭제한다|(?:api|API) 응답 인스턴스를 생성한다)\.?\s*(\*/)?\s*$"/>
       <property name="message"
                 value="Javadoc must describe the concrete responsibility or contract instead of repeating the symbol name."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="format"
-                value="^\s*\*\s+@param\s+([A-Za-z][A-Za-z0-9]*)\s+\1\s+값\s*$"/>
+                value="^\s*\*\s+@param\s+([A-Za-z][A-Za-z0-9]*)\s+\1(\s|$)"/>
       <property name="message"
                 value="Javadoc @param must explain the parameter semantic role, constraints, or use."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="format"
-                value="^\s*\*\s+@param\s+[A-Za-z][A-Za-z0-9]*\s+(호출 시 적용할|호출자가 전달한 요청 데이터)"/>
+                value="^\s*\*\s+@param\s+is[A-Z][A-Za-z0-9]*\s+is\s+"/>
+      <property name="message"
+                value="Javadoc boolean @param must describe what true or false means to the caller."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format"
+                value="^\s*\*\s+@param\s+[A-Za-z][A-Za-z0-9]*\s+(호출 시 적용할|호출자가 전달한 요청 데이터|응답에 포함할)"/>
       <property name="message"
                 value="Javadoc @param must name the domain role or constraint of the argument."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="format"
-                value="^\s*\*\s+@return\s+(조회|생성된|변환된|int|string|object|t|응답 entity.*|조건에 따라 처리되거나 집계된 항목 수)\s*$"/>
+                value="^\s*\*\s+@param\s+request\s+요청 정보\s*$"/>
+      <property name="message"
+                value="Javadoc request @param must explain the request contents, constraints, or operation."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format"
+                value="^\s*\*\s+@return\s+(조회|생성된|변환된|처리된 결과|처리된 값|조건 충족 여부|int|string|object|t|응답 entity.*|조건에 따라 처리되거나 집계된 항목 수)\s*$"/>
       <property name="message"
                 value="Javadoc @return must explain what the returned value means to the caller."/>
     </module>
@@ -438,6 +450,7 @@
       <property name="accessModifiers" value="public, protected"/>
       <property name="allowMissingParamTags" value="false"/>
       <property name="allowMissingReturnTag" value="false"/>
+      <property name="validateThrows" value="true"/>
       <property name="allowedAnnotations" value="Override, Test"/>
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
     </module>
@@ -468,13 +481,6 @@
           value="^(?![a-z]$)(?![a-z][A-Z])[a-z][a-z0-9]*(?:[A-Z][a-z0-9]*)*(?:_[0-9]+)*$"/>
       <message key="name.invalidPattern"
              value="Method name ''{0}'' must match pattern ''{1}''."/>
-    </module>
-    <module name="SuppressionXpathSingleFilter">
-      <property name="checks" value="MethodName"/>
-      <property name="query" value="//METHOD_DEF[
-                                     ./MODIFIERS/ANNOTATION//IDENT[contains(@text, 'Test')]
-                                   ]/IDENT"/>
-      <property name="message" value="'[a-z][a-z0-9][a-zA-Z0-9]*(?:_[a-z][a-z0-9][a-zA-Z0-9]*)*'"/>
     </module>
     <module name="SingleLineJavadoc"/>
     <module name="TodoComment">

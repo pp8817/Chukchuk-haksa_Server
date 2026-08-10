@@ -4,13 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import lombok.Builder;
 
-/** 계층 간 전달할 데이터를 표현한다. */
+/** 인증 토큰 발급과 갱신에 사용하는 요청·응답 형식을 묶는다. */
 public class AuthDto {
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 리프레시 토큰과 만료·세션 정보를 함께 전달한다.
    *
-   * @param token 응답에 포함할 토큰
+   * @param token 발급된 리프레시 토큰 원문
    * @param expiry 만료 시각
    * @param sessionId 세션 식별자
    */
@@ -31,7 +31,7 @@ public class AuthDto {
   }
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 갱신에 사용할 리프레시 토큰을 전달한다.
    *
    * @param refreshToken refresh token 원문
    */
@@ -40,9 +40,9 @@ public class AuthDto {
       @Schema(description = "Refresh Token", required = true) String refreshToken) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 토큰 갱신으로 새로 발급된 액세스·리프레시 토큰을 전달한다.
    *
-   * @param accessToken 응답에 포함할 접근 토큰
+   * @param accessToken 새로 발급된 액세스 토큰
    * @param refreshToken refresh token 원문
    */
   @Schema(description = "Refresh Response DTO")
@@ -51,11 +51,11 @@ public class AuthDto {
       @Schema(description = "리프레시 토큰", required = true) String refreshToken) {}
 
   /**
-   * 계층 간 전달할 데이터를 표현한다.
+   * 로그인 성공으로 발급된 토큰과 포털 연동 상태를 전달한다.
    *
-   * @param accessToken 응답에 포함할 접근 토큰
+   * @param accessToken 로그인 후 발급된 액세스 토큰
    * @param refreshToken refresh token 원문
-   * @param isPortalLinked is 포털 linked 여부
+   * @param isPortalLinked 로그인 사용자의 포털 연동 완료 여부
    */
   @Schema(description = "카카오 로그인 성공 시 반환되는 토큰 정보")
   @Builder

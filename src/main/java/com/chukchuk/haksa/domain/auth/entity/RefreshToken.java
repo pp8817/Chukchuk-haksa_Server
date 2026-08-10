@@ -28,7 +28,7 @@ public class RefreshToken {
   @Column(nullable = false)
   private Date expiry;
 
-  /** JPA에서 사용할 기본 인스턴스를 생성한다. */
+  /** JPA가 리프레시 토큰 엔티티를 복원할 때 사용하는 기본 생성자다. */
   public RefreshToken() {}
 
   /**
@@ -62,9 +62,9 @@ public class RefreshToken {
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 원문 토큰 검증에 사용할 해시가 저장돼 있는지 확인한다.
    *
-   * @return 조건 충족 여부
+   * @return 비어 있지 않은 토큰 해시가 있으면 {@code true}
    */
   public boolean hasTokenHash() {
     return tokenHash != null && !tokenHash.isBlank();

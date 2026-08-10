@@ -77,7 +77,7 @@ public class LanguageCertRequirement extends BaseEntity {
    *
    * @param policyGroup 정책 그룹
    * @param testType 외국어 인증 시험 종류
-   * @param minimumScore minimum 점수
+   * @param minimumScore 점수형 시험의 최소 통과 점수
    * @param displayText 사용자 화면에 노출할 인증 기준 문구
    * @param sortOrder 화면에 표시할 정렬 순서
    * @return language cert 요건 결과

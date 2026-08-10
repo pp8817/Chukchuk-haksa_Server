@@ -42,10 +42,11 @@ public class UserService {
   private final Map<OidcProvider, OidcService> oidcServices;
 
   /**
-   * 사용자 및 소셜 계정를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 사용자 식별자로 계정을 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 처리된 사용자 및 소셜 계정
+   * @return 식별자에 해당하는 사용자
+   * @throws EntityNotFoundException 식별자에 해당하는 사용자가 없는 경우
    */
   public User getUserById(UUID userId) {
     return userRepository
@@ -54,10 +55,10 @@ public class UserService {
   }
 
   /**
-   * 사용자 및 소셜 계정를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 사용자의 포털 연동 완료 여부를 반환한다.
    *
    * @param userId 사용자 식별자
-   * @return 처리된 사용자 및 소셜 계정
+   * @return 사용자의 포털 연동 여부
    */
   public UserDto.MeResponse getMe(UUID userId) {
     User user = getUserById(userId);
@@ -65,7 +66,7 @@ public class UserService {
   }
 
   /**
-   * 전달된 데이터를 영속 저장소에 보관한다.
+   * 사용자를 저장한다.
    *
    * @param user 연결할 사용자
    */
@@ -77,8 +78,8 @@ public class UserService {
   /**
    * OIDC 로그인 요청을 검증하고 인증 토큰을 발급한다.
    *
-   * @param signInRequest sign in 요청 정보
-   * @return auth dto sign in 토큰 응답 결과
+   * @param signInRequest OIDC 제공자와 ID 토큰을 포함한 로그인 요청
+   * @return 로그인 사용자와 발급된 인증 토큰
    */
   @Transactional
   public AuthDto.SignInTokenResponse signIn(UserDto.SignInRequest signInRequest) {
@@ -104,6 +105,7 @@ public class UserService {
    * 지정된 데이터를 삭제한다.
    *
    * @param userId 사용자 식별자
+   * @throws EntityNotFoundException 삭제할 사용자가 없는 경우
    */
   @Transactional
   public void deleteUserById(UUID userId) {

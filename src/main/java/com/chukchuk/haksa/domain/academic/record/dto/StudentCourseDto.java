@@ -7,28 +7,28 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;
 
-/** 학생 과목 계층 간 데이터를 전달한다. */
+/** 학생 수강 내역을 API 과목 상세 응답으로 변환한다. */
 public class StudentCourseDto {
 
   /**
-   * 과목 detail dto 데이터를 전달한다.
+   * 학생의 수강 과목과 성적 상세 정보를 표현한다.
    *
-   * @param id id 식별자
+   * @param id 학생 수강 기록 식별자
    * @param courseName 과목 이름
    * @param courseCode 과목 코드
    * @param areaType 졸업 요건을 구분하는 영역
-   * @param rawAreaType 응답에 포함할 raw area type
+   * @param rawAreaType 포털에서 받은 원본 이수 구분
    * @param credits 학점
    * @param professor 교수
    * @param grade 과목에서 취득한 성적
    * @param score 점수
-   * @param isRetake is retake 여부
-   * @param isOnline is online 여부
+   * @param isRetake 재수강 과목인지 여부
+   * @param isOnline 온라인 강의인지 여부
    * @param year 연도
    * @param semester 대상 학기
    * @param originalScore 원점수
-   * @param liberalAreaCode 응답에 포함할 liberal area code
-   * @param isRetakeDelete is retake delete 여부
+   * @param liberalAreaCode 선교 과목의 교양 영역 코드이며 그 외에는 {@code null}
+   * @param isRetakeDelete 재수강으로 대체돼 성적 계산에서 제외되는지 여부
    */
   @Schema(description = "수강 과목 상세 정보")
   public record CourseDetailDto(

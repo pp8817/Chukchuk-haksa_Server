@@ -11,18 +11,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
   /**
-   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 과목 코드가 일치하는 과목을 조회한다.
    *
    * @param courseCode 과목 코드
-   * @return 조건에 일치하는 과목 및 개설 강의가 있으면 포함한 선택값
+   * @return 과목 코드가 일치하면 포함한 선택값
    */
   Optional<Course> findByCourseCode(String courseCode);
 
   /**
-   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 주어진 과목 코드 중 하나와 일치하는 과목을 조회한다.
    *
-   * @param courseCodes 과목 codes
-   * @return 조건에 일치하는 과목 및 개설 강의 목록
+   * @param courseCodes 조회할 과목 코드 모음
+   * @return 주어진 코드와 일치하는 과목 목록
    */
   List<Course> findByCourseCodeIn(Collection<String> courseCodes);
 }

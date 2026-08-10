@@ -56,7 +56,7 @@ public interface LectureEvaluationControllerDocs {
    * 로그인 사용자의 강의평가를 제출한다.
    *
    * @param userDetails 사용자 상세 정보
-   * @param request 요청 정보
+   * @param request 대상 학기와 과목·교수별 평가 내용
    * @return 강의평가 저장 완료 메시지를 담은 성공 응답
    */
   @Operation(
@@ -91,7 +91,7 @@ public interface LectureEvaluationControllerDocs {
    * 로그인 사용자의 대상 학기 강의평가를 건너뛴다.
    *
    * @param userDetails 사용자 상세 정보
-   * @param request 요청 정보
+   * @param request 강의평가를 건너뛸 대상 학기
    * @return 강의평가 건너뛰기 완료 메시지를 담은 성공 응답
    */
   @Operation(

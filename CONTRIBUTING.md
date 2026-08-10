@@ -53,7 +53,7 @@
 ## 커밋 컨벤션
 
 - 커밋 형식은 `{이슈 번호} {type}: {한국어 메시지}`입니다.
-- type은 `feat`, `fix`, `refactor`, `test`, `docs`, `chore` 중 변경 목적에 맞는 값을 사용합니다.
+- type은 `feat`, `fix`, `refactor`, `docs`, `comment`, `chore`, `deploy`, `test`, `rename`, `remove` 중 변경 목적에 맞는 값을 사용합니다.
 - 하나의 커밋은 하나의 논리적 변경만 포함하고, 사용자 변경은 보존합니다.
 
 ## PR 규칙

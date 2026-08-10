@@ -11,18 +11,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
   /**
-   * 교수를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 이름이 일치하는 교수를 조회한다.
    *
    * @param name 이름
-   * @return 조건에 일치하는 교수가 있으면 포함한 선택값
+   * @return 이름이 일치하는 교수가 있으면 포함한 선택값
    */
   Optional<Professor> findByProfessorName(String name);
 
   /**
-   * 교수를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
+   * 주어진 이름 중 하나와 일치하는 교수를 조회한다.
    *
-   * @param names names
-   * @return 조건에 일치하는 교수 목록
+   * @param names 조회할 교수 이름 모음
+   * @return 주어진 이름 중 하나와 일치하는 교수 목록
    */
   List<Professor> findByProfessorNameIn(Collection<String> names);
 }

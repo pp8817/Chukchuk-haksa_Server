@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface PortalLinkCommandControllerDocs {
 
   /**
-   * 포털 연동에 대한 입력 작업을 수행한다.
+   * 일회용 검증 토큰으로 비동기 포털 연동 작업을 생성한다.
    *
    * @param userDetails 인증된 사용자 정보
    * @param idempotencyKey 멱등성 키
    * @param request 포털 유형·일회용 검증 토큰·멱등성 키를 포함한 작업 생성 요청
-   * @return 처리된 포털 연동
+   * @return 접수된 작업 식별자와 상태 조회 경로
    */
   @Operation(
       summary = "포털 연동 job 생성",

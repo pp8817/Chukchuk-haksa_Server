@@ -9,7 +9,7 @@ import java.util.List;
 @Schema(name = "AcademicRecordApiResponse", description = "학기별 성적 및 수강 과목 정보 응답")
 public class AcademicRecordApiResponse extends SuccessResponse<AcademicRecordResponse> {
 
-  /** 학사 record api 응답 인스턴스를 생성한다. */
+  /** 빈 수강 과목 그룹을 담은 학기 성적 문서용 성공 응답을 생성한다. */
   public AcademicRecordApiResponse() {
     super(
         new AcademicRecordResponse(

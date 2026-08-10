@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface CourseEvaluationRepository extends JpaRepository<CourseEvaluation, Long> {
 
   /**
-   * 지정된 조건에 해당하는 강의평가를 삭제한다.
+   * 학생의 지정 학기 강의평가를 모두 삭제한다.
    *
    * @param studentId 학생 식별자
    * @param year 대상 연도

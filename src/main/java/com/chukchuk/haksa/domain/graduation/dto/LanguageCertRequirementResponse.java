@@ -9,16 +9,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 /**
- * 계층 간 전달할 데이터를 표현한다.
+ * 학생의 학과와 입학 연도에 적용되는 외국어 인증 기준을 전달한다.
  *
  * @param departmentCode 학과 코드
  * @param departmentName 학과 이름
  * @param admissionYear admission 연도
- * @param policyGroupKey 응답에 포함할 policy group key
+ * @param policyGroupKey 적용된 정책 그룹의 내부 키이며 미매핑이면 {@code null}
  * @param policyGroupName policy group 이름
  * @param matchStatus match 상태
  * @param note 요건과 함께 안내할 참고 문구
- * @param requirements 응답에 포함할 requirements
+ * @param requirements 시험별 통과 기준 목록
  */
 @Schema(description = "외국어 인증 기준 응답")
 public record LanguageCertRequirementResponse(
@@ -57,12 +57,12 @@ public record LanguageCertRequirementResponse(
   }
 
   /**
-   * 요건 데이터를 전달한다.
+   * 외국어 인증 시험의 최소 점수 또는 등급 요건을 표현한다.
    *
    * @param testType 외국어 인증 시험 종류
-   * @param minimumScore minimum 점수
-   * @param minimumGrade 응답에 포함할 minimum 성적
-   * @param displayText 응답에 포함할 display text
+   * @param minimumScore 통과에 필요한 최소 점수이며 등급형 시험이면 {@code null}
+   * @param minimumGrade 통과에 필요한 최소 등급이며 점수형 시험이면 {@code null}
+   * @param displayText 사용자에게 보여 줄 통과 기준 문구
    * @param sortOrder 화면에 표시할 정렬 순서
    */
   public record Requirement(

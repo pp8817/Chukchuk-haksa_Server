@@ -46,7 +46,7 @@ public class CourseEvaluationTag {
   private LectureEvaluationTag tag;
 
   /**
-   * 과목 evaluation tag 인스턴스를 생성한다.
+   * 강의평가에 사용자가 선택한 태그를 연결한다.
    *
    * @param courseEvaluation 태그가 속한 강의평가
    * @param tag 사용자가 선택한 평가 태그

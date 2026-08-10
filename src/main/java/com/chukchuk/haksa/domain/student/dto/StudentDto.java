@@ -10,18 +10,18 @@ import java.util.Objects;
 public class StudentDto {
 
   /**
-   * 계층 간 전달할 학생 info dto 데이터를 표현한다.
+   * 포털에서 동기화한 학생 학적 정보를 표현한다.
    *
    * @param studentCode 학번
    * @param name 이름
    * @param departmentName 학과 이름
    * @param majorName 전공 이름
-   * @param dualMajorName dual 전공 이름
+   * @param dualMajorName 복수전공 이름
    * @param gradeLevel 학년
    * @param status 상태
    * @param completedSemesters 이수 학기 수
    * @param updatedAt 수정 시각
-   * @param reconnectionRequired 응답에 포함할 reconnection required
+   * @param reconnectionRequired 포털 자격 증명을 다시 확인해야 하는지 여부
    */
   public record StudentInfoDto(
       String studentCode,
@@ -38,7 +38,7 @@ public class StudentDto {
      * 학생 엔티티를 학생 정보 응답으로 변환한다.
      *
      * @param student 기록의 소유 학생
-     * @return 학생 info dto 결과
+     * @return 학생 엔티티에서 변환한 학적 정보
      */
     public static StudentInfoDto from(Student student) {
       return new StudentInfoDto(
@@ -60,19 +60,19 @@ public class StudentDto {
   }
 
   /**
-   * 계층 간 전달할 학생 프로필 응답 데이터를 표현한다.
+   * 사용자 화면에 표시할 학생 프로필과 목표 학점을 표현한다.
    *
    * @param name 이름
    * @param studentCode 학번
    * @param departmentName 학과 이름
    * @param majorName 전공 이름
-   * @param dualMajorName dual 전공 이름
+   * @param dualMajorName 복수전공 이름
    * @param gradeLevel 학년
-   * @param currentSemester 응답에 포함할 current 학기
+   * @param currentSemester 현재 재학 학기 차수
    * @param status 상태
    * @param lastUpdatedAt last 수정 시각
-   * @param lastSyncedAt 응답에 포함할 last synced at
-   * @param reconnectionRequired 응답에 포함할 reconnection required
+   * @param lastSyncedAt 포털 학사 정보를 마지막으로 동기화한 시각
+   * @param reconnectionRequired 포털 자격 증명을 다시 확인해야 하는지 여부
    */
   @Schema(description = "학생 프로필 정보")
   public record StudentProfileResponse(
@@ -91,9 +91,9 @@ public class StudentDto {
     /**
      * 학생 정보와 동기화 시각으로 학생 프로필 응답을 생성한다.
      *
-     * @param studentInfoDto 응답에 포함할 학생 info dto
-     * @param currentSemester 응답에 포함할 current 학기
-     * @param lastSyncedAt 응답에 포함할 last synced at
+     * @param studentInfoDto 프로필로 변환할 학생·학적 정보
+     * @param currentSemester 현재 재학 학기 차수
+     * @param lastSyncedAt 포털 학사 정보를 마지막으로 동기화한 시각
      * @return 학생 프로필 응답 결과
      */
     public static StudentProfileResponse from(

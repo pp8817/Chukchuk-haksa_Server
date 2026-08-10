@@ -48,12 +48,12 @@ public class LanguageCertPolicyGroup extends BaseEntity {
   }
 
   /**
-   * 입력 값으로 졸업 요건를 생성한다.
+   * 외국어 인증 정책 그룹을 생성한다.
    *
    * @param groupKey group key
    * @param name 이름
-   * @param description description
-   * @return 처리된 졸업 요건
+   * @param description 사용자에게 보여 줄 정책 그룹 설명
+   * @return 지정한 키·이름·설명을 가진 외국어 인증 정책 그룹
    */
   public static LanguageCertPolicyGroup create(String groupKey, String name, String description) {
     return new LanguageCertPolicyGroup(groupKey, name, description);

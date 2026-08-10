@@ -14,11 +14,11 @@
 
 - public/protected 타입과 메서드는 호출자가 알아야 할 책임과 계약을 설명합니다.
 - 매개변수, 반환값, 호출자가 처리해야 할 예외가 있으면 각각 `@param`, `@return`, `@throws`로 기록합니다.
-- public/protected 메서드에서 `@param`이나 `@return`을 빠뜨리면 Checkstyle이 실패합니다.
+- public/protected 메서드에서 `@param`, `@return` 또는 메서드 본문에서 직접 발생시키는 예외의 `@throws`를 빠뜨리면 Checkstyle이 실패합니다.
 - record 타입은 각 구성요소를 `@param`으로 설명합니다.
 - `@Override`, `@Test` 메서드는 상위 계약이나 테스트 이름으로 의도가 충분하면 중복 Javadoc을 작성하지 않습니다.
 - private 구현에는 알고리즘이나 제약을 설명할 필요가 있을 때만 Javadoc을 작성합니다.
-- 타입·메서드·매개변수 이름을 그대로 반복하지 않습니다. `요청 조건에 맞는 데이터를 조회한다`, `@param value value 값`, `@return 생성된`처럼 호출자에게 새로운 정보를 주지 않는 문장은 Checkstyle에서 거부합니다. 단, 구체적인 의미를 설명한 정상 문장까지 금지하지 않도록 정확히 일치하는 반복형 문구만 검사합니다.
+- 타입·메서드·매개변수 이름을 그대로 반복하지 않습니다. `요청 조건에 맞는 데이터를 조회한다`, `계층 간 전달할 데이터를 표현한다`, `@param value value 값`, `@param token 응답에 포함할 토큰`, `@return 생성된`처럼 호출자에게 새로운 정보를 주지 않는 문장은 Checkstyle에서 거부합니다. 단, 구체적인 의미를 설명한 정상 문장까지 금지하지 않도록 정확히 일치하는 반복형 문구만 검사합니다.
 
 ```java
 /**
@@ -37,7 +37,7 @@ public record DepartmentResponse(Long id, String name) {}
 ## import와 명명
 
 - wildcard import를 사용하지 않습니다.
-- 타입은 UpperCamelCase, 메서드와 변수는 lowerCamelCase를 사용합니다.
+- 타입은 UpperCamelCase, 운영·테스트 메서드와 변수는 lowerCamelCase를 사용합니다. 테스트 조건과 기대 결과도 밑줄 대신 camelCase로 이어 씁니다.
 - 약어도 일반 단어처럼 표기합니다. 예: `OidcConfig`, `RawPortalDataDto`.
 - Java 내부 식별자는 camelCase를 사용하고, 외부 JSON의 snake_case 계약은 `@JsonProperty`로 명시합니다.
 

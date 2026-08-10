@@ -64,7 +64,7 @@ public class StudentCourse {
   private Student student;
 
   /**
-   * 학생 과목 인스턴스를 생성한다.
+   * 학생과 개설 과목에 취득 성적을 연결한 수강 내역을 생성한다.
    *
    * @param student 과목을 수강한 학생
    * @param offering 수강한 강의 개설 정보

@@ -153,8 +153,8 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
    * 학과와 입학연도가 이 정책의 적용 범위인지 확인한다.
    *
    * @param departmentCode 학과 코드
-   * @param admissionYear admission 연도
-   * @return 조건 충족 여부
+   * @param admissionYear 입학 연도
+   * @return 학과 코드가 같고 입학 연도가 적용 범위에 포함되면 {@code true}
    */
   public boolean appliesTo(String departmentCode, int admissionYear) {
     return Objects.equals(this.departmentCode, departmentCode)

@@ -43,7 +43,7 @@ public class AcademicInfo {
    *
    * @param admissionYear admission 연도
    * @param semesterEnrolled 현재까지 등록한 학기 수
-   * @param isTransferStudent is transfer 학생 여부
+   * @param isTransferStudent 편입생인지 여부
    * @param status 상태
    * @param gradeLevel 학년
    * @param completedSemesters 이수 학기 수
