@@ -28,7 +28,7 @@ repositories {
 spotless {
     java {
         target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
-        googleJavaFormat('1.35.0')
+        googleJavaFormat('1.28.0')
     }
 }
 

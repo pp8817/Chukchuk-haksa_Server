@@ -6,7 +6,7 @@
 
 **Architecture:** Gradle에 Spotless와 Checkstyle을 추가해 포맷, 정적 스타일, 테스트를 독립적으로 실행하고 `check`에서 통합한다. 기존 소스의 기계적 포맷과 의미 있는 Javadoc·스타일 수정을 분리하며, 사람·에이전트·PR 문서를 같은 명령과 커밋 규칙으로 정렬한다.
 
-**Tech Stack:** Java 17, Spring Boot 3.2.5, Gradle, Spotless 8.8.0, google-java-format 1.35.0, Checkstyle 12.3.1, GitHub Actions.
+**Tech Stack:** Java 17, Spring Boot 3.2.5, Gradle, Spotless 8.8.0, google-java-format 1.28.0, Checkstyle 12.3.1, GitHub Actions.
 
 ## Global Constraints
 
@@ -55,7 +55,7 @@ id 'com.diffplug.spotless' version '8.8.0'
 ```groovy
 spotless {
     java {
-        googleJavaFormat('1.35.0')
+        googleJavaFormat('1.28.0')
     }
 }
 
@@ -118,7 +118,7 @@ git commit -m "327 chore: Google Java Style 검사 도구 설정"
 
 **Interfaces:**
 - Consumes: Task 1의 `spotlessApply`, `spotlessCheck` task.
-- Produces: google-java-format 1.35.0과 일치하는 전체 Java 기준선.
+- Produces: google-java-format 1.28.0과 일치하는 전체 Java 기준선.
 
 - [x] **Step 1: 포맷 위반이 있는 현재 기준선을 확인한다.**
 

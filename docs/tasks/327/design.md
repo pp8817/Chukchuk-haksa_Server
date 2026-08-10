@@ -29,7 +29,7 @@
 ### Spotless
 
 - Gradle 플러그인 `com.diffplug.spotless` 8.8.0을 사용한다.
-- `google-java-format` 1.35.0을 main/test Java 소스에 적용한다.
+- Java 17에서 실행 가능한 `google-java-format` 1.28.0을 main/test Java 소스에 적용한다.
 - `spotlessApply`는 서식을 고치는 명령, `spotlessCheck`는 변경 없이 위반을 검사하는 명령으로 사용한다.
 - 전체 소스의 최초 포맷 결과는 별도 커밋으로 분리해 이후 의미 변경을 검토하기 쉽게 한다.
 

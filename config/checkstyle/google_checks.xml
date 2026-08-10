@@ -363,7 +363,7 @@
       <property name="lineWrappingIndentation" value="4"/>
       <property name="arrayInitIndent" value="2"/>
     </module>
-    <!-- google-java-format 1.35.0 aligns multiline record closing parentheses by 4 spaces. -->
+    <!-- google-java-format aligns multiline record closing parentheses by 4 spaces. -->
     <module name="SuppressionXpathSingleFilter">
       <property name="checks" value="Indentation"/>
       <property name="query" value="//RECORD_DEF/RPAREN"/>
