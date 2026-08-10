@@ -20,7 +20,7 @@ class GraduationQueryRepositoryEtcTests {
 
   @Test
   @DisplayName("기타 이수구분 수강 이력이 있으면 매직 넘버 영역을 추가한다")
-  void getStudentAreaProgress_addsEtcAreaWithMagicNumbers() {
+  void getStudentAreaProgressAddsEtcAreaWithMagicNumbers() {
     List<AreaProgressDto> progress = repository.getStudentAreaProgress(UUID.randomUUID(), 1L, 2024);
 
     AreaProgressDto majorArea =
@@ -44,7 +44,7 @@ class GraduationQueryRepositoryEtcTests {
 
   @Test
   @DisplayName("학점이 없는 과목이 있어도 일반 영역 취득학점을 계산한다")
-  void getStudentAreaProgress_treatsNullCreditsAsZero() {
+  void getStudentAreaProgressTreatsNullCreditsAsZero() {
     List<AreaProgressDto> progress = repository.getStudentAreaProgress(UUID.randomUUID(), 1L, 2024);
 
     assertThat(progress)
@@ -56,7 +56,7 @@ class GraduationQueryRepositoryEtcTests {
 
   @Test
   @DisplayName("선교 completedElectiveCourses 는 요건 공백을 무시하고 세부 영역 고유 개수로 계산한다")
-  void getStudentAreaProgress_countsMissionDistinctLiberalAreas() {
+  void getStudentAreaProgressCountsMissionDistinctLiberalAreas() {
     GraduationQueryRepository missionRepository = new TestMissionGraduationQueryRepository();
 
     List<AreaProgressDto> progress =

@@ -72,7 +72,7 @@ class AdminTestLectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("empty-semester는 대상 학기 데이터를 모두 삭제하고 추가 row를 만들지 않는다")
-  void setEmptySemester_deletesTargetSemesterDataOnly() {
+  void setEmptySemesterDeletesTargetSemesterDataOnly() {
     Student student = targetStudent();
     when(userRepository.findById(TARGET_USER_ID)).thenReturn(Optional.of(student.getUser()));
 
@@ -103,7 +103,7 @@ class AdminTestLectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("not-released는 실제 교수 연결 강의를 IP 수강 과목으로 재구성한다")
-  void setNotReleased_rebuildsIpCoursesAndNotReleasedSemester() {
+  void setNotReleasedRebuildsIpCoursesAndNotReleasedSemester() {
     Student student = targetStudent();
     CourseOffering offering = offering(1L, 11L, "자료구조", "김교수");
     when(userRepository.findById(TARGET_USER_ID)).thenReturn(Optional.of(student.getUser()));
@@ -125,7 +125,7 @@ class AdminTestLectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("pending은 완료 성적 수강 과목과 PENDING 학기 row만 재구성한다")
-  void setPending_rebuildsCompletedCoursesAndPendingSemesterWithoutEvaluations() {
+  void setPendingRebuildsCompletedCoursesAndPendingSemesterWithoutEvaluations() {
     Student student = targetStudent();
     CourseOffering offering = offering(1L, 11L, "자료구조", "김교수");
     when(userRepository.findById(TARGET_USER_ID)).thenReturn(Optional.of(student.getUser()));
@@ -144,7 +144,7 @@ class AdminTestLectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("skipped는 완료 성적 수강 과목과 SKIPPED 학기 row만 재구성한다")
-  void setSkipped_rebuildsCompletedCoursesAndSkippedSemesterWithoutEvaluations() {
+  void setSkippedRebuildsCompletedCoursesAndSkippedSemesterWithoutEvaluations() {
     Student student = targetStudent();
     CourseOffering offering = offering(1L, 11L, "자료구조", "김교수");
     when(userRepository.findById(TARGET_USER_ID)).thenReturn(Optional.of(student.getUser()));
@@ -160,7 +160,7 @@ class AdminTestLectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("completed는 완료 성적 수강 과목과 평가 데이터를 재구성한다")
-  void setCompleted_rebuildsCoursesSemesterAndEvaluations() {
+  void setCompletedRebuildsCoursesSemesterAndEvaluations() {
     Student student = targetStudent();
     CourseOffering first = offering(1L, 11L, "자료구조", "김교수");
     CourseOffering second = offering(2L, 12L, "운영체제", "이교수");
@@ -181,7 +181,7 @@ class AdminTestLectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("재사용할 실제 교수 연결 강의가 없으면 임의 데이터를 만들지 않고 실패한다")
-  void setPending_throwsWhenReusableOfferingMissing() {
+  void setPendingThrowsWhenReusableOfferingMissing() {
     Student student = targetStudent();
     when(userRepository.findById(TARGET_USER_ID)).thenReturn(Optional.of(student.getUser()));
     when(courseOfferingRepository.findReusableLectureEvaluationTestOfferings(

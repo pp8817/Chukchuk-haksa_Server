@@ -78,7 +78,7 @@ class JwtAuthenticationFilterTests {
 
   @Test
   @DisplayName("만료된 acToken으로 /api/users/me 호출 시 401 TOKEN_EXPIRED를 반환한다")
-  void getMe_withExpiredAccessToken_returns401() throws Exception {
+  void getMeWithExpiredAccessTokenReturns401() throws Exception {
     String token = "expired-access-token";
     when(jwtProvider.parseToken(token)).thenThrow(new ExpiredJwtException(null, null, "expired"));
 
@@ -96,7 +96,7 @@ class JwtAuthenticationFilterTests {
 
   @Test
   @DisplayName("유효하지 않은 acToken으로 /api/student/profile 호출 시 401 TOKEN_INVALID를 반환한다")
-  void getStudentProfile_withInvalidAccessToken_returns401() throws Exception {
+  void getStudentProfileWithInvalidAccessTokenReturns401() throws Exception {
     String token = "invalid-access-token";
     when(jwtProvider.parseToken(token)).thenThrow(new JwtException("invalid"));
 
@@ -114,7 +114,7 @@ class JwtAuthenticationFilterTests {
 
   @Test
   @DisplayName("탈퇴 사용자 acToken으로 /api/users/me 호출 시 401 TOKEN_INVALID를 반환한다")
-  void getMe_withDeletedUserAccessToken_returns401() throws Exception {
+  void getMeWithDeletedUserAccessTokenReturns401() throws Exception {
     String userId = UUID.randomUUID().toString();
     String token = "deleted-user-access-token";
     Claims claims = Jwts.claims().setSubject(userId);
@@ -143,7 +143,7 @@ class JwtAuthenticationFilterTests {
 
   @Test
   @DisplayName("탈퇴 처리된 사용자 acToken으로 /api/users/analytics-id 호출 시 401 TOKEN_INVALID를 반환한다")
-  void getAnalyticsId_withWithdrawnUserAccessToken_returns401() throws Exception {
+  void getAnalyticsIdWithWithdrawnUserAccessTokenReturns401() throws Exception {
     UUID userId = UUID.randomUUID();
     String token = "withdrawn-user-access-token";
     Claims claims = Jwts.claims().setSubject(userId.toString());
@@ -173,7 +173,7 @@ class JwtAuthenticationFilterTests {
 
   @Test
   @DisplayName("subject가 없는 acToken으로 /api/users/me 호출 시 401 TOKEN_INVALID를 반환한다")
-  void getMe_withMissingSubjectAccessToken_returns401() throws Exception {
+  void getMeWithMissingSubjectAccessTokenReturns401() throws Exception {
     String token = "missing-subject-access-token";
     Claims claims = Jwts.claims();
 
@@ -193,7 +193,7 @@ class JwtAuthenticationFilterTests {
 
   @Test
   @DisplayName("dev 테스트 옵션 조회 API는 토큰 없이도 인증 오류를 반환하지 않는다")
-  void getAdminTestReadEndpoints_withoutToken_arePublic() throws Exception {
+  void getAdminTestReadEndpointsWithoutTokenArePublic() throws Exception {
     mockMvc.perform(get("/api/admin/test-options")).andExpect(status().isOk());
 
     mockMvc.perform(get("/api/admin/departments")).andExpect(status().isOk());

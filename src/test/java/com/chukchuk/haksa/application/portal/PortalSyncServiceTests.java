@@ -63,7 +63,7 @@ class PortalSyncServiceTests {
 
   @Test
   @DisplayName("LINK 중 기존 연동 사용자가 병합되면 REFRESH처럼 재동기화한다")
-  void syncWithPortal_usesRefreshFlowWhenMergeMakesUserConnected() {
+  void syncWithPortalUsesRefreshFlowWhenMergeMakesUserConnected() {
     UUID userId = UUID.randomUUID();
     User mergedUser = connectedUser(userId);
     PortalData portalData = portalData("19018036", true);
@@ -88,7 +88,7 @@ class PortalSyncServiceTests {
 
   @Test
   @DisplayName("처음 LINK하는 사용자는 기존 신규 초기화 흐름을 유지한다")
-  void syncWithPortal_keepsInitialFlowForUnconnectedUser() {
+  void syncWithPortalKeepsInitialFlowForUnconnectedUser() {
     UUID userId = UUID.randomUUID();
     User user = unconnectedUser(userId);
     PortalData portalData = portalData("19018036", true);

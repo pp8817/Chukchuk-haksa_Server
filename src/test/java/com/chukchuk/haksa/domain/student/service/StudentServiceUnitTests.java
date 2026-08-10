@@ -49,7 +49,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("studentId로 학생을 조회할 수 있다")
-  void getStudentById_success() {
+  void getStudentByIdSuccess() {
     UUID studentId = UUID.randomUUID();
     Student student = org.mockito.Mockito.mock(Student.class);
     when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
@@ -61,7 +61,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생이 없으면 STUDENT_NOT_FOUND 예외를 던진다")
-  void getStudentById_notFound_throws() {
+  void getStudentByIdNotFoundThrows() {
     UUID studentId = UUID.randomUUID();
     when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
 
@@ -75,7 +75,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("userId로 학생을 조회한다")
-  void getStudentByUserId_success() {
+  void getStudentByUserIdSuccess() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("u@example.com").profileNickname("u").build();
     Student student = org.mockito.Mockito.mock(Student.class);
@@ -89,7 +89,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생 컨텍스트가 필요할 때 userId로 studentId를 조회한다")
-  void getRequiredStudentIdByUserId_success() {
+  void getRequiredStudentIdByUserIdSuccess() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     User user = User.builder().id(userId).email("u@example.com").profileNickname("u").build();
@@ -105,7 +105,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생 컨텍스트가 없으면 USER_NOT_CONNECTED 예외를 던진다")
-  void getRequiredStudentIdByUserId_notConnected_throws() {
+  void getRequiredStudentIdByUserIdNotConnectedThrows() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("u@example.com").profileNickname("u").build();
     when(userService.getUserById(userId)).thenReturn(user);
@@ -120,7 +120,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("재연동 마킹 시 학생을 조회해 markReconnected 후 저장한다")
-  void markReconnectedByUser_success() {
+  void markReconnectedByUserSuccess() {
     User user =
         User.builder().id(UUID.randomUUID()).email("u@example.com").profileNickname("u").build();
     Student student = org.mockito.Mockito.mock(Student.class);
@@ -134,7 +134,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("재연동 대상 학생이 없으면 STUDENT_NOT_FOUND 예외를 던진다")
-  void markReconnectedByUser_notFound_throws() {
+  void markReconnectedByUserNotFoundThrows() {
     User user =
         User.builder().id(UUID.randomUUID()).email("u@example.com").profileNickname("u").build();
     when(studentRepository.findByUser(user)).thenReturn(Optional.empty());
@@ -149,7 +149,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생 저장은 repository.save에 위임한다")
-  void save_delegatesToRepository() {
+  void saveDelegatesToRepository() {
     Student student = org.mockito.Mockito.mock(Student.class);
 
     studentService.save(student);
@@ -159,7 +159,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생 프로필 조회 성공 시 currentSemester를 계산해 반환한다")
-  void getStudentProfile_success() {
+  void getStudentProfileSuccess() {
     UUID studentId = UUID.randomUUID();
     Student student = profileStudent(3, 7, Instant.parse("2026-02-22T00:00:00Z"), null);
     when(studentRepository.findProfileByIdWithAssociations(studentId))
@@ -174,7 +174,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생 프로필이 없으면 STUDENT_NOT_FOUND 공통 예외를 던진다")
-  void getStudentProfile_notFound_throws() {
+  void getStudentProfileNotFoundThrows() {
     UUID studentId = UUID.randomUUID();
     when(studentRepository.findProfileByIdWithAssociations(studentId)).thenReturn(Optional.empty());
 
@@ -188,7 +188,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("userId 기준 프로필 조회 성공 시 현재 연결된 학생 프로필을 반환한다")
-  void getStudentProfileByUserId_success() {
+  void getStudentProfileByUserIdSuccess() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student =
@@ -213,7 +213,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("프로필 조회 대상 사용자가 없으면 USER_NOT_FOUND 예외를 던진다")
-  void getStudentProfileByUserId_userNotFound_throws() {
+  void getStudentProfileByUserIdUserNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     when(userRepository.findProfileByIdWithAssociations(userId)).thenReturn(Optional.empty());
 
@@ -227,7 +227,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("프로필 조회 대상 사용자가 학생과 연결되지 않았으면 USER_NOT_CONNECTED 예외를 던진다")
-  void getStudentProfileByUserId_userNotConnected_throws() {
+  void getStudentProfileByUserIdUserNotConnectedThrows() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     when(userRepository.findProfileByIdWithAssociations(userId)).thenReturn(Optional.of(user));
@@ -242,7 +242,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("프로필 응답의 lastUpdatedAt과 lastSyncedAt은 null일 때 빈 문자열로 내려간다")
-  void getStudentProfileByUserId_nullTimestamps_returnsEmptyString() {
+  void getStudentProfileByUserIdNullTimestampsReturnsEmptyString() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = profileStudent(3, 5, null, null);
@@ -258,7 +258,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("학생 데이터 초기화 시 학기/과목/학업요약을 벌크 삭제한다")
-  void resetBy_deletesAcademicRecordsInBulk() {
+  void resetByDeletesAcademicRecordsInBulk() {
     UUID studentId = UUID.randomUUID();
 
     studentService.resetBy(studentId);
@@ -270,7 +270,7 @@ class StudentServiceUnitTests {
 
   @Test
   @DisplayName("목표 GPA 설정은 repository update 메서드에 위임한다")
-  void setStudentTargetGpa_updatesRepository() {
+  void setStudentTargetGpaUpdatesRepository() {
     UUID studentId = UUID.randomUUID();
 
     studentService.setStudentTargetGpa(studentId, 3.8);

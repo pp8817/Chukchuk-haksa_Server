@@ -29,7 +29,7 @@ class AuthControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("refresh 성공 시 재발급 토큰을 반환한다")
-  void refresh_success() throws Exception {
+  void refreshSuccess() throws Exception {
     when(refreshTokenService.reissue("valid-refresh-token"))
         .thenReturn(new AuthDto.RefreshResponse("new-access-token", "new-refresh-token"));
 
@@ -51,7 +51,7 @@ class AuthControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("refresh token mismatch 예외 발생 시 401을 반환한다")
-  void refresh_tokenMismatch() throws Exception {
+  void refreshTokenMismatch() throws Exception {
     when(refreshTokenService.reissue("mismatch-token"))
         .thenThrow(new TokenException(ErrorCode.REFRESH_TOKEN_MISMATCH));
 

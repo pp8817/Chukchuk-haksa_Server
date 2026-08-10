@@ -44,7 +44,7 @@ class StudentAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("학업 요약 캐시가 있으면 캐시 값을 그대로 반환한다")
-  void getAcademicSummary_cacheHit_returnsCached() {
+  void getAcademicSummaryCacheHitReturnsCached() {
     UUID studentId = UUID.randomUUID();
     StudentAcademicRecordDto.AcademicSummaryResponse cached =
         new StudentAcademicRecordDto.AcademicSummaryResponse(
@@ -60,7 +60,7 @@ class StudentAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("단일전공인 경우 전공 요건 총합으로 requiredCredits를 계산한다")
-  void getAcademicSummary_singleMajor_calculatesRequiredCredits() {
+  void getAcademicSummarySingleMajorCalculatesRequiredCredits() {
     UUID studentId = UUID.randomUUID();
     Student student = student(10L, null, 2022);
     StudentAcademicRecord record =
@@ -87,7 +87,7 @@ class StudentAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("복수전공인 경우 주전공(전선/일선 제외)+복수전공 합계로 requiredCredits를 계산한다")
-  void getAcademicSummary_dualMajor_calculatesRequiredCredits() {
+  void getAcademicSummaryDualMajorCalculatesRequiredCredits() {
     UUID studentId = UUID.randomUUID();
     Student student = student(20L, 30L, 2021);
     StudentAcademicRecord record =
@@ -118,7 +118,7 @@ class StudentAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("학업 기록이 없으면 STUDENT_ACADEMIC_RECORD_NOT_FOUND 예외를 던진다")
-  void getAcademicSummary_recordMissing_throws() {
+  void getAcademicSummaryRecordMissingThrows() {
     UUID studentId = UUID.randomUUID();
     when(academicCache.getAcademicSummary(studentId)).thenReturn(null);
     when(studentAcademicRecordRepository.findByStudentId(studentId)).thenReturn(Optional.empty());
@@ -133,7 +133,7 @@ class StudentAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("캐시 set 실패가 발생해도 학업 요약 응답은 정상 반환한다")
-  void getAcademicSummary_cacheSetFails_stillReturns() {
+  void getAcademicSummaryCacheSetFailsStillReturns() {
     UUID studentId = UUID.randomUUID();
     Student student = student(10L, null, 2022);
     StudentAcademicRecord record =
@@ -158,7 +158,7 @@ class StudentAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("studentId로 학업 기록을 조회할 수 있다")
-  void getStudentAcademicRecordByStudentId_success() {
+  void getStudentAcademicRecordByStudentIdSuccess() {
     UUID studentId = UUID.randomUUID();
     StudentAcademicRecord record = org.mockito.Mockito.mock(StudentAcademicRecord.class);
     when(studentAcademicRecordRepository.findByStudentId(studentId))

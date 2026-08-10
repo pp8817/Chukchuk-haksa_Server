@@ -22,7 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class KakaoOidcServiceTests {
 
   @Test
-  void verifyIdToken_refreshesKeysWhenKidMissing() throws Exception {
+  void verifyIdTokenRefreshesKeysWhenKidMissing() throws Exception {
     String kid = "new-kid";
     String appKey = "kakao-app-key";
 

@@ -60,7 +60,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("현재 인증 계정의 강의 데이터를 추가하고 삭제한다")
-  void updateGraduationCourses_addsAndRemovesCourses() {
+  void updateGraduationCoursesAddsAndRemovesCourses() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -85,7 +85,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("강의 데이터 추가 시 성적이 비어 있으면 IP로 저장한다")
-  void updateGraduationCourses_withBlankGrade_savesInProgressGrade() {
+  void updateGraduationCoursesWithBlankGradeSavesInProgressGrade() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -106,7 +106,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("현재 인증 계정의 주전공과 복수전공을 변경한다")
-  void updateMajor_changesMajorAndSecondaryMajor() {
+  void updateMajorChangesMajorAndSecondaryMajor() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -129,7 +129,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("복수전공을 켤 때 주전공과 같은 학과는 거부한다")
-  void updateMajor_rejectsSameMajorAndSecondaryMajor() {
+  void updateMajorRejectsSameMajorAndSecondaryMajor() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -146,7 +146,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("현재 인증 계정의 테스트 데이터를 초기화한다")
-  void resetCurrentAccount_deletesCoursesAndResetsMajors() {
+  void resetCurrentAccountDeletesCoursesAndResetsMajors() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -167,7 +167,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("현재 인증 계정에 테스트 강의를 생성해 추가한다")
-  void createTestCourse_createsCourseOfferingAndStudentCourse() {
+  void createTestCourseCreatesCourseOfferingAndStudentCourse() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -221,7 +221,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("테스트 강의 생성 시 계절학기를 개설학기 한 자리 값으로 변환한다")
-  void createTestCourse_withSeasonalSemester_mapsSubjectEstablishmentSemester() {
+  void createTestCourseWithSeasonalSemesterMapsSubjectEstablishmentSemester() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);
@@ -246,7 +246,7 @@ class AdminTestMutationServiceUnitTests {
 
   @Test
   @DisplayName("테스트 강의 생성 시 성적이 null이면 IP로 저장한다")
-  void createTestCourse_withNullGrade_savesInProgressGrade() {
+  void createTestCourseWithNullGradeSavesInProgressGrade() {
     UUID userId = UUID.randomUUID();
     User user = User.builder().id(userId).email("user@example.com").profileNickname("user").build();
     Student student = student(user);

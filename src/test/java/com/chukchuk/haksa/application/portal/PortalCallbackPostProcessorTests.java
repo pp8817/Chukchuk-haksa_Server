@@ -71,7 +71,7 @@ class PortalCallbackPostProcessorTests {
 
   @Test
   @DisplayName("LINK 후처리가 성공하면 portal sync가 호출되고 성공 메트릭이 증가한다")
-  void handle_linkSuccess() {
+  void handleLinkSuccess() {
     ScrapeJob job = newJob(ScrapeJobOperationType.LINK);
     when(scrapeJobRepository.findForUpdateByJobId(job.getJobId())).thenReturn(Optional.of(job));
     doAnswer(
@@ -105,7 +105,7 @@ class PortalCallbackPostProcessorTests {
 
   @Test
   @DisplayName("PORTAL refresh 실패는 실패 메트릭에 reason=portal_conn_fail로 기록된다")
-  void handle_portalFailure_recordsPortalReason() {
+  void handlePortalFailureRecordsPortalReason() {
     ScrapeJob job = newJob(ScrapeJobOperationType.REFRESH);
     job.markPostProcessing(
         "callbacks/" + job.getJobId() + "/result.json", null, null, 1, Instant.now());
@@ -143,7 +143,7 @@ class PortalCallbackPostProcessorTests {
 
   @Test
   @DisplayName("EntityNotFoundException은 reason=user_missing으로 기록된다")
-  void handle_userMissing_recordsReason() {
+  void handleUserMissingRecordsReason() {
     ScrapeJob job = newJob(ScrapeJobOperationType.LINK);
     job.markPostProcessing(
         "callbacks/" + job.getJobId() + "/result.json", null, null, 1, Instant.now());
@@ -181,7 +181,7 @@ class PortalCallbackPostProcessorTests {
 
   @Test
   @DisplayName("Json 파싱 실패는 portal sync를 호출하지 않고 invalid_payload 메트릭을 증가시킨다")
-  void handle_invalidPayload_recordsFailure() {
+  void handleInvalidPayloadRecordsFailure() {
     ScrapeJob job = newJob(ScrapeJobOperationType.LINK);
     job.markPostProcessing(
         "callbacks/" + job.getJobId() + "/result.json", null, null, 1, Instant.now());

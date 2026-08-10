@@ -14,7 +14,7 @@ class JwtProviderTests {
 
   @Test
   @DisplayName("이메일이 없으면 access token에서 email claim을 생략한다")
-  void createAccessToken_withoutEmail_omitsEmailClaim() {
+  void createAccessTokenWithoutEmailOmitsEmailClaim() {
     JwtProvider jwtProvider = jwtProvider();
 
     Claims claims = jwtProvider.parseToken(jwtProvider.createAccessToken("user-1", null, "USER"));
@@ -26,7 +26,7 @@ class JwtProviderTests {
 
   @Test
   @DisplayName("refresh token에는 로그인 세션 식별자 sid가 포함된다")
-  void createRefreshToken_containsSessionIdClaim() {
+  void createRefreshTokenContainsSessionIdClaim() {
     JwtProvider jwtProvider = jwtProvider();
 
     AuthDto.RefreshTokenWithExpiry refresh = jwtProvider.createRefreshToken("user-1");
@@ -39,7 +39,7 @@ class JwtProviderTests {
 
   @Test
   @DisplayName("같은 사용자에게 refresh token을 여러 번 발급해도 sid는 매번 달라진다")
-  void createRefreshToken_generatesDifferentSessionIdEachTime() {
+  void createRefreshTokenGeneratesDifferentSessionIdEachTime() {
     JwtProvider jwtProvider = jwtProvider();
 
     AuthDto.RefreshTokenWithExpiry first = jwtProvider.createRefreshToken("user-1");
@@ -50,7 +50,7 @@ class JwtProviderTests {
 
   @Test
   @DisplayName("refresh token 재발급 시 기존 sid를 유지할 수 있다")
-  void createRefreshToken_withSessionId_preservesSessionIdClaim() {
+  void createRefreshTokenWithSessionIdPreservesSessionIdClaim() {
     JwtProvider jwtProvider = jwtProvider();
 
     AuthDto.RefreshTokenWithExpiry refresh = jwtProvider.createRefreshToken("user-1", "session-1");

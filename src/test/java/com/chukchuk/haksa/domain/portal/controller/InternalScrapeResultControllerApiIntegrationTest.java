@@ -27,7 +27,7 @@ class InternalScrapeResultControllerApiIntegrationTest extends ApiControllerWebM
 
   @Test
   @DisplayName("internal scrape result 요청은 callback service에 raw body와 헤더를 전달한다")
-  void handleCallback_success() throws Exception {
+  void handleCallbackSuccess() throws Exception {
     String body =
         """
                 {

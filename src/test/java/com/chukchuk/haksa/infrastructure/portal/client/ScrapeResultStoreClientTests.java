@@ -14,7 +14,7 @@ class ScrapeResultStoreClientTests {
 
   @Test
   @DisplayName("허용 prefix 다음 첫 path segment가 jobId일 때만 유효한 key로 본다")
-  void isJobScopedLocation_matchesFirstSegmentAfterPrefix() {
+  void isJobScopedLocationMatchesFirstSegmentAfterPrefix() {
     ScrapingProperties properties = properties();
     ScrapeResultStoreClient client =
         new ScrapeResultStoreClient(Mockito.mock(S3Client.class), properties);
@@ -41,7 +41,7 @@ class ScrapeResultStoreClientTests {
 
   @Test
   @DisplayName("URL 형태 key는 거부한다")
-  void validateLocation_rejectsUrl() {
+  void validateLocationRejectsUrl() {
     ScrapeResultStoreClient client =
         new ScrapeResultStoreClient(Mockito.mock(S3Client.class), properties());
 

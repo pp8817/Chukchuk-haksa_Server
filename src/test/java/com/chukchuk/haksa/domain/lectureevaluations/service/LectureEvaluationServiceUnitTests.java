@@ -54,7 +54,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("target 학기가 평가 필요 상태이면 IP 과목을 제외하고 score null을 유지한다")
-  void getRequired_returnsTargetGradesExcludingIpAndKeepsNullScore() {
+  void getRequiredReturnsTargetGradesExcludingIpAndKeepsNullScore() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -86,7 +86,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("성적 값이 null이면 성적 카드 grade를 null로 반환한다")
-  void gradeCardFrom_returnsNullGradeWhenGradeValueMissing() {
+  void gradeCardFromReturnsNullGradeWhenGradeValueMissing() {
     StudentCourse target = studentCourse(1L, "CSE101", "컴퓨터네트워크", 11L, "김민규", null, 88);
 
     LectureEvaluationDto.GradeCard gradeCard = LectureEvaluationDto.GradeCard.from(target);
@@ -96,7 +96,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("교수 정보가 없는 과목은 평가 대상에서 제외한다")
-  void getRequired_excludesCoursesWithoutProfessor() {
+  void getRequiredExcludesCoursesWithoutProfessor() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -123,7 +123,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("target 학기 row가 없으면 status null과 빈 grades를 반환한다")
-  void getRequired_returnsNullStatusWhenTargetSemesterRecordMissing() {
+  void getRequiredReturnsNullStatusWhenTargetSemesterRecordMissing() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -143,7 +143,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("제출 과목이 평가 대상 전체와 일치하면 저장하고 학기 완료 상태로 변경한다")
-  void submit_savesEvaluationsAndMarksSemesterCompleted() {
+  void submitSavesEvaluationsAndMarksSemesterCompleted() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -175,7 +175,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("건너뛰기 요청은 pending 학기를 skipped 상태로 변경한다")
-  void skip_marksPendingSemesterSkipped() {
+  void skipMarksPendingSemesterSkipped() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -196,7 +196,7 @@ class LectureEvaluationServiceUnitTests {
 
   @Test
   @DisplayName("제출 과목이 평가 대상과 다르면 예외를 던진다")
-  void submit_throwsWhenSubmittedCoursesDoNotMatchTargets() {
+  void submitThrowsWhenSubmittedCoursesDoNotMatchTargets() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);

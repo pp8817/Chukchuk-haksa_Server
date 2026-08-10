@@ -28,7 +28,7 @@ class AcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("전공/교양 과목을 분류해 학업 기록 응답을 반환한다")
-  void getAcademicRecord_categorizesCourses() {
+  void getAcademicRecordCategorizesCourses() {
     UUID studentId = UUID.randomUUID();
     SemesterAcademicRecordDto.SemesterGradeResponse grade =
         new SemesterAcademicRecordDto.SemesterGradeResponse(
@@ -111,7 +111,7 @@ class AcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("전공 과목이 없으면 전공 목록을 빈 리스트로 반환한다")
-  void getAcademicRecord_withoutMajorCourses_returnsEmptyMajorList() {
+  void getAcademicRecordWithoutMajorCoursesReturnsEmptyMajorList() {
     UUID studentId = UUID.randomUUID();
     SemesterAcademicRecordDto.SemesterGradeResponse grade =
         new SemesterAcademicRecordDto.SemesterGradeResponse(
@@ -149,7 +149,7 @@ class AcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("복핵은 전공으로, 복교는 교양으로 분류한다")
-  void getAcademicRecord_categorizesDualCoreAsMajorAndDualLiberalAsLiberal() {
+  void getAcademicRecordCategorizesDualCoreAsMajorAndDualLiberalAsLiberal() {
     UUID studentId = UUID.randomUUID();
     SemesterAcademicRecordDto.SemesterGradeResponse grade =
         new SemesterAcademicRecordDto.SemesterGradeResponse(

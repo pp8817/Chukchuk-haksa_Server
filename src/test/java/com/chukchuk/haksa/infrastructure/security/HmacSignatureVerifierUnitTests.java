@@ -16,7 +16,7 @@ class HmacSignatureVerifierUnitTests {
 
   @Test
   @DisplayName("hex 문자열 secret으로 생성한 hex signature를 검증한다")
-  void verify_acceptsHexSecretAndHexSignature() throws Exception {
+  void verifyAcceptsHexSecretAndHexSignature() throws Exception {
     String secret =
         "a89f20be2f4a38ee011f98d6e7ef1290fd100e82ca4605ea923c81ba80a0d35ed"
             + "64ad6746f6e159cd59d1864e60cfbb8cdbdf98c79d163c8526916f9beed3a6e";
@@ -31,7 +31,7 @@ class HmacSignatureVerifierUnitTests {
 
   @Test
   @DisplayName("hex 형태 secret이어도 원문 UTF-8 secret으로 만든 signature를 허용한다")
-  void verify_acceptsUtf8SignatureWhenSecretLooksHex() throws Exception {
+  void verifyAcceptsUtf8SignatureWhenSecretLooksHex() throws Exception {
     String secret =
         "a89f20be2f4a38ee011f98d6e7ef1290fd100e82ca4605ea923c81ba80a0d35ed"
             + "64ad6746f6e159cd59d1864e60cfbb8cdbdf98c79d163c8526916f9beed3a6e";
@@ -47,7 +47,7 @@ class HmacSignatureVerifierUnitTests {
 
   @Test
   @DisplayName("sha256= prefix가 붙은 signature도 검증한다")
-  void verify_acceptsPrefixedSignature() throws Exception {
+  void verifyAcceptsPrefixedSignature() throws Exception {
     String secret = "test-callback-secret";
     String timestamp = Instant.now().toString();
     String rawBody = "{\"job_id\":\"job-1\",\"status\":\"failed\"}";
@@ -61,7 +61,7 @@ class HmacSignatureVerifierUnitTests {
 
   @Test
   @DisplayName("검증 실패 사유를 구체적으로 반환한다")
-  void inspect_returnsDetailedReason() {
+  void inspectReturnsDetailedReason() {
     HmacSignatureVerifier verifier = new HmacSignatureVerifier("test-callback-secret", 300);
 
     HmacSignatureVerifier.VerificationResult result = verifier.inspect("", "{}", "signature");
@@ -73,7 +73,7 @@ class HmacSignatureVerifierUnitTests {
 
   @Test
   @DisplayName("diagnostics는 signature mismatch 시 비교 정보를 제공한다")
-  void diagnostics_exposesSignatureComparisonHints() {
+  void diagnosticsExposesSignatureComparisonHints() {
     HmacSignatureVerifier verifier = new HmacSignatureVerifier("test-callback-secret", 300);
 
     HmacSignatureVerifier.VerificationDiagnostics diagnostics =

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class SemesterAcademicRecordTest {
 
   @Test
-  void markLectureEvaluationNotReleased_changesNullStatusToNotReleased() {
+  void markLectureEvaluationNotReleasedChangesNullStatusToNotReleased() {
     SemesterAcademicRecord record = semesterRecord();
 
     record.markLectureEvaluationNotReleased();
@@ -16,7 +16,7 @@ class SemesterAcademicRecordTest {
   }
 
   @Test
-  void markLectureEvaluationPending_changesNotReleasedStatusToPending() {
+  void markLectureEvaluationPendingChangesNotReleasedStatusToPending() {
     SemesterAcademicRecord record = semesterRecord();
     record.markLectureEvaluationNotReleased();
 
@@ -26,7 +26,7 @@ class SemesterAcademicRecordTest {
   }
 
   @Test
-  void markLectureEvaluationNotReleased_doesNotOverwriteCompletedStatus() {
+  void markLectureEvaluationNotReleasedDoesNotOverwriteCompletedStatus() {
     SemesterAcademicRecord record = semesterRecord();
     record.markLectureEvaluationCompleted();
 

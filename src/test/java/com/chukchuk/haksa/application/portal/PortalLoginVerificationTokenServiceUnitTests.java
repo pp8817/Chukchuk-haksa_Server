@@ -26,7 +26,7 @@ class PortalLoginVerificationTokenServiceUnitTests {
 
   @Test
   @DisplayName("발급한 verification token은 같은 사용자와 같은 자격 증명에서 검증된다")
-  void verify_acceptsMatchingUserAndCredential() {
+  void verifyAcceptsMatchingUserAndCredential() {
     UUID userId = UUID.randomUUID();
     PortalLoginVerificationTokenService service = serviceAt(NOW);
 
@@ -37,7 +37,7 @@ class PortalLoginVerificationTokenServiceUnitTests {
 
   @Test
   @DisplayName("다른 비밀번호로 제출한 verification token은 거부한다")
-  void verify_rejectsDifferentPassword() {
+  void verifyRejectsDifferentPassword() {
     UUID userId = UUID.randomUUID();
     PortalLoginVerificationTokenService service = serviceAt(NOW);
     String token = service.issue(userId, "suwon", "17019013", "pw");
@@ -52,7 +52,7 @@ class PortalLoginVerificationTokenServiceUnitTests {
 
   @Test
   @DisplayName("verification token payload에는 비밀번호 기반 fingerprint를 포함하지 않는다")
-  void issue_doesNotExposePasswordDerivedFingerprintInPayload() throws Exception {
+  void issueDoesNotExposePasswordDerivedFingerprintInPayload() throws Exception {
     UUID userId = UUID.randomUUID();
     PortalLoginVerificationTokenService service = serviceAt(NOW);
 
@@ -66,7 +66,7 @@ class PortalLoginVerificationTokenServiceUnitTests {
 
   @Test
   @DisplayName("만료된 verification token은 거부한다")
-  void verify_rejectsExpiredToken() {
+  void verifyRejectsExpiredToken() {
     UUID userId = UUID.randomUUID();
     PortalLoginVerificationTokenService issuer = serviceAt(NOW);
     String token = issuer.issue(userId, "suwon", "17019013", "pw");

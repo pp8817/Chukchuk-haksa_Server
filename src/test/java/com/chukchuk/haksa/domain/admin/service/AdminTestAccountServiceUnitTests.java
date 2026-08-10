@@ -47,7 +47,7 @@ class AdminTestAccountServiceUnitTests {
 
   @Test
   @DisplayName("테스트 계정 생성 시 test_ prefix 계정과 토큰을 만든다")
-  void createTestUser_createsPrefixedAccountAndTokens() {
+  void createTestUserCreatesPrefixedAccountAndTokens() {
     Department department = new Department("CSE", "컴퓨터학과");
     AdminTestDto.CreateTestUserRequest request =
         new AdminTestDto.CreateTestUserRequest("프론트테스트", 1L, 1L, null, 2024);
@@ -88,7 +88,7 @@ class AdminTestAccountServiceUnitTests {
 
   @Test
   @DisplayName("학과 ID가 없으면 기본 학과 조회를 1건으로 제한한다")
-  void createTestUser_withoutDepartmentId_limitsDefaultDepartmentLookup() {
+  void createTestUserWithoutDepartmentIdLimitsDefaultDepartmentLookup() {
     Department department = new Department("CSE", "컴퓨터학과");
     final AdminTestDto.CreateTestUserRequest request =
         new AdminTestDto.CreateTestUserRequest("프론트테스트", null, null, null, 2024, null);
@@ -114,7 +114,7 @@ class AdminTestAccountServiceUnitTests {
 
   @Test
   @DisplayName("포털 미연동 옵션이면 테스트 계정을 포털 미연동 상태로 만든다")
-  void createTestUser_withPortalLinkedFalse_keepsUserUnlinked() {
+  void createTestUserWithPortalLinkedFalseKeepsUserUnlinked() {
     Department department = new Department("CSE", "컴퓨터학과");
     final AdminTestDto.CreateTestUserRequest request =
         new AdminTestDto.CreateTestUserRequest("프론트테스트", 1L, 1L, null, 2024, false);

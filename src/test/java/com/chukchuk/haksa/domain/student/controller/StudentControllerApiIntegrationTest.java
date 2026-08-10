@@ -32,7 +32,7 @@ class StudentControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport
 
   @Test
   @DisplayName("student profile 조회 성공 시 성공 응답을 반환한다")
-  void getProfile_success() throws Exception {
+  void getProfileSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);
@@ -60,7 +60,7 @@ class StudentControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport
 
   @Test
   @DisplayName("student profile 조회 시 학생 미연결 사용자는 U04 응답을 반환한다")
-  void getProfile_notConnected() throws Exception {
+  void getProfileNotConnected() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(studentService.getStudentProfileByUserId(userId))
@@ -75,7 +75,7 @@ class StudentControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport
 
   @Test
   @DisplayName("student profile 조회 시 사용자가 없으면 U01 응답을 반환한다")
-  void getProfile_userNotFound() throws Exception {
+  void getProfileUserNotFound() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(studentService.getStudentProfileByUserId(userId))
@@ -90,7 +90,7 @@ class StudentControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport
 
   @Test
   @DisplayName("target-gpa 입력이 범위를 벗어나면 C01 예외를 반환한다")
-  void setTargetGpa_invalid() throws Exception {
+  void setTargetGpaInvalid() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);

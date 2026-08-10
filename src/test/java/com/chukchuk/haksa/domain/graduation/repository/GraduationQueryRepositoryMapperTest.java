@@ -35,7 +35,7 @@ class GraduationQueryRepositoryMapperTest {
 
   @Test
   @DisplayName("toCourseResponseDto 는 liberalAreaCode 정수 값을 패스스루한다")
-  void toCourseResponseDto_passesNonNullLiberalAreaCodeThrough() {
+  void toCourseResponseDtoPassesNonNullLiberalAreaCodeThrough() {
     GraduationQueryRepository repository = newRepository();
     CourseInternalDto internal =
         new CourseInternalDto(1L, "선교", 3, "A+", "기독교의 이해", 10, 2024, "G001", 90, 7);
@@ -52,7 +52,7 @@ class GraduationQueryRepositoryMapperTest {
 
   @Test
   @DisplayName("toCourseResponseDto 는 liberalAreaCode 가 NULL 이면 그대로 null 을 유지한다")
-  void toCourseResponseDto_passesNullLiberalAreaCodeThrough() {
+  void toCourseResponseDtoPassesNullLiberalAreaCodeThrough() {
     GraduationQueryRepository repository = newRepository();
     CourseInternalDto internal =
         new CourseInternalDto(2L, "전공필수", 3, "B+", "자료구조", 20, 2023, "C001", 85, null);
@@ -66,7 +66,7 @@ class GraduationQueryRepositoryMapperTest {
 
   @Test
   @DisplayName("toCourseResponseDto 는 선교가 아닌 과목의 liberalAreaCode 를 노출하지 않는다")
-  void toCourseResponseDto_omitsLiberalAreaCodeForNonMissionCourse() {
+  void toCourseResponseDtoOmitsLiberalAreaCodeForNonMissionCourse() {
     GraduationQueryRepository repository = newRepository();
     CourseInternalDto internal =
         new CourseInternalDto(3L, "전핵", 3, "A+", "자료구조", 20, 2024, "CSE101", 95, 7);
@@ -78,7 +78,7 @@ class GraduationQueryRepositoryMapperTest {
 
   @Test
   @DisplayName("최근 유효 과목 조회는 개인 이수 학점을 사용한다")
-  void getLatestValidCourses_usesStudentSpecificPoints() {
+  void getLatestValidCoursesUsesStudentSpecificPoints() {
     UUID studentId = UUID.randomUUID();
     when(em.createNativeQuery(anyString())).thenReturn(query);
     when(query.setParameter(eq("studentId"), eq(studentId))).thenReturn(query);

@@ -64,7 +64,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("잘못된 HMAC 서명은 거부한다")
-  void handleCallback_rejectsInvalidSignature() {
+  void handleCallbackRejectsInvalidSignature() {
     ScrapeResultCallbackService service = createService();
     String timestamp = Instant.now().toString();
 
@@ -85,7 +85,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("HMAC 검증은 request parse보다 먼저 수행한다")
-  void handleCallback_verifiesSignatureBeforeParsing() {
+  void handleCallbackVerifiesSignatureBeforeParsing() {
     ScrapeResultCallbackService service = createService();
     String timestamp = Instant.now().toString();
 
@@ -102,7 +102,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("성공 callback은 S3를 읽어 후처리를 동기 실행한다")
-  void handleCallback_fetchesS3Synchronously() {
+  void handleCallbackFetchesS3Synchronously() {
     final ScrapeResultCallbackService service = createService();
     UUID userId = UUID.randomUUID();
     final String timestamp = Instant.now().toString();
@@ -155,7 +155,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("checksum은 정규화 전 raw payload 기준으로 검증한다")
-  void handleCallback_verifiesChecksumOnRawPayload() {
+  void handleCallbackVerifiesChecksumOnRawPayload() {
     ScrapeResultCallbackService service = createService();
     UUID userId = UUID.randomUUID();
     ScrapeJob job = createJob(userId);
@@ -193,7 +193,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("이미 처리된 attempt면 중복으로 간주한다")
-  void handleCallback_ignoresDuplicateAttempt() {
+  void handleCallbackIgnoresDuplicateAttempt() {
     final ScrapeResultCallbackService service = createService();
     ScrapeJob job = createJob(UUID.randomUUID());
     job.recordCallbackAttempt(1, Instant.now());
@@ -221,7 +221,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("실패 callback이면 FAILED 상태와 에러 정보를 저장한다")
-  void handleCallback_marksJobFailed() {
+  void handleCallbackMarksJobFailed() {
     ScrapeResultCallbackService service = createService();
     String timestamp = Instant.now().toString();
     ScrapeJob job = createJob(UUID.randomUUID());
@@ -254,7 +254,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("result_s3_key 없이 성공 콜백이 오면 SCRAPE_INVALID_S3_KEY")
-  void handleCallback_requiresS3Key() {
+  void handleCallbackRequiresS3Key() {
     ScrapeResultCallbackService service = createService();
     String timestamp = Instant.now().toString();
     ScrapeJob job = createJob(UUID.randomUUID());
@@ -279,7 +279,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("S3 key 형식 검증이 실패하면 SCRAPE_INVALID_S3_KEY를 반환한다")
-  void handleCallback_rejectsInvalidS3KeyFormat() {
+  void handleCallbackRejectsInvalidS3KeyFormat() {
     ScrapeResultCallbackService service = createService();
     String timestamp = Instant.now().toString();
     ScrapeJob job = createJob(UUID.randomUUID());
@@ -308,7 +308,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("jobId가 path segment로 일치하지 않으면 SCRAPE_INVALID_S3_KEY를 반환한다")
-  void handleCallback_rejectsKeyWithoutExactJobSegment() {
+  void handleCallbackRejectsKeyWithoutExactJobSegment() {
     ScrapeResultCallbackService service = createService();
     String timestamp = Instant.now().toString();
     ScrapeJob job = createJob(UUID.randomUUID());
@@ -340,7 +340,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("S3 읽기 실패 시 FAILED_S3_READ로 저장하고 SCRAPE_RESULT_S3_FAILED 반환")
-  void handleCallback_marksS3Failure() {
+  void handleCallbackMarksS3Failure() {
     ScrapeResultCallbackService service = createService();
     ScrapeJob job = createJob(UUID.randomUUID());
     String timestamp = Instant.now().toString();
@@ -372,7 +372,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("후처리 실패는 SCRAPE_RESULT_POST_PROCESSING_FAILED로 전달된다")
-  void handleCallback_propagatesPostProcessingFailure() {
+  void handleCallbackPropagatesPostProcessingFailure() {
     ScrapeResultCallbackService service = createService();
     ScrapeJob job = createJob(UUID.randomUUID());
     String timestamp = Instant.now().toString();
@@ -405,7 +405,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("알 수 없는 flangPassGb 값은 schema invalid로 실패 확정한다")
-  void handleCallback_marksUnknownLanguageCertAsSchemaFailure() {
+  void handleCallbackMarksUnknownLanguageCertAsSchemaFailure() {
     ScrapeResultCallbackService service = createServiceWithRealPostProcessor();
     ScrapeJob job = createJob(UUID.randomUUID());
     String timestamp = Instant.now().toString();
@@ -451,7 +451,7 @@ class ScrapeResultCallbackServiceUnitTests {
 
   @Test
   @DisplayName("매핑 중 RuntimeException이 발생해도 schema invalid로 실패 확정한다")
-  void handleCallback_marksMapperRuntimeExceptionAsSchemaFailure() {
+  void handleCallbackMarksMapperRuntimeExceptionAsSchemaFailure() {
     ScrapeResultCallbackService service = createServiceWithRealPostProcessor();
     ScrapeJob job = createJob(UUID.randomUUID());
     String timestamp = Instant.now().toString();

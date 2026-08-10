@@ -35,7 +35,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("성공한 job은 학생 요약 정보를 반환한다")
-  void getJobSummary_returnsStudentInfo() {
+  void getJobSummaryReturnsStudentInfo() {
     UUID userId = UUID.randomUUID();
     ScrapeJob job =
         ScrapeJob.createQueued(
@@ -67,7 +67,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("미완료 job 요약 요청 시 예외를 던진다")
-  void getJobSummary_throwsWhenJobNotCompleted() {
+  void getJobSummaryThrowsWhenJobNotCompleted() {
     UUID userId = UUID.randomUUID();
     ScrapeJob job =
         ScrapeJob.createQueued(
@@ -93,7 +93,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("미완료 job duration은 pending 상태와 null 소요 시간을 반환한다")
-  void getJobDuration_returnsPendingWhenJobIsNotTerminal() {
+  void getJobDurationReturnsPendingWhenJobIsNotTerminal() {
     UUID userId = UUID.randomUUID();
     Instant startedAt = Instant.parse("2026-06-04T10:00:00Z");
     ScrapeJob job =
@@ -124,7 +124,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("성공 job duration은 서버 종료 시각 기준 소요 시간을 반환한다")
-  void getJobDuration_returnsSucceededElapsedTime() {
+  void getJobDurationReturnsSucceededElapsedTime() {
     UUID userId = UUID.randomUUID();
     Instant startedAt = Instant.parse("2026-06-04T10:00:00Z");
     Instant workerFinishedAt = Instant.parse("2026-06-04T09:59:30Z");
@@ -157,7 +157,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("실패 job duration은 failed 상태와 실패 소요 시간을 반환한다")
-  void getJobDuration_returnsFailedElapsedTime() {
+  void getJobDurationReturnsFailedElapsedTime() {
     UUID userId = UUID.randomUUID();
     Instant startedAt = Instant.parse("2026-06-04T10:00:00Z");
     Instant workerFinishedAt = Instant.parse("2026-06-04T09:59:30Z");
@@ -189,7 +189,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("완료 job duration timestamp가 일부 없으면 소요 시간은 null로 반환한다")
-  void getJobDuration_returnsNullElapsedTimeWhenTerminalTimestampMissing() {
+  void getJobDurationReturnsNullElapsedTimeWhenTerminalTimestampMissing() {
     UUID userId = UUID.randomUUID();
     Instant workerFinishedAt = Instant.parse("2026-06-04T10:00:03.120Z");
     ScrapeJob job =
@@ -220,7 +220,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("종료 시각이 시작 시각보다 빠르면 duration은 0ms로 보정한다")
-  void getJobDuration_clampsNegativeElapsedTimeToZero() {
+  void getJobDurationClampsNegativeElapsedTimeToZero() {
     UUID userId = UUID.randomUUID();
     Instant startedAt = Instant.parse("2026-06-04T10:00:00Z");
     Instant workerFinishedAt = Instant.parse("2026-06-04T09:59:30Z");
@@ -251,7 +251,7 @@ class PortalLinkJobQueryServiceUnitTests {
 
   @Test
   @DisplayName("실패 job 요약 요청 시 실패 상태 예외를 던진다")
-  void getJobSummary_throwsWhenJobFailed() {
+  void getJobSummaryThrowsWhenJobFailed() {
     UUID userId = UUID.randomUUID();
     ScrapeJob job =
         ScrapeJob.createQueued(

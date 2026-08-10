@@ -42,7 +42,7 @@ class PortalLinkJobServiceUnitTests {
 
   @Test
   @DisplayName("새 요청은 job/outbox 저장 후 같은 요청에서 동기 publish 한다")
-  void acceptLinkJob_dispatchesSynchronously() {
+  void acceptLinkJobDispatchesSynchronously() {
     UUID userId = UUID.randomUUID();
     PortalLinkJobService service = service();
     PortalLinkDto.LinkRequest request = linkRequest("pw");
@@ -81,7 +81,7 @@ class PortalLinkJobServiceUnitTests {
 
   @Test
   @DisplayName("포털 로그인 검증 token을 먼저 검증한 뒤 job을 생성한다")
-  void acceptLinkJob_verifiesPortalLoginTokenBeforeCreatingJob() {
+  void acceptLinkJobVerifiesPortalLoginTokenBeforeCreatingJob() {
     UUID userId = UUID.randomUUID();
     PortalLinkJobService service = service();
     PortalLinkDto.LinkRequest request = linkRequest("pw");
@@ -122,7 +122,7 @@ class PortalLinkJobServiceUnitTests {
 
   @Test
   @DisplayName("포털 로그인 검증 token 검증에 실패하면 job을 생성하지 않는다")
-  void acceptLinkJob_doesNotCreateJobWhenPortalLoginTokenIsInvalid() {
+  void acceptLinkJobDoesNotCreateJobWhenPortalLoginTokenIsInvalid() {
     UUID userId = UUID.randomUUID();
     PortalLinkJobService service = service();
     PortalLinkDto.LinkRequest request = linkRequest("wrong");
@@ -141,7 +141,7 @@ class PortalLinkJobServiceUnitTests {
 
   @Test
   @DisplayName("이미 RUNNING 이상인 동일 요청은 기존 job을 재사용하고 publish 하지 않는다")
-  void acceptLinkJob_reusesExistingJobWithoutDispatch() {
+  void acceptLinkJobReusesExistingJobWithoutDispatch() {
     UUID userId = UUID.randomUUID();
     PortalLinkJobService service = service();
     PortalLinkDto.LinkRequest request = linkRequest("pw");
@@ -169,7 +169,7 @@ class PortalLinkJobServiceUnitTests {
 
   @Test
   @DisplayName("동기 publish 후 SENT/RUNNING이 아니면 enqueue 실패로 처리한다")
-  void acceptLinkJob_throwsWhenDispatchStateIsNotSent() {
+  void acceptLinkJobThrowsWhenDispatchStateIsNotSent() {
     UUID userId = UUID.randomUUID();
     PortalLinkJobService service = service();
     PortalLinkDto.LinkRequest request = linkRequest("pw");
@@ -208,7 +208,7 @@ class PortalLinkJobServiceUnitTests {
 
   @Test
   @DisplayName("동시성으로 최초 저장이 충돌하면 기존 job을 다시 조회해 같은 요청 흐름에서 publish 한다")
-  void acceptLinkJob_resolvesConcurrentDuplicateAndDispatches() {
+  void acceptLinkJobResolvesConcurrentDuplicateAndDispatches() {
     UUID userId = UUID.randomUUID();
     PortalLinkJobService service = service();
     PortalLinkDto.LinkRequest request = linkRequest("pw");

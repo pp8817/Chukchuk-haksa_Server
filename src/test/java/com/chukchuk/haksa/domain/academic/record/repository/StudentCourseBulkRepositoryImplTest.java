@@ -63,7 +63,7 @@ class StudentCourseBulkRepositoryImplTest {
   }
 
   @Test
-  void insertAll_insertsAllRowsInSingleBatch() {
+  void insertAllInsertsAllRowsInSingleBatch() {
     UUID studentId = UUID.randomUUID();
     StudentCourseBulkRow row =
         new StudentCourseBulkRow(studentId, 10L, GradeType.A0, 3, false, 95, false);

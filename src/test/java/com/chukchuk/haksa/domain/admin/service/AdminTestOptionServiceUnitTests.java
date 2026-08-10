@@ -35,7 +35,7 @@ class AdminTestOptionServiceUnitTests {
 
   @Test
   @DisplayName("테스트 옵션 조회 시 학과와 졸업요건 영역을 반환한다")
-  void getTestOptions_returnsDepartmentsAndAreas() {
+  void getTestOptionsReturnsDepartmentsAndAreas() {
     when(departmentRepository.findAll()).thenReturn(List.of(new Department("CSE", "컴퓨터학과")));
 
     AdminTestDto.TestOptionsResponse response = optionService.getTestOptions();
@@ -49,7 +49,7 @@ class AdminTestOptionServiceUnitTests {
 
   @Test
   @DisplayName("학과 검색 시 keyword가 있으면 학과 코드와 학과명으로 검색한다")
-  void searchDepartments_withKeyword_returnsMatchedDepartments() {
+  void searchDepartmentsWithKeywordReturnsMatchedDepartments() {
     Department department = new Department("CSE", "컴퓨터학과");
     when(departmentRepository.searchAdminDepartments("컴퓨터")).thenReturn(List.of(department));
 
@@ -62,7 +62,7 @@ class AdminTestOptionServiceUnitTests {
 
   @Test
   @DisplayName("학과 검색 시 keyword가 없으면 전체 학과를 반환한다")
-  void searchDepartments_withoutKeyword_returnsAllDepartments() {
+  void searchDepartmentsWithoutKeywordReturnsAllDepartments() {
     Department department = new Department("BUS", "경영학과");
     when(departmentRepository.findAll()).thenReturn(List.of(department));
 
@@ -75,7 +75,7 @@ class AdminTestOptionServiceUnitTests {
 
   @Test
   @DisplayName("강의 후보 검색 시 개설강의 정보를 프론트 선택지로 변환한다")
-  void searchCourseOfferings_returnsCourseOptions() {
+  void searchCourseOfferingsReturnsCourseOptions() {
     CourseOffering offering = mock(CourseOffering.class);
     Course course = new Course("CSE101", "자료구조");
     Department department = new Department("CSE", "컴퓨터학과");
@@ -108,7 +108,7 @@ class AdminTestOptionServiceUnitTests {
 
   @Test
   @DisplayName("강의 후보 검색 시 학과 ID가 없으면 학과 필터 없이 검색한다")
-  void searchCourseOfferings_withoutDepartmentId_usesNoDepartmentFilter() {
+  void searchCourseOfferingsWithoutDepartmentIdUsesNoDepartmentFilter() {
     when(courseOfferingRepository.searchAdminCandidates(null, FacultyDivision.선교, null, null, null))
         .thenReturn(List.of());
 
@@ -121,7 +121,7 @@ class AdminTestOptionServiceUnitTests {
 
   @Test
   @DisplayName("강의 후보 검색 시 존재하지 않는 학과 ID는 잘못된 요청으로 처리한다")
-  void searchCourseOfferings_withUnknownDepartmentId_throwsInvalidArgument() {
+  void searchCourseOfferingsWithUnknownDepartmentIdThrowsInvalidArgument() {
     when(departmentRepository.findById(999L)).thenReturn(Optional.empty());
 
     assertThatThrownBy(

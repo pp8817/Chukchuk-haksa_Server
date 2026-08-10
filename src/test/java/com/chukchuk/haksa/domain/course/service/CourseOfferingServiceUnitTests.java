@@ -50,7 +50,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("동일 분반 강의가 이미 존재하면 기존 강의를 반환하고 누락 학점을 보정한다")
-  void getOrCreateOffering_whenExists_returnsExistingAndBackfillsMissingPoints() {
+  void getOrCreateOfferingWhenExistsReturnsExistingAndBackfillsMissingPoints() {
     CreateOfferingCommand cmd = command(10L, 20L, 30L, 101);
     CourseOffering existing = mock(CourseOffering.class);
     Course course = mock(Course.class);
@@ -79,7 +79,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("강의가 없으면 관련 참조를 조회해 새 강의를 생성/저장한다")
-  void getOrCreateOffering_whenMissing_createsAndSaves() {
+  void getOrCreateOfferingWhenMissingCreatesAndSaves() {
     CreateOfferingCommand cmd = command(11L, 21L, 31L, 202);
     Course course = new Course("CSE101", "자료구조");
     Professor professor = new Professor("홍길동");
@@ -107,7 +107,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("areaCode가 null 또는 0이면 교양영역 참조를 조회하지 않는다")
-  void getOrCreateOffering_withoutAreaCode_skipsLiberalArtsLookup() {
+  void getOrCreateOfferingWithoutAreaCodeSkipsLiberalArtsLookup() {
     CreateOfferingCommand cmd = command(12L, 22L, null, 0);
     Course course = new Course("MAT201", "선형대수");
     Professor professor = new Professor("김교수");
@@ -130,7 +130,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("offering id 목록으로 조회한 결과를 id-key map으로 반환한다")
-  void getOfferingMapByIds_returnsIdMap() {
+  void getOfferingMapByIdsReturnsIdMap() {
     CourseOffering first = org.mockito.Mockito.mock(CourseOffering.class);
     CourseOffering second = org.mockito.Mockito.mock(CourseOffering.class);
     when(first.getId()).thenReturn(1L);
@@ -144,7 +144,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("평가 방식/이수구분 값이 없으면 안전한 기본값으로 저장한다")
-  void getOrCreateOffering_whenEnumFieldsMissing_usesSafeDefaults() {
+  void getOrCreateOfferingWhenEnumFieldsMissingUsesSafeDefaults() {
     CreateOfferingCommand cmd =
         new CreateOfferingCommand(
             13L, 2024, 1, "02", 23L, null, "화 1-2", null, null, null, null, null, null, 3,
@@ -169,7 +169,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("기존 강의의 nullable 키 필드가 비어 있어도 동일 강의로 재사용한다")
-  void getOrCreateOffering_whenExistingKeyFieldsAreNull_reusesExistingOffering() {
+  void getOrCreateOfferingWhenExistingKeyFieldsAreNullReusesExistingOffering() {
     CreateOfferingCommand cmd =
         new CreateOfferingCommand(
             14L,
@@ -213,7 +213,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("정의되지 않은 이수 구분은 기타로 대체한다")
-  void getOrCreateOffering_whenFacultyDivisionUnknown_setsEtcAndPreservesRawValue() {
+  void getOrCreateOfferingWhenFacultyDivisionUnknownSetsEtcAndPreservesRawValue() {
     CreateOfferingCommand cmd =
         new CreateOfferingCommand(
             15L,
@@ -251,7 +251,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("정의된 이수 구분은 원본 문자열을 별도로 저장하지 않는다")
-  void getOrCreateOffering_whenFacultyDivisionKnown_doesNotPreserveRawValue() {
+  void getOrCreateOfferingWhenFacultyDivisionKnownDoesNotPreserveRawValue() {
     CreateOfferingCommand cmd = command(16L, 26L, null, null);
     Course course = new Course("CSE202", "운영체제");
     Professor professor = new Professor("정교수");
@@ -272,7 +272,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("동일한 미지원 이수 구분은 재연동 시 기존 기타 강의를 재사용한다")
-  void getOrCreateOffering_whenExistingEtcWithSameRawValue_reusesExistingOffering() {
+  void getOrCreateOfferingWhenExistingEtcWithSameRawValueReusesExistingOffering() {
     CreateOfferingCommand cmd =
         new CreateOfferingCommand(
             17L,
@@ -342,7 +342,7 @@ class CourseOfferingServiceUnitTests {
   @Test
   @DisplayName(
       "T1 backfill: 선교 + area_code null + cmd.areaCode=6 → backfillMissionLiberalAreaCode 호출됨")
-  void getOrCreateAll_missionAndAreaCodeNull_backfillsFromCmd() {
+  void getOrCreateAllMissionAndAreaCodeNullBackfillsFromCmd() {
     CreateOfferingCommand cmd = missionCommand(50L, 60L, 6);
     CourseOffering existing = missionExistingMock(50L, 60L, null);
     LiberalArtsAreaCode areaProxy = mock(LiberalArtsAreaCode.class);
@@ -360,7 +360,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("T2 backfill: 선교 + area_code 이미 존재 → backfill 호출 안 됨")
-  void getOrCreateAll_missionAndAreaCodeAlreadyPresent_skipsBackfill() {
+  void getOrCreateAllMissionAndAreaCodeAlreadyPresentSkipsBackfill() {
     CreateOfferingCommand cmd = missionCommand(51L, 61L, 6);
     LiberalArtsAreaCode existingArea = mock(LiberalArtsAreaCode.class);
     CourseOffering existing = missionExistingMock(51L, 61L, existingArea);
@@ -377,7 +377,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("T3 backfill: 비-선교(전핵) cmd + 비-선교 existing → backfill 호출 안 됨")
-  void getOrCreateAll_nonMissionFacultyDivision_skipsBackfill() {
+  void getOrCreateAllNonMissionFacultyDivisionSkipsBackfill() {
     // 키가 매칭되어 기존 row reuse 가 되도록 cmd·existing 모두 비-선교(전핵)로 정렬
     final CreateOfferingCommand cmd = command(52L, 62L, null, 6); // facultyDivisionName="전핵"
     CourseOffering existing = mock(CourseOffering.class);
@@ -405,7 +405,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("T4 backfill: 선교 + area_code null + cmd.areaCode=null → backfill 호출 안 됨")
-  void getOrCreateAll_missionAndCmdAreaCodeNull_skipsBackfill() {
+  void getOrCreateAllMissionAndCmdAreaCodeNullSkipsBackfill() {
     CreateOfferingCommand cmd = missionCommand(53L, 63L, null);
     CourseOffering existing = missionExistingMock(53L, 63L, null);
 
@@ -421,7 +421,7 @@ class CourseOfferingServiceUnitTests {
 
   @Test
   @DisplayName("T5 backfill: 선교 + area_code null + cmd.areaCode=0 → backfill 호출 안 됨")
-  void getOrCreateAll_missionAndCmdAreaCodeZero_skipsBackfill() {
+  void getOrCreateAllMissionAndCmdAreaCodeZeroSkipsBackfill() {
     CreateOfferingCommand cmd = missionCommand(54L, 64L, 0);
     CourseOffering existing = missionExistingMock(54L, 64L, null);
 

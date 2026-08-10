@@ -25,7 +25,7 @@ class StudentCourseDtoTests {
 
   @Test
   @DisplayName("기타 과목 응답은 canonical areaType과 포털 원본 rawAreaType을 함께 반환한다")
-  void from_whenEtcCourseHasRawFacultyDivision_returnsRawAreaType() {
+  void fromWhenEtcCourseHasRawFacultyDivisionReturnsRawAreaType() {
     Course course = mock(Course.class);
     when(course.getCourseName()).thenReturn("교직 과목");
     when(course.getCourseCode()).thenReturn("EDU101");
@@ -60,7 +60,7 @@ class StudentCourseDtoTests {
 
   @Test
   @DisplayName("수강 과목 응답은 개인 이수 학점을 반환한다")
-  void from_returnsStudentSpecificPoints() {
+  void fromReturnsStudentSpecificPoints() {
     StudentCourse studentCourse = studentCourse(offering(FacultyDivision.전핵, null));
     when(studentCourse.getPoints()).thenReturn(21);
 
@@ -71,7 +71,7 @@ class StudentCourseDtoTests {
 
   @Test
   @DisplayName("선교 과목 응답은 liberalAreaCode 를 반환한다")
-  void from_whenMissionCourseHasAreaCode_returnsLiberalAreaCode() {
+  void fromWhenMissionCourseHasAreaCodeReturnsLiberalAreaCode() {
     CourseOffering offering = offering(FacultyDivision.선교, areaCode(7));
     StudentCourse studentCourse = studentCourse(offering);
 
@@ -83,7 +83,7 @@ class StudentCourseDtoTests {
 
   @Test
   @DisplayName("선교가 아닌 과목 응답은 liberalAreaCode 를 반환하지 않는다")
-  void from_whenNonMissionCourseHasAreaCode_omitsLiberalAreaCode() {
+  void fromWhenNonMissionCourseHasAreaCodeOmitsLiberalAreaCode() {
     CourseOffering offering = offering(FacultyDivision.중핵, areaCode(7));
     StudentCourse studentCourse = studentCourse(offering);
 

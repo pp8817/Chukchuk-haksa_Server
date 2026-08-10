@@ -89,7 +89,7 @@ class SyncAcademicRecordServiceTest {
   }
 
   @Test
-  void mergeOfferingsAndAcademic_mergesByCourseYearSemester() throws Exception {
+  void mergeOfferingsAndAcademicMergesByCourseYearSemester() throws Exception {
     PortalCurriculumData curriculumData = sampleCurriculumData();
     PortalAcademicData academicData = sampleAcademicData();
 
@@ -109,7 +109,7 @@ class SyncAcademicRecordServiceTest {
   }
 
   @Test
-  void executeWithPortalData_usesBulkInsertForNewCourses() {
+  void executeWithPortalDataUsesBulkInsertForNewCourses() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -148,7 +148,7 @@ class SyncAcademicRecordServiceTest {
   }
 
   @Test
-  void executeWithPortalData_mergesDuplicateSectionsIntoSingleEnrollment() {
+  void executeWithPortalDataMergesDuplicateSectionsIntoSingleEnrollment() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -189,8 +189,7 @@ class SyncAcademicRecordServiceTest {
   }
 
   @Test
-  void
-      executeForRefreshPortalData_marksLectureEvaluationPendingWhenGradeChangesFromIpToCompleted() {
+  void executeForRefreshPortalDataMarksLectureEvaluationPendingWhenGradeChangesFromIpToCompleted() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -237,7 +236,7 @@ class SyncAcademicRecordServiceTest {
   }
 
   @Test
-  void executeForRefreshPortalData_marksLectureEvaluationNotReleasedWhenGradeIsStillIp() {
+  void executeForRefreshPortalDataMarksLectureEvaluationNotReleasedWhenGradeIsStillIp() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);
@@ -286,7 +285,7 @@ class SyncAcademicRecordServiceTest {
   }
 
   @Test
-  void executeForRefreshPortalData_marksLectureEvaluationPendingOncePerSemester() {
+  void executeForRefreshPortalDataMarksLectureEvaluationPendingOncePerSemester() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     Student student = mock(Student.class);

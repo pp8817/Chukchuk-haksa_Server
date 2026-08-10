@@ -84,7 +84,7 @@ class UserServiceIntegrationTest {
 
   @Test
   @DisplayName("사용자가 탈퇴하면 User와 Student를 익명화하고 학적 정보만 삭제한다")
-  void deleteUser_anonymizesUserAndStudentAndRemovesAcademicAssociations() {
+  void deleteUserAnonymizesUserAndStudentAndRemovesAcademicAssociations() {
     User user =
         userRepository.save(
             User.builder().email("test@haksa.com").profileNickname("tester").build());
@@ -121,7 +121,7 @@ class UserServiceIntegrationTest {
 
   @Test
   @DisplayName("연동하지 않은 사용자의 탈퇴에서는 User만 익명화한다")
-  void deleteUser_withoutStudent_doesNotFail() {
+  void deleteUserWithoutStudentDoesNotFail() {
     User user =
         userRepository.save(
             User.builder().email("orphan@haksa.com").profileNickname("orphan").build());
@@ -146,7 +146,7 @@ class UserServiceIntegrationTest {
 
   @Test
   @DisplayName("강의평가가 있는 회원도 탈퇴할 수 있고 재가입 학생과 과거 평가는 분리된다")
-  void deleteUser_preservesCourseEvaluationAndAllowsNewStudentWithOriginalStudentCode() {
+  void deleteUserPreservesCourseEvaluationAndAllowsNewStudentWithOriginalStudentCode() {
     String studentCode = "20260002";
     User user =
         userRepository.save(
@@ -220,7 +220,7 @@ class UserServiceIntegrationTest {
 
   @Test
   @DisplayName("사용자와 소셜 계정은 이메일 없이 저장할 수 있다")
-  void nullableSocialEmail_isPersistedAsNull() {
+  void nullableSocialEmailIsPersistedAsNull() {
     User user =
         userRepository.save(User.builder().email(null).profileNickname("email-less").build());
     socialAccountRepository.save(

@@ -36,7 +36,7 @@ class AcademicRecordControllerApiIntegrationTest extends ApiControllerWebMvcTest
 
   @Test
   @DisplayName("academic record 조회 성공 시 성공 응답을 반환한다")
-  void getAcademicRecord_success() throws Exception {
+  void getAcademicRecordSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);
@@ -55,7 +55,7 @@ class AcademicRecordControllerApiIntegrationTest extends ApiControllerWebMvcTest
 
   @Test
   @DisplayName("academic summary 데이터가 없으면 U02 예외를 반환한다")
-  void getAcademicSummary_notFound() throws Exception {
+  void getAcademicSummaryNotFound() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);

@@ -26,7 +26,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class AppleOidcServiceTests {
 
   @Test
-  void verifyIdToken_withMatchingKeyAndClaims_returnsClaims() throws Exception {
+  void verifyIdTokenWithMatchingKeyAndClaimsReturnsClaims() throws Exception {
     String kid = "test-kid";
     String alg = "RS256";
     String clientId = "com.example.app";
@@ -65,7 +65,7 @@ class AppleOidcServiceTests {
   }
 
   @Test
-  void verifyIdToken_refreshesKeysWhenKidMissing() throws Exception {
+  void verifyIdTokenRefreshesKeysWhenKidMissing() throws Exception {
     String kid = "rotated-kid";
     String alg = "RS256";
     String clientId = "com.example.app";
@@ -109,7 +109,7 @@ class AppleOidcServiceTests {
   }
 
   @Test
-  void verifyIdToken_withAllowedAudienceList_acceptsAlternateClientId() throws Exception {
+  void verifyIdTokenWithAllowedAudienceListAcceptsAlternateClientId() throws Exception {
     String kid = "allowed-kid";
     String alg = "RS256";
     String primaryClientId = "com.cchaksa.app";
@@ -153,7 +153,7 @@ class AppleOidcServiceTests {
   }
 
   @Test
-  void verifyIdToken_withAudClaimArray_acceptsAllowedEntry() throws Exception {
+  void verifyIdTokenWithAudClaimArrayAcceptsAllowedEntry() throws Exception {
     String kid = "array-kid";
     String alg = "RS256";
     String primaryClientId = "com.cchaksa.app";
@@ -190,7 +190,7 @@ class AppleOidcServiceTests {
   }
 
   @Test
-  void verifyIdToken_withAudOutsideAllowList_throwsTokenException() throws Exception {
+  void verifyIdTokenWithAudOutsideAllowListThrowsTokenException() throws Exception {
     String kid = "invalid-aud-kid";
     String alg = "RS256";
     String primaryClientId = "com.cchaksa.app";
@@ -233,7 +233,7 @@ class AppleOidcServiceTests {
   }
 
   @Test
-  void verifyIdToken_withNonceMismatch_propagatesOriginalTokenException() throws Exception {
+  void verifyIdTokenWithNonceMismatchPropagatesOriginalTokenException() throws Exception {
     String kid = "nonce-kid";
     String alg = "RS256";
     String clientId = "com.example.app";

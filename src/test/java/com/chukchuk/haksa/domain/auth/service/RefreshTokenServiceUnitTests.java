@@ -46,7 +46,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("save는 refresh token 엔티티를 생성해 저장한다")
-  void save_persistsRefreshToken() {
+  void savePersistsRefreshToken() {
     Date expiry = new Date(System.currentTimeMillis() + 60_000);
     when(refreshTokenHasher.hash("refresh-token")).thenReturn("refresh-token-hash");
 
@@ -62,7 +62,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("reissue 성공 시 access/refresh 토큰을 재발급한다")
-  void reissue_success() {
+  void reissueSuccess() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String sessionId = "session-1";
@@ -102,7 +102,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("sid가 없는 기존 refresh token은 userId 기반 세션 row로 재발급한다")
-  void reissue_legacyTokenWithoutSessionId_usesUserIdFallback() {
+  void reissueLegacyTokenWithoutSessionIdUsesUserIdFallback() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String oldRefresh = "legacy-refresh";
@@ -135,7 +135,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("hash로 저장된 refresh token과 요청 token이 다르면 REFRESH_TOKEN_MISMATCH 예외를 던진다")
-  void reissue_tokenHashMismatch_throws() {
+  void reissueTokenHashMismatchThrows() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String sessionId = "session-1";
@@ -155,7 +155,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("reissue는 refresh token 만료가 임계값보다 많이 남으면 기존 refresh token을 반환한다")
-  void reissue_refreshExpiryBeyondThreshold_returnsExistingRefreshToken() {
+  void reissueRefreshExpiryBeyondThresholdReturnsExistingRefreshToken() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String sessionId = "session-1";
@@ -190,7 +190,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("reissue는 저장된 refresh token 만료시각이 없으면 새 refresh token을 저장한다")
-  void reissue_refreshExpiryNull_renewsRefreshToken() {
+  void reissueRefreshExpiryNullRenewsRefreshToken() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String sessionId = "session-1";
@@ -226,7 +226,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("저장된 refresh token이 없으면 REFRESH_TOKEN_NOT_FOUND 예외를 던진다")
-  void reissue_refreshNotFound_throws() {
+  void reissueRefreshNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     Claims claims = Jwts.claims();
     claims.setSubject(userId.toString());
@@ -240,7 +240,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("저장된 refresh token과 요청 token이 다르면 REFRESH_TOKEN_MISMATCH 예외를 던진다")
-  void reissue_tokenMismatch_throws() {
+  void reissueTokenMismatchThrows() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String sessionId = "session-1";
@@ -259,7 +259,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("토큰은 유효하지만 사용자가 없으면 USER_NOT_FOUND 예외를 던진다")
-  void reissue_userNotFound_throws() {
+  void reissueUserNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     String userIdText = userId.toString();
     String sessionId = "session-1";
@@ -279,7 +279,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("findBySessionId는 저장된 refresh token을 반환한다")
-  void findBySessionId_success() {
+  void findBySessionIdSuccess() {
     RefreshToken token = new RefreshToken("session-1", "user-1", "refresh", new Date());
     when(refreshTokenRepository.findById("session-1")).thenReturn(Optional.of(token));
 
@@ -290,7 +290,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("findBySessionId 대상이 없으면 REFRESH_TOKEN_NOT_FOUND 예외를 던진다")
-  void findBySessionId_notFound_throws() {
+  void findBySessionIdNotFoundThrows() {
     when(refreshTokenRepository.findById("missing")).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> refreshTokenService.findBySessionId("missing"))
@@ -300,7 +300,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("사용자 탈퇴 시 해당 사용자의 모든 refresh token을 삭제한다")
-  void deleteAllByUserId_deletesAllTokensForUser() {
+  void deleteAllByUserIdDeletesAllTokensForUser() {
     when(refreshTokenRepository.deleteByUserId("user-1")).thenReturn(2);
 
     refreshTokenService.deleteAllByUserId("user-1");
@@ -310,7 +310,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("만료 토큰 정리 작업은 삭제 쿼리를 호출한다")
-  void deletedExpiredTokens_executesDelete() {
+  void deletedExpiredTokensExecutesDelete() {
     when(refreshTokenRepository.deleteByExpiryBefore(any(Date.class))).thenReturn(3);
 
     int deleted = refreshTokenService.deletedExpiredTokens();
@@ -321,7 +321,7 @@ class RefreshTokenServiceUnitTests {
 
   @Test
   @DisplayName("만료 토큰 정리 중 예외가 발생하면 호출자에게 전파한다")
-  void deletedExpiredTokens_propagatesException() {
+  void deletedExpiredTokensPropagatesException() {
     doThrow(new RuntimeException("db error"))
         .when(refreshTokenRepository)
         .deleteByExpiryBefore(any(Date.class));

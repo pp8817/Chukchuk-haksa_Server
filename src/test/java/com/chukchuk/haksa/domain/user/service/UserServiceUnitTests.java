@@ -61,7 +61,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("userId로 사용자를 조회할 수 있다")
-  void getUserById_success() {
+  void getUserByIdSuccess() {
     UUID userId = UUID.randomUUID();
     User user =
         User.builder().id(userId).email("found@example.com").profileNickname("found").build();
@@ -76,7 +76,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("userId에 해당하는 사용자가 없으면 USER_NOT_FOUND 예외를 던진다")
-  void getUserById_notFound_throws() {
+  void getUserByIdNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     UserService userService = createService();
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -91,7 +91,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("내 정보 조회 시 포털 연동 여부를 true로 반환한다")
-  void getMe_whenPortalConnected_returnsTrue() {
+  void getMeWhenPortalConnectedReturnsTrue() {
     UUID userId = UUID.randomUUID();
     User user =
         User.builder().id(userId).email("linked@example.com").profileNickname("linked").build();
@@ -107,7 +107,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("내 정보 조회 시 포털 연동 여부가 false 또는 null이면 false를 반환한다")
-  void getMe_whenPortalConnectedFalseOrNull_returnsFalse() {
+  void getMeWhenPortalConnectedFalseOrNullReturnsFalse() {
     UUID falseUserId = UUID.randomUUID();
     UUID nullUserId = UUID.randomUUID();
     User falseUser =
@@ -126,7 +126,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("내 정보 조회 대상 사용자가 없으면 USER_NOT_FOUND 예외를 던진다")
-  void getMe_userNotFound_throws() {
+  void getMeUserNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     UserService userService = createService();
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -141,7 +141,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("studentCode에 해당하는 기존 사용자가 없으면 현재 사용자를 그대로 반환한다")
-  void tryMergeWithExistingUser_whenNoExistingUser_returnsCurrentUser() {
+  void tryMergeWithExistingUserWhenNoExistingUserReturnsCurrentUser() {
     UUID currentUserId = UUID.randomUUID();
     User currentUser =
         User.builder()
@@ -163,7 +163,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("기존 사용자 발견 시 social account와 student 연관관계를 현재 사용자로 병합하고 기존 사용자를 삭제한다")
-  void tryMergeWithExistingUser_whenExistingUserExists_mergesAndDeletesExisting() {
+  void tryMergeWithExistingUserWhenExistingUserExistsMergesAndDeletesExisting() {
     UUID currentUserId = UUID.randomUUID();
     UUID existingUserId = UUID.randomUUID();
 
@@ -220,7 +220,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("existing user가 current와 동일하면 병합을 건너뛴다")
-  void tryMergeWithExistingUser_whenExistingIsSame_skipsMerge() {
+  void tryMergeWithExistingUserWhenExistingIsSameSkipsMerge() {
     UUID currentUserId = UUID.randomUUID();
     User currentUser =
         User.builder()
@@ -241,7 +241,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("병합 대상 current user가 없으면 USER_NOT_FOUND 예외를 던진다")
-  void tryMergeWithExistingUser_whenCurrentMissing_throws() {
+  void tryMergeWithExistingUserWhenCurrentMissingThrows() {
     UUID currentUserId = UUID.randomUUID();
     UserService userService = createService();
     when(userRepository.findById(currentUserId)).thenReturn(Optional.empty());
@@ -256,7 +256,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("회원 탈퇴 시 학생 캐시와 인증 정보를 정리한 뒤 사용자를 익명화한다")
-  void deleteUserById_cleansUpAndAnonymizesUser() {
+  void deleteUserByIdCleansUpAndAnonymizesUser() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
 
@@ -282,7 +282,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("회원 탈퇴 대상 사용자가 없으면 USER_NOT_FOUND 예외를 던진다")
-  void deleteUserById_userNotFound_throws() {
+  void deleteUserByIdUserNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     UserService userService = createService();
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -297,7 +297,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("소셜 계정이 이미 존재하면 이메일 claim 없이도 기존 사용자로 로그인한다")
-  void signIn_whenSocialAccountExists_returnsTokensForExistingUser() {
+  void signInWhenSocialAccountExistsReturnsTokensForExistingUser() {
     User existingUser =
         User.builder()
             .id(UUID.randomUUID())
@@ -344,7 +344,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("소셜 계정이 없으면 사용자와 소셜 계정을 새로 생성하고 로그인 토큰을 발급한다")
-  void signIn_whenSocialAccountMissing_createsUserAndSocialAccount() {
+  void signInWhenSocialAccountMissingCreatesUserAndSocialAccount() {
     UUID newUserId = UUID.randomUUID();
     final User savedUser =
         User.builder()
@@ -393,7 +393,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("이메일 claim이 없는 신규 사용자는 null 이메일로 가입하고 로그인한다")
-  void signIn_withoutEmail_createsNullableUserAndSocialAccount() {
+  void signInWithoutEmailCreatesNullableUserAndSocialAccount() {
     UUID newUserId = UUID.randomUUID();
     User savedUser =
         User.builder().id(newUserId).email(null).profileNickname("Unknown User").build();
@@ -423,7 +423,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("evictUserDetailsCache는 auth token 캐시 제거를 위임한다")
-  void evictUserDetailsCache_delegatesToAuthTokenCache() {
+  void evictUserDetailsCacheDelegatesToAuthTokenCache() {
     UUID userId = UUID.randomUUID();
     UserService userService = createService();
 
@@ -434,7 +434,7 @@ class UserServiceUnitTests {
 
   @Test
   @DisplayName("save는 userRepository에 위임한다")
-  void save_delegatesToRepository() {
+  void saveDelegatesToRepository() {
     User user = User.builder().email("save@example.com").profileNickname("save").build();
 
     UserService userService = createService();

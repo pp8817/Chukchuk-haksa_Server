@@ -33,7 +33,7 @@ class SemesterControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppor
 
   @Test
   @DisplayName("semester 목록 조회 성공 시 성공 응답을 반환한다")
-  void getSemesterRecord_success() throws Exception {
+  void getSemesterRecordSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);
@@ -51,7 +51,7 @@ class SemesterControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppor
 
   @Test
   @DisplayName("semester grades 데이터가 없으면 A02 예외를 반환한다")
-  void getSemesterGrades_empty() throws Exception {
+  void getSemesterGradesEmpty() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);

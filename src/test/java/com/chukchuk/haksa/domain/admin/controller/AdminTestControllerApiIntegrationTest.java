@@ -52,7 +52,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("테스트 계정 생성 성공 시 토큰과 테스트 식별자를 반환한다")
-  void createTestUser_success() throws Exception {
+  void createTestUserSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     AdminTestDto.TestUserResponse response =
@@ -90,7 +90,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("테스트 옵션 조회 성공 시 학과와 졸업요건 영역 목록을 반환한다")
-  void getTestOptions_success() throws Exception {
+  void getTestOptionsSuccess() throws Exception {
     AdminTestDto.TestOptionsResponse response =
         new AdminTestDto.TestOptionsResponse(
             List.of(new AdminTestDto.DepartmentOption(1L, "CSE", "컴퓨터학과")),
@@ -108,7 +108,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("학과 공개 검색 성공 시 검색 결과를 반환한다")
-  void searchDepartments_success() throws Exception {
+  void searchDepartmentsSuccess() throws Exception {
     when(optionService.searchDepartments("컴퓨터"))
         .thenReturn(List.of(new AdminTestDto.DepartmentOption(1L, "CSE", "컴퓨터학과")));
 
@@ -123,7 +123,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("강의 후보 조회 성공 시 검색 결과를 반환한다")
-  void searchCourseOfferings_success() throws Exception {
+  void searchCourseOfferingsSuccess() throws Exception {
     AdminTestDto.CourseOfferingOption option =
         new AdminTestDto.CourseOfferingOption(
             10L, "CSE101", "자료구조", 2024, 10, 3, FacultyDivision.전핵, null, "컴퓨터학과");
@@ -147,7 +147,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("현재 인증 계정 강의 데이터 수정 성공 시 성공 메시지를 반환한다")
-  void updateGraduationCourses_success() throws Exception {
+  void updateGraduationCoursesSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     doNothing().when(mutationService).updateGraduationCourses(eq(userId), any());
@@ -173,7 +173,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("현재 인증 계정 전공 상태 수정 성공 시 성공 메시지를 반환한다")
-  void updateMajor_success() throws Exception {
+  void updateMajorSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     doNothing().when(mutationService).updateMajor(eq(userId), any());
@@ -197,7 +197,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("현재 인증 계정 초기화 성공 시 성공 메시지를 반환한다")
-  void resetCurrentAccount_success() throws Exception {
+  void resetCurrentAccountSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     doNothing().when(mutationService).resetCurrentAccount(userId);
@@ -211,7 +211,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("현재 인증 계정 테스트 강의 생성 성공 시 생성 결과를 반환한다")
-  void createTestCourse_success() throws Exception {
+  void createTestCourseSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     AdminTestDto.TestCourseResponse response =
@@ -247,7 +247,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("강의평가 empty-semester 테스트 상태 세팅 성공 시 성공 메시지를 반환한다")
-  void setLectureEvaluationEmptySemester_success() throws Exception {
+  void setLectureEvaluationEmptySemesterSuccess() throws Exception {
     mockMvc
         .perform(post("/api/admin/test-lecture-evaluations/empty-semester"))
         .andExpect(status().isOk())
@@ -259,7 +259,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("강의평가 NOT_RELEASED 테스트 상태 세팅 성공 시 성공 메시지를 반환한다")
-  void setLectureEvaluationNotReleased_success() throws Exception {
+  void setLectureEvaluationNotReleasedSuccess() throws Exception {
     mockMvc
         .perform(post("/api/admin/test-lecture-evaluations/not-released"))
         .andExpect(status().isOk())
@@ -271,7 +271,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("강의평가 PENDING 테스트 상태 세팅 성공 시 성공 메시지를 반환한다")
-  void setLectureEvaluationPending_success() throws Exception {
+  void setLectureEvaluationPendingSuccess() throws Exception {
     mockMvc
         .perform(post("/api/admin/test-lecture-evaluations/pending"))
         .andExpect(status().isOk())
@@ -283,7 +283,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("강의평가 SKIPPED 테스트 상태 세팅 성공 시 성공 메시지를 반환한다")
-  void setLectureEvaluationSkipped_success() throws Exception {
+  void setLectureEvaluationSkippedSuccess() throws Exception {
     mockMvc
         .perform(post("/api/admin/test-lecture-evaluations/skipped"))
         .andExpect(status().isOk())
@@ -295,7 +295,7 @@ class AdminTestControllerApiIntegrationTest extends ApiControllerWebMvcTestSuppo
 
   @Test
   @DisplayName("강의평가 COMPLETED 테스트 상태 세팅 성공 시 성공 메시지를 반환한다")
-  void setLectureEvaluationCompleted_success() throws Exception {
+  void setLectureEvaluationCompletedSuccess() throws Exception {
     mockMvc
         .perform(post("/api/admin/test-lecture-evaluations/completed"))
         .andExpect(status().isOk())

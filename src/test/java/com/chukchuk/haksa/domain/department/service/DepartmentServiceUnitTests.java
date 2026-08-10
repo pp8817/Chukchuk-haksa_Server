@@ -25,7 +25,7 @@ class DepartmentServiceUnitTests {
 
   @Test
   @DisplayName("기존 학과가 존재하면 해당 학과를 반환한다")
-  void getOrCreateDepartment_whenExists_returnsExisting() {
+  void getOrCreateDepartmentWhenExistsReturnsExisting() {
     Department existing = new Department("CS", "컴퓨터학과");
     when(departmentRepository.findByDepartmentCode("CS")).thenReturn(Optional.of(existing));
 
@@ -37,7 +37,7 @@ class DepartmentServiceUnitTests {
 
   @Test
   @DisplayName("기존 학과가 없으면 새 학과를 생성해 저장한다")
-  void getOrCreateDepartment_whenMissing_createsAndSaves() {
+  void getOrCreateDepartmentWhenMissingCreatesAndSaves() {
     Department saved = new Department("EE", "전자공학과");
     when(departmentRepository.findByDepartmentCode("EE")).thenReturn(Optional.empty());
     when(departmentRepository.save(any(Department.class))).thenReturn(saved);

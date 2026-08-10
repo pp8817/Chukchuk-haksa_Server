@@ -23,7 +23,7 @@ class CourseOfferingBackfillTest {
 
   @Test
   @DisplayName("선교 영역 + area null 인 경우 정상적으로 채워진다")
-  void backfill_onMissionWithNull_assignsArea() {
+  void backfillOnMissionWithNullAssignsArea() {
     CourseOffering offering = newOffering(FacultyDivision.선교, null);
     LiberalArtsAreaCode area = mock(LiberalArtsAreaCode.class);
 
@@ -34,7 +34,7 @@ class CourseOfferingBackfillTest {
 
   @Test
   @DisplayName("선교 영역인데 이미 area 가 있으면 idempotent 하게 무시된다")
-  void backfill_onMissionAlreadyAssigned_isNoOp() {
+  void backfillOnMissionAlreadyAssignedIsNoOp() {
     LiberalArtsAreaCode existing = mock(LiberalArtsAreaCode.class);
     CourseOffering offering = newOffering(FacultyDivision.선교, existing);
     LiberalArtsAreaCode incoming = mock(LiberalArtsAreaCode.class);
@@ -46,7 +46,7 @@ class CourseOfferingBackfillTest {
 
   @Test
   @DisplayName("선교 외 영역에서 호출하면 IllegalStateException 으로 즉시 차단된다")
-  void backfill_onNonMission_throwsIllegalState() {
+  void backfillOnNonMissionThrowsIllegalState() {
     CourseOffering offering = newOffering(FacultyDivision.전핵, null);
     LiberalArtsAreaCode area = mock(LiberalArtsAreaCode.class);
 
@@ -57,7 +57,7 @@ class CourseOfferingBackfillTest {
 
   @Test
   @DisplayName("선교 영역인데 인자 area 가 null 이면 IllegalArgumentException")
-  void backfill_withNullArea_throwsIllegalArgument() {
+  void backfillWithNullAreaThrowsIllegalArgument() {
     CourseOffering offering = newOffering(FacultyDivision.선교, null);
 
     assertThatThrownBy(() -> offering.backfillMissionLiberalAreaCode(null))

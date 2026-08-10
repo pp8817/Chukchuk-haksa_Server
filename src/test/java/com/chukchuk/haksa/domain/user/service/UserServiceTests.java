@@ -53,7 +53,7 @@ class UserServiceTests {
   @Captor private ArgumentCaptor<OidcProvider> providerCaptor;
 
   @Test
-  void signIn_usesProviderFromRequest_andReturnsTokens() {
+  void signInUsesProviderFromRequestAndReturnsTokens() {
     Claims claims = Jwts.claims().setSubject("apple-sub");
     claims.put("email", "apple@example.com");
 

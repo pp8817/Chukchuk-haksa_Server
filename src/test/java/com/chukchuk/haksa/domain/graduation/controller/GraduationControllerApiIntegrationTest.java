@@ -39,7 +39,7 @@ class GraduationControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
 
   @Test
   @DisplayName("graduation progress 조회 성공 시 성공 응답을 반환한다")
-  void getGraduationProgress_success() throws Exception {
+  void getGraduationProgressSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);
@@ -58,7 +58,7 @@ class GraduationControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
 
   @Test
   @DisplayName("졸업요건 데이터가 없으면 G02 예외를 반환한다")
-  void getGraduationProgress_notFound() throws Exception {
+  void getGraduationProgressNotFound() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);
@@ -76,7 +76,7 @@ class GraduationControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
 
   @Test
   @DisplayName("외국어 인증 기준 조회 성공 시 기준 목록을 반환한다")
-  void getLanguageCertRequirement_success() throws Exception {
+  void getLanguageCertRequirementSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);
@@ -108,7 +108,7 @@ class GraduationControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
 
   @Test
   @DisplayName("외국어 인증 기준 미매핑도 200 응답으로 반환한다")
-  void getLanguageCertRequirement_unmapped() throws Exception {
+  void getLanguageCertRequirementUnmapped() throws Exception {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     authenticate(userId, studentId);

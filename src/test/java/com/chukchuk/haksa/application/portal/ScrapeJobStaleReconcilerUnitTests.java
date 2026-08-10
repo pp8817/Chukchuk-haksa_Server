@@ -38,7 +38,7 @@ class ScrapeJobStaleReconcilerUnitTests {
 
   @Test
   @DisplayName("SENT 이후 callback이 늦으면 job을 FAILED로 확정한다")
-  void reconcileStaleQueuedJobs_marksJobFailed() {
+  void reconcileStaleQueuedJobsMarksJobFailed() {
     ScrapingProperties properties = new ScrapingProperties();
     properties.getStale().setEnabled(true);
     properties.getStale().setBatchSize(10);

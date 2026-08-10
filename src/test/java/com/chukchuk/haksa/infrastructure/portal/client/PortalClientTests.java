@@ -30,7 +30,7 @@ class PortalClientTests {
   }
 
   @Test
-  void validateLogin_postsCredentialToLoginEndpoint() throws Exception {
+  void validateLoginPostsCredentialToLoginEndpoint() throws Exception {
     AtomicReference<String> requestBody = new AtomicReference<>();
     PortalClient client = clientWithServer(204, requestBody);
 
@@ -41,7 +41,7 @@ class PortalClientTests {
   }
 
   @Test
-  void validateLogin_mapsUnauthorizedToPortalLoginFailed() throws Exception {
+  void validateLoginMapsUnauthorizedToPortalLoginFailed() throws Exception {
     PortalClient client = clientWithServer(401, new AtomicReference<>());
 
     assertThatThrownBy(() -> client.validateLogin("17019013", "wrong"))

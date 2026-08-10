@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class RefreshTokenHasherTests {
 
   @Test
-  void hash_returnsDeterministicSecretBasedValue() {
+  void hashReturnsDeterministicSecretBasedValue() {
     RefreshTokenHasher hasher = new RefreshTokenHasher("01234567890123456789012345678901");
     RefreshTokenHasher otherSecretHasher =
         new RefreshTokenHasher("abcdefghijklmnopqrstuvwxyz123456");
@@ -24,7 +24,7 @@ class RefreshTokenHasherTests {
   }
 
   @Test
-  void matches_comparesRawTokenWithStoredHash() {
+  void matchesComparesRawTokenWithStoredHash() {
     RefreshTokenHasher hasher = new RefreshTokenHasher("01234567890123456789012345678901");
     String tokenHash = hasher.hash("refresh-token");
 

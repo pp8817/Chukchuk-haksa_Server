@@ -22,7 +22,7 @@ class MaintenanceTaskHandlerUnitTests {
 
   @Test
   @DisplayName("SCRAPE_JOB_RECONCILE_STALE 작업은 stale reconciler를 실행하고 처리 건수를 반환한다")
-  void handle_reconcileStale_returnsAffectedCount() {
+  void handleReconcileStaleReturnsAffectedCount() {
     MaintenanceTaskHandler handler =
         new MaintenanceTaskHandler(scrapeJobStaleReconciler, refreshTokenService);
     when(scrapeJobStaleReconciler.reconcileStaleQueuedJobs()).thenReturn(2);
@@ -41,7 +41,7 @@ class MaintenanceTaskHandlerUnitTests {
 
   @Test
   @DisplayName("REFRESH_TOKEN_CLEANUP 작업은 만료 토큰 정리를 실행하고 삭제 건수를 반환한다")
-  void handle_refreshTokenCleanup_returnsDeletedCount() {
+  void handleRefreshTokenCleanupReturnsDeletedCount() {
     MaintenanceTaskHandler handler =
         new MaintenanceTaskHandler(scrapeJobStaleReconciler, refreshTokenService);
     when(refreshTokenService.deletedExpiredTokens()).thenReturn(3);
@@ -60,7 +60,7 @@ class MaintenanceTaskHandlerUnitTests {
 
   @Test
   @DisplayName("알 수 없는 maintenance task는 실패한다")
-  void handle_unknownTask_throws() {
+  void handleUnknownTaskThrows() {
     MaintenanceTaskHandler handler =
         new MaintenanceTaskHandler(scrapeJobStaleReconciler, refreshTokenService);
 

@@ -27,7 +27,7 @@ class CustomUserDetailsServiceUnitTests {
 
   @Test
   @DisplayName("사용자가 존재하면 CustomUserDetails를 반환한다")
-  void loadUserByUsername_success() {
+  void loadUserByUsernameSuccess() {
     UUID userId = UUID.randomUUID();
     User user =
         User.builder().id(userId).email("test@example.com").profileNickname("tester").build();
@@ -42,7 +42,7 @@ class CustomUserDetailsServiceUnitTests {
 
   @Test
   @DisplayName("사용자가 없으면 USER_NOT_FOUND 토큰 예외를 던진다")
-  void loadUserByUsername_notFound_throws() {
+  void loadUserByUsernameNotFoundThrows() {
     UUID userId = UUID.randomUUID();
     when(userRepository.findById(userId)).thenReturn(Optional.empty());
 

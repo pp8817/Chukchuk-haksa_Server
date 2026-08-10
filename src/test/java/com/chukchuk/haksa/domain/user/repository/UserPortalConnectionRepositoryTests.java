@@ -38,7 +38,7 @@ class UserPortalConnectionRepositoryTests {
 
   @Test
   @DisplayName("기존 Student 가 있으면 재사용하여 중복 삽입을 막는다")
-  void initializePortalConnection_reusesExistingStudent() {
+  void initializePortalConnectionReusesExistingStudent() {
     UUID userId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     User user =
@@ -59,7 +59,7 @@ class UserPortalConnectionRepositoryTests {
 
   @Test
   @DisplayName("기존 Student 가 없으면 새 Student 를 생성한다")
-  void initializePortalConnection_createsNewStudentWhenAbsent() {
+  void initializePortalConnectionCreatesNewStudentWhenAbsent() {
     UUID userId = UUID.randomUUID();
     User user =
         User.builder().id(userId).email("test@example.com").profileNickname("tester").build();

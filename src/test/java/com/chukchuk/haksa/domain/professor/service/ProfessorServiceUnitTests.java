@@ -25,7 +25,7 @@ class ProfessorServiceUnitTests {
 
   @Test
   @DisplayName("기존 교수가 존재하면 해당 교수를 반환한다")
-  void getOrCreate_whenExists_returnsExisting() {
+  void getOrCreateWhenExistsReturnsExisting() {
     Professor existing = new Professor("홍길동");
     when(professorRepository.findByProfessorName("홍길동")).thenReturn(Optional.of(existing));
 
@@ -37,7 +37,7 @@ class ProfessorServiceUnitTests {
 
   @Test
   @DisplayName("기존 교수가 없으면 새 교수를 생성해 저장한다")
-  void getOrCreate_whenMissing_createsAndSaves() {
+  void getOrCreateWhenMissingCreatesAndSaves() {
     Professor saved = new Professor("김교수");
     when(professorRepository.findByProfessorName("김교수")).thenReturn(Optional.empty());
     when(professorRepository.save(any(Professor.class))).thenReturn(saved);

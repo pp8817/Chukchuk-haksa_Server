@@ -30,7 +30,7 @@ class PortalLoginServiceUnitTests {
 
   @Test
   @DisplayName("포털 로그인 검증에 성공하면 verification token을 발급한다")
-  void login_issuesVerificationTokenAfterPortalLoginSuccess() {
+  void loginIssuesVerificationTokenAfterPortalLoginSuccess() {
     UUID userId = UUID.randomUUID();
     PortalLoginService service = new PortalLoginService(portalLoginVerifier, tokenService);
     PortalLinkDto.LoginRequest request = new PortalLinkDto.LoginRequest("suwon", "17019013", "pw");
@@ -46,7 +46,7 @@ class PortalLoginServiceUnitTests {
 
   @Test
   @DisplayName("포털 로그인 검증에 실패하면 verification token을 발급하지 않는다")
-  void login_doesNotIssueVerificationTokenWhenPortalLoginFails() {
+  void loginDoesNotIssueVerificationTokenWhenPortalLoginFails() {
     UUID userId = UUID.randomUUID();
     PortalLoginService service = new PortalLoginService(portalLoginVerifier, tokenService);
     PortalLinkDto.LoginRequest request =

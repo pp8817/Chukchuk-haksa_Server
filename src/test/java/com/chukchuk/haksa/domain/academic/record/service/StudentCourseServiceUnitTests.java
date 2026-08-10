@@ -27,7 +27,7 @@ class StudentCourseServiceUnitTests {
 
   @Test
   @DisplayName("수강 과목을 CourseDetailDto로 매핑해 반환한다")
-  void getStudentCourses_mapsCourses() {
+  void getStudentCoursesMapsCourses() {
     UUID studentId = UUID.randomUUID();
     StudentCourse course = mock(StudentCourse.class, RETURNS_DEEP_STUBS);
 
@@ -60,7 +60,7 @@ class StudentCourseServiceUnitTests {
 
   @Test
   @DisplayName("교수/성적/재수강 값이 null이면 DTO 기본값을 사용한다")
-  void getStudentCourses_usesDefaultsForNullables() {
+  void getStudentCoursesUsesDefaultsForNullables() {
     UUID studentId = UUID.randomUUID();
     StudentCourse course = mock(StudentCourse.class, RETURNS_DEEP_STUBS);
 

@@ -37,7 +37,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("특정 학기 성적 조회 성공 시 응답 DTO를 반환한다")
-  void getSemesterGradesByYearAndSemester_success() {
+  void getSemesterGradesByYearAndSemesterSuccess() {
     UUID studentId = UUID.randomUUID();
     SemesterAcademicRecord record = semesterRecord(2024, 1);
     when(semesterAcademicRecordRepository.findByStudentIdAndYearAndSemester(studentId, 2024, 1))
@@ -53,7 +53,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("특정 학기 성적이 없으면 SEMESTER_RECORD_NOT_FOUND 예외를 던진다")
-  void getSemesterGradesByYearAndSemester_notFound_throws() {
+  void getSemesterGradesByYearAndSemesterNotFoundThrows() {
     UUID studentId = UUID.randomUUID();
     when(semesterAcademicRecordRepository.findByStudentIdAndYearAndSemester(studentId, 2024, 1))
         .thenReturn(Optional.empty());
@@ -71,7 +71,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("전체 학기 성적이 비어 있으면 SEMESTER_RECORD_EMPTY 예외를 던진다")
-  void getAllSemesterGrades_empty_throws() {
+  void getAllSemesterGradesEmptyThrows() {
     UUID studentId = UUID.randomUUID();
     when(academicCache.getSemesterSummaries(studentId)).thenReturn(List.of());
 
@@ -85,7 +85,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("학기 목록 조회 시 데이터가 비어 있으면 FRESHMAN_NO_SEMESTER 예외를 던진다")
-  void getSemestersByStudentId_empty_throws() {
+  void getSemestersByStudentIdEmptyThrows() {
     UUID studentId = UUID.randomUUID();
     when(academicCache.getSemesterSummaries(studentId)).thenReturn(List.of());
 
@@ -99,7 +99,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("캐시에 학기 요약이 있으면 저장소를 조회하지 않고 반환한다")
-  void getSemesterSummaries_cacheHit_returnsCached() {
+  void getSemesterSummariesCacheHitReturnsCached() {
     UUID studentId = UUID.randomUUID();
     List<SemesterSummaryResponse> cached =
         List.of(
@@ -117,7 +117,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("캐시 조회 실패 시에도 저장소 데이터를 반환하고 캐시 저장을 시도한다")
-  void getSemesterSummaries_cacheGetFails_fallbacksToRepository() {
+  void getSemesterSummariesCacheGetFailsFallbacksToRepository() {
     UUID studentId = UUID.randomUUID();
     SemesterAcademicRecord record = semesterRecord(2023, 2);
     when(academicCache.getSemesterSummaries(studentId))
@@ -135,7 +135,7 @@ class SemesterAcademicRecordServiceUnitTests {
 
   @Test
   @DisplayName("저장소 결과가 비어 있으면 캐시에 저장하지 않고 빈 리스트를 반환한다")
-  void getSemesterSummaries_repositoryEmpty_returnsEmpty() {
+  void getSemesterSummariesRepositoryEmptyReturnsEmpty() {
     UUID studentId = UUID.randomUUID();
     when(academicCache.getSemesterSummaries(studentId)).thenReturn(null);
     when(semesterAcademicRecordRepository.findByStudentIdOrderByYearDescSemesterDesc(studentId))

@@ -25,7 +25,7 @@ class CourseServiceUnitTests {
 
   @Test
   @DisplayName("기존 과목이 존재하면 해당 과목을 반환한다")
-  void getOrCreateCourse_whenExists_returnsExisting() {
+  void getOrCreateCourseWhenExistsReturnsExisting() {
     Course existing = new Course("CSE101", "자료구조");
     when(courseRepository.findByCourseCode("CSE101")).thenReturn(Optional.of(existing));
 
@@ -37,7 +37,7 @@ class CourseServiceUnitTests {
 
   @Test
   @DisplayName("기존 과목이 없으면 새 과목을 생성해 저장한다")
-  void getOrCreateCourse_whenMissing_createsAndSaves() {
+  void getOrCreateCourseWhenMissingCreatesAndSaves() {
     Course saved = new Course("MAT201", "선형대수");
     when(courseRepository.findByCourseCode("MAT201")).thenReturn(Optional.empty());
     when(courseRepository.save(any(Course.class))).thenReturn(saved);
