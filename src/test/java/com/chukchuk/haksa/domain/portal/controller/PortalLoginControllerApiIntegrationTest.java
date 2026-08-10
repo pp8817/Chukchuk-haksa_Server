@@ -2,7 +2,7 @@
 
 package com.chukchuk.haksa.domain.portal.controller;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,10 +32,11 @@ class PortalLoginControllerApiIntegrationTest extends ApiControllerWebMvcTestSup
 
   @Test
   @DisplayName("포털 로그인 검증 성공 시 verification token을 반환한다")
-  void verifyPortalLogin_success() throws Exception {
+  void verifyPortalLoginSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
-    when(portalLoginService.login(eq(userId), any(PortalLinkDto.LoginRequest.class)))
+    when(portalLoginService.login(
+            eq(userId), argThat(request -> "suwon".equals(request.portalType()))))
         .thenReturn(new PortalLinkDto.LoginResponse("verification-token"));
 
     mockMvc

@@ -12,7 +12,7 @@ import java.time.Instant;
 public class PortalLinkJobDurationApiResponse
     extends SuccessResponse<PortalLinkDto.JobDurationResponse> {
 
-  /** 포털 link 작업 duration api 응답 인스턴스를 생성한다. */
+  /** 성공한 포털 연동 작업의 예시 소요 시간을 담은 문서용 응답을 생성한다. */
   public PortalLinkJobDurationApiResponse() {
     super(
         new PortalLinkDto.JobDurationResponse(
@@ -22,7 +22,7 @@ public class PortalLinkJobDurationApiResponse
             Instant.parse("2026-06-04T10:00:00Z"),
             Instant.parse("2026-06-04T10:00:12.345Z"),
             12_345L,
-            "12S345ms"),
+            "12s 345ms"),
         "요청 성공");
   }
 }

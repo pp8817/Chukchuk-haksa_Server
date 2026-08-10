@@ -1,6 +1,7 @@
 package com.chukchuk.haksa.domain.user.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -39,7 +40,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("analyticsId 조회 성공 시 인증 사용자 ID를 반환한다")
-  void getAnalyticsId_success() throws Exception {
+  void getAnalyticsIdSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
 
@@ -52,7 +53,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("내 정보 조회 성공 시 포털 연동 여부를 반환한다")
-  void getMe_success() throws Exception {
+  void getMeSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(userService.getMe(userId)).thenReturn(new UserDto.MeResponse(true));
@@ -67,7 +68,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("내 정보 조회 시 사용자가 없으면 U01 응답을 반환한다")
-  void getMe_userNotFound() throws Exception {
+  void getMeUserNotFound() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(userService.getMe(userId))
@@ -82,8 +83,8 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("signin 성공 시 성공 응답을 반환한다")
-  void signIn_success() throws Exception {
-    when(userService.signIn(any()))
+  void signInSuccess() throws Exception {
+    when(userService.signIn(argThat(request -> "dummy-id-token".equals(request.idToken()))))
         .thenReturn(new AuthDto.SignInTokenResponse("access-token", "refresh-token", false));
 
     mockMvc
@@ -106,7 +107,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("delete 성공 시 성공 응답을 반환한다")
-  void delete_success() throws Exception {
+  void deleteSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId, UUID.randomUUID());
     doNothing().when(userService).deleteUserById(userId);
@@ -120,7 +121,7 @@ class UserControllerApiIntegrationTest extends ApiControllerWebMvcTestSupport {
 
   @Test
   @DisplayName("signin 토큰 검증 실패 시 에러 응답을 반환한다")
-  void signIn_tokenInvalid() throws Exception {
+  void signInTokenInvalid() throws Exception {
     when(userService.signIn(any())).thenThrow(new TokenException(ErrorCode.TOKEN_INVALID));
 
     mockMvc

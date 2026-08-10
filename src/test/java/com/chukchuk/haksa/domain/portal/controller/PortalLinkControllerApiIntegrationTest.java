@@ -1,6 +1,6 @@
 package com.chukchuk.haksa.domain.portal.controller;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,11 +30,16 @@ class PortalLinkControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
 
   @Test
   @DisplayName("portal link 요청 성공 시 accepted 응답을 반환한다")
-  void createPortalLinkJob_success() throws Exception {
+  void createPortalLinkJobSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(portalLinkJobService.acceptJob(
-            eq(userId), eq("idem-1"), any(PortalLinkDto.LinkRequest.class)))
+            eq(userId),
+            eq("idem-1"),
+            argThat(
+                request ->
+                    "suwon".equals(request.portalType())
+                        && "verification-token".equals(request.portalVerificationToken()))))
         .thenReturn(
             new PortalLinkDto.AcceptedResponse("job-1", "accepted", "/portal/link/jobs/job-1"));
 
@@ -55,6 +60,7 @@ class PortalLinkControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
         .andExpect(status().isAccepted())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.job_id").value("job-1"))
-        .andExpect(jsonPath("$.data.status").value("accepted"));
+        .andExpect(jsonPath("$.data.status").value("accepted"))
+        .andExpect(jsonPath("$.data.polling_endpoint").value("/portal/link/jobs/job-1"));
   }
 }

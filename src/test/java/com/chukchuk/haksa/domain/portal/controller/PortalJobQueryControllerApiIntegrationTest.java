@@ -31,7 +31,7 @@ class PortalJobQueryControllerApiIntegrationTest extends ApiControllerWebMvcTest
 
   @Test
   @DisplayName("본인 job은 조회할 수 있다")
-  void getJobStatus_success() throws Exception {
+  void getJobStatusSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(portalLinkJobQueryService.getJobStatus(userId, "job-1"))
@@ -40,23 +40,30 @@ class PortalJobQueryControllerApiIntegrationTest extends ApiControllerWebMvcTest
                 "job-1",
                 "suwon",
                 "queued",
-                null,
-                null,
-                null,
+                "TEMPORARY_FAILURE",
+                "일시적인 오류",
+                true,
                 Instant.parse("2026-03-14T10:00:00Z"),
-                Instant.parse("2026-03-14T10:00:00Z"),
-                null));
+                Instant.parse("2026-03-14T10:01:00Z"),
+                Instant.parse("2026-03-14T10:02:00Z")));
 
     mockMvc
         .perform(get("/portal/link/jobs/job-1"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.job_id").value("job-1"))
-        .andExpect(jsonPath("$.data.status").value("queued"));
+        .andExpect(jsonPath("$.data.portal_type").value("suwon"))
+        .andExpect(jsonPath("$.data.status").value("queued"))
+        .andExpect(jsonPath("$.data.error_code").value("TEMPORARY_FAILURE"))
+        .andExpect(jsonPath("$.data.error_message").value("일시적인 오류"))
+        .andExpect(jsonPath("$.data.retryable").value(true))
+        .andExpect(jsonPath("$.data.created_at").value("2026-03-14T10:00:00Z"))
+        .andExpect(jsonPath("$.data.updated_at").value("2026-03-14T10:01:00Z"))
+        .andExpect(jsonPath("$.data.finished_at").value("2026-03-14T10:02:00Z"));
   }
 
   @Test
   @DisplayName("타 사용자 job 조회는 404를 반환한다")
-  void getJobStatus_notFound() throws Exception {
+  void getJobStatusNotFound() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(portalLinkJobQueryService.getJobStatus(eq(userId), eq("job-2")))
@@ -70,7 +77,7 @@ class PortalJobQueryControllerApiIntegrationTest extends ApiControllerWebMvcTest
 
   @Test
   @DisplayName("완료된 job 요약 조회 시 학생 요약 정보를 반환한다")
-  void getJobSummary_success() throws Exception {
+  void getJobSummarySuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     PortalLinkDto.StudentInfoSummary studentInfo =
@@ -85,12 +92,13 @@ class PortalJobQueryControllerApiIntegrationTest extends ApiControllerWebMvcTest
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.job_id").value("job-3"))
         .andExpect(jsonPath("$.data.studentInfo.name").value("홍길동"))
-        .andExpect(jsonPath("$.data.studentInfo.majorName").value("소프트웨어학과"));
+        .andExpect(jsonPath("$.data.studentInfo.majorName").value("소프트웨어학과"))
+        .andExpect(jsonPath("$.data.finished_at").value("2026-03-14T10:10:00Z"));
   }
 
   @Test
   @DisplayName("완료된 job duration 조회 시 소요 시간을 반환한다")
-  void getJobDuration_success() throws Exception {
+  void getJobDurationSuccess() throws Exception {
     UUID userId = UUID.randomUUID();
     authenticate(userId);
     when(portalLinkJobQueryService.getJobDuration(eq(userId), eq("job-4")))
@@ -110,6 +118,8 @@ class PortalJobQueryControllerApiIntegrationTest extends ApiControllerWebMvcTest
         .andExpect(jsonPath("$.data.job_id").value("job-4"))
         .andExpect(jsonPath("$.data.status").value("succeeded"))
         .andExpect(jsonPath("$.data.success").value(true))
+        .andExpect(jsonPath("$.data.started_at").value("2026-06-04T10:00:00Z"))
+        .andExpect(jsonPath("$.data.ended_at").value("2026-06-04T10:00:12.345Z"))
         .andExpect(jsonPath("$.data.elapsed_millis").value(12_345))
         .andExpect(jsonPath("$.data.elapsed_time").value("12s 345ms"));
   }
