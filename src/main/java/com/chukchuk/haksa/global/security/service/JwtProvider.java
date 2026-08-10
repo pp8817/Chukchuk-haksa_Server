@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-/** 척척학사의 jwt 필요한 값을 조회해 제공한다. */
+/** 사용자 인증용 access token과 세션 식별자가 포함된 refresh token을 발급·검증한다. */
 @Component
 @Slf4j
 public class JwtProvider {
@@ -40,12 +40,12 @@ public class JwtProvider {
 
   // AccessToken 토큰 생성
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 사용자 식별자·이메일·권한을 claim으로 담은 access token을 발급한다.
    *
    * @param userId 사용자 식별자
-   * @param email 이메일 값
-   * @param role role 값
-   * @return 생성된
+   * @param email 인증 사용자 이메일 claim
+   * @param role 인가에 사용할 사용자 역할 claim
+   * @return 설정된 access token 만료 시간이 적용된 서명 JWT
    */
   public String createAccessToken(String userId, String email, String role) {
     Date now = new Date();
@@ -63,10 +63,10 @@ public class JwtProvider {
 
   // RefreshToken 생성
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 임의의 새 세션 식별자로 refresh token을 발급한다.
    *
    * @param userId 사용자 식별자
-   * @return 생성된
+   * @return refresh token 원문, 만료 시각 및 생성된 세션 식별자
    */
   public RefreshTokenWithExpiry createRefreshToken(String userId) {
     return createRefreshToken(userId, UUID.randomUUID().toString());
@@ -74,11 +74,11 @@ public class JwtProvider {
 
   // RefreshToken 생성
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 지정한 세션 식별자를 {@code sid} claim으로 담은 refresh token을 발급한다.
    *
    * @param userId 사용자 식별자
    * @param sessionId 세션 식별자
-   * @return 생성된
+   * @return refresh token 원문, 만료 시각 및 전달받은 세션 식별자
    */
   public RefreshTokenWithExpiry createRefreshToken(String userId, String sessionId) {
     Date now = new Date();
@@ -98,10 +98,12 @@ public class JwtProvider {
 
   // 토큰 검증
   /**
-   * 입력 데이터를 필요한 형식으로 변환한다.
+   * JWT 서명과 만료 시각을 검증하고 claim을 반환한다.
    *
-   * @param token 토큰 값
-   * @return 변환된
+   * @param token 검증하고 해석할 JWT 문자열
+   * @return 서명이 유효한 JWT claim
+   * @throws ExpiredJwtException 허용된 clock skew를 포함해 토큰이 만료된 경우
+   * @throws JwtException 토큰 형식이나 서명이 유효하지 않은 경우
    */
   public Claims parseToken(String token) {
     try {

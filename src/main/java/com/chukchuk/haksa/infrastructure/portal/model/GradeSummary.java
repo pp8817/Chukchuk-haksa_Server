@@ -3,9 +3,9 @@ package com.chukchuk.haksa.infrastructure.portal.model;
 import java.util.List;
 
 /**
- * 계층 간 전달할 성적 summary 데이터를 표현한다.
+ * 포털의 학기별 성적과 누적 성적 요약을 묶어 표현한다.
  *
- * @param semesters semesters 값
- * @param summary summary 값
+ * @param semesters 학기별 성적 목록
+ * @param summary 누적 학점과 성적 요약
  */
 public record GradeSummary(List<SemesterGrade> semesters, AcademicSummary summary) {}

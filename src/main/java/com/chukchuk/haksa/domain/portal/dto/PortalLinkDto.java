@@ -10,7 +10,7 @@ import java.time.Instant;
 public class PortalLinkDto {
 
   /**
-   * 로그인 요청 데이터를 전달한다.
+   * 검증할 포털 종류와 계정 자격 증명을 담는다.
    *
    * @param portalType 포털 유형
    * @param username user이름
@@ -24,9 +24,9 @@ public class PortalLinkDto {
       @NotBlank @Schema(description = "포털 비밀번호", example = "pw") String password) {}
 
   /**
-   * 로그인 응답 데이터를 전달한다.
+   * 검증 완료 후 연동 작업 생성에 사용할 일회성 토큰을 담는다.
    *
-   * @param portalVerificationToken 포털 검증 토큰 값
+   * @param portalVerificationToken 응답에 포함할 포털 검증 토큰
    */
   @Schema(description = "포털 로그인 검증 응답")
   public record LoginResponse(
@@ -40,7 +40,7 @@ public class PortalLinkDto {
    * @param portalType 포털 유형
    * @param username user이름
    * @param password 포털 비밀번호
-   * @param portalVerificationToken 포털 검증 토큰 값
+   * @param portalVerificationToken 응답에 포함할 포털 검증 토큰
    */
   @Schema(description = "포털 연동 job 생성 요청")
   public record LinkRequest(
@@ -58,7 +58,7 @@ public class PortalLinkDto {
    *
    * @param jobId 작업 식별자
    * @param status 상태
-   * @param pollingEndpoint polling endpoint 값
+   * @param pollingEndpoint 응답에 포함할 polling endpoint
    */
   @Schema(description = "스크래핑 job 수락 응답")
   public record AcceptedResponse(
@@ -69,15 +69,15 @@ public class PortalLinkDto {
           String pollingEndpoint) {}
 
   /**
-   * 작업 status 응답 데이터를 전달한다.
+   * 포털 연동 작업의 현재 상태·오류·생성 및 완료 시각을 담는다.
    *
    * @param jobId 작업 식별자
    * @param portalType 포털 유형
    * @param status 상태
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
-   * @param createdAt created at 값
+   * @param retryable 실패 후 재시도 가능한지 여부
+   * @param createdAt 응답에 포함할 created at
    * @param updatedAt 수정 시각
    * @param finishedAt 처리 종료 시각
    */
@@ -94,11 +94,11 @@ public class PortalLinkDto {
       @JsonProperty("finished_at") Instant finishedAt) {}
 
   /**
-   * 작업 summary 응답 데이터를 전달한다.
+   * 완료된 포털 연동 작업의 학생 요약과 완료 시각을 담는다.
    *
    * @param jobId 작업 식별자
    * @param status 상태
-   * @param studentInfo 학생 info 값
+   * @param studentInfo 응답에 포함할 학생 info
    * @param finishedAt 처리 종료 시각
    */
   @Schema(description = "스크래핑 job 요약 응답")
@@ -109,15 +109,15 @@ public class PortalLinkDto {
       @JsonProperty("finished_at") Instant finishedAt) {}
 
   /**
-   * 작업 duration 응답 데이터를 전달한다.
+   * 포털 연동 작업의 시작·종료 시각과 계산된 소요 시간을 담는다.
    *
    * @param jobId 작업 식별자
    * @param status 상태
-   * @param success success 값
-   * @param startedAt started at 값
-   * @param endedAt ended at 값
-   * @param elapsedMillis elapsed millis 값
-   * @param elapsedTime elapsed time 값
+   * @param success 응답에 포함할 success
+   * @param startedAt 응답에 포함할 started at
+   * @param endedAt 응답에 포함할 ended at
+   * @param elapsedMillis 응답에 포함할 elapsed millis
+   * @param elapsedTime 응답에 포함할 elapsed time
    */
   @Schema(description = "스크래핑 job 소요 시간 응답")
   public record JobDurationResponse(
@@ -133,12 +133,12 @@ public class PortalLinkDto {
    * 학생 info summary 데이터를 전달한다.
    *
    * @param name 이름
-   * @param school school 값
+   * @param school 응답에 포함할 school
    * @param majorName 전공 이름
    * @param studentCode 학번
    * @param gradeLevel 학년
    * @param status 상태
-   * @param completedSemesterType completed 학기 type 값
+   * @param completedSemesterType 응답에 포함할 completed 학기 type
    */
   @Schema(description = "포털 학생 요약 정보")
   public record StudentInfoSummary(
@@ -151,16 +151,16 @@ public class PortalLinkDto {
       int completedSemesterType) {}
 
   /**
-   * 스크래핑 결과 콜백 요청 데이터를 전달한다.
+   * 스크래핑 워커가 전송한 결과 위치·처리 상태·재시도 정보와 메타데이터를 담는다.
    *
    * @param jobId 작업 식별자
    * @param status 상태
-   * @param attempt attempt 값
-   * @param resultS3Key 결과 S3 key 값
-   * @param resultChecksum 결과 checksum 값
+   * @param attempt 응답에 포함할 attempt
+   * @param resultS3Key 응답에 포함할 결과 S3 key
+   * @param resultChecksum 응답에 포함할 결과 checksum
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 실패 후 재시도 가능한지 여부
    * @param finishedAt 처리 종료 시각
    * @param metadata meta응답 데이터
    */

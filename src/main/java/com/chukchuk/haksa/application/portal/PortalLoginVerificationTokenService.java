@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** 포털 로그인 검증 토큰 비즈니스 흐름을 처리한다. */
+/** 검증된 포털 계정과 사용자에게 결합된 단기 서명 토큰을 발급하고 검증한다. */
 @Service
 public class PortalLoginVerificationTokenService {
 
@@ -34,7 +34,7 @@ public class PortalLoginVerificationTokenService {
   private final Duration ttl;
   private final Clock clock;
 
-  /** 포털 로그인 검증 토큰 service 인스턴스를 생성한다. */
+  /** 설정된 비밀키와 유효 기간으로 포털 로그인 검증 토큰 서비스를 생성한다. */
   @Autowired
   public PortalLoginVerificationTokenService(
       @Value("${portal.login-verification.secret}") String secret,
@@ -52,13 +52,13 @@ public class PortalLoginVerificationTokenService {
   }
 
   /**
-   * 척척학사의 issue 대상을 생성한다.
+   * 검증을 마친 포털 계정 정보에 결합된 단기 토큰을 발급한다.
    *
    * @param userId 사용자 식별자
    * @param portalType 포털 유형
-   * @param username user이름
+   * @param username 포털 로그인 아이디
    * @param password 포털 비밀번호
-   * @return 조건 충족 여부
+   * @return 사용자·포털·아이디와 현재 비밀번호에만 사용할 수 있는 서명 토큰
    */
   public String issue(UUID userId, String portalType, String username, String password) {
     Instant now = clock.instant();
@@ -74,13 +74,14 @@ public class PortalLoginVerificationTokenService {
   }
 
   /**
-   * 척척학사의 verify 대상을 검증한다.
+   * 토큰의 서명과 만료 시각 및 발급 당시 사용자·포털 계정 정보를 검증한다.
    *
    * @param userId 사용자 식별자
    * @param portalType 포털 유형
-   * @param username user이름
+   * @param username 포털 로그인 아이디
    * @param password 포털 비밀번호
-   * @param token 토큰 값
+   * @param token 검증할 포털 로그인 토큰
+   * @throws CommonException 토큰이 없거나 만료·변조됐거나 현재 계정 정보와 일치하지 않는 경우
    */
   public void verify(
       UUID userId, String portalType, String username, String password, String token) {

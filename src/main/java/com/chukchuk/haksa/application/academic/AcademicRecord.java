@@ -11,11 +11,11 @@ public class AcademicRecord {
   private AcademicSummary summary;
 
   /**
-   * 학사 record 인스턴스를 생성한다.
+   * 학생의 학기별 성적과 누적 요약을 묶은 학사 기록을 생성한다.
    *
    * @param studentId 학생 식별자
-   * @param semesters semesters 값
-   * @param summary summary 값
+   * @param semesters 학생의 학기별 성적 목록
+   * @param summary 학생의 누적 학사 요약
    */
   public AcademicRecord(UUID studentId, List<SemesterGrade> semesters, AcademicSummary summary) {
     this.studentId = studentId;
@@ -28,9 +28,9 @@ public class AcademicRecord {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학기별 성적을 최신 연도와 학기 순으로 정렬해 반환한다.
    *
-   * @return 조회
+   * @return 최신 학기부터 정렬된 성적 목록이며, 저장된 목록이 없으면 빈 목록
    */
   public List<SemesterGrade> getSemesters() {
     if (semesters == null) {

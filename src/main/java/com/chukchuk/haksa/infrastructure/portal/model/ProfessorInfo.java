@@ -1,8 +1,8 @@
 package com.chukchuk.haksa.infrastructure.portal.model;
 
 /**
- * 계층 간 전달할 professor info 데이터를 표현한다.
+ * 포털 개설 과목에 연결할 교수 이름을 표현한다.
  *
- * @param professorName professor 이름
+ * @param professorName 포털에 표시된 담당 교수 이름
  */
 public record ProfessorInfo(String professorName) {}

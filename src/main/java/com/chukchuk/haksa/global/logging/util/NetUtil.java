@@ -9,8 +9,8 @@ public final class NetUtil {
   /**
    * 프록시 헤더를 고려해 요청 클라이언트 IP를 반환한다.
    *
-   * @param req req 값
-   * @return string
+   * @param req 클라이언트 주소와 프록시 헤더를 포함한 HTTP 요청
+   * @return {@code X-Forwarded-For}의 첫 주소, {@code X-Real-IP}, 원격 주소 순으로 선택한 IP
    */
   public static String clientIp(HttpServletRequest req) {
     String ip = req.getHeader("X-Forwarded-For");

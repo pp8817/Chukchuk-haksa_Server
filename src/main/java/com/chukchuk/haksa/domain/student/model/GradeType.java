@@ -40,7 +40,7 @@ public enum GradeType {
   /**
    * 포털 성적 문자열에 대응하는 성적 유형을 반환한다.
    *
-   * @param value value 값
+   * @param value 성적 유형
    * @return 성적 type 결과
    */
   public static GradeType from(String value) {

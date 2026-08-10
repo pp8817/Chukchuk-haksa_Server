@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 학기 학사 record 도메인 상태를 표현한다. */
+/** 학생의 한 학기 성적, 취득 학점, 강의평가 상태를 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -74,18 +74,18 @@ public class SemesterAcademicRecord extends BaseEntity {
   private Student student;
 
   /**
-   * 학기 학사 record 인스턴스를 생성한다.
+   * 학생의 학기 성적 기록을 생성한다.
    *
-   * @param student 학생 값
+   * @param student 성적의 소유 학생
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 성적이 속한 학기
    * @param attemptedCredits 신청 학점
    * @param earnedCredits 취득 학점
    * @param semesterGpa 학기 평점
-   * @param semesterPercentile 학기 percentile 값
-   * @param attemptedCreditsGpa attempted credits gpa 값
-   * @param classRank class rank 값
-   * @param totalStudents total students 값
+   * @param semesterPercentile 학기 백분위 성적
+   * @param attemptedCreditsGpa 평점 계산에 포함된 신청 학점
+   * @param classRank 학기 석차
+   * @param totalStudents 석차 산정 대상 인원
    */
   public SemesterAcademicRecord(
       Student student,
@@ -131,7 +131,7 @@ public class SemesterAcademicRecord extends BaseEntity {
   /**
    * 학기 학사 기록의 주요 내용이 같은지 비교한다.
    *
-   * @param other other 값
+   * @param other 비교할 다른 학기 성적, {@code null}이면 다른 기록으로 간주함
    * @return 조건 충족 여부
    */
   public boolean equalsContentOf(SemesterAcademicRecord other) {
@@ -151,9 +151,9 @@ public class SemesterAcademicRecord extends BaseEntity {
   }
 
   /**
-   * 척척학사의 update with 대상을 갱신한다.
+   * 학생 연결과 강의평가 상태를 유지한 채 성적 내용을 주어진 기록으로 교체한다.
    *
-   * @param src src 값
+   * @param src 복사할 학기 성적 기록
    */
   public void updateWith(SemesterAcademicRecord src) {
     this.year = src.year;

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** 척척학사의 admin test HTTP 요청을 처리한다. */
+/** 개발 환경의 테스트 계정과 학사·강의평가 데이터 조작 요청을 처리한다. */
 @RestController
 @RequiredArgsConstructor
 @Profile({"dev", "test"})

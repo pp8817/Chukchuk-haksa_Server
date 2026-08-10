@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-/** 척척학사의 professor 도메인 상태를 표현한다. */
+/** 교수 식별자와 이름을 보관하고 개설 강의와 연결한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,7 +42,7 @@ public class Professor {
   private Department department;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 교수 이름으로 새 교수 엔티티를 생성한다.
    *
    * @param professorName professor 이름
    */

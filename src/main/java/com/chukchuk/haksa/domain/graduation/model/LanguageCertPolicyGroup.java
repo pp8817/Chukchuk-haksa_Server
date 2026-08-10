@@ -16,7 +16,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 language cert policy group 도메인 상태를 표현한다. */
+/** 학과와 입학 연도별 외국어 졸업 인증 정책 묶음을 식별한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,12 +48,12 @@ public class LanguageCertPolicyGroup extends BaseEntity {
   }
 
   /**
-   * 척척학사의 create 대상을 생성한다.
+   * 입력 값으로 졸업 요건를 생성한다.
    *
-   * @param groupKey group key 값
+   * @param groupKey group key
    * @param name 이름
-   * @param description description 값
-   * @return 생성된
+   * @param description description
+   * @return 처리된 졸업 요건
    */
   public static LanguageCertPolicyGroup create(String groupKey, String name, String description) {
     return new LanguageCertPolicyGroup(groupKey, name, description);

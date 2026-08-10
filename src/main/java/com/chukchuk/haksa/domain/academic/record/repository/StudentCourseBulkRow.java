@@ -9,7 +9,7 @@ import java.util.UUID;
  *
  * @param studentId 학생 식별자
  * @param offeringId 과목 개설 식별자
- * @param gradeType 성적 type 값
+ * @param gradeType 응답에 포함할 성적 type
  * @param points 학점
  * @param isRetake is retake 여부
  * @param originalScore 원점수
@@ -27,7 +27,7 @@ public record StudentCourseBulkRow(
   /**
    * 수강 정보를 JDBC 배치 저장 행으로 변환한다.
    *
-   * @param enrollment 수강 값
+   * @param enrollment 응답에 포함할 수강
    * @return 학생 과목 bulk row 결과
    */
   public static StudentCourseBulkRow from(CourseEnrollment enrollment) {

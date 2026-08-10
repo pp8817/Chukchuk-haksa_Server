@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-/** 척척학사의 scheduling 애플리케이션 설정을 제공한다. */
+/** 스크래핑 예약 실행이 활성화된 환경에 작업 스케줄러를 구성한다. */
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(prefix = "scraping.scheduler", name = "enabled", havingValue = "true")
@@ -15,7 +15,7 @@ public class SchedulingConfig {
   /**
    * 예약 작업에 사용할 스레드 풀 스케줄러를 생성한다.
    *
-   * @return thread pool task scheduler 결과
+   * @return 두 개의 작업 스레드와 종료 대기 정책이 적용된 스케줄러
    */
   @Bean
   public ThreadPoolTaskScheduler taskScheduler() {

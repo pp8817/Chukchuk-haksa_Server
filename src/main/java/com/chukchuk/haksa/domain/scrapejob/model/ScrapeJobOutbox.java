@@ -15,7 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 스크래핑 작업 아웃박스 도메인 상태를 표현한다. */
+/** 스크래핑 작업 메시지의 발행 상태와 재시도 정보를 작업과 함께 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -72,12 +72,12 @@ public class ScrapeJobOutbox extends BaseEntity {
   }
 
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 입력 값으로 스크래핑 작업를 생성한다.
    *
    * @param jobId 작업 식별자
    * @param payloadJson JSON payload
-   * @param nextAttemptAt next attempt at 값
-   * @return 생성된
+   * @param nextAttemptAt 다음 발행 시도 시각
+   * @return 처리된 스크래핑 작업
    */
   public static ScrapeJobOutbox createPending(
       String jobId, String payloadJson, Instant nextAttemptAt) {
@@ -103,7 +103,7 @@ public class ScrapeJobOutbox extends BaseEntity {
   /**
    * 아웃박스를 발행 예약 상태로 전환한다.
    *
-   * @param reservedUntil reserved until 값
+   * @param reservedUntil 발행 예약이 유지되는 시각
    * @param attemptedAt 발행 시도 시각
    */
   public void reserveForPublish(Instant reservedUntil, Instant attemptedAt) {
@@ -114,9 +114,9 @@ public class ScrapeJobOutbox extends BaseEntity {
   /**
    * 아웃박스 발행 실패와 다음 재시도 시각을 기록한다.
    *
-   * @param lastError last 오류 값
+   * @param lastError 마지막 발행 실패 원인
    * @param attemptedAt 발행 시도 시각
-   * @param nextAttemptAt next attempt at 값
+   * @param nextAttemptAt 다음 발행 시도 시각
    */
   public void markRetryableFailure(String lastError, Instant attemptedAt, Instant nextAttemptAt) {
     this.status = ScrapeJobOutboxStatus.RETRYABLE_FAILED;
@@ -129,7 +129,7 @@ public class ScrapeJobOutbox extends BaseEntity {
   /**
    * 재시도하지 않을 아웃박스 실패를 기록한다.
    *
-   * @param lastError last 오류 값
+   * @param lastError 마지막 발행 실패 원인
    * @param attemptedAt 발행 시도 시각
    */
   public void markDead(String lastError, Instant attemptedAt) {

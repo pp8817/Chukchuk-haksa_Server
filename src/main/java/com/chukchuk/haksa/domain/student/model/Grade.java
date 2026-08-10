@@ -5,7 +5,7 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
-/** 척척학사의 성적 도메인 상태를 표현한다. */
+/** 수강 과목의 원본 성적 문자열과 표준 성적 유형을 함께 보관한다. */
 @Embeddable
 public class Grade {
 
@@ -13,22 +13,22 @@ public class Grade {
   @Column(name = "grade")
   private GradeType value;
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** JPA가 수강 성적 값 객체를 복원할 때 사용하는 생성자다. */
   protected Grade() {} // JPA를 위한 기본 생성자
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 확정된 성적 유형을 수강 성적 값 객체로 생성한다.
    *
-   * @param value value 값
+   * @param value 성적 유형
    */
   public Grade(GradeType value) {
     this.value = value;
   }
 
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 아직 확정되지 않은 수강 성적을 생성한다.
    *
-   * @return 생성된
+   * @return 미확정 상태의 성적 값
    */
   public static Grade createInProgress() {
     return new Grade(GradeType.IP);

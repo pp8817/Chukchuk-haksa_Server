@@ -7,7 +7,7 @@ import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
-/** 척척학사의 스크래핑 결과 store 애플리케이션 설정을 제공한다. */
+/** 스크래핑 결과 저장소의 region과 호출 제한 시간을 적용한 S3 클라이언트를 구성한다. */
 @Configuration
 @RequiredArgsConstructor
 public class ScrapeResultStoreConfig {
@@ -17,7 +17,7 @@ public class ScrapeResultStoreConfig {
   /**
    * 스크래핑 결과 저장소에 접근할 S3 클라이언트를 생성한다.
    *
-   * @return S3 클라이언트 결과
+   * @return 결과 저장소 설정이 적용된 동기 S3 클라이언트
    */
   @Bean
   public S3Client scrapeResultStoreS3Client() {

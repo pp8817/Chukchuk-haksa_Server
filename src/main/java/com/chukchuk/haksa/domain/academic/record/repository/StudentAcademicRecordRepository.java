@@ -8,17 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** 학생 학사 record repository 기능의 계약을 정의한다. */
+/** 학생의 누적 성적을 학생 식별자와 함께 조회하고 학생 단위로 삭제하는 저장소다. */
 @Repository
 public interface StudentAcademicRecordRepository
     extends JpaRepository<StudentAcademicRecord, UUID> {
 
   // student_id(UUID)로 직접 조회
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 조건에 일치하는 학사 기록가 있으면 포함한 선택값
    */
   @Query(
       """
@@ -29,7 +29,7 @@ public interface StudentAcademicRecordRepository
   Optional<StudentAcademicRecord> findByStudentId(@Param("studentId") UUID studentId);
 
   /**
-   * 척척학사의 delete by 학생 id 대상을 삭제한다.
+   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
    *
    * @param studentId 학생 식별자
    */

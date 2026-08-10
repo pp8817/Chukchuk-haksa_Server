@@ -3,7 +3,7 @@ package com.chukchuk.haksa.global.common.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * 계층 간 전달할 메시지 only 응답 데이터를 표현한다.
+ * 별도 payload 없이 처리 결과 메시지만 반환하는 API 응답을 표현한다.
  *
  * @param message 응답 메시지
  */

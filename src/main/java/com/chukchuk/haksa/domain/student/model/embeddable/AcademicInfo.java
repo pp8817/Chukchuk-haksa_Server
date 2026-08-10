@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 학사 info 도메인 상태를 표현한다. */
+/** 학생의 입학 연도·학기·유형과 현재 등록 학기를 묶어 저장한다. */
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,10 +39,10 @@ public class AcademicInfo {
 
   // Builder 패턴 추가
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 입학 연도와 등록·이수 학기 및 재학 상태를 묶어 학적 정보를 생성한다.
    *
    * @param admissionYear admission 연도
-   * @param semesterEnrolled 학기 enrolled 값
+   * @param semesterEnrolled 현재까지 등록한 학기 수
    * @param isTransferStudent is transfer 학생 여부
    * @param status 상태
    * @param gradeLevel 학년

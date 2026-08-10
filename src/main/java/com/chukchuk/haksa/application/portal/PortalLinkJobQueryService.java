@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 포털 link 작업 query 비즈니스 흐름을 처리한다. */
+/** 사용자가 소유한 포털 연동 작업의 상태와 결과를 조회한다. */
 @Service
 @RequiredArgsConstructor
 public class PortalLinkJobQueryService {
@@ -27,11 +27,12 @@ public class PortalLinkJobQueryService {
   private final StudentService studentService;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자가 소유한 포털 연동 작업의 현재 상태와 오류 정보를 조회한다.
    *
    * @param userId 사용자 식별자
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 작업 상태, 오류 정보 및 생성·수정·종료 시각
+   * @throws EntityNotFoundException 사용자가 소유한 작업을 찾을 수 없는 경우
    */
   @Transactional(readOnly = true)
   public PortalLinkDto.JobStatusResponse getJobStatus(UUID userId, String jobId) {
@@ -50,11 +51,13 @@ public class PortalLinkJobQueryService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 완료된 포털 연동 작업과 현재 연결된 학생 정보를 요약해 반환한다.
    *
    * @param userId 사용자 식별자
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 성공한 작업 상태와 연결된 학생 정보
+   * @throws EntityNotFoundException 사용자가 소유한 작업을 찾을 수 없는 경우
+   * @throws CommonException 작업이 실패·미완료 상태이거나 연결된 학생 정보가 없는 경우
    */
   @Transactional(readOnly = true)
   public PortalLinkDto.JobSummaryResponse getJobSummary(UUID userId, String jobId) {
@@ -81,11 +84,12 @@ public class PortalLinkJobQueryService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 포털 연동 작업의 시작·종료 시각과 처리 시간을 조회한다.
    *
    * @param userId 사용자 식별자
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 미완료 작업이면 pending 상태, 완료 작업이면 성공 여부와 경과 시간이 포함된 결과
+   * @throws EntityNotFoundException 사용자가 소유한 작업을 찾을 수 없는 경우
    */
   @Transactional(readOnly = true)
   public PortalLinkDto.JobDurationResponse getJobDuration(UUID userId, String jobId) {

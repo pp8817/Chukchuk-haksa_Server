@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import java.util.Date;
 import lombok.Getter;
 
-/** 척척학사의 refresh 토큰 도메인 상태를 표현한다. */
+/** 세션별 리프레시 토큰 해시와 만료 시각을 저장한다. */
 @Entity
 @Getter
 @Table(name = "refresh_token")
@@ -32,11 +32,11 @@ public class RefreshToken {
   public RefreshToken() {}
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 세션·사용자·토큰 값과 만료 시각을 포함한 리프레시 토큰 엔티티를 생성한다.
    *
    * @param sessionId 세션 식별자
    * @param userId 사용자 식별자
-   * @param token 토큰 값
+   * @param token 저장하거나 해시할 리프레시 토큰 원문
    * @param expiry 만료 시각
    */
   public RefreshToken(String sessionId, String userId, String token, Date expiry) {
@@ -44,12 +44,12 @@ public class RefreshToken {
   }
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 세션·사용자·토큰 값과 만료 시각을 포함한 리프레시 토큰 엔티티를 생성한다.
    *
    * @param sessionId 세션 식별자
    * @param userId 사용자 식별자
-   * @param token 토큰 값
-   * @param tokenHash 토큰 hash 값
+   * @param token 저장하거나 해시할 리프레시 토큰 원문
+   * @param tokenHash 원문 토큰 검증에 사용할 저장된 해시
    * @param expiry 만료 시각
    */
   public RefreshToken(

@@ -31,11 +31,11 @@ public class PortalCallbackPostProcessor {
   private final ScrapeResultCallbackTxService scrapeResultCallbackTxService;
 
   /**
-   * 포털 콜백 post processor 인스턴스를 생성한다.
+   * 포털 결과 payload 역직렬화, 처리 지표 및 트랜잭션 반영 의존성으로 후처리기를 생성한다.
    *
-   * @param objectMapper object mapper 값
-   * @param meterRegistry meter registry 값
-   * @param scrapeResultCallbackTxService 스크래핑 결과 콜백 tx service 값
+   * @param objectMapper 포털 결과 payload를 역직렬화할 mapper
+   * @param meterRegistry 후처리 성공·실패와 소요 시간을 기록할 지표 저장소
+   * @param scrapeResultCallbackTxService 동기화 결과를 작업 상태에 반영할 트랜잭션 서비스
    */
   public PortalCallbackPostProcessor(
       ObjectMapper objectMapper,
@@ -47,17 +47,19 @@ public class PortalCallbackPostProcessor {
   }
 
   /**
-   * 척척학사의 process 대상을 처리한다.
+   * 성공 콜백 payload를 포털 데이터로 변환해 사용자 학사 정보에 반영한다.
+   *
+   * <p>후처리 실패는 예외를 전파하지 않고 작업 실패 상태와 지표로 기록한다.
    *
    * @param jobId 작업 식별자
    * @param userId 사용자 식별자
    * @param operationType 작업 유형
    * @param payloadJson JSON payload
    * @param finishedAt 처리 종료 시각
-   * @param queuedAgeSeconds queued age seconds 값
-   * @param attempt attempt 값
+   * @param queuedAgeSeconds 작업 생성부터 완료까지의 대기 시간(초)
+   * @param attempt 콜백을 발생시킨 작업 시도 횟수
    * @param workerRequestId 워커 요청 식별자
-   * @param payloadHash payload hash 값
+   * @param payloadHash 로그 추적에 사용할 원본 payload 해시
    */
   public void process(
       String jobId,

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** 척척학사의 kakao oidc 비즈니스 흐름을 처리한다. */
+/** Kakao 공개키와 issuer·audience·nonce 조건으로 ID token을 검증한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -41,11 +41,14 @@ public class KakaoOidcService implements OidcService {
   private String nativeAppKey;
 
   /**
-   * 입력 값과 업무 처리 조건을 검증한다.
+   * Kakao ID token의 서명, 만료, issuer, audience와 nonce를 검증한다.
+   *
+   * <p>token의 {@code kid}가 캐시에 없으면 JWKS를 한 번 새로 조회한다.
    *
    * @param idToken ID token
-   * @param expectedNonce expected nonce 값
-   * @return claims
+   * @param expectedNonce 로그인 요청에서 발급한 원본 nonce
+   * @return 검증된 Kakao ID token claim
+   * @throws TokenException token 형식, 서명, claim 또는 공개키를 검증할 수 없는 경우
    */
   public Claims verifyIdToken(String idToken, String expectedNonce) {
     try {

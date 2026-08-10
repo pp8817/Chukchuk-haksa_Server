@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 학생 학사 record 비즈니스 흐름을 처리한다. */
+/** 학생의 누적 성적과 전공 구성에 맞는 졸업 필요 학점을 제공한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,10 +30,11 @@ public class StudentAcademicRecordService {
   private static final String AREA_GENERAL_ELECTIVE = "일선";
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 누적 성적과 전공·복수전공 기준의 졸업 필요 학점을 요약한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 누적 성적과 졸업 필요 학점 요약
+   * @throws EntityNotFoundException 학생의 누적 성적 기록이 없는 경우
    */
   public StudentAcademicRecordDto.AcademicSummaryResponse getAcademicSummary(UUID studentId) {
     try {
@@ -82,10 +83,11 @@ public class StudentAcademicRecordService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 누적 성적 엔티티를 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 학생에게 연결된 누적 성적
+   * @throws EntityNotFoundException 학생의 누적 성적 기록이 없는 경우
    */
   public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID studentId) {
     return studentAcademicRecordRepository

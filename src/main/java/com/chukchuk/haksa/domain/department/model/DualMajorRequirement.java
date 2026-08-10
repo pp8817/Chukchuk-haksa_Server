@@ -16,7 +16,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 dual 전공 요건 도메인 상태를 표현한다. */
+/** 학과별 복수전공 이수 학점과 적용 연도 범위를 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

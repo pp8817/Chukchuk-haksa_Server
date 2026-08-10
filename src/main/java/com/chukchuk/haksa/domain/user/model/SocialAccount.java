@@ -18,7 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 social 계정 도메인 상태를 표현한다. */
+/** OIDC 공급자의 사용자 식별자를 척척학사 사용자 계정과 연결한다. */
 @Entity
 @Table(
     name = "social_accounts",
@@ -49,12 +49,12 @@ public class SocialAccount {
   private User user;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 소셜 제공자 계정과 사용자의 연결을 생성한다.
    *
-   * @param provider provider 값
+   * @param provider 소셜 로그인 제공자
    * @param socialId social id 식별자
-   * @param email 이메일 값
-   * @param user 사용자 값
+   * @param email 연락 및 로그인에 사용하는 이메일
+   * @param user 연결할 사용자
    */
   @Builder
   public SocialAccount(OidcProvider provider, String socialId, String email, User user) {
@@ -65,9 +65,9 @@ public class SocialAccount {
   }
 
   /**
-   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   * 연결된 사용자 참조를 새 사용자로 교체한다.
    *
-   * @param user 사용자 값
+   * @param user 대상 사용자
    */
   public void updateUser(User user) {
     this.user = user;

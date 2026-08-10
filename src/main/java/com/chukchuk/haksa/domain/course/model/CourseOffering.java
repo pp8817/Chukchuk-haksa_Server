@@ -90,21 +90,21 @@ public class CourseOffering extends BaseEntity {
   /**
    * 과목 offering 인스턴스를 생성한다.
    *
-   * @param subjectEstablishmentSemester subject establishment 학기 값
+   * @param subjectEstablishmentSemester 교과목이 교육과정에 개설된 기준 학기
    * @param isVideoLecture is video lecture 여부
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param hostDepartment 주관 학과
    * @param classSection 분반
-   * @param scheduleSummary schedule summary 값
-   * @param originalAreaCode original area code 값
+   * @param scheduleSummary 강의 시간과 강의실을 요약한 일정
+   * @param originalAreaCode 포털에서 수집한 원본 이수구분 코드
    * @param points 학점
-   * @param evaluationTypeCode evaluation type code 값
+   * @param evaluationTypeCode 절대·상대평가를 구분하는 평가 방식
    * @param facultyDivisionName faculty division 이름
-   * @param course 과목 값
+   * @param course 연결할 수강 과목
    * @param professor 교수
-   * @param department 학과 값
-   * @param liberalArtsAreaCode liberal arts area code 값
+   * @param department 소속 학과
+   * @param liberalArtsAreaCode 교양 영역 분류에 연결할 표준 코드
    */
   public CourseOffering(
       Integer subjectEstablishmentSemester,
@@ -144,22 +144,22 @@ public class CourseOffering extends BaseEntity {
   /**
    * 과목 offering 인스턴스를 생성한다.
    *
-   * @param subjectEstablishmentSemester subject establishment 학기 값
+   * @param subjectEstablishmentSemester 교과목이 교육과정에 개설된 기준 학기
    * @param isVideoLecture is video lecture 여부
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param hostDepartment 주관 학과
    * @param classSection 분반
-   * @param scheduleSummary schedule summary 값
-   * @param originalAreaCode original area code 값
+   * @param scheduleSummary 강의 시간과 강의실을 요약한 일정
+   * @param originalAreaCode 포털에서 수집한 원본 이수구분 코드
    * @param points 학점
-   * @param evaluationTypeCode evaluation type code 값
+   * @param evaluationTypeCode 절대·상대평가를 구분하는 평가 방식
    * @param facultyDivisionName faculty division 이름
    * @param rawFacultyDivisionName raw faculty division 이름
-   * @param course 과목 값
+   * @param course 연결할 수강 과목
    * @param professor 교수
-   * @param department 학과 값
-   * @param liberalArtsAreaCode liberal arts area code 값
+   * @param department 소속 학과
+   * @param liberalArtsAreaCode 교양 영역 분류에 연결할 표준 코드
    */
   public CourseOffering(
       Integer subjectEstablishmentSemester,

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 admin test mutation 비즈니스 흐름을 처리한다. */
+/** 개발 환경 테스트 계정의 전공과 수강 데이터를 변경한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -48,10 +48,10 @@ public class AdminTestMutationService {
   private final AcademicCache academicCache;
 
   /**
-   * 척척학사의 update 졸업 courses 대상을 갱신한다.
+   * 테스트 계정의 졸업 판정용 수강 과목을 요청 목록으로 교체한다.
    *
    * @param userId 사용자 식별자
-   * @param request 요청 정보
+   * @param request 추가·삭제할 졸업 판정용 수강 과목 목록
    */
   public void updateGraduationCourses(
       UUID userId, AdminTestDto.UpdateGraduationCoursesRequest request) {
@@ -84,10 +84,10 @@ public class AdminTestMutationService {
   }
 
   /**
-   * 척척학사의 update 전공 대상을 갱신한다.
+   * 테스트 계정의 주전공과 복수전공을 요청 값으로 변경한다.
    *
    * @param userId 사용자 식별자
-   * @param request 요청 정보
+   * @param request 변경할 주전공과 복수전공 식별정보
    */
   public void updateMajor(UUID userId, AdminTestDto.UpdateMajorRequest request) {
     Student student = getRequiredStudent(userId);
@@ -127,11 +127,11 @@ public class AdminTestMutationService {
   }
 
   /**
-   * 척척학사의 create test 과목 대상을 생성한다.
+   * 테스트용 과목과 개설 강의를 만들고 학생의 수강 내역에 추가한다.
    *
    * @param userId 사용자 식별자
-   * @param request 요청 정보
-   * @return 생성된
+   * @param request 학생 수강 내역에 추가할 테스트 과목 정보
+   * @return 생성되어 수강 내역에 추가된 테스트 과목
    */
   public AdminTestDto.TestCourseResponse createTestCourse(
       UUID userId, AdminTestDto.CreateTestCourseRequest request) {

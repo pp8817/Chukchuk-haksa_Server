@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Getter;
 
-/** 졸업 progress 응답 데이터를 전달한다. */
+/** 학생의 영역별 졸업 요건 충족도와 전체 졸업 가능 여부를 담는다. */
 @Getter
 @Schema(description = "졸업 요건 진행 상황 응답")
 public class GraduationProgressResponse {
@@ -23,7 +23,7 @@ public class GraduationProgressResponse {
   /**
    * 졸업 progress 응답 인스턴스를 생성한다.
    *
-   * @param graduationProgress 졸업 progress 값
+   * @param graduationProgress API 응답 형태로 변환할 졸업 진행률 계산 결과
    */
   public GraduationProgressResponse(List<AreaProgressDto> graduationProgress) {
     this(graduationProgress, null);
@@ -32,7 +32,7 @@ public class GraduationProgressResponse {
   /**
    * 졸업 progress 응답 인스턴스를 생성한다.
    *
-   * @param graduationProgress 졸업 progress 값
+   * @param graduationProgress API 응답 형태로 변환할 졸업 진행률 계산 결과
    * @param languageCertFulfilled 어학 인증 충족 여부
    */
   public GraduationProgressResponse(
@@ -42,7 +42,7 @@ public class GraduationProgressResponse {
     this.languageCertNeedsRefresh = languageCertFulfilled == null;
   }
 
-  /** 척척학사의 set has different 졸업 요건 대상을 설정한다. */
+  /** 응답에 일반 기준과 다른 학과·연도별 졸업 요건이 적용됐음을 표시한다. */
   public void setHasDifferentGraduationRequirement() {
     this.hasDifferentGraduationRequirement = true;
   }

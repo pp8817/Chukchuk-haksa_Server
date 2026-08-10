@@ -189,6 +189,30 @@
                                    may only be represented as '{}' when not part of a
                                    multi-block statement (4.1.3)"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format"
+                value="^\s*\*\s+.*(척척학사의|비즈니스 흐름을 처리한다|기능의 계약을 정의한다|응답 데이터를 전달한다|요청 데이터를 전달한다|필수 의존성과 초기 상태를 받아 인스턴스를 생성한다|요청 조건에 맞는 데이터를 조회한다|현재 상태를 요청 내용에 맞게 갱신한다)\.?\s*$"/>
+      <property name="message"
+                value="Javadoc must describe the concrete responsibility or contract instead of repeating the symbol name."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format"
+                value="^\s*\*\s+@param\s+[A-Za-z][A-Za-z0-9]*\s+.*\s값\s*$"/>
+      <property name="message"
+                value="Javadoc @param must explain the parameter semantic role, constraints, or use."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format"
+                value="^\s*\*\s+@param\s+[A-Za-z][A-Za-z0-9]*\s+(호출 시 적용할|호출자가 전달한 요청 데이터)"/>
+      <property name="message"
+                value="Javadoc @param must name the domain role or constraint of the argument."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format"
+                value="^\s*\*\s+@return\s+(조회|생성된|변환된|int|string|object|t|응답 entity.*|조건에 따라 처리되거나 집계된 항목 수)\s*$"/>
+      <property name="message"
+                value="Javadoc @return must explain what the returned value means to the caller."/>
+    </module>
     <module name="OneStatementPerLine"/>
     <module name="MultipleVariableDeclarations"/>
     <module name="ArrayTypeStyle"/>

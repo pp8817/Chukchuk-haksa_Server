@@ -18,16 +18,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 
-/** 포털 link query controller docs 기능의 계약을 정의한다. */
+/** 포털 연동 작업의 상태·요약·처리 시간을 조회하는 API를 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내")
 public interface PortalLinkQueryControllerDocs {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 포털 연동를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param userDetails 사용자 상세 정보
+   * @param userDetails 인증된 사용자 정보
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 처리 결과를 담은 성공 응답
    */
   @Operation(
       summary = "비동기 job 상태 조회",
@@ -53,11 +53,11 @@ public interface PortalLinkQueryControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 포털 연동를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param userDetails 사용자 상세 정보
+   * @param userDetails 인증된 사용자 정보
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 처리 결과를 담은 성공 응답
    */
   @Operation(
       summary = "비동기 job 요약 조회",
@@ -83,11 +83,11 @@ public interface PortalLinkQueryControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String jobId);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 포털 연동를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param userDetails 사용자 상세 정보
+   * @param userDetails 인증된 사용자 정보
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 처리 결과를 담은 성공 응답
    */
   @Operation(
       summary = "비동기 job 소요 시간 조회",

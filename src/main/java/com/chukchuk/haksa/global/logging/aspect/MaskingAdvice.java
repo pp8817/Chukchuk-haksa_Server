@@ -17,9 +17,9 @@ public class MaskingAdvice {
   /**
    * 로깅 대상 메서드의 반환값을 마스킹해 기록한다.
    *
-   * @param jp jp 값
-   * @param msg msg 값
-   * @param ret ret 값
+   * @param jp 호출된 로깅 메서드의 결합 지점
+   * @param msg {@code info} 호출에 전달된 첫 번째 메시지 인자
+   * @param ret 로깅 메서드의 반환값
    */
   @AfterReturning(
       pointcut = "execution(* org.slf4j.Logger.info(..)) && args(msg,..)",

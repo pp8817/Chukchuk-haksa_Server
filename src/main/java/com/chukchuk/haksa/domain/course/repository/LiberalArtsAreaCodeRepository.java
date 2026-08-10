@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** 척척학사의 liberal arts area code repository 기능의 계약을 정의한다. */
+/** 포털의 원시 교양 영역 코드를 표준 교양 영역 정보로 매핑해 조회한다. */
 @Repository
 public interface LiberalArtsAreaCodeRepository extends JpaRepository<LiberalArtsAreaCode, Integer> {
 

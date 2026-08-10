@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-/** 학생 과목 도메인 상태를 표현한다. */
+/** 학생의 수강 과목과 성적, 재수강 여부를 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -66,13 +66,13 @@ public class StudentCourse {
   /**
    * 학생 과목 인스턴스를 생성한다.
    *
-   * @param student 학생 값
-   * @param offering offering 값
-   * @param grade 성적 값
-   * @param points 학점
-   * @param isRetake is retake 여부
+   * @param student 과목을 수강한 학생
+   * @param offering 수강한 강의 개설 정보
+   * @param grade 취득 성적
+   * @param points 과목 학점
+   * @param isRetake 재수강 여부
    * @param originalScore 원점수
-   * @param isRetakeDeleted is retake deleted 여부
+   * @param isRetakeDeleted 재수강으로 기존 성적이 삭제된 수강 기록인지 여부
    */
   public StudentCourse(
       Student student,
@@ -100,10 +100,10 @@ public class StudentCourse {
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 저장된 성적·학점·재수강 상태가 포털 수강 정보와 다른지 확인한다.
    *
-   * @param pe pe 값
-   * @return 조건 충족 여부
+   * @param pe 비교할 포털 수강 정보
+   * @return 비교 대상 필드 중 하나라도 다르면 {@code true}
    */
   public boolean isDifferentFrom(CourseEnrollment pe) {
     return !Objects.equals(this.grade, pe.getGrade())
@@ -116,9 +116,9 @@ public class StudentCourse {
   }
 
   /**
-   * 척척학사의 update from 포털 대상을 갱신한다.
+   * 포털 수강 정보로 성적·학점·재수강 상태를 갱신한다.
    *
-   * @param pe pe 값
+   * @param pe 적용할 포털 수강 정보
    */
   public void updateFromPortal(CourseEnrollment pe) {
     this.grade = pe.getGrade();

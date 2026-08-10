@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "ErrorResponseWrapper", description = "API 에러 응답 포맷")
 public class ErrorResponseWrapper extends ErrorResponse {
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** Springdoc schema 생성을 위한 예시 오류 상세 정보로 wrapper를 생성한다. */
   public ErrorResponseWrapper() {
     super(new ErrorDetail("ERROR_CODE", "에러 메시지", null));
   }

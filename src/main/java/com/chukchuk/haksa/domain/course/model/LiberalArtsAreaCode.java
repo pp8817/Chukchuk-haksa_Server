@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 liberal arts area code 도메인 상태를 표현한다. */
+/** 포털의 교양 영역 코드를 표준 영역명과 연결해 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

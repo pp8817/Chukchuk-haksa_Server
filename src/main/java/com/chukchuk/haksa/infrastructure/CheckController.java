@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** 척척학사의 check HTTP 요청을 처리한다. */
+/** 애플리케이션 상태 확인과 Sentry 연동 점검용 HTTP endpoint를 제공한다. */
 @RestController
 @RequestMapping
 public class CheckController {
@@ -18,7 +18,7 @@ public class CheckController {
   /**
    * 애플리케이션의 정상 동작 여부를 반환한다.
    *
-   * @return string
+   * @return 애플리케이션이 요청을 처리할 수 있음을 나타내는 {@code ok}
    */
   @Operation(
       responses =

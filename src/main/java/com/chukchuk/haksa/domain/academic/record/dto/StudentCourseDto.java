@@ -16,18 +16,18 @@ public class StudentCourseDto {
    * @param id id 식별자
    * @param courseName 과목 이름
    * @param courseCode 과목 코드
-   * @param areaType area type 값
-   * @param rawAreaType raw area type 값
+   * @param areaType 졸업 요건을 구분하는 영역
+   * @param rawAreaType 응답에 포함할 raw area type
    * @param credits 학점
    * @param professor 교수
-   * @param grade 성적 값
+   * @param grade 과목에서 취득한 성적
    * @param score 점수
    * @param isRetake is retake 여부
    * @param isOnline is online 여부
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param originalScore 원점수
-   * @param liberalAreaCode liberal area code 값
+   * @param liberalAreaCode 응답에 포함할 liberal area code
    * @param isRetakeDelete is retake delete 여부
    */
   @Schema(description = "수강 과목 상세 정보")

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 refresh 토큰 비즈니스 흐름을 처리한다. */
+/** 리프레시 토큰을 저장·검증·폐기하고 인증 토큰 재발급을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -37,7 +37,7 @@ public class RefreshTokenService {
 
   /* Refresh Token 저장 */
   /**
-   * 척척학사의 save 대상을 저장한다.
+   * 전달된 도메인 객체 또는 토큰을 영속 저장한다.
    *
    * @param sessionId 세션 식별자
    * @param userId 사용자 식별자
@@ -117,10 +117,10 @@ public class RefreshTokenService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 세션 식별자에 대응하는 리프레시 토큰을 조회한다.
    *
    * @param sessionId 세션 식별자
-   * @return 조회
+   * @return 처리된 리프레시 토큰
    */
   public RefreshToken findBySessionId(String sessionId) {
     return refreshTokenRepository
@@ -141,9 +141,9 @@ public class RefreshTokenService {
 
   /* 유효기간이 지난 RefreshToken 정보 삭제 */
   /**
-   * 척척학사의 deleted expired tokens 대상을 삭제한다.
+   * 현재 시각보다 만료 시각이 이른 리프레시 토큰을 삭제한다.
    *
-   * @return int
+   * @return 삭제된 만료 토큰 수
    */
   @Transactional
   public int deletedExpiredTokens() {

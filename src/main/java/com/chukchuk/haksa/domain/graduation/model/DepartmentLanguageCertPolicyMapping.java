@@ -83,10 +83,10 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
    * 검증된 학과별 어학 인증 정책 매핑을 생성한다.
    *
    * @param departmentCode 학과 코드
-   * @param admissionYearFrom admission year from 값
-   * @param admissionYearTo admission year to 값
+   * @param admissionYearFrom 정책을 적용할 입학 연도의 하한값
+   * @param admissionYearTo 정책을 적용할 입학 연도의 상한값
    * @param policyGroup 정책 그룹
-   * @param note note 값
+   * @param note 요건과 함께 안내할 참고 문구
    * @return 학과 language cert policy mapping 결과
    */
   public static DepartmentLanguageCertPolicyMapping verified(
@@ -108,10 +108,10 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
    * 추론된 학과별 어학 인증 정책 매핑을 생성한다.
    *
    * @param departmentCode 학과 코드
-   * @param admissionYearFrom admission year from 값
-   * @param admissionYearTo admission year to 값
+   * @param admissionYearFrom 정책을 적용할 입학 연도의 하한값
+   * @param admissionYearTo 정책을 적용할 입학 연도의 상한값
    * @param policyGroup 정책 그룹
-   * @param note note 값
+   * @param note 요건과 함께 안내할 참고 문구
    * @return 학과 language cert policy mapping 결과
    */
   public static DepartmentLanguageCertPolicyMapping inferred(
@@ -133,9 +133,9 @@ public class DepartmentLanguageCertPolicyMapping extends BaseEntity {
    * 학과 정책이 연결되지 않은 응답을 생성한다.
    *
    * @param departmentCode 학과 코드
-   * @param admissionYearFrom admission year from 값
-   * @param admissionYearTo admission year to 값
-   * @param note note 값
+   * @param admissionYearFrom 정책을 적용할 입학 연도의 하한값
+   * @param admissionYearTo 정책을 적용할 입학 연도의 상한값
+   * @param note 요건과 함께 안내할 참고 문구
    * @return 학과 language cert policy mapping 결과
    */
   public static DepartmentLanguageCertPolicyMapping unmapped(

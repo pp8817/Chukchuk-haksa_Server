@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class LanguageCertRequirementApiResponse
     extends SuccessResponse<LanguageCertRequirementResponse> {
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** 외국어 인증 기준 조회 성공 응답의 예시 값과 메시지를 구성한다. */
   public LanguageCertRequirementApiResponse() {
     super(
         LanguageCertRequirementResponse.unmapped("2000763", "자유전공학부", 2025, "기준표에 직접 행이 없음"),

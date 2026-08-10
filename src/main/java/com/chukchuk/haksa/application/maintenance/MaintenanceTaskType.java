@@ -16,8 +16,9 @@ public enum MaintenanceTaskType {
   /**
    * 외부 작업 이름에 대응하는 유지보수 작업 유형을 반환한다.
    *
-   * @param value value 값
-   * @return 유지보수 task type 결과
+   * @param value 대소문자를 포함해 enum 이름과 정확히 일치해야 하는 작업 이름
+   * @return 작업 이름에 대응하는 유지보수 작업 유형
+   * @throws IllegalArgumentException 등록되지 않은 작업 이름인 경우
    */
   public static MaintenanceTaskType from(String value) {
     MaintenanceTaskType taskType = LOOKUP.get(value);

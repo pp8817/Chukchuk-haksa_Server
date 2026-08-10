@@ -2,7 +2,7 @@ package com.chukchuk.haksa.infrastructure.portal.model;
 
 import lombok.Data;
 
-/** 척척학사의 포털 offering creation data 도메인 상태를 표현한다. */
+/** 포털 개설 과목을 내부 개설 과목 엔티티로 생성하는 데 필요한 값을 표현한다. */
 @Data
 public class PortalOfferingCreationData {
   private String courseCode;

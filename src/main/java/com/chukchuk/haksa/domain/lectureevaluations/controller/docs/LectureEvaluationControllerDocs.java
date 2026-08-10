@@ -19,15 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
-/** 척척학사의 lecture evaluation controller docs 기능의 계약을 정의한다. */
+/** 강의평가 필요 여부 조회와 평가 제출·건너뛰기 API 계약을 정의한다. */
 @Tag(name = "Lecture Evaluations", description = "강의평가 API")
 public interface LectureEvaluationControllerDocs {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 현재 학생이 제출해야 하는 강의평가 과목을 반환한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리 결과를 담은 성공 응답
    */
   @Operation(
       summary = "강의평가 상태 조회",
@@ -57,7 +57,7 @@ public interface LectureEvaluationControllerDocs {
    *
    * @param userDetails 사용자 상세 정보
    * @param request 요청 정보
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 강의평가 저장 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "강의평가 제출",
@@ -92,7 +92,7 @@ public interface LectureEvaluationControllerDocs {
    *
    * @param userDetails 사용자 상세 정보
    * @param request 요청 정보
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 강의평가 건너뛰기 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "강의평가 건너뛰기",

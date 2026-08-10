@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 lecture evaluation 비즈니스 흐름을 처리한다. */
+/** 필수 강의평가 조회와 제출·건너뛰기 상태 전환을 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -38,10 +38,10 @@ public class LectureEvaluationService {
   private final LectureEvaluationProperties properties;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 현재 학생이 제출해야 하는 강의평가 과목을 반환한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 처리된 강의평가
    */
   public LectureEvaluationDto.RequiredResponse getRequired(UUID userId) {
     Student student = studentService.getStudentByUserId(userId);

@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-/** 척척학사의 custom 사용자 details 비즈니스 흐름을 처리한다. */
+/** JWT subject의 사용자 UUID로 인증 계정 정보를 조회한다. */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {

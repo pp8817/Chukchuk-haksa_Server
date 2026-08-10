@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /* 포털 연동 초기화 유스케이스 실행 */
-/** 척척학사의 initialize 포털 연동 비즈니스 흐름을 처리한다. */
+/** 최초 포털 연동 시 사용자에게 학생 정보를 연결하고 연동 상태를 저장한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,11 +29,13 @@ public class InitializePortalConnectionService {
   private final PortalStudentDataMapper portalStudentDataMapper;
 
   /**
-   * 척척학사의 execute with 포털 data 대상을 처리한다.
+   * 아직 연동되지 않은 사용자에게 포털 학생 정보를 연결한다.
+   *
+   * <p>이미 연동됐거나 유효한 학생 정보가 없으면 상태를 변경하지 않고 실패 결과를 반환한다.
    *
    * @param userId 사용자 식별자
-   * @param portalData 포털 학사 데이터
-   * @return 포털 연동 결과
+   * @param portalData 학생 정보가 포함된 포털 조회 결과
+   * @return 연동된 학번과 학생 정보 또는 연동하지 못한 사유
    */
   @Transactional
   public PortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {

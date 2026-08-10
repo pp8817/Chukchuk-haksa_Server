@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collections;
 import java.util.List;
 
-/** 학기 grades api 응답 데이터를 전달한다. */
+/** 학기별 성적 목록 조회 성공 응답의 OpenAPI 스키마 예시를 제공한다. */
 @Schema(name = "SemesterGradesApiResponse", description = "학기별 성적 목록 응답")
 public class SemesterGradesApiResponse extends SuccessResponse<List<SemesterSummaryResponse>> {
   /** 학기 grades api 응답 인스턴스를 생성한다. */

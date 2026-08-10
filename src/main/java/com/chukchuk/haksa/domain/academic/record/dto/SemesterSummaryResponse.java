@@ -5,16 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
 /**
- * 학기 summary 응답 데이터를 전달한다.
+ * 학기 선택과 성적 목록에 사용할 연도·학기·평점·백분위·취득 학점을 담는다.
  *
  * @param year 연도
- * @param semester 학기 값
+ * @param semester 대상 학기
  * @param earnedCredits 취득 학점
  * @param attemptedCredits 신청 학점
  * @param semesterGpa 학기 평점
- * @param classRank class rank 값
- * @param totalStudents total students 값
- * @param percentile percentile 값
+ * @param classRank 해당 학기의 석차
+ * @param totalStudents 석차 산정 대상 인원
+ * @param percentile 누적 성적의 백분위
  */
 @Schema(description = "학기 요약 정보 (성적 포함)")
 public record SemesterSummaryResponse(

@@ -6,11 +6,11 @@ import com.chukchuk.haksa.domain.user.dto.UserDto;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** 척척학사의 me api 응답 데이터를 전달한다. */
+/** 내 사용자 정보 조회 성공 응답의 OpenAPI 스키마 예시를 제공한다. */
 @Schema(name = "MeApiResponse", description = "내 사용자 정보 조회 응답")
 public class MeApiResponse extends SuccessResponse<UserDto.MeResponse> {
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** 내 사용자 정보 조회 성공 응답의 예시 값과 메시지를 구성한다. */
   public MeApiResponse() {
     super(new UserDto.MeResponse(true), "요청 성공");
   }

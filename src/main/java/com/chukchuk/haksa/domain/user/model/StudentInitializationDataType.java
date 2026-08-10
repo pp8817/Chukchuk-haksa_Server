@@ -5,7 +5,7 @@ import com.chukchuk.haksa.domain.student.model.StudentStatus;
 import lombok.Builder;
 import lombok.Getter;
 
-/** 척척학사의 학생 initialization data type 도메인 상태를 표현한다. */
+/** 포털 학생 정보를 학생 엔티티로 초기화할 때 필요한 학적·전공 정보를 보관한다. */
 @Builder
 @Getter
 public class StudentInitializationDataType {

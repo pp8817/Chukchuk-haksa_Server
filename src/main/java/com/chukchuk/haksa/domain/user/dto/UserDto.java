@@ -4,15 +4,15 @@ import com.chukchuk.haksa.global.security.service.OidcProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** 척척학사의 사용자 계층 간 데이터를 전달한다. */
+/** 로그인, 내 정보 조회와 회원 탈퇴에 사용하는 요청·응답 형식을 묶는다. */
 public class UserDto {
 
   /**
    * 계층 간 전달할 sign in 요청 데이터를 표현한다.
    *
-   * @param provider provider 값
+   * @param provider 소셜 로그인 제공자
    * @param idToken ID token
-   * @param nonce nonce 값
+   * @param nonce 응답에 포함할 nonce
    */
   @Schema(description = "소셜 로그인 요청 정보")
   public record SignInRequest(
@@ -26,7 +26,7 @@ public class UserDto {
   /**
    * 계층 간 전달할 sign in 응답 데이터를 표현한다.
    *
-   * @param accessToken 접근 토큰 값
+   * @param accessToken 응답에 포함할 접근 토큰
    * @param refreshToken refresh token 원문
    * @param isPortalLinked is 포털 linked 여부
    */

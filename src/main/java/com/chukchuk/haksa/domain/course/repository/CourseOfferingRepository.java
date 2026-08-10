@@ -9,20 +9,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-/** 과목 offering repository 기능의 계약을 정의한다. */
+/** 과목 개설 정보를 학기·분반·교수·영역 조건으로 조회한다. */
 public interface CourseOfferingRepository extends JpaRepository<CourseOffering, Long> {
   /**
-   * 척척학사의 find by 과목 id and year and 학기 and class section and professor id and faculty division
-   * name and host 학과 대상을 조회한다.
+   * 과목·학기·분반·교수·영역·주관 학과가 모두 일치하는 개설 강의를 찾는다.
    *
    * @param courseId 과목 식별자
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 개설 학기
    * @param classSection 분반
    * @param professorId 교수 식별자
-   * @param facultyDivisionName faculty division 이름
+   * @param facultyDivisionName 과목 영역
    * @param hostDepartment 주관 학과
-   * @return 조회
+   * @return 모든 조건이 일치하는 개설 강의가 있으면 포함한 선택값
    */
   @Query(
       """
@@ -45,12 +44,12 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
       String hostDepartment);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 주어진 과목·연도·학기 조합에 포함되는 개설 강의를 조회한다.
    *
-   * @param courseIds 과목 ids 식별자
-   * @param years years 값
-   * @param semesters semesters 값
-   * @return 조회
+   * @param courseIds 조회할 과목 식별자 집합
+   * @param years 조회할 연도 집합
+   * @param semesters 조회할 학기 집합
+   * @return 세 조건 집합에 모두 속하는 개설 강의
    */
   @Query(
       """
@@ -63,14 +62,14 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
       Collection<Long> courseIds, Collection<Integer> years, Collection<Integer> semesters);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 관리자 테스트에 사용할 개설 강의를 선택 조건으로 검색한다.
    *
    * @param keyword 검색어
-   * @param area area 값
+   * @param area 과목 영역 필터, {@code null}이면 제한하지 않음
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 학기 필터, {@code null}이면 제한하지 않음
    * @param departmentName 학과 이름
-   * @return 조회
+   * @return 최신 학기와 과목명 순으로 정렬된 개설 강의 후보
    */
   @Query(
       """
@@ -94,11 +93,11 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
       String keyword, FacultyDivision area, Integer year, Integer semester, String departmentName);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 강의평가 테스트에 재사용할 특정 학기의 개설 강의를 조회한다.
    *
    * @param year 연도
-   * @param semester 학기 값
-   * @return 조회
+   * @param semester 조회할 학기
+   * @return 과목명·교수명·개설 식별자 순으로 정렬된 개설 강의
    */
   @Query(
       """
@@ -118,8 +117,8 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
    * 대상 학기의 과목 개설 강의평가 유형을 미확인 상태로 초기화한다.
    *
    * @param year 연도
-   * @param semester 학기 값
-   * @return int
+   * @param semester 초기화할 학기
+   * @return 강의평가 유형을 변경한 개설 강의 수
    */
   @Modifying
   @Query(

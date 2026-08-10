@@ -17,17 +17,17 @@ public class SemesterGrade {
   private Integer totalStudents;
 
   /**
-   * 학기 성적 인스턴스를 생성한다.
+   * 한 학기의 이수 학점과 성적·석차 지표를 생성한다.
    *
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 학기 구분
    * @param attemptedCredits 신청 학점
    * @param earnedCredits 취득 학점
    * @param semesterGpa 학기 평점
-   * @param semesterPercentile 학기 percentile 값
-   * @param attemptedCreditsGpa attempted credits gpa 값
-   * @param classRank class rank 값
-   * @param totalStudents total students 값
+   * @param semesterPercentile 해당 학기의 백분위
+   * @param attemptedCreditsGpa 평점 계산에 반영된 신청 학점
+   * @param classRank 해당 학기의 석차
+   * @param totalStudents 석차 산정 대상 학생 수
    */
   public SemesterGrade(
       int year,

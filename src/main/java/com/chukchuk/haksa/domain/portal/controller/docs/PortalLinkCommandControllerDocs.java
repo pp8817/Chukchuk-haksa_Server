@@ -20,17 +20,17 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-/** 포털 link command controller docs 기능의 계약을 정의한다. */
+/** 검증된 포털 자격 증명으로 비동기 연동 작업을 생성하는 API를 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내")
 public interface PortalLinkCommandControllerDocs {
 
   /**
-   * 척척학사의 create 포털 link 작업 대상을 생성한다.
+   * 포털 연동에 대한 입력 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
+   * @param userDetails 인증된 사용자 정보
    * @param idempotencyKey 멱등성 키
-   * @param request 요청 정보
-   * @return 생성된
+   * @param request 포털 유형·일회용 검증 토큰·멱등성 키를 포함한 작업 생성 요청
+   * @return 처리된 포털 연동
    */
   @Operation(
       summary = "포털 연동 job 생성",

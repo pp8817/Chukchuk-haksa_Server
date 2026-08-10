@@ -4,13 +4,13 @@ import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/** 척척학사의 base 처리할 수 없는 도메인 또는 요청 상태를 나타낸다. */
+/** API 오류 코드와 HTTP 상태를 함께 전달하는 애플리케이션 예외의 기반 타입이다. */
 @Getter
 public abstract class BaseException extends RuntimeException {
   private final ErrorCode errorCode;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 오류 코드의 기본 메시지를 사용하는 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    */
@@ -20,7 +20,7 @@ public abstract class BaseException extends RuntimeException {
   }
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 오류 코드의 기본 메시지와 내부 원인을 보존하는 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    * @param cause 원인 예외

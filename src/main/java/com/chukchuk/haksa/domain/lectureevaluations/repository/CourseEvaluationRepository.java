@@ -8,16 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** 과목 evaluation repository 기능의 계약을 정의한다. */
+/** 학생의 학기별 강의평가 결과를 저장하고 일괄 삭제하는 저장소다. */
 @Repository
 public interface CourseEvaluationRepository extends JpaRepository<CourseEvaluation, Long> {
 
   /**
-   * 척척학사의 delete by 학생 id and year and 학기 대상을 삭제한다.
+   * 지정된 조건에 해당하는 강의평가를 삭제한다.
    *
    * @param studentId 학생 식별자
-   * @param year 연도
-   * @param semester 학기 값
+   * @param year 대상 연도
+   * @param semester 대상 학기
    */
   @Modifying
   @Query(

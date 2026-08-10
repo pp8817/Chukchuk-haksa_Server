@@ -2,10 +2,10 @@ package com.chukchuk.haksa.global.exception.type;
 
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 
-/** 척척학사의 common 처리할 수 없는 도메인 또는 요청 상태를 나타낸다. */
+/** 별도 예외 타입이 필요하지 않은 요청 또는 업무 규칙 위반을 나타낸다. */
 public class CommonException extends BaseException {
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 지정한 오류 코드와 기본 메시지로 업무 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    */
@@ -14,7 +14,7 @@ public class CommonException extends BaseException {
   }
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 지정한 오류 코드와 내부 원인을 보존하는 업무 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    * @param cause 원인 예외

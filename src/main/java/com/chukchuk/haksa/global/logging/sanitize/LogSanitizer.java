@@ -42,8 +42,8 @@ public final class LogSanitizer {
   /**
    * 로그 문자열에서 민감정보와 제어문자를 제거한다.
    *
-   * @param s s 값
-   * @return string
+   * @param s 로그에 기록하려는 문자열이며 {@code null}일 수 있음
+   * @return 토큰·비밀번호·학번·이메일과 제어 대상 값이 마스킹된 문자열 또는 {@code null}
    */
   public static String clean(String s) {
     if (s == null) {
@@ -80,8 +80,8 @@ public final class LogSanitizer {
   /**
    * 로그 인자를 안전한 값으로 변환한다.
    *
-   * @param o o 값
-   * @return object
+   * @param o 문자열로 변환해 로그에 기록할 객체
+   * @return 문자열 변환 후 민감정보를 마스킹한 값 또는 {@code null}
    */
   public static Object arg(Object o) {
     return (o == null) ? null : clean(String.valueOf(o));
@@ -90,8 +90,9 @@ public final class LogSanitizer {
   /**
    * 추가 로그 마스킹 규칙을 등록한다.
    *
-   * @param regex regex 값
-   * @param replacement replacement 값
+   * @param regex 대소문자를 구분하지 않고 추가로 치환할 정규식
+   * @param replacement 정규식에 일치한 내용을 바꿀 문자열
+   * @throws java.util.regex.PatternSyntaxException 정규식 문법이 유효하지 않은 경우
    */
   public static void registerExtraRule(String regex, String replacement) {
     EXTRA_RULES.add(new ReplaceRule(Pattern.compile(regex, Pattern.CASE_INSENSITIVE), replacement));

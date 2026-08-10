@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 
-/** 척척학사의 포털 data 도메인 데이터 간 변환을 담당한다. */
+/** 워커의 포털 원본 DTO를 학생·학사·교육과정 내부 모델로 변환한다. */
 @Slf4j
 public class PortalDataMapper {
 
@@ -39,8 +39,9 @@ public class PortalDataMapper {
   /**
    * 포털 원본 응답을 내부 포털 데이터로 변환한다.
    *
-   * @param raw raw 값
-   * @return 포털 data 결과
+   * @param raw 학생, 학기별 과목 및 성적 응답을 포함한 워커 payload
+   * @return 기본값 보정과 영역·석차 파싱이 적용된 내부 포털 데이터
+   * @throws IllegalArgumentException 외국어 인증 값이 지원하는 표현이 아닌 경우
    */
   public static PortalData toPortalData(RawPortalData raw) {
     return new PortalData(

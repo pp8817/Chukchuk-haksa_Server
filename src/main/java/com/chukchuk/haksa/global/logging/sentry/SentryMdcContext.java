@@ -44,7 +44,7 @@ public final class SentryMdcContext {
    *
    * @param context 적용할 문맥
    * @param supplier 실행할 값 공급자
-   * @return t
+   * @return 지정한 문맥 안에서 공급자가 계산한 값
    */
   public static <T> T supply(Context context, Supplier<T> supplier) {
     try (MdcScope ignored = open(context)) {
@@ -56,7 +56,7 @@ public final class SentryMdcContext {
    * 지정한 값을 적용한 MDC 범위를 연다.
    *
    * @param context 적용할 문맥
-   * @return mdc scope 결과
+   * @return 닫을 때 이전 MDC와 Sentry 사용자 문맥을 복원하는 scope
    */
   public static MdcScope open(Context context) {
     return new MdcScope(context);
@@ -70,7 +70,7 @@ public final class SentryMdcContext {
    * @param outboxId 아웃박스 식별자
    * @param operationType 작업 유형
    * @param workerRequestId 워커 요청 식별자
-   * @return context
+   * @return null 식별자는 제외하고 문자열로 변환한 MDC 문맥
    */
   public static Context from(
       UUID userId, String jobId, String outboxId, Enum<?> operationType, String workerRequestId) {
@@ -83,7 +83,7 @@ public final class SentryMdcContext {
   }
 
   /**
-   * 전달된 값을 현재 객체에 설정한다.
+   * 현재 HTTP 요청에 스크래핑 추적 문맥을 저장한다.
    *
    * @param context 적용할 문맥
    */
@@ -95,7 +95,7 @@ public final class SentryMdcContext {
   }
 
   /**
-   * 전달된 값을 현재 객체에 설정한다.
+   * 지정한 HTTP 요청에 값이 있는 스크래핑 추적 식별자만 저장한다.
    *
    * @param request 요청 정보
    * @param context 적용할 문맥
@@ -115,7 +115,7 @@ public final class SentryMdcContext {
    * HTTP 요청에 저장된 값으로 MDC 범위를 연다.
    *
    * @param request 요청 정보
-   * @return mdc scope 결과
+   * @return 요청 문맥을 적용한 scope이며 저장된 값이 없으면 아무 작업도 하지 않는 scope
    */
   public static MdcScope openFromRequest(HttpServletRequest request) {
     Context context = contextFromRequest(request);
@@ -126,7 +126,7 @@ public final class SentryMdcContext {
   }
 
   /**
-   * 계층 간 전달할 context 데이터를 표현한다.
+   * 로그와 Sentry 이벤트를 같은 스크래핑 작업에 연결할 추적 식별자를 전달한다.
    *
    * @param userId 사용자 식별자
    * @param jobId 작업 식별자

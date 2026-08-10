@@ -4,11 +4,11 @@ import com.chukchuk.haksa.infrastructure.portal.model.PortalConnectionResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * 스크래핑 응답 데이터를 전달한다.
+ * 포털 연동·재연동 완료 후 작업 식별자와 학생 정보 및 처리 상태를 반환한다.
  *
- * @param taskId task id 식별자
- * @param studentInfo 학생 info 값
- * @param status 상태
+ * @param taskId 응답 추적에 사용하는 작업 식별자
+ * @param studentInfo 포털 연동으로 확인한 학생 정보
+ * @param status 포털 연동 및 동기화 처리 상태
  */
 @Schema(description = "포털 연동 또는 재연동 및 학업 이력 동기화 성공 응답")
 public record ScrapingResponse(

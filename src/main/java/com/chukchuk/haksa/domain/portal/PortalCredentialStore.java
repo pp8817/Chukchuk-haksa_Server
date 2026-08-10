@@ -1,10 +1,10 @@
 package com.chukchuk.haksa.domain.portal;
 
-/** 포털 credential store 기능의 계약을 정의한다. */
+/** 포털 연동 중에만 사용하는 계정 자격 증명의 저장·조회·삭제 계약을 정의한다. */
 public interface PortalCredentialStore {
 
   /**
-   * 척척학사의 save 대상을 저장한다.
+   * 전달된 도메인 객체 또는 토큰을 영속 저장한다.
    *
    * @param userId 사용자 식별자
    * @param username user이름
@@ -13,23 +13,23 @@ public interface PortalCredentialStore {
   void save(String userId, String username, String password);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자의 임시 포털 계정 아이디를 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 저장된 포털 계정 아이디, 없으면 {@code null}
    */
   String getUsername(String userId);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자의 임시 포털 계정 비밀번호를 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 저장된 포털 계정 비밀번호, 없으면 {@code null}
    */
   String getPassword(String userId);
 
   /**
-   * 척척학사의 clear 대상을 삭제한다.
+   * 사용자의 임시 포털 자격 증명을 저장소에서 제거한다.
    *
    * @param userId 사용자 식별자
    */

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 학생 과목 비즈니스 흐름을 처리한다. */
+/** 학생이 학기별로 수강한 과목과 성적을 조회한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,12 +19,12 @@ public class StudentCourseService {
   private final StudentCourseRepository studentCourseRepository;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생이 특정 학기에 수강한 과목을 성적과 함께 반환한다.
    *
    * @param studentId 학생 식별자
    * @param year 연도
-   * @param semester 학기 값
-   * @return 조회
+   * @param semester 조회할 학기
+   * @return 해당 학기의 수강 과목 상세 목록
    */
   public List<CourseDetailDto> getStudentCourses(UUID studentId, Integer year, Integer semester) {
     List<StudentCourse> courses =

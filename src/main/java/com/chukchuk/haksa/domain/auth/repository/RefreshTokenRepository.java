@@ -5,14 +5,14 @@ import java.util.Date;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/** 척척학사의 refresh 토큰 repository 기능의 계약을 정의한다. */
+/** 세션별 리프레시 토큰을 저장하고 만료 시각·사용자 기준 삭제 연산을 제공한다. */
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
   /**
-   * 척척학사의 delete by expiry before 대상을 삭제한다.
+   * 지정된 조건에 해당하는 리프레시 토큰를 삭제한다.
    *
-   * @param now now 값
-   * @return int
+   * @param now 처리 기준 시각
+   * @return 기준 시각 이전에 만료되어 삭제된 리프레시 토큰 수
    */
   int deleteByExpiryBefore(Date now);
 

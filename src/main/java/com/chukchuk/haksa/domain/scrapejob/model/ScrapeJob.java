@@ -15,7 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 스크래핑 작업 도메인 상태를 표현한다. */
+/** 포털 스크래핑 요청의 멱등성, 시도 횟수, 결과 위치 및 처리 상태를 관리한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -116,7 +116,7 @@ public class ScrapeJob extends BaseEntity {
   }
 
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 입력 값으로 스크래핑 작업를 생성한다.
    *
    * @param userId 사용자 식별자
    * @param portalType 포털 유형
@@ -124,7 +124,7 @@ public class ScrapeJob extends BaseEntity {
    * @param idempotencyKey 멱등성 키
    * @param requestFingerprint 요청 fingerprint 정보
    * @param requestPayloadJson 요청 payload json 정보
-   * @return 생성된
+   * @return 처리된 스크래핑 작업
    */
   public static ScrapeJob createQueued(
       UUID userId,
@@ -144,7 +144,7 @@ public class ScrapeJob extends BaseEntity {
   }
 
   /**
-   * 입력 값을 사용해 결과 객체를 생성한다.
+   * 입력 값으로 스크래핑 작업를 생성한다.
    *
    * @param userId 사용자 식별자
    * @param portalType 포털 유형
@@ -152,8 +152,8 @@ public class ScrapeJob extends BaseEntity {
    * @param idempotencyKey 멱등성 키
    * @param requestFingerprint 요청 fingerprint 정보
    * @param requestPayloadJson 요청 payload json 정보
-   * @param linkStartedAt link started at 값
-   * @return 생성된
+   * @param linkStartedAt link started at
+   * @return 처리된 스크래핑 작업
    */
   public static ScrapeJob createQueued(
       UUID userId,
@@ -201,7 +201,7 @@ public class ScrapeJob extends BaseEntity {
   /**
    * 현재 상태가 조건을 충족하는지 반환한다.
    *
-   * @param attempt attempt 값
+   * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
    * @return 조건 충족 여부
    */
   public boolean hasProcessedAttempt(int attempt) {
@@ -218,10 +218,10 @@ public class ScrapeJob extends BaseEntity {
   /**
    * 스크래핑 작업을 후처리 상태로 전환한다.
    *
-   * @param resultS3Key 결과 S3 key 값
-   * @param resultChecksum 결과 checksum 값
+   * @param resultS3Key 워커 결과 객체를 읽을 S3 키
+   * @param resultChecksum 워커 결과 객체의 무결성을 확인할 체크섬
    * @param callbackMetadataJson 콜백 메타데이터 JSON
-   * @param attempt attempt 값
+   * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
    * @param receivedAt 수신 시각
    */
   public void markPostProcessing(
@@ -255,7 +255,7 @@ public class ScrapeJob extends BaseEntity {
    *
    * @param resultPayloadJson 결과 JSON payload
    * @param finishedAt 처리 종료 시각
-   * @param linkEndedAt link ended at 값
+   * @param linkEndedAt 포털 연결 단계가 종료된 시각
    */
   public void markSucceeded(String resultPayloadJson, Instant finishedAt, Instant linkEndedAt) {
     recordWorkerResult(resultPayloadJson, finishedAt);
@@ -280,7 +280,7 @@ public class ScrapeJob extends BaseEntity {
   /**
    * 콜백 수신 시도 횟수와 시각을 기록한다.
    *
-   * @param attempt attempt 값
+   * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
    * @param receivedAt 수신 시각
    */
   public void recordCallbackAttempt(int attempt, Instant receivedAt) {
@@ -291,8 +291,8 @@ public class ScrapeJob extends BaseEntity {
   /**
    * 스크래핑 결과 저장 위치와 콜백 정보를 기록한다.
    *
-   * @param resultS3Key 결과 S3 key 값
-   * @param attempt attempt 값
+   * @param resultS3Key 워커 결과 객체를 읽을 S3 키
+   * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
    * @param receivedAt 수신 시각
    */
   public void recordResultLocation(String resultS3Key, int attempt, Instant receivedAt) {
@@ -303,12 +303,12 @@ public class ScrapeJob extends BaseEntity {
   /**
    * 실패 콜백의 원인과 처리 정보를 기록한다.
    *
-   * @param attempt attempt 값
+   * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
    * @param receivedAt 수신 시각
    * @param callbackMetadataJson 콜백 메타데이터 JSON
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 실패 후 재시도 가능한지 여부
    * @param finishedAt 처리 종료 시각
    */
   public void recordFailedCallback(
@@ -333,14 +333,14 @@ public class ScrapeJob extends BaseEntity {
   /**
    * 실패 콜백의 원인과 처리 정보를 기록한다.
    *
-   * @param attempt attempt 값
+   * @param attempt 콜백 중복과 순서를 판정할 워커 시도 번호
    * @param receivedAt 수신 시각
    * @param callbackMetadataJson 콜백 메타데이터 JSON
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 실패 후 재시도 가능한지 여부
    * @param finishedAt 처리 종료 시각
-   * @param linkEndedAt link ended at 값
+   * @param linkEndedAt 포털 연결 단계가 종료된 시각
    */
   public void recordFailedCallback(
       int attempt,
@@ -361,7 +361,7 @@ public class ScrapeJob extends BaseEntity {
    *
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 실패 후 재시도 가능한지 여부
    * @param finishedAt 처리 종료 시각
    */
   public void markFailed(
@@ -374,9 +374,9 @@ public class ScrapeJob extends BaseEntity {
    *
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 실패 후 재시도 가능한지 여부
    * @param finishedAt 처리 종료 시각
-   * @param linkEndedAt link ended at 값
+   * @param linkEndedAt 포털 연결 단계가 종료된 시각
    */
   public void markFailed(
       String errorCode,

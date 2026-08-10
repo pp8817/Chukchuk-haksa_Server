@@ -21,11 +21,11 @@ public class GraduationMajorResolver {
   private final DepartmentRepository departmentRepository;
 
   /**
-   * 척척학사의 resolve 대상을 계산한다.
+   * 학생의 주전공·복수전공과 입학 연도로 적용할 졸업 요건 학과를 결정한다.
    *
-   * @param student 학생 값
-   * @param admissionYear admission 연도
-   * @return 전공 resolution 결과
+   * @param student 기록의 소유 학생
+   * @param admissionYear 졸업 요건 기준을 선택할 입학 연도
+   * @return 주전공과 복수전공에 적용할 학과 식별자
    */
   public MajorResolutionResult resolve(Student student, int admissionYear) {
     List<Long> primaryCandidates =

@@ -9,83 +9,83 @@ import com.chukchuk.haksa.domain.student.dto.StudentSemesterDto;
 import java.util.List;
 import java.util.UUID;
 
-/** 학사 캐시 기능의 계약을 정의한다. */
+/** 학생·학과별 학사 조회 결과를 캐시하는 계약을 정의한다. */
 public interface AcademicCache {
 
   /**
-   * 척척학사의 set 학사 summary 대상을 설정한다.
+   * 학생의 누적 학사 요약을 캐시한다.
    *
    * @param studentId 학생 식별자
-   * @param summary summary 값
+   * @param summary 캐시할 누적 학사 요약
    */
   void setAcademicSummary(UUID studentId, AcademicSummaryResponse summary);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 누적 학사 요약을 캐시에서 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 캐시된 학사 요약, 없으면 {@code null}
    */
   AcademicSummaryResponse getAcademicSummary(UUID studentId);
 
   /**
-   * 척척학사의 set 학기 list 대상을 설정한다.
+   * 학생의 학기 목록을 캐시한다.
    *
    * @param studentId 학생 식별자
-   * @param list list 값
+   * @param list 캐시할 학기 목록
    */
   void setSemesterList(UUID studentId, List<StudentSemesterDto.StudentSemesterInfoResponse> list);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 학기 목록을 캐시에서 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 캐시된 학기 목록, 없으면 {@code null}
    */
   List<StudentSemesterDto.StudentSemesterInfoResponse> getSemesterList(UUID studentId);
 
   /**
-   * 척척학사의 set 졸업 progress 대상을 설정한다.
+   * 학생의 졸업 요건 진행 상태를 캐시한다.
    *
    * @param studentId 학생 식별자
-   * @param progress progress 값
+   * @param progress 캐시할 졸업 요건 진행 상태
    */
   void setGraduationProgress(UUID studentId, GraduationProgressResponse progress);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 졸업 요건 진행 상태를 캐시에서 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 캐시된 졸업 진행 상태, 없으면 {@code null}
    */
   GraduationProgressResponse getGraduationProgress(UUID studentId);
 
   /**
-   * 척척학사의 set 졸업 requirements 대상을 설정한다.
+   * 학과와 입학 연도에 해당하는 졸업 영역별 요건을 캐시한다.
    *
    * @param departmentId 학과 식별자
-   * @param admissionYear admission 연도
-   * @param requirements requirements 값
+   * @param admissionYear 입학 연도
+   * @param requirements 캐시할 영역별 졸업 요건
    */
   void setGraduationRequirements(
       Long departmentId, Integer admissionYear, List<AreaRequirementDto> requirements);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학과와 입학 연도의 졸업 영역별 요건을 캐시에서 조회한다.
    *
    * @param departmentId 학과 식별자
-   * @param admissionYear admission 연도
-   * @return 조회
+   * @param admissionYear 입학 연도
+   * @return 캐시된 영역별 졸업 요건, 없으면 {@code null}
    */
   List<AreaRequirementDto> getGraduationRequirements(Long departmentId, Integer admissionYear);
 
   /**
-   * 척척학사의 set dual 전공 requirements 대상을 설정한다.
+   * 주전공·복수전공·입학 연도 조합의 졸업 요건을 캐시한다.
    *
    * @param primaryMajorId 주전공 식별자
    * @param secondaryMajorId 복수전공 식별자
-   * @param admissionYear admission 연도
-   * @param requirements requirements 값
+   * @param admissionYear 입학 연도
+   * @param requirements 캐시할 복수전공 졸업 요건
    */
   void setDualMajorRequirements(
       Long primaryMajorId,
@@ -94,34 +94,34 @@ public interface AcademicCache {
       List<AreaRequirementDto> requirements);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 주전공·복수전공·입학 연도 조합의 졸업 요건을 캐시에서 조회한다.
    *
    * @param primaryMajorId 주전공 식별자
    * @param secondaryMajorId 복수전공 식별자
-   * @param admissionYear admission 연도
-   * @return 조회
+   * @param admissionYear 입학 연도
+   * @return 캐시된 복수전공 졸업 요건, 없으면 {@code null}
    */
   List<AreaRequirementDto> getDualMajorRequirements(
       Long primaryMajorId, Long secondaryMajorId, Integer admissionYear);
 
   /**
-   * 척척학사의 set 학기 summaries 대상을 설정한다.
+   * 학생의 학기별 성적 요약을 캐시한다.
    *
    * @param studentId 학생 식별자
-   * @param list list 값
+   * @param list 캐시할 학기별 성적 요약
    */
   void setSemesterSummaries(UUID studentId, List<SemesterSummaryResponse> list);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 학기별 성적 요약을 캐시에서 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 캐시된 학기별 성적 요약, 없으면 {@code null}
    */
   List<SemesterSummaryResponse> getSemesterSummaries(UUID studentId);
 
   /**
-   * 척척학사의 delete all by 학생 id 대상을 삭제한다.
+   * 학생 식별자로 시작하는 모든 학사 캐시를 제거한다.
    *
    * @param studentId 학생 식별자
    */

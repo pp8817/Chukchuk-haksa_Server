@@ -29,16 +29,16 @@ public class ScrapeJobOutboxDispatcher {
   private final ScrapingProperties scrapingProperties;
   private final Environment environment;
 
-  /** 척척학사의 dispatch eligible outboxes 대상을 처리한다. */
+  /** 예약 시점에 발행 가능한 아웃박스를 배치로 예약해 큐로 전송한다. */
   public void dispatchEligibleOutboxes() {
     dispatchBatch("scheduled");
   }
 
   /**
-   * 척척학사의 dispatch once 대상을 처리한다.
+   * 지정한 아웃박스 한 건을 우선 예약해 큐로 전송한다.
    *
-   * @param preferredOutboxId preferred 아웃박스 식별자
-   * @return int
+   * @param preferredOutboxId 즉시 발행할 아웃박스 식별자
+   * @return 발행 대상으로 예약한 경우 {@code 1}, 발행할 수 없거나 발행기가 비활성화된 경우 {@code 0}
    */
   public int dispatchOnce(String preferredOutboxId) {
     return dispatchPreferredOutbox("sync_request", preferredOutboxId);

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/** 스크래핑 결과 콜백 비즈니스 흐름을 처리한다. */
+/** 워커 콜백의 서명과 payload를 검증하고 스크래핑 작업 상태 및 학사 데이터를 반영한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -45,13 +45,15 @@ public class ScrapeResultCallbackService {
   private final ObjectMapper objectMapper;
 
   /**
-   * 척척학사의 handle 콜백 대상을 처리한다.
+   * 워커 콜백의 서명·상태·결과 위치를 검증하고 성공 또는 실패 처리를 실행한다.
    *
    * @param rawBody 서명 검증 대상 요청 본문
    * @param timestamp 요청 타임스탬프
    * @param signature 요청 서명
-   * @param attemptHeader attempt header 값
-   * @param workerRequestId 워커 요청 식별자
+   * @param attemptHeader payload에 시도 횟수가 없을 때 사용할 요청 헤더
+   * @param workerRequestId 로그와 오류 추적에 사용할 워커 요청 식별자
+   * @throws CommonException 서명, payload 형식, 결과 위치 또는 checksum이 유효하지 않은 경우
+   * @throws EntityNotFoundException 콜백 대상 작업을 찾을 수 없는 경우
    */
   public void handleCallback(
       String rawBody,

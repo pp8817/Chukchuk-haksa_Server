@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.HandlerMapping;
 
-/** 척척학사의 global exception 요청 또는 이벤트 처리를 담당한다. */
+/** 컨트롤러 예외를 공통 오류 응답으로 변환하고 예상하지 못한 오류를 Sentry에 기록한다. */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

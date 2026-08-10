@@ -19,15 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
-/** 구현체가 제공해야 할 사용자 controller docs 기능의 계약을 정의한다. */
+/** 인증 사용자의 분석 식별자·포털 연동 상태 조회와 로그인·탈퇴 API를 정의한다. */
 @Tag(name = "User", description = "사용자 관련 API")
 public interface UserControllerDocs {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자 및 소셜 계정를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리 결과를 담은 성공 응답
    */
   @Operation(
       summary = "사용자 분석 식별자 조회",
@@ -47,10 +47,10 @@ public interface UserControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자 및 소셜 계정에 대한 없음 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리된 사용자 및 소셜 계정
    */
   @Operation(
       summary = "내 사용자 정보 조회",
@@ -77,7 +77,7 @@ public interface UserControllerDocs {
    * 지정된 데이터를 삭제한다.
    *
    * @param userDetails 사용자 상세 정보
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 회원 탈퇴 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "회원 탈퇴",
@@ -100,7 +100,7 @@ public interface UserControllerDocs {
    * OIDC 토큰으로 회원가입 또는 로그인을 처리한다.
    *
    * @param signInRequest sign in 요청 정보
-   * @return 응답 entity success 응답 사용자 dto sign in 응답 결과
+   * @return 액세스·리프레시 토큰과 신규 가입 여부를 담은 로그인 응답
    */
   @Operation(
       summary = "회원 가입 및 로그인",

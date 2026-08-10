@@ -7,22 +7,22 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/** 구현체가 제공해야 할 professor repository 기능의 계약을 정의한다. */
+/** 교수 이름 하나 또는 이름 집합으로 교수를 조회하는 저장소다. */
 @Repository
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 교수를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param name 이름
-   * @return 조회
+   * @return 조건에 일치하는 교수가 있으면 포함한 선택값
    */
   Optional<Professor> findByProfessorName(String name);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 교수를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param names names 값
-   * @return 조회
+   * @param names names
+   * @return 조건에 일치하는 교수 목록
    */
   List<Professor> findByProfessorNameIn(Collection<String> names);
 }

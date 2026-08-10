@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 학기 학사 record 비즈니스 흐름을 처리한다. */
+/** 학생의 학기별 성적과 학기 목록을 조회하고 캐시한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,12 +32,13 @@ public class SemesterAcademicRecordService {
 
   /* 특정 학생의 특정 학기 성적 조회 */
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 특정 학기 성적을 조회한다.
    *
    * @param studentId 학생 식별자
    * @param year 연도
-   * @param semester 학기 값
-   * @return 조회
+   * @param semester 조회할 학기
+   * @return 해당 학기의 성적 정보
+   * @throws EntityNotFoundException 해당 학기 성적이 없는 경우
    */
   public SemesterGradeResponse getSemesterGradesByYearAndSemester(
       UUID studentId, Integer year, Integer semester) {
@@ -59,10 +60,11 @@ public class SemesterAcademicRecordService {
 
   /* 특정 학생의 전체 학기 성적 조회 (최신순 정렬) */
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 전체 학기 성적을 최신 학기부터 반환한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 최신순으로 정렬된 학기별 성적 요약
+   * @throws EntityNotFoundException 저장된 학기 성적이 하나도 없는 경우
    */
   public List<SemesterSummaryResponse> getAllSemesterGrades(UUID studentId) {
     List<SemesterSummaryResponse> records = getSemesterSummaries(studentId);
@@ -77,10 +79,11 @@ public class SemesterAcademicRecordService {
 
   /* 학생의 학기 정보 조회 */
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 성적이 존재하는 학기 목록을 반환한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 성적 조회에 사용할 학기 목록
+   * @throws CommonException 신입생 등 조회할 학기가 없는 경우
    */
   public List<StudentSemesterDto.StudentSemesterInfoResponse> getSemestersByStudentId(
       UUID studentId) {
@@ -98,10 +101,10 @@ public class SemesterAcademicRecordService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 학기별 성적 요약을 캐시 우선으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 최신순으로 정렬된 학기별 성적 요약, 성적이 없으면 빈 목록
    */
   public List<SemesterSummaryResponse> getSemesterSummaries(UUID studentId) {
     try {

@@ -61,11 +61,11 @@ public class StudentGraduationProgress extends BaseEntity {
   }
 
   /**
-   * 척척학사의 create for language cert 대상을 생성한다.
+   * 입력 값으로 졸업 요건를 생성한다.
    *
-   * @param student 학생 값
+   * @param student 대상 학생
    * @param languageCertFulfilled 어학 인증 충족 여부
-   * @return 생성된
+   * @return 처리된 졸업 요건
    */
   public static StudentGraduationProgress createForLanguageCert(
       Student student, boolean languageCertFulfilled) {
@@ -73,7 +73,7 @@ public class StudentGraduationProgress extends BaseEntity {
   }
 
   /**
-   * 척척학사의 update language cert 대상을 갱신한다.
+   * 졸업 요건의 호출자에게 노출된 상태를 입력 값에 맞게 변경한다.
    *
    * @param languageCertFulfilled 어학 인증 충족 여부
    */

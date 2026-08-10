@@ -9,38 +9,38 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /* JpaRepository를 확장, 커스텀 메서드 정의 */
-/** 구현체가 제공해야 할 사용자 repository 기능의 계약을 정의한다. */
+/** 이메일·학번으로 사용자를 조회하고 프로필 연관 정보를 함께 로딩하는 저장소다. */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 이메일이 일치하는 사용자를 찾는다.
    *
-   * @param email 이메일 값
-   * @return 조회
+   * @param email 사용자 이메일
+   * @return 조건에 일치하는 사용자 및 소셜 계정가 있으면 포함한 선택값
    */
   Optional<User> findByEmail(String email);
 
   /**
    * 현재 상태가 조건을 충족하는지 반환한다.
    *
-   * @param email 이메일 값
+   * @param email 연락 및 로그인에 사용하는 이메일
    * @return 조건 충족 여부
    */
   boolean existsByEmail(String email);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학번으로 연결된 사용자를 찾는다.
    *
    * @param studentCode 학번
-   * @return 조회
+   * @return 조건에 일치하는 사용자 및 소셜 계정가 있으면 포함한 선택값
    */
   Optional<User> findByStudentStudentCode(String studentCode);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 프로필 구성에 필요한 연관 정보를 함께 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 조건에 일치하는 사용자 및 소셜 계정가 있으면 포함한 선택값
    */
   @Query(
       """

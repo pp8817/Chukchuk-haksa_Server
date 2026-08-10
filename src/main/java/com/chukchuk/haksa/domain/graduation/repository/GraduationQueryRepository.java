@@ -39,11 +39,11 @@ public class GraduationQueryRepository {
 
   /* 졸업 요건 조회 (학과 코드, 입학년도) */
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param departmentId 학과 식별자
-   * @param admissionYear admission 연도
-   * @return 조회
+   * @param admissionYear 입학 연도
+   * @return 조건에 일치하는 졸업 요건 목록
    */
   public List<AreaRequirementDto> getAreaRequirements(Long departmentId, Integer admissionYear) {
     String sql =
@@ -108,12 +108,12 @@ public class GraduationQueryRepository {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
    * @param departmentId 학과 식별자
-   * @param admissionYear admission 연도
-   * @return 조회
+   * @param admissionYear 입학 연도
+   * @return 조건에 일치하는 졸업 요건 목록
    */
   public List<AreaProgressDto> getStudentAreaProgress(
       UUID studentId, Long departmentId, Integer admissionYear) {
@@ -269,10 +269,10 @@ public class GraduationQueryRepository {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 조건에 일치하는 졸업 요건 목록
    */
   public List<CourseInternalDto> getLatestValidCourses(UUID studentId) {
     String sql =
@@ -464,7 +464,7 @@ public class GraduationQueryRepository {
   /**
    * 내부 교과목 정보를 API 응답으로 변환한다.
    *
-   * @param dto dto 값
+   * @param dto API 과목 응답으로 변환할 내부 이수 과목
    * @return 과목 dto 결과
    */
   public CourseDto toCourseResponseDto(CourseInternalDto dto) {

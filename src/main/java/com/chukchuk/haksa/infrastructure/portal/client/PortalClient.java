@@ -31,10 +31,11 @@ public class PortalClient {
   private final RestTemplate loginRestTemplate = new RestTemplate(loginRequestFactory());
 
   /**
-   * 입력 값과 업무 처리 조건을 검증한다.
+   * 포털 로그인 endpoint에 자격 증명을 제출해 실제 로그인 가능 여부를 확인한다.
    *
-   * @param username user이름
+   * @param username 포털 로그인 아이디
    * @param password 포털 비밀번호
+   * @throws PortalScrapeException 자격 증명이 틀렸거나 계정이 잠겼거나 포털 요청에 실패한 경우
    */
   public void validateLogin(String username, String password) {
     String uri = "/login";
@@ -62,9 +63,10 @@ public class PortalClient {
   /**
    * 포털에 로그인해 전체 학사 데이터를 조회한다.
    *
-   * @param username user이름
+   * @param username 포털 로그인 아이디
    * @param password 포털 비밀번호
-   * @return raw 포털 data 결과
+   * @return 포털이 반환한 학생·학기별 과목·성적 원본 데이터
+   * @throws PortalScrapeException 응답 본문이 없거나 포털 요청에 실패한 경우
    */
   public RawPortalData scrapeAll(String username, String password) {
     String uri = "/scrape";

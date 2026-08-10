@@ -1,6 +1,6 @@
 package com.chukchuk.haksa.domain.course.model;
 
-/** 척척학사의 faculty division에서 사용할 값을 정의한다. */
+/** 과목과 개설 강의를 분류하는 전공·교양 영역을 정의한다. */
 public enum FacultyDivision {
   중핵,
   기교,

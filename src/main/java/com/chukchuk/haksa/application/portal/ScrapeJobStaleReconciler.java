@@ -33,7 +33,7 @@ public class ScrapeJobStaleReconciler {
   /**
    * 대기 제한 시간을 넘긴 스크래핑 작업을 실패 처리한다.
    *
-   * @return int
+   * @return 이번 실행에서 실패 상태로 전환한 작업 수
    */
   @Transactional
   public int reconcileStaleQueuedJobs() {

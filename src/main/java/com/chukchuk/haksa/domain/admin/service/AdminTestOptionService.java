@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 admin test option 비즈니스 흐름을 처리한다. */
+/** 개발 환경 테스트에 사용할 학과와 개설 강의 선택지를 제공한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -26,9 +26,9 @@ public class AdminTestOptionService {
   private final CourseOfferingRepository courseOfferingRepository;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 테스트 데이터 구성에 사용할 기본 선택지를 반환한다.
    *
-   * @return 조회
+   * @return 학과와 졸업 영역 등 테스트 구성 선택지
    */
   public AdminTestDto.TestOptionsResponse getTestOptions() {
     List<AdminTestDto.DepartmentOption> departments =
@@ -41,10 +41,10 @@ public class AdminTestOptionService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학과 코드 또는 이름에 검색어가 포함된 학과를 반환한다.
    *
-   * @param keyword 검색어
-   * @return 조회
+   * @param keyword 검색할 과목 코드 또는 이름
+   * @return 조건에 일치하는 개발 환경 테스트 데이터 목록
    */
   public List<AdminTestDto.DepartmentOption> searchDepartments(String keyword) {
     String normalizedKeyword = normalize(keyword);
@@ -56,10 +56,10 @@ public class AdminTestOptionService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 선택 필터에 맞는 개설 강의 후보를 반환한다.
    *
-   * @param request 요청 정보
-   * @return 조회
+   * @param request 개설 강의 후보를 제한할 검색 조건
+   * @return 조건에 일치하는 개발 환경 테스트 데이터 목록
    */
   public List<AdminTestDto.CourseOfferingOption> searchCourseOfferings(
       AdminTestDto.CourseOfferingSearchRequest request) {

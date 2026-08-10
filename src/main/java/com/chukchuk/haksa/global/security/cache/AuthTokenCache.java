@@ -20,7 +20,7 @@ public class AuthTokenCache {
   private final Cache<String, UserDetails> cache;
   private final Cache<String, Set<String>> userTokenIndex;
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** 액세스 토큰 만료 시간과 같은 TTL을 사용하는 사용자 인증 캐시를 생성한다. */
   public AuthTokenCache(@Value("${security.jwt.access-expiration}") long accessExpirationMs) {
     Duration ttl = Duration.ofMillis(accessExpirationMs);
     this.cache = Caffeine.newBuilder().maximumSize(50_000).expireAfterWrite(ttl).build();
@@ -28,22 +28,22 @@ public class AuthTokenCache {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 토큰 해시에 대응하는 사용자 인증 정보를 캐시에서 조회한다.
    *
-   * @param tokenHash 토큰 hash 값
-   * @return 조회
+   * @param tokenHash 원본 토큰의 SHA-256 해시
+   * @return 캐시된 사용자 인증 정보이며 없으면 {@code null}
    */
   public UserDetails get(String tokenHash) {
     return cache.getIfPresent(tokenHash);
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 토큰으로 사용자 인증 정보를 조회하고 캐시 miss이면 공급자를 한 번 실행해 저장한다.
    *
    * @param userId 사용자 식별자
-   * @param token 토큰 값
-   * @param loader loader 값
-   * @return 조회
+   * @param token 해시로 변환해 캐시 key로 사용할 원본 access token
+   * @param loader 캐시 miss일 때 사용자 인증 정보를 조회할 공급자
+   * @return 캐시에 있거나 공급자가 새로 조회한 사용자 인증 정보
    */
   public UserDetails getOrLoad(String userId, String token, Supplier<UserDetails> loader) {
     String tokenHash = hashToken(token);

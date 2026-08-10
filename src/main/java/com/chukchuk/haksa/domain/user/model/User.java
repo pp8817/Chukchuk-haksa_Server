@@ -17,7 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 사용자 도메인 상태를 표현한다. */
+/** 로그인 계정, 프로필, 학생 연결 및 탈퇴 상태를 관리한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -57,10 +57,10 @@ public class User extends BaseEntity {
   private Student student;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 로그인 계정의 식별자·이메일·프로필 별명으로 사용자를 생성한다.
    *
    * @param id id 식별자
-   * @param email 이메일 값
+   * @param email 연락 및 로그인에 사용하는 이메일
    * @param profileNickname 프로필 nick이름
    */
   @Builder
@@ -77,9 +77,9 @@ public class User extends BaseEntity {
   }
 
   /**
-   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   * 마지막 학사 데이터 동기화 시각을 변경한다.
    *
-   * @param time time 값
+   * @param time 기록할 동기화 시각
    */
   public void updateLastSyncedAt(Instant time) {
     this.lastSyncedAt = time;
@@ -88,7 +88,7 @@ public class User extends BaseEntity {
   /**
    * 사용자의 포털 연결 완료 시각을 기록한다.
    *
-   * @param now now 값
+   * @param now 처리 기준 시각
    */
   public void markPortalConnected(Instant now) {
     this.portalConnected = true;

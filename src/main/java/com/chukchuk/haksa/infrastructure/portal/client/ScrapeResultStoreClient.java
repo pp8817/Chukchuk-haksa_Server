@@ -30,10 +30,13 @@ public class ScrapeResultStoreClient {
   private final ScrapingProperties scrapingProperties;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 허용된 S3 위치의 스크래핑 결과를 크기 검증 후 UTF-8 문자열로 조회한다.
    *
-   * @param requestedLocation requested location 정보
-   * @return 조회
+   * <p>일시적인 S3 오류와 key 미발견은 지수 backoff로 최대 세 번 시도한다.
+   *
+   * @param requestedLocation 설정된 bucket의 key 또는 {@code s3://bucket/key} 형식 위치
+   * @return 최대 payload 크기를 넘지 않는 UTF-8 결과 본문
+   * @throws ScrapeResultPayloadAccessException 위치가 허용되지 않거나 S3 조회에 실패한 경우
    */
   public String fetch(String requestedLocation) {
     S3Location location = validateLocation(requestedLocation);
@@ -41,19 +44,20 @@ public class ScrapeResultStoreClient {
   }
 
   /**
-   * 입력 값과 업무 처리 조건을 검증한다.
+   * 요청 위치를 설정된 bucket과 prefix 안의 S3 위치로 정규화하고 검증한다.
    *
-   * @param requestedLocation requested location 정보
-   * @return S3 location 결과
+   * @param requestedLocation key 또는 {@code s3://bucket/key} 형식 위치
+   * @return 설정된 결과 저장소 안에서 정규화한 bucket과 key
+   * @throws ScrapeResultPayloadAccessException URL, 다른 bucket, 경로 탐색 또는 허용 prefix 밖인 경우
    */
   public S3Location validateLocation(String requestedLocation) {
     return resolveLocation(requestedLocation, scrapingProperties.getResultStore());
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * S3 key의 허용 prefix 바로 다음 경로가 지정한 작업 식별자인지 확인한다.
    *
-   * @param location location 값
+   * @param location 검증이 끝난 결과 저장소 위치
    * @param jobId 작업 식별자
    * @return 조건 충족 여부
    */
@@ -205,10 +209,10 @@ public class ScrapeResultStoreClient {
   }
 
   /**
-   * 계층 간 전달할 S3 location 데이터를 표현한다.
+   * 검증이 끝난 스크래핑 결과 객체의 S3 bucket과 key를 전달한다.
    *
-   * @param bucket bucket 값
-   * @param key key 값
+   * @param bucket 설정에서 허용한 S3 bucket
+   * @param key 허용 prefix 안의 객체 key
    */
   public record S3Location(String bucket, String key) {}
 }

@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** 척척학사의 apple oidc 비즈니스 흐름을 처리한다. */
+/** Apple 공개키와 issuer·audience·nonce 조건으로 ID token을 검증한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j

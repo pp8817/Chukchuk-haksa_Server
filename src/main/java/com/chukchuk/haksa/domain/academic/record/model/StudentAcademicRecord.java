@@ -18,7 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 학생 학사 record 도메인 상태를 표현한다. */
+/** 학생의 누적 학점, 평점, 백분위 성적을 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,13 +48,13 @@ public class StudentAcademicRecord extends BaseEntity {
   private Student student;
 
   /**
-   * 학생 학사 record 인스턴스를 생성한다.
+   * 학생의 누적 성적 기록을 생성한다.
    *
-   * @param student 학생 값
-   * @param totalAttemptedCredits total 신청 학점
-   * @param totalEarnedCredits total 취득 학점
+   * @param student 성적의 소유 학생
+   * @param totalAttemptedCredits 누적 신청 학점
+   * @param totalEarnedCredits 누적 취득 학점
    * @param cumulativeGpa 누적 평점
-   * @param percentile percentile 값
+   * @param percentile 누적 백분위 성적
    */
   public StudentAcademicRecord(
       Student student,
@@ -70,9 +70,9 @@ public class StudentAcademicRecord extends BaseEntity {
   }
 
   /**
-   * 척척학사의 update with 대상을 갱신한다.
+   * 포털에서 수집한 요약으로 누적 학점과 성적을 갱신한다.
    *
-   * @param summary summary 값
+   * @param summary 적용할 누적 성적 요약
    */
   public void updateWith(AcademicSummary summary) {
     this.totalAttemptedCredits = summary.getTotalAttemptedCredits();
@@ -86,10 +86,10 @@ public class StudentAcademicRecord extends BaseEntity {
   }
 
   /**
-   * 현재 상태가 조건을 충족하는지 반환한다.
+   * 저장된 누적 학점과 성적이 주어진 요약과 같은지 확인한다.
    *
-   * @param summary summary 값
-   * @return 조건 충족 여부
+   * @param summary 비교할 누적 성적 요약
+   * @return 신청·취득 학점, 누적 평점, 백분위가 모두 같으면 {@code true}
    */
   public boolean isSameAs(AcademicSummary summary) {
     return this.totalAttemptedCredits != null

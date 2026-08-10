@@ -50,7 +50,7 @@ public class RefreshTokenHasher {
    * 원문 refresh token이 저장된 해시와 일치하는지 확인한다.
    *
    * @param refreshToken refresh token 원문
-   * @param tokenHash 토큰 hash 값
+   * @param tokenHash 원문 토큰 검증에 사용할 저장된 해시
    * @return 조건 충족 여부
    */
   public boolean matches(String refreshToken, String tokenHash) {

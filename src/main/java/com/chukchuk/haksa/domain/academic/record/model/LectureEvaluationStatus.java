@@ -1,6 +1,6 @@
 package com.chukchuk.haksa.domain.academic.record.model;
 
-/** 척척학사의 lecture evaluation status에서 사용할 값을 정의한다. */
+/** 학기 성적 공개를 위한 강의평가 진행 상태를 정의한다. */
 public enum LectureEvaluationStatus {
   NOT_RELEASED,
   PENDING,

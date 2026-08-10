@@ -3,11 +3,11 @@ package com.chukchuk.haksa.infrastructure.portal.exception;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.BaseException;
 
-/** 척척학사의 포털 스크래핑 처리할 수 없는 도메인 또는 요청 상태를 나타낸다. */
+/** 포털 연결 또는 학사 데이터 동기화가 완료되지 못했음을 나타낸다. */
 public class PortalScrapeException extends BaseException {
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 포털 처리 단계에 대응하는 오류 코드와 기본 메시지로 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    */
@@ -16,7 +16,7 @@ public class PortalScrapeException extends BaseException {
   }
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 포털 처리 오류 코드와 내부 실패 원인을 보존하는 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    * @param cause 원인 예외

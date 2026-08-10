@@ -9,30 +9,30 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/** 구현체가 제공해야 할 social 계정 repository 기능의 계약을 정의한다. */
+/** 소셜 제공자 식별정보 또는 사용자로 소셜 계정을 조회·삭제하는 저장소다. */
 @Repository
 public interface SocialAccountRepository extends JpaRepository<SocialAccount, Long> {
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 소셜 로그인 제공자와 제공자 사용자 식별자가 일치하는 계정을 찾는다.
    *
-   * @param provider provider 값
-   * @param socialId social id 식별자
-   * @return 조회
+   * @param provider 소셜 로그인 제공자
+   * @param socialId 제공자가 발급한 사용자 식별자
+   * @return 조건에 일치하는 사용자 및 소셜 계정가 있으면 포함한 선택값
    */
   Optional<SocialAccount> findByProviderAndSocialId(OidcProvider provider, String socialId);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자에 연결된 모든 소셜 계정을 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 조건에 일치하는 사용자 및 소셜 계정 목록
    */
   List<SocialAccount> findAllByUserId(UUID userId);
 
   /**
    * 지정된 데이터를 삭제한다.
    *
-   * @param user 사용자 값
+   * @param user 연결할 사용자
    */
   void deleteByUser(User user);
 }

@@ -16,15 +16,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-/** 졸업 controller docs 기능의 계약을 정의한다. */
+/** 인증 학생의 졸업요건 진행률과 외국어 인증 기준 조회 API를 정의한다. */
 @Tag(name = "Graduation", description = "졸업 요건 및 진행 현황 관련 API")
 public interface GraduationControllerDocs {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건에 대한 없음 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리된 졸업 요건
    */
   @Operation(
       summary = "졸업 요건 진행 상황 조회",
@@ -52,10 +52,10 @@ public interface GraduationControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건에 대한 없음 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리된 졸업 요건
    */
   @Operation(
       summary = "외국어 인증 기준 조회",

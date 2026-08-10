@@ -12,9 +12,9 @@ public final class LambdaProfiles {
   private LambdaProfiles() {}
 
   /**
-   * 입력 값으로 업무 처리 결과를 계산한다.
+   * 시스템 속성, 환경 변수, 기본값 순으로 Lambda의 활성 Spring profile을 결정한다.
    *
-   * @return string
+   * @return 쉼표로 구분된 설정을 공백 제거 후 분리한 profile 이름 배열
    */
   public static String[] resolveActiveProfiles() {
     String configuredProfiles = System.getProperty(SPRING_PROFILES_ACTIVE);

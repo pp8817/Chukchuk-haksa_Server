@@ -9,12 +9,12 @@ public class AcademicSummary {
 
   // 생성자
   /**
-   * 학사 summary 인스턴스를 생성한다.
+   * 누적 신청·취득 학점과 성적 지표로 학사 요약을 생성한다.
    *
    * @param totalAttemptedCredits total 신청 학점
    * @param totalEarnedCredits total 취득 학점
    * @param cumulativeGpa 누적 평점
-   * @param percentile percentile 값
+   * @param percentile 전체 학생 대비 백분위
    */
   public AcademicSummary(
       Integer totalAttemptedCredits,

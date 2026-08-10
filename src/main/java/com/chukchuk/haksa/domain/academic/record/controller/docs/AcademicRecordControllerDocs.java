@@ -18,16 +18,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/** 학사 record controller docs 기능의 계약을 정의한다. */
+/** 인증 학생의 학기별 성적·수강 과목과 누적 학업 요약 조회 API를 정의한다. */
 public interface AcademicRecordControllerDocs {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록에 대한 학기 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @param year 연도
-   * @param semester 학기 값
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @param year 대상 연도
+   * @param semester 대상 학기
+   * @return 처리된 학사 기록
    */
   @Operation(
       summary = "학기별 성적 및 수강 과목 정보 조회",
@@ -61,10 +61,10 @@ public interface AcademicRecordControllerDocs {
           Integer semester);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록에 대한 없음 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리된 학사 기록
    */
   @Operation(
       summary = "사용자 학업 요약 정보 조회",

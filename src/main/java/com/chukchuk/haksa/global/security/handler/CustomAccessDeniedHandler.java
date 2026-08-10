@@ -14,7 +14,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 // 403 Forbidden
-/** 척척학사의 custom 접근 denied 요청 또는 이벤트 처리를 담당한다. */
+/** 인증됐지만 권한이 부족한 요청을 공통 403 JSON 응답으로 변환한다. */
 @Component
 @RequiredArgsConstructor
 @Slf4j

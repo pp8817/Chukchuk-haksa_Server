@@ -3,11 +3,11 @@ package com.chukchuk.haksa.infrastructure.portal.model;
 import java.util.List;
 
 /**
- * 계층 간 전달할 포털 학사 data 데이터를 표현한다.
+ * 포털에서 조회한 학기별 과목과 성적 요약을 묶어 표현한다.
  *
- * @param semesters semesters 값
- * @param grades grades 값
- * @param summary summary 값
+ * @param semesters 학기별 수강 과목 목록
+ * @param grades 학기별·누적 성적 정보
+ * @param summary 누적 학점과 평점 요약
  */
 public record PortalAcademicData(
     List<SemesterCourseInfo> semesters, GradeSummary grades, AcademicSummary summary) {}

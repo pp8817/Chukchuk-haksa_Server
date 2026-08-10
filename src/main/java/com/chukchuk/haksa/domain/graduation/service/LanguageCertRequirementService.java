@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 language cert 요건 비즈니스 흐름을 처리한다. */
+/** 학생의 소속과 입학 연도에 맞는 외국어 인증 요건을 제공한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,10 +30,10 @@ public class LanguageCertRequirementService {
   private final LanguageCertRequirementRepository requirementRepository;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 처리된 졸업 요건
    */
   public LanguageCertRequirementResponse getRequirement(UUID studentId) {
     Student student = studentService.getStudentById(studentId);

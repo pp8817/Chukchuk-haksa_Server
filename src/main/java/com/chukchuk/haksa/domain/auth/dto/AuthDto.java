@@ -10,7 +10,7 @@ public class AuthDto {
   /**
    * 계층 간 전달할 데이터를 표현한다.
    *
-   * @param token 토큰 값
+   * @param token 응답에 포함할 토큰
    * @param expiry 만료 시각
    * @param sessionId 세션 식별자
    */
@@ -42,7 +42,7 @@ public class AuthDto {
   /**
    * 계층 간 전달할 데이터를 표현한다.
    *
-   * @param accessToken 접근 토큰 값
+   * @param accessToken 응답에 포함할 접근 토큰
    * @param refreshToken refresh token 원문
    */
   @Schema(description = "Refresh Response DTO")
@@ -53,7 +53,7 @@ public class AuthDto {
   /**
    * 계층 간 전달할 데이터를 표현한다.
    *
-   * @param accessToken 접근 토큰 값
+   * @param accessToken 응답에 포함할 접근 토큰
    * @param refreshToken refresh token 원문
    * @param isPortalLinked is 포털 linked 여부
    */

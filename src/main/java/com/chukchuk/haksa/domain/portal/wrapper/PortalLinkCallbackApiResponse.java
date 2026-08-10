@@ -6,7 +6,7 @@ import com.chukchuk.haksa.global.common.response.MessageOnlyResponse;
 import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** 포털 link 콜백 api 응답 데이터를 전달한다. */
+/** 스크래핑 결과 콜백 처리 성공 응답의 OpenAPI 스키마 예시를 제공한다. */
 @Schema(name = "PortalLinkCallbackApiResponse", description = "포털 링크 내부 콜백 처리 응답")
 public class PortalLinkCallbackApiResponse extends SuccessResponse<MessageOnlyResponse> {
 

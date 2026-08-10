@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 과목 offering 비즈니스 흐름을 처리한다. */
+/** 포털 수강 정보와 일치하는 개설 강의를 재사용하거나 새로 저장한다. */
 @Service
 @RequiredArgsConstructor
 public class CourseOfferingService {
@@ -36,10 +36,10 @@ public class CourseOfferingService {
   private final DepartmentRepository departmentRepository;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param cmd cmd 값
-   * @return 조회
+   * @param cmd cmd
+   * @return 처리된 과목 및 개설 강의
    */
   @Transactional
   public CourseOffering getOrCreateOffering(CreateOfferingCommand cmd) {
@@ -47,10 +47,10 @@ public class CourseOfferingService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param commands commands 값
-   * @return 조회
+   * @param commands commands
+   * @return 처리된 과목 및 개설 강의
    */
   @Transactional
   public Map<CourseOfferingKey, CourseOffering> getOrCreateAll(
@@ -103,10 +103,10 @@ public class CourseOfferingService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param offeringIds offering ids 식별자
-   * @return 조회
+   * @return 처리된 과목 및 개설 강의
    */
   @Transactional(readOnly = true)
   public Map<Long, CourseOffering> getOfferingMapByIds(List<Long> offeringIds) {
@@ -201,7 +201,7 @@ public class CourseOfferingService {
    *
    * @param courseId 과목 식별자
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param classSection 분반
    * @param professorId 교수 식별자
    * @param facultyDivisionName faculty division 이름
@@ -220,7 +220,7 @@ public class CourseOfferingService {
     /**
      * 과목 개설 명령에서 중복 판별 키를 생성한다.
      *
-     * @param cmd cmd 값
+     * @param cmd 개설 강의를 식별하고 생성하는 명령
      * @return 과목 offering key 결과
      */
     public static CourseOfferingKey from(CreateOfferingCommand cmd) {
@@ -240,7 +240,7 @@ public class CourseOfferingService {
     /**
      * 과목 개설 엔티티에서 중복 판별 키를 생성한다.
      *
-     * @param offering offering 값
+     * @param offering 응답에 포함할 offering
      * @return 과목 offering key 결과
      */
     public static CourseOfferingKey from(CourseOffering offering) {

@@ -7,7 +7,7 @@ import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 
-/** 포털 link 작업 duration api 응답 데이터를 전달한다. */
+/** 포털 연동 작업 소요 시간 조회 성공 응답의 OpenAPI 스키마 예시를 제공한다. */
 @Schema(name = "PortalLinkJobDurationApiResponse", description = "포털 링크 job 소요 시간 조회 응답")
 public class PortalLinkJobDurationApiResponse
     extends SuccessResponse<PortalLinkDto.JobDurationResponse> {

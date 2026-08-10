@@ -72,13 +72,13 @@ public class CourseEvaluation extends BaseEntity {
   /**
    * 과목 evaluation 인스턴스를 생성한다.
    *
-   * @param student 학생 값
-   * @param course 과목 값
+   * @param student 기록의 소유 학생
+   * @param course 연결할 수강 과목
    * @param professor 교수
    * @param year 연도
-   * @param semester 학기 값
-   * @param review review 값
-   * @param selectedTags selected tags 값
+   * @param semester 대상 학기
+   * @param review 강의평가에 저장할 서술형 후기
+   * @param selectedTags 강의평가에 연결할 선택 태그 집합
    */
   public CourseEvaluation(
       Student student,

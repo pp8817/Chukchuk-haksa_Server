@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** 척척학사의 사용자 HTTP 요청을 처리한다. */
+/** 로그인·내 정보 조회·회원 탈퇴 요청을 사용자 서비스에 위임한다. */
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor

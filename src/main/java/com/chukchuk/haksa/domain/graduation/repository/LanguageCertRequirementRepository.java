@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/** 척척학사의 language cert 요건 repository 기능의 계약을 정의한다. */
+/** 입학 연도와 인증 정책에 맞는 외국어 졸업 인증 요건을 조회한다. */
 public interface LanguageCertRequirementRepository
     extends JpaRepository<LanguageCertRequirement, UUID> {
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param policyGroup 정책 그룹
-   * @return 조회
+   * @return 조건에 일치하는 졸업 요건 목록
    */
   List<LanguageCertRequirement> findAllByPolicyGroupOrderBySortOrderAsc(
       LanguageCertPolicyGroup policyGroup);

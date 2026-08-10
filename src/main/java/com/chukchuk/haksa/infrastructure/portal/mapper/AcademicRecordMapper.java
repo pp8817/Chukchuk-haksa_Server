@@ -7,15 +7,16 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
 import com.chukchuk.haksa.domain.student.model.Student;
 import java.math.BigDecimal;
 
-/** 척척학사의 학사 record 도메인 데이터 간 변환을 담당한다. */
+/** 애플리케이션 학사 요약과 학기 성적을 영속 학사 기록 엔티티로 변환한다. */
 public class AcademicRecordMapper {
 
   /**
-   * 입력 데이터를 영속 엔티티로 변환한다.
+   * 학생과 누적 학사 요약을 학생 학사 기록 엔티티로 변환한다.
    *
-   * @param student 학생 값
-   * @param summary summary 값
-   * @return 학생 학사 record 결과
+   * @param student 학사 기록의 소유 학생
+   * @param summary 누적 신청·취득 학점과 성적 요약
+   * @return null 성적 지표를 0으로 보정한 학생 학사 기록
+   * @throws IllegalArgumentException 학사 요약이 {@code null}인 경우
    */
   public static StudentAcademicRecord toEntity(Student student, AcademicSummary summary) {
 
@@ -43,11 +44,12 @@ public class AcademicRecordMapper {
   }
 
   /**
-   * 입력 데이터를 영속 엔티티로 변환한다.
+   * 학생과 한 학기의 성적을 학기 학사 기록 엔티티로 변환한다.
    *
-   * @param student 학생 값
-   * @param grade 성적 값
-   * @return 학기 학사 record 결과
+   * @param student 학기 기록의 소유 학생
+   * @param grade 연도·학기·학점·성적·석차 정보
+   * @return 평점 반영 학점의 null을 0으로 보정한 학기 학사 기록
+   * @throws IllegalArgumentException 학기 성적이 {@code null}인 경우
    */
   public static SemesterAcademicRecord toEntity(Student student, SemesterGrade grade) {
     if (grade == null) {

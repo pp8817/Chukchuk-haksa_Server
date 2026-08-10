@@ -1,22 +1,22 @@
 package com.chukchuk.haksa.infrastructure.portal.model;
 
 /**
- * 계층 간 전달할 offering info 데이터를 표현한다.
+ * 포털에서 조회한 특정 연도·학기의 개설 과목 정보를 표현한다.
  *
  * @param courseCode 과목 코드
  * @param year 연도
- * @param semester 학기 값
+ * @param semester 개설 학기
  * @param classSection 분반
- * @param professorName professor 이름
- * @param scheduleSummary schedule summary 값
+ * @param professorName 담당 교수 이름
+ * @param scheduleSummary 강의 시간·장소 요약
  * @param points 학점
  * @param hostDepartment 주관 학과
- * @param facultyDivisionName faculty division 이름
- * @param subjectEstablishmentSemester subject establishment 학기 값
- * @param areaCode area code 값
- * @param originalAreaCode original area code 값
- * @param evaluationType evaluation type 값
- * @param isVideoLecture is video lecture 여부
+ * @param facultyDivisionName 학부 구분 이름
+ * @param subjectEstablishmentSemester 과목 개설 학기 구분
+ * @param areaCode 현재 교양 영역 코드
+ * @param originalAreaCode 변경 전 교양 영역 코드
+ * @param evaluationType 성적 평가 방식
+ * @param isVideoLecture 영상 강의 여부
  */
 public record OfferingInfo(
     String courseCode,

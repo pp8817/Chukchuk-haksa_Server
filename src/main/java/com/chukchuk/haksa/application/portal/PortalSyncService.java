@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 포털 sync 비즈니스 흐름을 처리한다. */
+/** 포털 학생·학사 데이터를 사용자 계정에 최초 연결하거나 최신 상태로 동기화한다. */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,11 +34,12 @@ public class PortalSyncService {
   private final StudentGraduationProgressService studentGraduationProgressService;
 
   /**
-   * 포털 학사 데이터를 사용자 계정에 동기화한다.
+   * 학번이 같은 기존 사용자를 병합한 뒤 포털 연결, 학사 기록 및 졸업 정보를 동기화한다.
    *
    * @param userId 사용자 식별자
-   * @param portalData 포털 학사 데이터
-   * @return 스크래핑 응답 결과
+   * @param portalData 학생·성적·졸업 정보가 포함된 포털 조회 결과
+   * @return 실제 반영 대상 사용자의 학생 정보와 성공 상태
+   * @throws PortalScrapeException 포털 연결 또는 학사 기록 동기화에 실패한 경우
    */
   @Transactional
   public ScrapingResponse syncWithPortal(UUID userId, PortalData portalData) {
@@ -95,11 +96,11 @@ public class PortalSyncService {
   }
 
   /**
-   * 척척학사의 refresh from 포털 대상을 갱신한다.
+   * 최신 포털 데이터로 기존 연동 정보와 학사 기록을 함께 갱신한다.
    *
    * @param userId 사용자 식별자
-   * @param portalData 포털 학사 데이터
-   * @return 스크래핑 응답 결과
+   * @param portalData 학생 및 학사 정보가 포함된 최신 포털 조회 결과
+   * @return 갱신 성공 여부와 학생 정보를 담은 응답
    */
   @Transactional
   public ScrapingResponse refreshFromPortal(UUID userId, PortalData portalData) {

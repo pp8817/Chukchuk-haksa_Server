@@ -1,17 +1,17 @@
 package com.chukchuk.haksa.infrastructure.portal.model;
 
 /**
- * 계층 간 전달할 포털 학생 info 데이터를 표현한다.
+ * 포털에서 조회한 학생의 소속·학적·입학 및 졸업 인증 정보를 표현한다.
  *
  * @param studentCode 학번
  * @param name 이름
- * @param college 단과대학 값
- * @param department 학과 값
- * @param major 전공 값
+ * @param college 소속 단과대학
+ * @param department 소속 학과
+ * @param major 주전공
  * @param secondaryMajor 복수전공
  * @param status 상태
- * @param admission admission 값
- * @param academic 학사 값
+ * @param admission 입학 연도·학기와 입학 유형
+ * @param academic 현재 학년과 누적 이수 현황
  * @param languageCertFulfilled 어학 인증 충족 여부
  */
 public record PortalStudentInfo(

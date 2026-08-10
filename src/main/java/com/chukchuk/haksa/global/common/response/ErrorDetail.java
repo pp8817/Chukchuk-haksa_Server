@@ -20,9 +20,9 @@ public class ErrorDetail {
   private Object details;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 클라이언트가 오류를 식별하고 표시하는 데 필요한 상세 정보를 생성한다.
    *
-   * @param code code 값
+   * @param code 클라이언트가 분기 처리할 애플리케이션 오류 코드
    * @param message 응답 메시지
    * @param details 상세 정보
    */

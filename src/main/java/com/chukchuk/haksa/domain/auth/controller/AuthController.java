@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** 척척학사의 auth HTTP 요청을 처리한다. */
+/** 리프레시 토큰을 이용한 인증 토큰 재발급 요청을 처리한다. */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

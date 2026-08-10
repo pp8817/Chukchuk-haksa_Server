@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.Objects;
 
-/** 척척학사의 학생 계층 간 데이터를 전달한다. */
+/** 학생 프로필 조회와 목표 학점 변경에 사용하는 요청·응답 형식을 묶는다. */
 public class StudentDto {
 
   /**
@@ -21,7 +21,7 @@ public class StudentDto {
    * @param status 상태
    * @param completedSemesters 이수 학기 수
    * @param updatedAt 수정 시각
-   * @param reconnectionRequired reconnection required 값
+   * @param reconnectionRequired 응답에 포함할 reconnection required
    */
   public record StudentInfoDto(
       String studentCode,
@@ -37,7 +37,7 @@ public class StudentDto {
     /**
      * 학생 엔티티를 학생 정보 응답으로 변환한다.
      *
-     * @param student 학생 값
+     * @param student 기록의 소유 학생
      * @return 학생 info dto 결과
      */
     public static StudentInfoDto from(Student student) {
@@ -68,11 +68,11 @@ public class StudentDto {
    * @param majorName 전공 이름
    * @param dualMajorName dual 전공 이름
    * @param gradeLevel 학년
-   * @param currentSemester current 학기 값
+   * @param currentSemester 응답에 포함할 current 학기
    * @param status 상태
    * @param lastUpdatedAt last 수정 시각
-   * @param lastSyncedAt last synced at 값
-   * @param reconnectionRequired reconnection required 값
+   * @param lastSyncedAt 응답에 포함할 last synced at
+   * @param reconnectionRequired 응답에 포함할 reconnection required
    */
   @Schema(description = "학생 프로필 정보")
   public record StudentProfileResponse(
@@ -91,9 +91,9 @@ public class StudentDto {
     /**
      * 학생 정보와 동기화 시각으로 학생 프로필 응답을 생성한다.
      *
-     * @param studentInfoDto 학생 info dto 값
-     * @param currentSemester current 학기 값
-     * @param lastSyncedAt last synced at 값
+     * @param studentInfoDto 응답에 포함할 학생 info dto
+     * @param currentSemester 응답에 포함할 current 학기
+     * @param lastSyncedAt 응답에 포함할 last synced at
      * @return 학생 프로필 응답 결과
      */
     public static StudentProfileResponse from(

@@ -7,22 +7,22 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/** 과목 repository 기능의 계약을 정의한다. */
+/** 과목 코드와 이름으로 과목을 조회하는 저장소다. */
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param courseCode 과목 코드
-   * @return 조회
+   * @return 조건에 일치하는 과목 및 개설 강의가 있으면 포함한 선택값
    */
   Optional<Course> findByCourseCode(String courseCode);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
-   * @param courseCodes 과목 codes 값
-   * @return 조회
+   * @param courseCodes 과목 codes
+   * @return 조건에 일치하는 과목 및 개설 강의 목록
    */
   List<Course> findByCourseCodeIn(Collection<String> courseCodes);
 }

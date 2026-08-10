@@ -31,7 +31,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 학생 도메인 상태를 표현한다. */
+/** 사용자의 학적·전공·학사 기록과 포털 동기화 상태를 관리한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -92,22 +92,22 @@ public class Student extends BaseEntity {
   private List<StudentCourse> studentCourses = new ArrayList<>();
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 학번과 소속·학적·사용자 연결을 포함한 학생 엔티티를 생성한다.
    *
    * @param studentCode 학번
    * @param name 이름
-   * @param department 학과 값
-   * @param major 전공 값
+   * @param department 소속 학과
+   * @param major 주전공
    * @param secondaryMajor 복수전공
    * @param admissionYear admission 연도
-   * @param semesterEnrolled 학기 enrolled 값
+   * @param semesterEnrolled 응답에 포함할 학기 enrolled
    * @param isTransferStudent is transfer 학생 여부
    * @param isGraduated is graduated 여부
    * @param status 상태
    * @param gradeLevel 학년
    * @param completedSemesters 이수 학기 수
-   * @param admissionType admission type 값
-   * @param user 사용자 값
+   * @param admissionType 응답에 포함할 admission type
+   * @param user 연결할 사용자
    */
   @Builder
   public Student(
@@ -148,20 +148,20 @@ public class Student extends BaseEntity {
   }
 
   /**
-   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   * 포털에서 수집한 최신 학적 정보로 학생의 소속·학적 상태를 갱신한다.
    *
    * @param name 이름
-   * @param department 학과 값
-   * @param major 전공 값
-   * @param secondaryMajor 복수전공
-   * @param admissionYear admission 연도
-   * @param semesterEnrolled 학기 enrolled 값
-   * @param isTransferStudent is transfer 학생 여부
-   * @param isGraduated is graduated 여부
+   * @param department 학생의 소속 학과
+   * @param major 학생의 주전공
+   * @param secondaryMajor 학생의 복수전공
+   * @param admissionYear 입학 연도
+   * @param semesterEnrolled 현재 등록 학기
+   * @param isTransferStudent 편입생 여부
+   * @param isGraduated 졸업 여부
    * @param status 상태
    * @param gradeLevel 학년
    * @param completedSemesters 이수 학기 수
-   * @param admissionType admission type 값
+   * @param admissionType 입학 전형
    */
   public void updateInfo(
       String name,
@@ -225,7 +225,7 @@ public class Student extends BaseEntity {
   /**
    * 학생에게 수강 과목을 연결한다.
    *
-   * @param course 과목 값
+   * @param course 연결할 수강 과목
    */
   public void addStudentCourse(StudentCourse course) {
     this.studentCourses.add(course);
@@ -236,7 +236,7 @@ public class Student extends BaseEntity {
   /**
    * 전달된 값을 현재 객체에 설정한다.
    *
-   * @param record record 값
+   * @param record 연결할 학사 기록
    */
   public void setAcademicRecord(StudentAcademicRecord record) {
     //        this.studentAcademicRecord = record;
@@ -248,7 +248,7 @@ public class Student extends BaseEntity {
   /**
    * 학생에게 학기별 학사 기록을 연결한다.
    *
-   * @param record record 값
+   * @param record 연결할 학사 기록
    */
   public void addSemesterRecord(SemesterAcademicRecord record) {
     this.semesterAcademicRecords.add(record);
@@ -260,10 +260,10 @@ public class Student extends BaseEntity {
   }
 
   /**
-   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   * 학생의 주전공과 복수전공 연결을 교체한다.
    *
-   * @param major 전공 값
-   * @param secondaryMajor 복수전공
+   * @param major 학생의 주전공
+   * @param secondaryMajor 학생의 복수전공
    */
   public void updateMajors(Department major, Department secondaryMajor) {
     this.major = major;
@@ -326,9 +326,9 @@ public class Student extends BaseEntity {
   }
 
   /**
-   * 현재 상태를 요청 내용에 맞게 갱신한다.
+   * 연결된 사용자 참조를 새 사용자로 교체한다.
    *
-   * @param user 연결할 사용자
+   * @param user 대상 사용자
    */
   public void updateUser(User user) {
     this.user = user;

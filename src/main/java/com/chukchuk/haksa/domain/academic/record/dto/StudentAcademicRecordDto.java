@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 public class StudentAcademicRecordDto {
 
   /**
-   * 학사 summary 응답 데이터를 전달한다.
+   * 누적 학점·평점·백분위와 졸업 필요 학점 요약을 담는다.
    *
    * @param totalEarnedCredits total 취득 학점
    * @param cumulativeGpa 누적 평점
-   * @param percentile percentile 값
+   * @param percentile 누적 성적의 백분위
    * @param requiredCredits required 학점
    */
   @Schema(description = "학업 성적 요약 정보")

@@ -6,7 +6,7 @@ import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-/** 학사 summary api 응답 데이터를 전달한다. */
+/** 누적 학업 요약 조회 성공 응답의 OpenAPI 스키마 예시를 제공한다. */
 @Schema(name = "AcademicSummaryApiResponse", description = "학업 요약 정보 응답")
 public class AcademicSummaryApiResponse extends SuccessResponse<AcademicSummaryResponse> {
 

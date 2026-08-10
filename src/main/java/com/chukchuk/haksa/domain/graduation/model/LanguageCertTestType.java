@@ -2,7 +2,7 @@
 
 package com.chukchuk.haksa.domain.graduation.model;
 
-/** 척척학사의 language cert test type에서 사용할 값을 정의한다. */
+/** 외국어 졸업 인증에 사용할 수 있는 시험 종류를 정의한다. */
 public enum LanguageCertTestType {
   TOEIC,
   TOEFL_IBT,

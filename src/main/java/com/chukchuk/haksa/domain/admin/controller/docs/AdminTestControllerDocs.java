@@ -12,47 +12,47 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
-/** 척척학사의 admin test controller docs 기능의 계약을 정의한다. */
+/** 개발 환경에서 테스트 계정과 학사·강의평가 데이터를 구성하는 API 계약을 정의한다. */
 @Tag(name = "Admin Test", description = "dev 전용 프론트 테스트 데이터 조작 API")
 public interface AdminTestControllerDocs {
 
   /**
-   * 척척학사의 create test 사용자 대상을 생성한다.
+   * 개발 환경에서 요청 조건의 테스트 사용자와 인증 토큰을 생성한다.
    *
-   * @param request 요청 정보
-   * @return 생성된
+   * @param request 생성할 테스트 사용자의 학과·학적 조건
+   * @return 생성된 테스트 사용자와 인증 토큰
    */
   @Operation(summary = "테스트 계정 생성", description = "dev 환경에서 테스트 계정을 생성하고 JWT 토큰을 발급합니다.")
   ResponseEntity<SuccessResponse<AdminTestDto.TestUserResponse>> createTestUser(
       AdminTestDto.CreateTestUserRequest request);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 테스트 데이터 구성에 사용할 기본 선택지를 반환한다.
    *
-   * @return 조회
+   * @return 학과와 졸업 영역 등 테스트 구성 선택지
    */
   @Operation(summary = "테스트 조작 옵션 조회", description = "dev 환경에서 토큰 없이 학과와 졸업요건 영역 선택지를 조회합니다.")
   ResponseEntity<SuccessResponse<AdminTestDto.TestOptionsResponse>> getTestOptions();
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학과 코드 또는 이름에 검색어가 포함된 학과를 반환한다.
    *
-   * @param keyword 검색어
-   * @return 조회
+   * @param keyword 검색할 과목 코드 또는 이름
+   * @return 조건에 일치하는 개발 환경 테스트 데이터 목록
    */
   @Operation(summary = "학과 검색", description = "dev 환경에서 토큰 없이 학과 코드와 학과명으로 학과 선택지를 검색합니다.")
   ResponseEntity<SuccessResponse<List<AdminTestDto.DepartmentOption>>> searchDepartments(
       String keyword);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 선택 필터에 맞는 개설 강의 후보를 반환한다.
    *
-   * @param keyword 검색어
-   * @param area area 값
-   * @param year 연도
-   * @param semester 학기 값
+   * @param keyword 검색할 과목 코드 또는 이름
+   * @param area 과목 영역 필터
+   * @param year 대상 연도
+   * @param semester 대상 학기
    * @param departmentId 학과 식별자
-   * @return 조회
+   * @return 조건에 일치하는 개발 환경 테스트 데이터 목록
    */
   @Operation(summary = "강의 후보 조회", description = "dev 환경에서 토큰 없이 테스트 데이터에 추가할 개설강의 후보를 검색합니다.")
   ResponseEntity<SuccessResponse<List<AdminTestDto.CourseOfferingOption>>> searchCourseOfferings(
@@ -63,11 +63,11 @@ public interface AdminTestControllerDocs {
       Long departmentId);
 
   /**
-   * 척척학사의 update 졸업 courses 대상을 갱신한다.
+   * 테스트 계정의 졸업 판정용 수강 과목을 요청 목록으로 교체한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @param request 요청 정보
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @param userDetails 인증된 사용자 정보
+   * @param request 추가·삭제할 졸업 판정용 수강 과목 목록
+   * @return 수강 과목 변경 완료 메시지를 담은 성공 응답
    */
   @Operation(summary = "현재 계정 강의 데이터 수정", description = "현재 인증 계정의 졸업요건 강의 데이터를 추가하거나 삭제합니다.")
   @SecurityRequirement(name = "bearerAuth")
@@ -75,11 +75,11 @@ public interface AdminTestControllerDocs {
       CustomUserDetails userDetails, AdminTestDto.UpdateGraduationCoursesRequest request);
 
   /**
-   * 척척학사의 update 전공 대상을 갱신한다.
+   * 테스트 계정의 주전공과 복수전공을 요청 값으로 변경한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @param request 요청 정보
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @param userDetails 인증된 사용자 정보
+   * @param request 변경할 주전공과 복수전공 식별정보
+   * @return 전공 변경 완료 메시지를 담은 성공 응답
    */
   @Operation(summary = "현재 계정 전공 상태 수정", description = "현재 인증 계정의 주전공과 복수전공 상태를 수정합니다.")
   @SecurityRequirement(name = "bearerAuth")
@@ -90,7 +90,7 @@ public interface AdminTestControllerDocs {
    * 현재 관리자 테스트 계정의 학사 데이터를 초기화한다.
    *
    * @param userDetails 사용자 상세 정보
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 테스트 학사 데이터 초기화 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "현재 계정 테스트 데이터 초기화",
@@ -100,11 +100,11 @@ public interface AdminTestControllerDocs {
       CustomUserDetails userDetails);
 
   /**
-   * 척척학사의 create test 과목 대상을 생성한다.
+   * 테스트용 과목과 개설 강의를 만들고 학생의 수강 내역에 추가한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @param request 요청 정보
-   * @return 생성된
+   * @param userDetails 인증된 사용자 정보
+   * @param request 학생 수강 내역에 추가할 테스트 과목 정보
+   * @return 생성되어 수강 내역에 추가된 테스트 과목
    */
   @Operation(
       summary = "현재 계정 테스트 강의 생성",
@@ -114,9 +114,9 @@ public interface AdminTestControllerDocs {
       CustomUserDetails userDetails, AdminTestDto.CreateTestCourseRequest request);
 
   /**
-   * 척척학사의 set lecture evaluation empty 학기 대상을 설정한다.
+   * 고정 테스트 계정의 대상 학기 평가·수강·성적 기록을 제거한다.
    *
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 대상 학기 데이터 삭제 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "dev 강의평가 empty-semester 상태 세팅",
@@ -124,9 +124,9 @@ public interface AdminTestControllerDocs {
   ResponseEntity<SuccessResponse<MessageOnlyResponse>> setLectureEvaluationEmptySemester();
 
   /**
-   * 척척학사의 set lecture evaluation not released 대상을 설정한다.
+   * 고정 테스트 계정의 대상 학기를 성적 미공개 상태로 재구성한다.
    *
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 성적 미공개 상태 구성 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "dev 강의평가 NOT_RELEASED 상태 세팅",
@@ -134,9 +134,9 @@ public interface AdminTestControllerDocs {
   ResponseEntity<SuccessResponse<MessageOnlyResponse>> setLectureEvaluationNotReleased();
 
   /**
-   * 척척학사의 set lecture evaluation pending 대상을 설정한다.
+   * 고정 테스트 계정의 대상 학기를 강의평가 제출 대기 상태로 재구성한다.
    *
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 강의평가 대기 상태 구성 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "dev 강의평가 PENDING 상태 세팅",
@@ -144,9 +144,9 @@ public interface AdminTestControllerDocs {
   ResponseEntity<SuccessResponse<MessageOnlyResponse>> setLectureEvaluationPending();
 
   /**
-   * 척척학사의 set lecture evaluation skipped 대상을 설정한다.
+   * 고정 테스트 계정의 대상 학기를 강의평가 건너뜀 상태로 재구성한다.
    *
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 강의평가 건너뜀 상태 구성 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "dev 강의평가 SKIPPED 상태 세팅",
@@ -154,9 +154,9 @@ public interface AdminTestControllerDocs {
   ResponseEntity<SuccessResponse<MessageOnlyResponse>> setLectureEvaluationSkipped();
 
   /**
-   * 척척학사의 set lecture evaluation completed 대상을 설정한다.
+   * 고정 테스트 계정의 대상 학기를 강의평가 제출 완료 상태로 재구성한다.
    *
-   * @return 응답 entity success 응답 메시지 only 응답 결과
+   * @return 강의평가 완료 상태 구성 완료 메시지를 담은 성공 응답
    */
   @Operation(
       summary = "dev 강의평가 COMPLETED 상태 세팅",

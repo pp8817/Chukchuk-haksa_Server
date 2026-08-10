@@ -20,8 +20,8 @@ public class LectureEvaluationDto {
    *
    * @param evaluationStatus evaluation 상태
    * @param year 연도
-   * @param semester 학기 값
-   * @param grades grades 값
+   * @param semester 대상 학기
+   * @param grades 응답에 포함할 grades
    */
   public record RequiredResponse(
       @Schema(
@@ -52,13 +52,13 @@ public class LectureEvaluationDto {
    * @param courseName 과목 이름
    * @param courseCode 과목 코드
    * @param courseId 과목 식별자
-   * @param areaType area type 값
+   * @param areaType 졸업 요건을 구분하는 영역
    * @param credits 학점
    * @param professor 교수
    * @param professorId 교수 식별자
-   * @param grade 성적 값
+   * @param grade 과목에서 취득한 성적
    * @param score 점수
-   * @param liberalAreaCode liberal area code 값
+   * @param liberalAreaCode 응답에 포함할 liberal area code
    */
   public record GradeCard(
       String courseName,
@@ -111,8 +111,8 @@ public class LectureEvaluationDto {
    * 계층 간 전달할 데이터를 표현한다.
    *
    * @param year 연도
-   * @param semester 학기 값
-   * @param evaluations evaluations 값
+   * @param semester 대상 학기
+   * @param evaluations 응답에 포함할 evaluations
    */
   public record SubmitRequest(
       @NotNull Integer year,
@@ -124,8 +124,8 @@ public class LectureEvaluationDto {
    *
    * @param courseId 과목 식별자
    * @param professorId 교수 식별자
-   * @param selectedTags selected tags 값
-   * @param review review 값
+   * @param selectedTags 응답에 포함할 selected tags
+   * @param review 응답에 포함할 review
    */
   public record SubmitEvaluation(
       @NotNull Long courseId,
@@ -137,7 +137,7 @@ public class LectureEvaluationDto {
    * 계층 간 전달할 데이터를 표현한다.
    *
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    */
   public record SkipRequest(@NotNull Integer year, @NotNull Integer semester) {}
 }

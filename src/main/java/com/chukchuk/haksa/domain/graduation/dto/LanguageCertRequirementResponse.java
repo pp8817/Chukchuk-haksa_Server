@@ -14,11 +14,11 @@ import java.util.List;
  * @param departmentCode 학과 코드
  * @param departmentName 학과 이름
  * @param admissionYear admission 연도
- * @param policyGroupKey policy group key 값
+ * @param policyGroupKey 응답에 포함할 policy group key
  * @param policyGroupName policy group 이름
  * @param matchStatus match 상태
- * @param note note 값
- * @param requirements requirements 값
+ * @param note 요건과 함께 안내할 참고 문구
+ * @param requirements 응답에 포함할 requirements
  */
 @Schema(description = "외국어 인증 기준 응답")
 public record LanguageCertRequirementResponse(
@@ -40,7 +40,7 @@ public record LanguageCertRequirementResponse(
    * @param departmentCode 학과 코드
    * @param departmentName 학과 이름
    * @param admissionYear admission 연도
-   * @param note note 값
+   * @param note 요건과 함께 안내할 참고 문구
    * @return language cert 요건 응답 결과
    */
   public static LanguageCertRequirementResponse unmapped(
@@ -59,11 +59,11 @@ public record LanguageCertRequirementResponse(
   /**
    * 요건 데이터를 전달한다.
    *
-   * @param testType test type 값
+   * @param testType 외국어 인증 시험 종류
    * @param minimumScore minimum 점수
-   * @param minimumGrade minimum 성적 값
-   * @param displayText display text 값
-   * @param sortOrder sort order 값
+   * @param minimumGrade 응답에 포함할 minimum 성적
+   * @param displayText 응답에 포함할 display text
+   * @param sortOrder 화면에 표시할 정렬 순서
    */
   public record Requirement(
       @Schema(description = "시험 종류", implementation = LanguageCertTestType.class)

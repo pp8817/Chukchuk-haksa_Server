@@ -7,7 +7,7 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import java.util.Map;
 
-/** 척척학사의 sentry duplicate 이벤트 요청 처리 과정의 필터링을 담당한다. */
+/** 명시적으로 Sentry에 캡처하는 요청의 예외·Hibernate 로그가 중복 전송되지 않게 차단한다. */
 public class SentryDuplicateEventFilter extends Filter<ILoggingEvent> {
 
   public static final String MANAGED_REQUEST_MDC_KEY = "sentryManagedRequest";

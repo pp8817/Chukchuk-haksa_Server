@@ -26,7 +26,7 @@ public class StudentCourseBulkRepositoryImpl implements StudentCourseBulkReposit
   /**
    * 학생 과목 bulk repository impl 인스턴스를 생성한다.
    *
-   * @param jdbcTemplate jdbc template 값
+   * @param jdbcTemplate 수강 내역 일괄 SQL을 실행할 JDBC 도구
    */
   public StudentCourseBulkRepositoryImpl(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;

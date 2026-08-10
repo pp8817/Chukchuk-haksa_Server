@@ -14,22 +14,22 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-/** 구현체가 제공해야 할 스크래핑 작업 아웃박스 repository 기능의 계약을 정의한다. */
+/** 스크래핑 작업 발행 아웃박스를 조회하고 잠금는 저장소이다. */
 public interface ScrapeJobOutboxRepository extends JpaRepository<ScrapeJobOutbox, String> {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 스크래핑 작업에 연결된 아웃박스를 찾는다.
    *
    * @param jobId 작업 식별자
-   * @return 조회
+   * @return 연결된 아웃박스가 있으면 포함한 선택값
    */
   Optional<ScrapeJobOutbox> findByJobId(String jobId);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 아웃박스를 변경하기 위해 비관적 쓰기 잠금으로 조회한다.
    *
    * @param outboxId 아웃박스 식별자
-   * @return 조회
+   * @return 잠금을 획득한 아웃박스가 있으면 포함한 선택값
    */
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query(
@@ -44,17 +44,17 @@ public interface ScrapeJobOutboxRepository extends JpaRepository<ScrapeJobOutbox
    * 지정한 상태의 아웃박스 수를 반환한다.
    *
    * @param status 상태
-   * @return long
+   * @return 해당 상태의 아웃박스 수
    */
   long countByStatus(ScrapeJobOutboxStatus status);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 발행 가능한 상태이고 재시도 시각이 된 아웃박스를 잠그고 찾는다.
    *
    * @param outboxId 아웃박스 식별자
-   * @param statuses statuses 값
-   * @param now now 값
-   * @return 조회
+   * @param statuses 발행 가능한 아웃박스 상태
+   * @param now 재시도 가능 여부를 판단할 기준 시각
+   * @return 잠금을 획득한 발행 대상이 있으면 포함한 선택값
    */
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query(
@@ -71,12 +71,12 @@ public interface ScrapeJobOutboxRepository extends JpaRepository<ScrapeJobOutbox
       @Param("now") Instant now);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 재시도 시각이 된 발행 대상을 생성순으로 잠그고 조회한다.
    *
-   * @param statuses statuses 값
-   * @param now now 값
-   * @param pageable pageable 값
-   * @return 조회
+   * @param statuses 발행 가능한 아웃박스 상태
+   * @param now 재시도 가능 여부를 판단할 기준 시각
+   * @param pageable 한 번에 잠글 대상 수
+   * @return 잠금을 획득한 발행 대상
    */
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query(
@@ -93,13 +93,13 @@ public interface ScrapeJobOutboxRepository extends JpaRepository<ScrapeJobOutbox
       Pageable pageable);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 전송 후 일정 시간 이상 작업이 완료되지 않은 아웃박스를 잠그고 조회한다.
    *
    * @param outboxStatus 아웃박스 상태
-   * @param sentBefore sent before 값
+   * @param sentBefore 전송 지연을 판단할 기준 시각
    * @param jobStatus 작업 상태
-   * @param pageable pageable 값
-   * @return 조회
+   * @param pageable 한 번에 잠글 대상 수
+   * @return 전송 시각이 오래된 순으로 잠금된 아웃박스
    */
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query(

@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 학생 비즈니스 흐름을 처리한다. */
+/** 학생 조회, 프로필 구성, 학사 데이터 초기화를 담당한다. */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,10 +34,11 @@ public class StudentService {
   private final StudentCourseRepository studentCourseRepository;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생 식별자로 학생을 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 조회된 학생
+   * @throws EntityNotFoundException 학생이 없는 경우
    */
   public Student getStudentById(UUID studentId) {
     return studentRepository
@@ -46,10 +47,11 @@ public class StudentService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자에게 연결된 학생을 반환한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 사용자에게 연결된 학생, 연결되지 않았으면 {@code null}
+   * @throws EntityNotFoundException 사용자가 없는 경우
    */
   public Student getStudentByUserId(UUID userId) {
     User user = userService.getUserById(userId);
@@ -58,30 +60,32 @@ public class StudentService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학번으로 학생을 찾는다.
    *
    * @param studentCode 학번
-   * @return 조회
+   * @return 학생이 있으면 포함한 선택값
    */
   public Optional<Student> findByStudentCode(String studentCode) {
     return studentRepository.findByStudentCode(studentCode);
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 포털 연동이 완료되지 않은 사용자의 학생을 찾는다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 연동 대기 학생이 있으면 포함한 선택값
    */
   public Optional<Student> findPortalPendingStudent(UUID userId) {
     return studentRepository.findPortalPendingStudent(userId);
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자에게 연결된 학생 식별자를 반환한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 연결된 학생 식별자
+   * @throws CommonException 사용자에게 학생이 연결되지 않은 경우
+   * @throws EntityNotFoundException 연결된 학생의 식별자가 없는 경우
    */
   public UUID getRequiredStudentIdByUserId(UUID userId) {
     Student student = getStudentByUserId(userId);
@@ -100,7 +104,7 @@ public class StudentService {
   /**
    * 사용자에 연결된 학생을 포털 재연동 상태로 변경한다.
    *
-   * @param user 사용자 값
+   * @param user 재연동 상태로 변경할 학생의 사용자
    */
   @Transactional
   public void markReconnectedByUser(User user) {
@@ -115,7 +119,7 @@ public class StudentService {
   /**
    * 전달된 데이터를 영속 저장소에 보관한다.
    *
-   * @param student 학생 값
+   * @param student 저장할 학생
    */
   @Transactional
   public void save(Student student) {
@@ -123,10 +127,11 @@ public class StudentService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생·사용자·학과·전공 정보를 포함한 프로필을 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 현재 학년·학기와 마지막 동기화 시각을 포함한 학생 프로필
+   * @throws CommonException 학생이 없는 경우
    */
   public StudentDto.StudentProfileResponse getStudentProfile(UUID studentId) {
     Student student =
@@ -138,10 +143,12 @@ public class StudentService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자 식별자로 학생 프로필을 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 현재 학년·학기와 마지막 동기화 시각을 포함한 학생 프로필
+   * @throws EntityNotFoundException 사용자가 없는 경우
+   * @throws CommonException 사용자에게 학생이 연결되지 않은 경우
    */
   public StudentDto.StudentProfileResponse getStudentProfileByUserId(UUID userId) {
     User user =
@@ -172,10 +179,10 @@ public class StudentService {
   }
 
   /**
-   * 전달된 값을 현재 객체에 설정한다.
+   * 학생의 목표 평점을 갱신한다.
    *
    * @param studentId 학생 식별자
-   * @param targetGpa target gpa 값
+   * @param targetGpa 새 목표 평점
    */
   @Transactional
   public void setStudentTargetGpa(UUID studentId, Double targetGpa) {

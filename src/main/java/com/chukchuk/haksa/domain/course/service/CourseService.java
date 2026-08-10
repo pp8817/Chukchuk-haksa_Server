@@ -12,18 +12,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 과목 비즈니스 흐름을 처리한다. */
+/** 과목 코드가 같은 과목을 재사용하거나 새 과목을 저장한다. */
 @Service
 @RequiredArgsConstructor
 public class CourseService {
   private final CourseRepository courseRepository;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param courseCode 과목 코드
    * @param courseName 과목 이름
-   * @return 조회
+   * @return 처리된 과목 및 개설 강의
    */
   @Transactional
   public Course getOrCreateCourse(String courseCode, String courseName) {
@@ -37,10 +37,10 @@ public class CourseService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 과목 및 개설 강의를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param courseCodeToName 과목 code to 이름
-   * @return 조회
+   * @return 처리된 과목 및 개설 강의
    */
   @Transactional
   public Map<String, Course> getOrCreateCourses(Map<String, String> courseCodeToName) {

@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 학생 deletion 비즈니스 흐름을 처리한다. */
+/** 탈퇴 학생의 학사 데이터를 제거하고 개인정보를 익명화한다. */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class StudentDeletionService {
   /**
    * 지정된 데이터를 삭제한다.
    *
-   * @param student 학생 값
+   * @param student 기록의 소유 학생
    */
   @Transactional
   public void anonymizeByStudent(Student student) {

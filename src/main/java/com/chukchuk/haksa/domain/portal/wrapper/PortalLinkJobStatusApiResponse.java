@@ -7,12 +7,12 @@ import com.chukchuk.haksa.global.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 
-/** 척척학사의 포털 link 작업 status api 응답 데이터를 전달한다. */
+/** 포털 연동 작업 상태 조회 성공 응답의 OpenAPI 스키마 예시를 제공한다. */
 @Schema(name = "PortalLinkJobStatusApiResponse", description = "포털 링크 job 상태 조회 응답")
 public class PortalLinkJobStatusApiResponse
     extends SuccessResponse<PortalLinkDto.JobStatusResponse> {
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** 포털 연동 작업 상태 조회 성공 응답의 예시 값과 메시지를 구성한다. */
   public PortalLinkJobStatusApiResponse() {
     super(
         new PortalLinkDto.JobStatusResponse(

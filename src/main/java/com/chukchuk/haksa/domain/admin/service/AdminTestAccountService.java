@@ -25,7 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 admin test 계정 비즈니스 흐름을 처리한다. */
+/** 개발 환경에서 테스트 계정과 학생을 생성하고 인증 토큰을 발급한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -42,10 +42,10 @@ public class AdminTestAccountService {
   private final RefreshTokenService refreshTokenService;
 
   /**
-   * 척척학사의 create test 사용자 대상을 생성한다.
+   * 개발 환경에서 요청 조건의 테스트 사용자와 인증 토큰을 생성한다.
    *
-   * @param request 요청 정보
-   * @return 생성된
+   * @param request 생성할 테스트 사용자의 학과·학적 조건
+   * @return 생성된 테스트 사용자와 인증 토큰
    */
   public AdminTestDto.TestUserResponse createTestUser(AdminTestDto.CreateTestUserRequest request) {
     String suffix = createSuffix();

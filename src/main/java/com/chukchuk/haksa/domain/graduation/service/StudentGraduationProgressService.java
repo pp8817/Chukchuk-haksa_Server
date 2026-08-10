@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 학생 졸업 progress 비즈니스 흐름을 처리한다. */
+/** 학생의 외국어 인증 충족 여부를 저장하고 조회한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,7 +24,7 @@ public class StudentGraduationProgressService {
   /**
    * 학생의 어학 인증 충족 상태를 동기화한다.
    *
-   * @param student 학생 값
+   * @param student 기록의 소유 학생
    * @param languageCertFulfilled 어학 인증 충족 여부
    */
   @Transactional
@@ -52,10 +52,10 @@ public class StudentGraduationProgressService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 조건에 일치하는 졸업 요건가 있으면 포함한 선택값
    */
   public Optional<Boolean> getLanguageCertFulfilled(UUID studentId) {
     return repository

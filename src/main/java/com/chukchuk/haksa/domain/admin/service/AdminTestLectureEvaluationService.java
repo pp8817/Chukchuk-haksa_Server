@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 admin test lecture evaluation 비즈니스 흐름을 처리한다. */
+/** 개발 환경의 강의평가 테스트 학기를 시나리오별 상태로 재구성한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -49,29 +49,29 @@ public class AdminTestLectureEvaluationService {
   private final CourseEvaluationTagRepository courseEvaluationTagRepository;
   private final AcademicCache academicCache;
 
-  /** 척척학사의 set empty 학기 대상을 설정한다. */
+  /** 대상 테스트 학생의 강의평가 학기 데이터를 모두 제거하고 학사 캐시를 비운다. */
   public void setEmptySemester() {
     Student student = getTargetStudent();
     clearTargetSemester(student.getId());
     academicCache.deleteAllByStudentId(student.getId());
   }
 
-  /** 척척학사의 set not released 대상을 설정한다. */
+  /** 대상 학기를 성적 미공개 상태의 테스트 데이터로 재구성한다. */
   public void setNotReleased() {
     rebuildSemester(LectureEvaluationStatus.NOT_RELEASED, GradeType.IP, false);
   }
 
-  /** 척척학사의 set pending 대상을 설정한다. */
+  /** 대상 학기를 강의평가 제출 대기 상태의 테스트 데이터로 재구성한다. */
   public void setPending() {
     rebuildSemester(LectureEvaluationStatus.PENDING, GradeType.A_PLUS, false);
   }
 
-  /** 척척학사의 set skipped 대상을 설정한다. */
+  /** 대상 학기를 강의평가 건너뛰기 완료 상태의 테스트 데이터로 재구성한다. */
   public void setSkipped() {
     rebuildSemester(LectureEvaluationStatus.SKIPPED, GradeType.A_PLUS, false);
   }
 
-  /** 척척학사의 set completed 대상을 설정한다. */
+  /** 대상 학기를 평가 내역이 저장된 강의평가 완료 상태로 재구성한다. */
   public void setCompleted() {
     rebuildSemester(LectureEvaluationStatus.COMPLETED, GradeType.A_PLUS, true);
   }

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 스크래핑 작업 아웃박스 dispatch tx 비즈니스 흐름을 처리한다. */
+/** 스크래핑 아웃박스 발행 대상을 잠그고 발행 결과를 독립 트랜잭션으로 기록한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -36,10 +36,10 @@ public class ScrapeJobOutboxDispatchTxService {
   /**
    * 지정한 아웃박스를 우선 발행 대상으로 예약한다.
    *
-   * @param preferredOutboxId preferred 아웃박스 식별자
-   * @param publishableStatuses publishable statuses 값
-   * @param now now 값
-   * @return 스크래핑 작업 아웃박스 dispatch plan 결과
+   * @param preferredOutboxId 즉시 발행하려는 아웃박스 식별자
+   * @param publishableStatuses 발행 대상으로 허용할 상태 목록
+   * @param now 예약 가능 시각과 lease 만료를 판단할 기준 시각
+   * @return 발행 대상으로 예약한 아웃박스가 없으면 빈 계획, 있으면 한 건의 발행 계획
    */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ScrapeJobOutboxDispatchPlan reservePreferred(
@@ -58,10 +58,10 @@ public class ScrapeJobOutboxDispatchTxService {
   /**
    * 발행 가능한 아웃박스를 배치 단위로 예약한다.
    *
-   * @param publishableStatuses publishable statuses 값
-   * @param now now 값
-   * @param batchSize batch size 값
-   * @return 스크래핑 작업 아웃박스 dispatch plan 결과
+   * @param publishableStatuses 발행 대상으로 허용할 상태 목록
+   * @param now 예약 가능 시각과 lease 만료를 판단할 기준 시각
+   * @param batchSize 한 번에 예약할 최대 아웃박스 수
+   * @return 잠금 후 발행 시도 상태로 전환한 아웃박스 계획
    */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ScrapeJobOutboxDispatchPlan reserveBatch(
@@ -78,7 +78,7 @@ public class ScrapeJobOutboxDispatchTxService {
    * @param outboxId 아웃박스 식별자
    * @param queueMessageId 큐 메시지 식별자
    * @param attemptedAt 발행 시도 시각
-   * @param trigger trigger 값
+   * @param trigger 예약 실행 또는 동기 요청 등 발행을 시작한 경로
    */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void markSent(
@@ -110,12 +110,12 @@ public class ScrapeJobOutboxDispatchTxService {
   }
 
   /**
-   * 처리 실패 상태와 원인을 기록한다.
+   * 아웃박스 발행 실패를 재시도 가능 상태 또는 영구 실패 상태로 기록한다.
    *
    * @param outboxId 아웃박스 식별자
    * @param attemptedAt 발행 시도 시각
-   * @param trigger trigger 값
-   * @param exception exception 값
+   * @param trigger 예약 실행 또는 동기 요청 등 발행을 시작한 경로
+   * @param exception 발행 실패 원인
    */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void markFailed(

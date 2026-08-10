@@ -21,9 +21,9 @@ public class CustomUserDetails implements UserDetails {
   private final boolean isDeleted;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 사용자 엔티티의 인증 식별자와 계정 활성 상태를 Spring Security 형식으로 변환한다.
    *
-   * @param user 사용자 값
+   * @param user 인증 문맥에 반영할 사용자 엔티티
    */
   public CustomUserDetails(User user) {
     this.id = user.getId();

@@ -17,14 +17,14 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-/** 학기 controller docs 기능의 계약을 정의한다. */
+/** 인증 학생의 이수 학기 목록과 학기별 성적 목록 조회 API를 정의한다. */
 public interface SemesterControllerDocs {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록에 대한 없음 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리된 학사 기록
    */
   @Operation(
       summary = "사용자 학기 목록 조회",
@@ -49,10 +49,10 @@ public interface SemesterControllerDocs {
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록에 대한 없음 작업을 수행한다.
    *
-   * @param userDetails 사용자 상세 정보
-   * @return 조회
+   * @param userDetails 인증된 사용자 정보
+   * @return 처리된 학사 기록
    */
   @Operation(
       summary = "사용자 학기 별 성적 조회",

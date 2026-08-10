@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/** 유지보수 task 요청 또는 이벤트 처리를 담당한다. */
+/** EventBridge 유지보수 작업을 실제 정리 서비스로 분기하고 처리 결과를 기록한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -16,10 +16,11 @@ public class MaintenanceTaskHandler {
   private final RefreshTokenService refreshTokenService;
 
   /**
-   * 척척학사의 handle 대상을 처리한다.
+   * 요청된 유지보수 작업을 실행하고 처리 건수와 실행 정보를 반환한다.
    *
-   * @param request 요청 정보
-   * @return 유지보수 task 결과
+   * @param request 실행할 작업 이름과 예약 시각을 담은 요청
+   * @return 실행한 작업 이름과 처리 건수를 담은 결과
+   * @throws IllegalArgumentException 지원하지 않는 작업 이름을 요청한 경우
    */
   public MaintenanceTaskResult handle(MaintenanceTaskRequest request) {
     long startedAt = System.nanoTime();

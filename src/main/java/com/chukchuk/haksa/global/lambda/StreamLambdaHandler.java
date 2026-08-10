@@ -21,7 +21,7 @@ import java.io.OutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-/** 척척학사의 stream lambda 요청 또는 이벤트 처리를 담당한다. */
+/** Lambda 입력을 유지보수 EventBridge 이벤트 또는 HTTP API 요청으로 분기한다. */
 @Slf4j
 public class StreamLambdaHandler implements RequestStreamHandler {
 

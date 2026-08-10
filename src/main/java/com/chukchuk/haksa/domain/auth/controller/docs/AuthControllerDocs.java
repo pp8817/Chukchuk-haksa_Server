@@ -14,15 +14,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-/** 척척학사의 auth controller docs 기능의 계약을 정의한다. */
+/** 리프레시 토큰을 이용한 인증 토큰 재발급 API 계약을 정의한다. */
 @Tag(name = "Auth", description = "인증 관련 API")
 public interface AuthControllerDocs {
 
   /**
-   * 척척학사의 refresh 응답 대상을 갱신한다.
+   * 유효한 리프레시 토큰을 새 액세스·리프레시 토큰 쌍으로 교환한다.
    *
-   * @param request 요청 정보
-   * @return 응답 entity success 응답 refresh 응답 결과
+   * @param request 검증하고 교체할 리프레시 토큰
+   * @return 재발급된 토큰 쌍을 담은 성공 응답
    */
   @Operation(
       summary = "토큰 재발급",

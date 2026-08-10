@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 척척학사의 language cert 요건 도메인 상태를 표현한다. */
+/** 인증 시험별 최소 등급·점수와 사용자 표시 문구를 보관한다. */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -76,10 +76,10 @@ public class LanguageCertRequirement extends BaseEntity {
    * 점수 기준 어학 인증 요건을 생성한다.
    *
    * @param policyGroup 정책 그룹
-   * @param testType test type 값
+   * @param testType 외국어 인증 시험 종류
    * @param minimumScore minimum 점수
-   * @param displayText display text 값
-   * @param sortOrder sort order 값
+   * @param displayText 사용자 화면에 노출할 인증 기준 문구
+   * @param sortOrder 화면에 표시할 정렬 순서
    * @return language cert 요건 결과
    */
   public static LanguageCertRequirement score(
@@ -96,10 +96,10 @@ public class LanguageCertRequirement extends BaseEntity {
    * 성적 처리를 수행한다.
    *
    * @param policyGroup 정책 그룹
-   * @param testType test type 값
-   * @param minimumGrade minimum 성적 값
-   * @param displayText display text 값
-   * @param sortOrder sort order 값
+   * @param testType 외국어 인증 시험 종류
+   * @param minimumGrade 등급형 시험에서 충족해야 할 최저 등급
+   * @param displayText 사용자 화면에 노출할 인증 기준 문구
+   * @param sortOrder 화면에 표시할 정렬 순서
    * @return language cert 요건 결과
    */
   public static LanguageCertRequirement grade(
@@ -116,9 +116,9 @@ public class LanguageCertRequirement extends BaseEntity {
    * 안내용 어학 인증 요건을 생성한다.
    *
    * @param policyGroup 정책 그룹
-   * @param testType test type 값
-   * @param displayText display text 값
-   * @param sortOrder sort order 값
+   * @param testType 외국어 인증 시험 종류
+   * @param displayText 사용자 화면에 노출할 인증 기준 문구
+   * @param sortOrder 화면에 표시할 정렬 순서
    * @return language cert 요건 결과
    */
   public static LanguageCertRequirement displayOnly(

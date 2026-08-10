@@ -5,7 +5,7 @@ import com.chukchuk.haksa.global.exception.type.CommonException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-/** 척척학사의 성적 type 데이터 형식을 변환한다. */
+/** 표준 성적 유형을 데이터베이스 문자열과 상호 변환한다. */
 @Converter(autoApply = false)
 public class GradeTypeConverter implements AttributeConverter<GradeType, String> {
 

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-/** 포털 link 작업 비즈니스 흐름을 처리한다. */
+/** 포털 연동 요청을 멱등하게 접수하고 스크래핑 작업 발행을 조정한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,9 +34,10 @@ public class PortalLinkJobService {
    * 포털 연동 작업을 접수하고 비동기 처리 정보를 반환한다.
    *
    * @param userId 사용자 식별자
-   * @param idempotencyKey 멱등성 키
-   * @param request 요청 정보
-   * @return 포털 link dto accepted 응답 결과
+   * @param idempotencyKey 같은 요청을 재사용하기 위한 비어 있지 않은 멱등성 키
+   * @param request 포털 자격 증명과 사전 검증 토큰을 담은 요청
+   * @return 접수되거나 재사용된 작업 식별자와 상태 조회 경로
+   * @throws CommonException 요청이 유효하지 않거나 멱등성 충돌 또는 작업 발행에 실패한 경우
    */
   public PortalLinkDto.AcceptedResponse acceptJob(
       UUID userId, String idempotencyKey, PortalLinkDto.LinkRequest request) {
@@ -91,13 +92,16 @@ public class PortalLinkJobService {
   }
 
   /**
-   * 척척학사의 create 요청 fingerprint 대상을 생성한다.
+   * 포털 계정과 작업 유형을 정규화해 멱등성 비교용 SHA-256 지문을 생성한다.
+   *
+   * <p>포털 유형은 앞뒤 공백과 대소문자를 무시하고, 아이디는 앞뒤 공백을 제거한다. 비밀번호와 작업 유형은 원문을 사용한다.
    *
    * @param portalType 포털 유형
-   * @param username user이름
+   * @param username null이 아닌 포털 로그인 아이디
    * @param password 포털 비밀번호
    * @param operationType 작업 유형
-   * @return 생성된
+   * @return 정규화된 요청을 소문자 16진수로 표현한 SHA-256 해시
+   * @throws IllegalStateException 입력을 정규화하거나 SHA-256 지문을 생성할 수 없는 경우
    */
   public static String createRequestFingerprint(
       String portalType, String username, String password, ScrapeJobOperationType operationType) {

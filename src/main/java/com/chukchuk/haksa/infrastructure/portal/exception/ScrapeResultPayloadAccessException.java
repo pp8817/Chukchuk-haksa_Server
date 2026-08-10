@@ -2,7 +2,7 @@ package com.chukchuk.haksa.infrastructure.portal.exception;
 
 import lombok.Getter;
 
-/** 척척학사의 스크래핑 결과 payload 접근 처리할 수 없는 도메인 또는 요청 상태를 나타낸다. */
+/** 스크래핑 결과 위치 검증 또는 S3 payload 조회 실패와 재시도 가능 여부를 나타낸다. */
 @Getter
 public class ScrapeResultPayloadAccessException extends RuntimeException {
 
@@ -10,11 +10,11 @@ public class ScrapeResultPayloadAccessException extends RuntimeException {
   private final boolean retryable;
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 저장소 오류 코드, 원인 설명과 재시도 가능 여부로 예외를 생성한다.
    *
    * @param errorCode 오류 코드
    * @param message 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 같은 위치 조회를 다시 시도할 수 있는지 여부
    */
   public ScrapeResultPayloadAccessException(String errorCode, String message, boolean retryable) {
     super(message);
@@ -23,11 +23,11 @@ public class ScrapeResultPayloadAccessException extends RuntimeException {
   }
 
   /**
-   * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+   * 저장소 오류 정보와 하위 S3 또는 SDK 예외를 보존해 생성한다.
    *
    * @param errorCode 오류 코드
    * @param message 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 같은 위치 조회를 다시 시도할 수 있는지 여부
    * @param cause 원인 예외
    */
   public ScrapeResultPayloadAccessException(

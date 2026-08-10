@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 스크래핑 결과 콜백 tx 비즈니스 흐름을 처리한다. */
+/** 스크래핑 콜백의 중복 여부를 판정하고 작업 상태를 트랜잭션으로 변경한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -31,12 +31,13 @@ public class ScrapeResultCallbackTxService {
    * 성공 콜백을 검증하고 후처리할 작업 정보를 반환한다.
    *
    * @param jobId 작업 식별자
-   * @param attempt attempt 값
-   * @param resultS3Key 결과 S3 key 값
-   * @param resultChecksum 결과 checksum 값
+   * @param attempt 워커의 작업 시도 횟수
+   * @param resultS3Key 성공 결과가 저장된 S3 객체 key
+   * @param resultChecksum 결과 payload 무결성 확인에 사용할 checksum
    * @param callbackMetadataJson 콜백 메타데이터 JSON
    * @param receivedAt 수신 시각
-   * @return 콜백 receipt 결과
+   * @return 중복 여부와 후처리에 필요한 작업 소유자·유형·상태
+   * @throws EntityNotFoundException 대상 작업을 찾을 수 없는 경우
    */
   @Transactional
   public CallbackReceipt receiveSuccessCallback(
@@ -59,14 +60,15 @@ public class ScrapeResultCallbackTxService {
    * 실패 콜백을 검증하고 작업 실패 정보를 기록한다.
    *
    * @param jobId 작업 식별자
-   * @param attempt attempt 값
+   * @param attempt 워커의 작업 시도 횟수
    * @param callbackMetadataJson 콜백 메타데이터 JSON
    * @param errorCode 오류 코드
    * @param errorMessage 오류 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 워커가 같은 작업을 재시도할 수 있는지 여부
    * @param receivedAt 수신 시각
    * @param finishedAt 처리 종료 시각
-   * @return 콜백 receipt 결과
+   * @return 중복 여부와 실패 처리된 작업의 소유자·유형·상태
+   * @throws EntityNotFoundException 대상 작업을 찾을 수 없는 경우
    */
   @Transactional
   public CallbackReceipt receiveFailedCallback(
@@ -102,11 +104,12 @@ public class ScrapeResultCallbackTxService {
    * @param jobId 작업 식별자
    * @param userId 사용자 식별자
    * @param operationType 작업 유형
-   * @param portalData 포털 학사 데이터
-   * @param payloadJson JSON payload
+   * @param portalData 사용자 학사 정보에 반영할 포털 데이터
+   * @param payloadJson 감사와 조회를 위해 작업에 저장할 정규화된 JSON payload
    * @param finishedAt 처리 종료 시각
-   * @param queuedAgeSeconds queued age seconds 값
-   * @param payloadHash payload hash 값
+   * @param queuedAgeSeconds 워커가 측정한 작업 대기 시간(초)이며 없으면 서버에서 계산
+   * @param payloadHash 로그 추적에 사용할 payload 해시
+   * @throws EntityNotFoundException 대상 작업을 찾을 수 없는 경우
    */
   @Transactional
   public void completeSuccess(
@@ -142,14 +145,15 @@ public class ScrapeResultCallbackTxService {
   }
 
   /**
-   * 처리 실패 상태와 원인을 기록한다.
+   * 완료되지 않은 작업을 실패 상태로 전환하고 대기 시간 지표를 기록한다.
    *
    * @param jobId 작업 식별자
    * @param finishedAt 처리 종료 시각
-   * @param queuedAgeSeconds queued age seconds 값
+   * @param queuedAgeSeconds 워커가 측정한 작업 대기 시간(초)이며 없으면 서버에서 계산
    * @param errorCode 오류 코드
    * @param message 응답 메시지
-   * @param retryable retryable 값
+   * @param retryable 같은 작업을 재시도할 수 있는지 여부
+   * @throws EntityNotFoundException 대상 작업을 찾을 수 없는 경우
    */
   @Transactional
   public void markFailed(
@@ -203,14 +207,14 @@ public class ScrapeResultCallbackTxService {
   }
 
   /**
-   * 콜백 receipt 데이터를 전달한다.
+   * 콜백의 중복 여부와 후속 처리에 필요한 작업 정보를 전달한다.
    *
-   * @param duplicate duplicate 값
+   * @param duplicate 이미 처리한 시도이거나 완료된 작업의 콜백인지 여부
    * @param jobId 작업 식별자
    * @param userId 사용자 식별자
    * @param operationType 작업 유형
    * @param status 상태
-   * @param queuedAgeSeconds queued age seconds 값
+   * @param queuedAgeSeconds 작업 생성부터 콜백 수신까지의 경과 시간(초)
    */
   public record CallbackReceipt(
       boolean duplicate,
@@ -222,8 +226,8 @@ public class ScrapeResultCallbackTxService {
     /**
      * 처리가 수락된 콜백 응답을 생성한다.
      *
-     * @param job 작업 값
-     * @return 콜백 receipt 결과
+     * @param job 콜백을 수락해 상태를 변경한 작업
+     * @return 중복이 아닌 콜백 처리 정보
      */
     public static CallbackReceipt accepted(ScrapeJob job) {
       return new CallbackReceipt(
@@ -238,8 +242,8 @@ public class ScrapeResultCallbackTxService {
     /**
      * 중복 수신된 콜백 응답을 생성한다.
      *
-     * @param job 작업 값
-     * @return 콜백 receipt 결과
+     * @param job 이미 같은 시도를 처리했거나 완료된 작업
+     * @return 중복으로 표시된 콜백 처리 정보
      */
     public static CallbackReceipt duplicate(ScrapeJob job) {
       return new CallbackReceipt(

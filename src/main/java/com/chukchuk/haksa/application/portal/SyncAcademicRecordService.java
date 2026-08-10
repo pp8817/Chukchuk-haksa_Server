@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /* 학업 이력 동기화 유스케이스 실행 */
-/** 척척학사의 sync 학사 record 비즈니스 흐름을 처리한다. */
+/** 포털 학기·과목·성적 데이터를 학생의 학사 기록과 개설 과목에 동기화한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -66,11 +66,13 @@ public class SyncAcademicRecordService {
   private static final String DEFAULT_PROFESSOR_NAME = "미확인 교수";
 
   /**
-   * 척척학사의 execute with 포털 data 대상을 처리한다.
+   * 최초 포털 연동에서 학사 기록과 수강 내역을 생성·갱신하고 누락 데이터도 정리한다.
+   *
+   * <p>처리 중 발생한 예외는 전파하지 않고 실패 사유가 포함된 결과로 반환한다.
    *
    * @param userId 사용자 식별자
-   * @param portalData 포털 학사 데이터
-   * @return sync 학사 record 결과
+   * @param portalData 학기별 성적과 수강 과목이 포함된 포털 조회 결과
+   * @return 동기화 성공 여부와 실패한 경우의 사유
    */
   @Transactional
   public SyncAcademicRecordResult executeWithPortalData(UUID userId, PortalData portalData) {
@@ -95,11 +97,13 @@ public class SyncAcademicRecordService {
   }
 
   /**
-   * 척척학사의 execute for refresh 포털 data 대상을 처리한다.
+   * 재연동에서 최신 포털 학사 기록을 반영하되 기존 개설 과목 메타데이터는 재사용한다.
+   *
+   * <p>처리 중 발생한 예외는 전파하지 않고 실패 사유가 포함된 결과로 반환한다.
    *
    * @param userId 사용자 식별자
-   * @param portalData 포털 학사 데이터
-   * @return sync 학사 record 결과
+   * @param portalData 최신 학기별 성적과 수강 과목이 포함된 포털 조회 결과
+   * @return 동기화 성공 여부와 실패한 경우의 사유
    */
   @Transactional
   public SyncAcademicRecordResult executeForRefreshPortalData(UUID userId, PortalData portalData) {

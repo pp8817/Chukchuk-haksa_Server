@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 졸업 비즈니스 흐름을 처리한다. */
+/** 학생의 이수 과목과 전공별 졸업 기준을 결합해 영역별 졸업 진행률을 계산한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -42,10 +42,10 @@ public class GraduationService {
 
   /* 졸업 요건 진행 상황 조회 */
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 졸업 요건를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 처리된 졸업 요건
    */
   public GraduationProgressResponse getGraduationProgress(UUID studentId) {
     // 1. 캐시 조회

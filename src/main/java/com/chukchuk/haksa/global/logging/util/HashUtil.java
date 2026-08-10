@@ -11,8 +11,8 @@ public final class HashUtil {
   /**
    * 입력값의 축약 SHA-256 해시를 반환한다.
    *
-   * @param input input 값
-   * @return string
+   * @param input 로그에서 원문 대신 식별할 문자열
+   * @return SHA-256 결과 앞부분을 URL-safe Base64 10자로 표현한 값이며 실패하면 {@code hash_err}
    */
   public static String sha256Short(String input) {
     try {

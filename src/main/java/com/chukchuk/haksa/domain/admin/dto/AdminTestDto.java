@@ -30,7 +30,7 @@ public class AdminTestDto {
       @Schema(description = "포털 연동 여부. 비어 있으면 true로 처리합니다.", example = "true")
           Boolean isPortalLinked) {
     /**
-     * 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다.
+     * 정규화된 검색 조건을 사용해 개설 강의 검색 요청을 생성한다.
      *
      * @param name 이름
      * @param departmentId 학과 식별자
@@ -53,9 +53,9 @@ public class AdminTestDto {
    *
    * @param userId 사용자 식별자
    * @param studentId 학생 식별자
-   * @param email 이메일 값
+   * @param email 연락 및 로그인에 사용하는 이메일
    * @param studentCode 학번
-   * @param accessToken 접근 토큰 값
+   * @param accessToken 응답에 포함할 접근 토큰
    * @param refreshToken refresh token 원문
    */
   @Schema(description = "테스트 계정 생성 응답")
@@ -70,8 +70,8 @@ public class AdminTestDto {
   /**
    * 계층 간 전달할 데이터를 표현한다.
    *
-   * @param departments departments 값
-   * @param graduationAreas 졸업 areas 값
+   * @param departments 응답에 포함할 departments
+   * @param graduationAreas 응답에 포함할 졸업 areas
    */
   @Schema(description = "테스트 조작 옵션 응답")
   public record TestOptionsResponse(
@@ -82,7 +82,7 @@ public class AdminTestDto {
    * 학과 option 데이터를 전달한다.
    *
    * @param id id 식별자
-   * @param code code 값
+   * @param code 응답에 포함할 code
    * @param name 이름
    */
   @Schema(description = "학과 선택지")
@@ -94,7 +94,7 @@ public class AdminTestDto {
   /**
    * 졸업 area option 데이터를 전달한다.
    *
-   * @param code code 값
+   * @param code 응답에 포함할 code
    * @param name 이름
    */
   @Schema(description = "졸업요건 영역 선택지")
@@ -102,12 +102,12 @@ public class AdminTestDto {
       @Schema(description = "영역 코드") String code, @Schema(description = "영역 표시명") String name) {}
 
   /**
-   * 과목 offering search 요청 데이터를 전달한다.
+   * 관리자 테스트용 개설 강의 검색 필터를 담는다.
    *
    * @param keyword 검색어
-   * @param area area 값
+   * @param area 과목 영역 필터
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param departmentId 학과 식별자
    */
   @Schema(description = "강의 후보 검색 요청")
@@ -125,10 +125,10 @@ public class AdminTestDto {
    * @param courseCode 과목 코드
    * @param courseName 과목 이름
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param credits 학점
-   * @param area area 값
-   * @param rawArea raw area 값
+   * @param area 과목 영역 필터
+   * @param rawArea 응답에 포함할 raw area
    * @param departmentName 학과 이름
    */
   @Schema(description = "강의 후보 선택지")
@@ -146,10 +146,10 @@ public class AdminTestDto {
   /**
    * 계층 간 전달할 데이터를 표현한다.
    *
-   * @param area area 값
+   * @param area 과목 영역 필터
    * @param addOfferingIds add offering ids 식별자
    * @param removeStudentCourseIds remove 학생 과목 ids 식별자
-   * @param grade 성적 값
+   * @param grade 과목에서 취득한 성적
    * @param points 학점
    * @param isRetake is retake 여부
    * @param originalScore 원점수
@@ -168,7 +168,7 @@ public class AdminTestDto {
    * 계층 간 전달할 데이터를 표현한다.
    *
    * @param majorDepartmentId 전공 학과 식별자
-   * @param dualMajorEnabled dual 전공 enabled 값
+   * @param dualMajorEnabled 응답에 포함할 dual 전공 enabled
    * @param secondaryMajorDepartmentId secondary 전공 학과 식별자
    */
   @Schema(description = "현재 인증 계정 전공 상태 수정 요청")
@@ -182,13 +182,13 @@ public class AdminTestDto {
    *
    * @param courseCode 과목 코드
    * @param courseName 과목 이름
-   * @param area area 값
+   * @param area 과목 영역 필터
    * @param departmentId 학과 식별자
    * @param hostDepartment 주관 학과
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    * @param credits 학점
-   * @param grade 성적 값
+   * @param grade 과목에서 취득한 성적
    * @param isRetake is retake 여부
    * @param originalScore 원점수
    */
@@ -213,7 +213,7 @@ public class AdminTestDto {
    * @param offeringId 과목 개설 식별자
    * @param courseCode 과목 코드
    * @param courseName 과목 이름
-   * @param area area 값
+   * @param area 과목 영역 필터
    */
   @Schema(description = "현재 인증 계정 테스트 강의 생성 응답")
   public record TestCourseResponse(

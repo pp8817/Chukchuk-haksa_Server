@@ -19,16 +19,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
-/** 포털 로그인 controller docs 기능의 계약을 정의한다. */
+/** 포털 자격 증명을 검증하고 연동용 일회성 토큰을 발급하는 API를 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내")
 public interface PortalLoginControllerDocs {
 
   /**
-   * 척척학사의 verify 포털 로그인 대상을 검증한다.
+   * 포털 계정 자격 증명을 검증하고 연동 작업에 사용할 일회용 토큰을 발급한다.
    *
    * @param userDetails 사용자 상세 정보
    * @param request 요청 정보
-   * @return 응답 entity success 응답 포털 link dto 로그인 응답 결과
+   * @return 포털 자격 증명 검증 후 발급한 일회용 검증 토큰 응답
    */
   @Operation(
       summary = "포털 로그인 검증",

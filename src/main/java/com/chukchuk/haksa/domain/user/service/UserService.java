@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 사용자 비즈니스 흐름을 처리한다. */
+/** 사용자 조회, OIDC 로그인, 계정 병합과 탈퇴를 처리한다. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -42,10 +42,10 @@ public class UserService {
   private final Map<OidcProvider, OidcService> oidcServices;
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자 및 소셜 계정를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 처리된 사용자 및 소셜 계정
    */
   public User getUserById(UUID userId) {
     return userRepository
@@ -54,10 +54,10 @@ public class UserService {
   }
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 사용자 및 소셜 계정를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param userId 사용자 식별자
-   * @return 조회
+   * @return 처리된 사용자 및 소셜 계정
    */
   public UserDto.MeResponse getMe(UUID userId) {
     User user = getUserById(userId);
@@ -67,7 +67,7 @@ public class UserService {
   /**
    * 전달된 데이터를 영속 저장소에 보관한다.
    *
-   * @param user 사용자 값
+   * @param user 연결할 사용자
    */
   @Transactional
   public void save(User user) {

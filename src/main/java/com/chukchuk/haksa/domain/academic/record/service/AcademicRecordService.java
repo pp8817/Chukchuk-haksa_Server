@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 학사 record 비즈니스 흐름을 처리한다. */
+/** 학생의 학기 성적과 수강 과목을 영역별로 구성해 제공한다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,12 +22,12 @@ public class AcademicRecordService {
 
   /* 학기별 성적 및 수강 과목 정보 조회 */
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학생의 특정 학기 성적과 수강 과목을 전공·교양·기타 영역으로 분류해 반환한다.
    *
    * @param studentId 학생 식별자
    * @param year 연도
-   * @param semester 학기 값
-   * @return 조회
+   * @param semester 조회할 학기
+   * @return 학기 성적과 영역별 수강 과목
    */
   public AcademicRecordResponse getAcademicRecord(UUID studentId, Integer year, Integer semester) {
 

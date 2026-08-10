@@ -21,8 +21,9 @@ public class SqsScrapeJobPublisher {
   /**
    * 스크래핑 작업 메시지를 큐에 발행하고 메시지 식별자를 반환한다.
    *
-   * @param payloadJson JSON payload
-   * @return string
+   * @param payloadJson 워커가 처리할 스크래핑 작업 JSON
+   * @return SQS가 발급한 메시지 식별자
+   * @throws IllegalStateException 스크래핑 작업 queue URL이 설정되지 않은 경우
    */
   public String publish(String payloadJson) {
     String queueUrl = scrapingProperties.getJob().getQueueUrl();

@@ -4,14 +4,14 @@ import com.chukchuk.haksa.domain.academic.record.dto.SemesterSummaryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 // year, semester를 받아오기 위한 DTO
-/** 척척학사의 학생 학기 계층 간 데이터를 전달한다. */
+/** 학생이 이수한 연도·학기 목록과 현재 학기 정보를 전달한다. */
 public class StudentSemesterDto {
 
   /**
    * 계층 간 전달할 학생 학기 info 응답 데이터를 표현한다.
    *
    * @param year 연도
-   * @param semester 학기 값
+   * @param semester 대상 학기
    */
   @Schema(description = "학생의 이수 학기 정보")
   public record StudentSemesterInfoResponse(
@@ -24,7 +24,7 @@ public class StudentSemesterDto {
     /**
      * 학기 요약을 학생 학기 응답으로 변환한다.
      *
-     * @param record record 값
+     * @param record 연결할 학사 기록
      * @return 학생 학기 info 응답 결과
      */
     public static StudentSemesterInfoResponse from(SemesterSummaryResponse record) {

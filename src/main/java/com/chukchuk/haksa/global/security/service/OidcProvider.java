@@ -1,6 +1,6 @@
 package com.chukchuk.haksa.global.security.service;
 
-/** 업무 처리에서 사용할 oidc provider 값을 정의한다. */
+/** ID token 검증을 지원하는 소셜 OIDC 제공자를 구분한다. */
 public enum OidcProvider {
   KAKAO,
   APPLE,

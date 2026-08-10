@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 척척학사의 refresh 포털 연동 비즈니스 흐름을 처리한다. */
+/** 기존 포털 연동 사용자의 학생 정보를 최신 조회 결과로 갱신한다. */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,11 +27,13 @@ public class RefreshPortalConnectionService {
   private final PortalStudentDataMapper portalStudentDataMapper;
 
   /**
-   * 척척학사의 execute with 포털 data 대상을 처리한다.
+   * 기존 연동 학번이 같은 경우에만 포털 학생 정보를 갱신한다.
+   *
+   * <p>미연동 사용자, 학번 불일치 또는 유효하지 않은 포털 데이터는 저장하지 않고 실패 결과로 반환한다.
    *
    * @param userId 사용자 식별자
-   * @param portalData 포털 학사 데이터
-   * @return 포털 연동 결과
+   * @param portalData 최신 학생 정보가 포함된 포털 조회 결과
+   * @return 갱신된 학번과 학생 정보 또는 갱신하지 못한 사유
    */
   @Transactional
   public PortalConnectionResult executeWithPortalData(UUID userId, PortalData portalData) {

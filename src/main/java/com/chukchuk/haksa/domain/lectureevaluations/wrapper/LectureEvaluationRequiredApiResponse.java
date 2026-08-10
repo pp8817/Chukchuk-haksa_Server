@@ -11,7 +11,7 @@ import java.util.List;
 public class LectureEvaluationRequiredApiResponse
     extends SuccessResponse<LectureEvaluationDto.RequiredResponse> {
 
-  /** 필수 의존성과 초기 상태를 받아 인스턴스를 생성한다. */
+  /** 필수 강의평가 조회 성공 응답의 예시 값과 메시지를 구성한다. */
   public LectureEvaluationRequiredApiResponse() {
     super(
         new LectureEvaluationDto.RequiredResponse(

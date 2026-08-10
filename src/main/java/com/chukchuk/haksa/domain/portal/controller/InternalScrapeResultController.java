@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-/** 척척학사의 internal 스크래핑 결과 HTTP 요청을 처리한다. */
+/** 스크래핑 워커의 서명된 결과 콜백을 검증 서비스에 전달한다. */
 @RestController
 @RequestMapping("/internal/scrape-results")
 @RequiredArgsConstructor

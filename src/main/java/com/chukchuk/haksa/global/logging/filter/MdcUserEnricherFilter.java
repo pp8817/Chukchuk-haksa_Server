@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/** 척척학사의 mdc 사용자 enricher 요청 처리 과정의 필터링을 담당한다. */
+/** 인증 사용자 식별자를 MDC와 Sentry 문맥에 추가하고 요청 종료 시 제거한다. */
 @Component
 @Order(20) // SecurityFilterChain 이후, HttpSummaryLoggingFilter(30)보다 먼저
 public class MdcUserEnricherFilter extends OncePerRequestFilter {

@@ -92,7 +92,7 @@ public enum ErrorCode {
   /**
    * 오류 코드를 반환한다.
    *
-   * @return string
+   * @return 외부 API 응답에 노출되는 안정적인 애플리케이션 오류 코드
    */
   public String code() {
     return code;
@@ -101,7 +101,7 @@ public enum ErrorCode {
   /**
    * 오류 메시지를 반환한다.
    *
-   * @return string
+   * @return 클라이언트에 전달할 기본 오류 메시지
    */
   public String message() {
     return message;
@@ -110,7 +110,7 @@ public enum ErrorCode {
   /**
    * 오류에 대응하는 HTTP 상태를 반환한다.
    *
-   * @return http status 결과
+   * @return 오류를 HTTP 응답으로 변환할 때 사용할 상태
    */
   public HttpStatus status() {
     return status;

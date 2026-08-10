@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/** 척척학사의 보안 애플리케이션 설정을 제공한다. */
+/** 무상태 JWT 인증, 공개 경로, 예외 처리 및 환경별 CORS 정책을 구성한다. */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -35,10 +35,10 @@ public class SecurityConfig {
   /**
    * 인증과 인가 정책이 적용된 보안 필터 체인을 구성한다.
    *
-   * @param http http 값
-   * @param corsConfigurationSource cors configuration source 값
-   * @return 보안 filter chain 결과
-   * @throws Exception exception이 발생하는 경우
+   * @param http 애플리케이션 보안 정책을 구성할 builder
+   * @param corsConfigurationSource 현재 profile에 맞는 CORS 정책
+   * @return 공개 경로를 제외한 요청에 JWT 인증을 요구하는 필터 체인
+   * @throws Exception Spring Security 필터 체인을 구성할 수 없는 경우
    */
   @Bean
   public SecurityFilterChain securityFilterChain(
@@ -99,7 +99,7 @@ public class SecurityConfig {
   /**
    * 개발 환경의 CORS 정책을 반환한다.
    *
-   * @return cors configuration source 결과
+   * @return 개발 도메인과 로컬 프론트엔드를 허용하는 CORS 정책
    */
   @Bean("corsConfigurationSource")
   @Profile("dev")
@@ -124,7 +124,7 @@ public class SecurityConfig {
   /**
    * 운영 환경의 CORS 정책을 반환한다.
    *
-   * @return cors configuration source 결과
+   * @return 운영·개발 웹 도메인과 로컬 프론트엔드를 허용하는 CORS 정책
    */
   @Bean("corsConfigurationSource")
   @Profile("prod")
@@ -150,7 +150,7 @@ public class SecurityConfig {
   /**
    * 기본 CORS 정책을 반환한다.
    *
-   * @return cors configuration source 결과
+   * @return 모든 origin을 허용하는 로컬 실행용 CORS 정책
    */
   @Bean("corsConfigurationSource")
   @Profile("local")
@@ -167,7 +167,7 @@ public class SecurityConfig {
   /**
    * Spring Security 인증 관리자를 반환한다.
    *
-   * @return authentication manager 결과
+   * @return 사용자 조회 서비스를 사용하는 DAO 인증 관리자
    */
   @Bean
   public AuthenticationManager authenticationManager() {

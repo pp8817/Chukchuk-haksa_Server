@@ -48,8 +48,8 @@ public class CourseEvaluationTag {
   /**
    * 과목 evaluation tag 인스턴스를 생성한다.
    *
-   * @param courseEvaluation 과목 evaluation 값
-   * @param tag tag 값
+   * @param courseEvaluation 태그가 속한 강의평가
+   * @param tag 사용자가 선택한 평가 태그
    */
   public CourseEvaluationTag(CourseEvaluation courseEvaluation, LectureEvaluationTag tag) {
     this.courseEvaluation = courseEvaluation;

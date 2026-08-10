@@ -10,18 +10,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-/** 학기 학사 record repository 기능의 계약을 정의한다. */
+/** 학생의 학기 성적을 학생·연도·학기로 조회하고 학생 단위로 삭제하는 저장소다. */
 @Repository
 public interface SemesterAcademicRecordRepository
     extends JpaRepository<SemesterAcademicRecord, UUID> {
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @param year 연도
-   * @param semester 학기 값
-   * @return 조회
+   * @param year 대상 연도
+   * @param semester 대상 학기
+   * @return 조건에 일치하는 학사 기록가 있으면 포함한 선택값
    */
   @Query(
       """
@@ -37,34 +37,34 @@ public interface SemesterAcademicRecordRepository
       @Param("semester") Integer semester);
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 조건에 일치하는 학사 기록 목록
    */
   List<SemesterAcademicRecord> findByStudentId(UUID studentId); // studentID로 data 얻어오기
 
   /**
-   * 요청 조건에 맞는 데이터를 조회한다.
+   * 학사 기록를 메서드에 지정된 식별 조건과 정렬 기준으로 조회한다.
    *
    * @param studentId 학생 식별자
-   * @return 조회
+   * @return 조건에 일치하는 학사 기록 목록
    */
   List<SemesterAcademicRecord> findByStudentIdOrderByYearDescSemesterDesc(UUID studentId);
 
   /**
-   * 척척학사의 delete by 학생 id 대상을 삭제한다.
+   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
    *
    * @param studentId 학생 식별자
    */
   void deleteByStudentId(UUID studentId);
 
   /**
-   * 척척학사의 delete by 학생 id and year and 학기 대상을 삭제한다.
+   * 지정된 조건에 해당하는 학사 기록를 삭제한다.
    *
    * @param studentId 학생 식별자
-   * @param year 연도
-   * @param semester 학기 값
+   * @param year 대상 연도
+   * @param semester 대상 학기
    */
   @Modifying
   @Query(

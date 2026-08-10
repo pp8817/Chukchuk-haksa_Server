@@ -17,11 +17,11 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** 척척학사의 hmac signature 입력 값과 인증 조건을 검증한다. */
+/** 스크래핑 콜백의 시각 오차와 HMAC-SHA256 서명을 검증한다. */
 @Component
 public class HmacSignatureVerifier {
 
-  /** 업무 처리에서 사용할 검증 failure reason 값을 정의한다. */
+  /** 콜백 서명 검증 성공 또는 실패 원인을 구분한다. */
   public enum VerificationFailureReason {
     OK,
     MISSING_TIMESTAMP,
@@ -34,25 +34,25 @@ public class HmacSignatureVerifier {
   }
 
   /**
-   * 계층 간 전달할 검증 결과 데이터를 표현한다.
+   * 콜백 서명의 유효 여부와 최초 실패 원인을 전달한다.
    *
-   * @param valid valid 식별자
-   * @param reason reason 값
+   * @param valid timestamp와 HMAC 서명이 모두 유효한지 여부
+   * @param reason 검증 성공 또는 최초 실패 원인
    */
   public record VerificationResult(boolean valid, VerificationFailureReason reason) {}
 
   /**
-   * 계층 간 전달할 검증 diagnostics 데이터를 표현한다.
+   * 원문이나 비밀키를 노출하지 않고 콜백 서명 실패를 분석할 값을 전달한다.
    *
-   * @param reason reason 값
-   * @param parsedTimestamp parsed 요청 타임스탬프
-   * @param timestampDeltaSeconds timestamp delta seconds 값
-   * @param rawBodyHash raw body hash 값
-   * @param actualSignatureEncoding actual signature encoding 값
-   * @param actualSignatureLength actual signature length 값
-   * @param actualSignatureHash actual signature hash 값
-   * @param expectedUtf8SignatureHash expected utf 8 signature hash 값
-   * @param expectedHexSignatureHash expected hex signature hash 값
+   * @param reason 검증 성공 또는 최초 실패 원인
+   * @param parsedTimestamp 파싱된 요청 시각의 ISO-8601 표현
+   * @param timestampDeltaSeconds 서버 현재 시각과 요청 시각의 차이(초)
+   * @param rawBodyHash 요청 본문의 SHA-256 해시
+   * @param actualSignatureEncoding 전달된 서명의 감지된 인코딩
+   * @param actualSignatureLength 디코딩한 서명의 byte 길이
+   * @param actualSignatureHash 전달된 서명의 SHA-256 해시
+   * @param expectedUtf8SignatureHash 비밀키를 UTF-8로 해석한 예상 서명의 해시
+   * @param expectedHexSignatureHash 비밀키를 16진수로 해석한 예상 서명의 해시
    */
   public record VerificationDiagnostics(
       VerificationFailureReason reason,
@@ -71,7 +71,7 @@ public class HmacSignatureVerifier {
   /**
    * 스크래핑 콜백 설정으로 서명 검증기를 생성한다.
    *
-   * @param scrapingProperties 스크래핑 properties 값
+   * @param scrapingProperties HMAC 비밀키와 허용 시각 오차 설정
    */
   @Autowired
   public HmacSignatureVerifier(ScrapingProperties scrapingProperties) {
@@ -83,8 +83,8 @@ public class HmacSignatureVerifier {
   /**
    * HMAC secret과 허용 시각 오차로 서명 검증기를 생성한다.
    *
-   * @param secret secret 값
-   * @param allowedSkewSeconds allowed skew seconds 값
+   * @param secret HMAC-SHA256 비밀키의 UTF-8 또는 16진수 표현
+   * @param allowedSkewSeconds replay 방지를 위해 허용할 요청 시각 오차(초)
    */
   public HmacSignatureVerifier(String secret, long allowedSkewSeconds) {
     this.secret = secret;
@@ -92,11 +92,12 @@ public class HmacSignatureVerifier {
   }
 
   /**
-   * 입력 값과 업무 처리 조건을 검증한다.
+   * 요청 timestamp와 본문을 결합한 HMAC 서명 및 허용 시각 오차를 검증한다.
    *
    * @param timestamp 요청 타임스탬프
    * @param rawBody 서명 검증 대상 요청 본문
-   * @param signature 요청 서명
+   * @param signature Base64, Base64 URL 또는 16진수로 표현된 요청 서명
+   * @throws CommonException 필수 값, timestamp 또는 서명이 유효하지 않은 경우
    */
   public void verify(String timestamp, String rawBody, String signature) {
     VerificationResult result = inspect(timestamp, rawBody, signature);
@@ -111,7 +112,7 @@ public class HmacSignatureVerifier {
    * @param timestamp 요청 타임스탬프
    * @param rawBody 서명 검증 대상 요청 본문
    * @param signature 요청 서명
-   * @return 검증
+   * @return 예외를 발생시키지 않는 검증 결과와 실패 원인
    */
   public VerificationResult inspect(String timestamp, String rawBody, String signature) {
     if (isBlank(timestamp)) {
@@ -153,7 +154,7 @@ public class HmacSignatureVerifier {
    * @param timestamp 요청 타임스탬프
    * @param rawBody 서명 검증 대상 요청 본문
    * @param signature 요청 서명
-   * @return 검증 diagnostics 결과
+   * @return 원문과 비밀키 대신 길이·인코딩·해시로 구성한 진단 정보
    */
   public VerificationDiagnostics diagnostics(String timestamp, String rawBody, String signature) {
     VerificationFailureReason reason;
@@ -209,8 +210,9 @@ public class HmacSignatureVerifier {
   /**
    * 정규화된 문자열의 HMAC 값을 계산한다.
    *
-   * @param canonicalString canonical string 여부
-   * @return byte
+   * @param canonicalString timestamp와 본문을 결합한 서명 대상 문자열
+   * @return 설정된 비밀키로 계산한 HMAC-SHA256 byte 배열
+   * @throws CommonException 비밀키 또는 HMAC 계산을 사용할 수 없는 경우
    */
   public byte[] hmac(String canonicalString) {
     try {

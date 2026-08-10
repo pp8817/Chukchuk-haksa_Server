@@ -5,7 +5,7 @@ import com.chukchuk.haksa.domain.student.model.GradeType;
 import java.util.UUID;
 import lombok.Getter;
 
-/** 학사 영역에서 과목 수강 책임을 수행한다. */
+/** 학생의 개설 과목 수강 결과와 재수강 상태를 표현한다. */
 @Getter
 public class CourseEnrollment {
   private UUID studentId;
@@ -17,15 +17,15 @@ public class CourseEnrollment {
   private boolean isRetakeDeleted;
 
   /**
-   * 과목 수강 인스턴스를 생성한다.
+   * 학생의 개설 과목 성적과 재수강 정보를 생성한다.
    *
    * @param studentId 학생 식별자
    * @param offeringId 과목 개설 식별자
-   * @param grade 성적 값
+   * @param grade 취득 성적
    * @param points 학점
-   * @param isRetake is retake 여부
+   * @param isRetake 재수강 여부
    * @param originalScore 원점수
-   * @param isRetakeDeleted is retake deleted 여부
+   * @param isRetakeDeleted 재수강으로 대체된 성적의 제외 여부
    */
   public CourseEnrollment(
       UUID studentId,

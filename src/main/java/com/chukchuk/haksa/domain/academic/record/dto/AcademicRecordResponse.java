@@ -4,10 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 /**
- * 학사 record 응답 데이터를 전달한다.
+ * 한 학기의 성적과 전공·교양·기타 영역별 수강 과목을 묶는다.
  *
- * @param semesterGrade 학기 성적 값
- * @param summary summary 값
+ * @param semesterGrade 응답에 포함할 학기 성적
+ * @param summary 저장하거나 비교할 학사 요약
  */
 @Schema(description = "학기별 성적 및 수강 과목 응답")
 public record AcademicRecordResponse(
@@ -20,9 +20,9 @@ public record AcademicRecordResponse(
   /**
    * 계층 간 전달할 데이터를 표현한다.
    *
-   * @param major 전공 값
-   * @param liberal liberal 값
-   * @param etc etc 값
+   * @param major 주전공
+   * @param liberal 응답에 포함할 liberal
+   * @param etc 응답에 포함할 etc
    */
   @Schema(description = "수강 과목 목록")
   public record Courses(

@@ -6,7 +6,7 @@ import com.chukchuk.haksa.application.portal.PortalLoginVerifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-/** 척척학사의 포털 클라이언트 로그인 입력 값과 인증 조건을 검증한다. */
+/** 수원대학교 PortalClient를 사용해 포털 자격 증명의 로그인 가능 여부를 검증한다. */
 @Component
 @RequiredArgsConstructor
 public class PortalClientLoginVerifier implements PortalLoginVerifier {

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** 척척학사의 학생 HTTP 요청을 처리한다. */
+/** 학생 프로필과 목표 학점 조회·수정 요청을 서비스에 위임한다. */
 @Slf4j
 @Validated
 @RestController
