@@ -40,6 +40,7 @@
 
 ## Development Rules
 - 실제 파일과 호출부를 확인하고 요청 범위만 변경합니다.
+- Java 작성과 Javadoc 기준은 `docs/development/java-style.md`를 따릅니다.
 - 설정은 `application-local.yml`, `application-dev.yml`, `application-prod.yml`로 환경별 관리합니다.
 - Redis 자동 구성은 `application.yml`에서 제외하며 local cache를 기본으로 사용합니다.
 - 공개 API 변경은 Springdoc annotation·configuration과 계약 테스트를 함께 갱신하고 실행 중인 애플리케이션의 `/v3/api-docs`를 검증합니다.
@@ -50,7 +51,8 @@
 - 적용된 migration은 수정하거나 자동 rollback하지 않으며, 보정은 다음 version의 forward migration으로 수행합니다.
 
 ## Testing And Verification
-- 코드·설정·배포 변경 후 `./gradlew test --stacktrace --no-daemon`을 실행합니다.
+- Java 자동 포맷은 `./gradlew spotlessApply --no-daemon`, 개별 진단은 `spotlessCheck`, `checkstyleMain checkstyleTest`, `test` task를 사용합니다.
+- 코드·설정·배포 변경의 최종 검증은 `./gradlew check --stacktrace --no-daemon`을 실행합니다.
 - 문서만 변경하면 링크, `git diff --check`, 변경 범위를 검토합니다.
 - 최종 응답에는 실제로 실행한 정확한 검사와 결과, 남은 위험을 포함합니다.
 

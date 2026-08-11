@@ -1,5 +1,9 @@
 // 포털 raw 데이터의 외국어 인증 값을 내부 모델로 변환하는 테스트
+
 package com.chukchuk.haksa.infrastructure.portal.mapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
@@ -11,110 +15,114 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 class PortalDataMapperTests {
 
-    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+  private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    @Test
-    @DisplayName("flangPassGb가 Y이면 알 수 없는 값으로 거부한다")
-    void rejectsLanguageCertWhenFlagIsY() throws Exception {
-        RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("Y"), RawPortalData.class);
+  @Test
+  @DisplayName("flangPassGb가 Y이면 알 수 없는 값으로 거부한다")
+  void rejectsLanguageCertWhenFlagIsY() throws Exception {
+    RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("Y"), RawPortalData.class);
 
-        assertThatThrownBy(() -> PortalDataMapper.toPortalData(raw))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("알 수 없는 외국어 인증 값: Y");
-    }
+    assertThatThrownBy(() -> PortalDataMapper.toPortalData(raw))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("알 수 없는 외국어 인증 값: Y");
+  }
 
-    @Test
-    @DisplayName("flangPassGb가 N이면 알 수 없는 값으로 거부한다")
-    void rejectsLanguageCertWhenFlagIsN() throws Exception {
-        RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("N"), RawPortalData.class);
+  @Test
+  @DisplayName("flangPassGb가 N이면 알 수 없는 값으로 거부한다")
+  void rejectsLanguageCertWhenFlagIsN() throws Exception {
+    RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("N"), RawPortalData.class);
 
-        assertThatThrownBy(() -> PortalDataMapper.toPortalData(raw))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("알 수 없는 외국어 인증 값: N");
-    }
+    assertThatThrownBy(() -> PortalDataMapper.toPortalData(raw))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("알 수 없는 외국어 인증 값: N");
+  }
 
-    @Test
-    @DisplayName("flangPassGb가 통과이면 외국어 인증 통과로 변환한다")
-    void mapsLanguageCertFulfilledWhenFlagIsKoreanPass() throws Exception {
-        RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("통과"), RawPortalData.class);
+  @Test
+  @DisplayName("flangPassGb가 통과이면 외국어 인증 통과로 변환한다")
+  void mapsLanguageCertFulfilledWhenFlagIsKoreanPass() throws Exception {
+    RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("통과"), RawPortalData.class);
 
-        PortalData portalData = PortalDataMapper.toPortalData(raw);
+    PortalData portalData = PortalDataMapper.toPortalData(raw);
 
-        assertThat(portalData.student().languageCertFulfilled()).isTrue();
-    }
+    assertThat(portalData.student().languageCertFulfilled()).isTrue();
+  }
 
-    @Test
-    @DisplayName("flangPassGb가 미통과이면 외국어 인증 미통과로 변환한다")
-    void mapsLanguageCertNotFulfilledWhenFlagIsKoreanFail() throws Exception {
-        RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("미통과"), RawPortalData.class);
+  @Test
+  @DisplayName("flangPassGb가 미통과이면 외국어 인증 미통과로 변환한다")
+  void mapsLanguageCertNotFulfilledWhenFlagIsKoreanFail() throws Exception {
+    RawPortalData raw = objectMapper.readValue(payloadWithLanguageCert("미통과"), RawPortalData.class);
 
-        PortalData portalData = PortalDataMapper.toPortalData(raw);
+    PortalData portalData = PortalDataMapper.toPortalData(raw);
 
-        assertThat(portalData.student().languageCertFulfilled()).isFalse();
-    }
+    assertThat(portalData.student().languageCertFulfilled()).isFalse();
+  }
 
-    @Test
-    @DisplayName("point가 없으면 gainPoint를 과목 학점으로 변환한다")
-    void mapsGainPointWhenCoursePointIsNull() throws Exception {
-        RawPortalData raw = objectMapper.readValue(payloadWithNullPointAndGainPoint(), RawPortalData.class);
+  @Test
+  @DisplayName("point가 없으면 gainPoint를 과목 학점으로 변환한다")
+  void mapsGainPointWhenCoursePointIsNull() throws Exception {
+    RawPortalData raw =
+        objectMapper.readValue(payloadWithNullPointAndGainPoint(), RawPortalData.class);
 
-        PortalData portalData = PortalDataMapper.toPortalData(raw);
+    PortalData portalData = PortalDataMapper.toPortalData(raw);
 
-        assertThat(portalData.academic().semesters().get(0).courses().get(0).credits()).isEqualTo(4);
-        assertThat(portalData.curriculum().offerings().get(0).points()).isEqualTo(4);
-    }
+    assertThat(portalData.academic().semesters().get(0).courses().get(0).credits()).isEqualTo(4);
+    assertThat(portalData.curriculum().offerings().get(0).points()).isEqualTo(4);
+  }
 
-    @ParameterizedTest
-    @CsvSource({"8영역, 8", "10영역, 10"})
-    @DisplayName("숫자 영역명은 전체 영역 번호로 변환한다")
-    void mapsFullAreaNumber(String rawAreaName, int expected) throws Exception {
-        PortalData portalData = PortalDataMapper.toPortalData(areaPayload(rawAreaName));
+  @ParameterizedTest
+  @CsvSource({"8영역, 8", "10영역, 10"})
+  @DisplayName("숫자 영역명은 전체 영역 번호로 변환한다")
+  void mapsFullAreaNumber(String rawAreaName, int expected) throws Exception {
+    PortalData portalData = PortalDataMapper.toPortalData(areaPayload(rawAreaName));
 
-        assertThat(portalData.curriculum().offerings().get(0).areaCode()).isEqualTo(expected);
-    }
+    assertThat(portalData.curriculum().offerings().get(0).areaCode()).isEqualTo(expected);
+  }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {"영역8", "8영역추가", "미지정"})
-    @DisplayName("누락되거나 숫자+영역 형식이 아니면 영역 코드 없음으로 변환한다")
-    void rejectsInvalidAreaFormat(String rawAreaName) throws Exception {
-        PortalData portalData = PortalDataMapper.toPortalData(areaPayload(rawAreaName));
+  @ParameterizedTest
+  @NullAndEmptySource
+  @ValueSource(strings = {"영역8", "8영역추가", "미지정"})
+  @DisplayName("누락되거나 숫자+영역 형식이 아니면 영역 코드 없음으로 변환한다")
+  void rejectsInvalidAreaFormat(String rawAreaName) throws Exception {
+    PortalData portalData = PortalDataMapper.toPortalData(areaPayload(rawAreaName));
 
-        assertThat(portalData.curriculum().offerings().get(0).areaCode()).isZero();
-    }
+    assertThat(portalData.curriculum().offerings().get(0).areaCode()).isZero();
+  }
 
-    private static String payloadWithLanguageCert(String flangPassGb) {
-        return """
-                {
-                  "studentInfo":{"sno":"17019013","studNm":"홍길동","univCd":"01","univNm":"수원대학교","dpmjCd":"D1","dpmjNm":"컴퓨터학부","mjorCd":"M1","mjorNm":"컴퓨터학과","the2MjorCd":null,"the2MjorNm":null,"scrgStatNm":"재학","enscYear":"2021","enscSmrCd":"10","enscDvcd":"신입","studGrde":4,"facSmrCnt":8,"flangPassGb":"%s"},
-                  "semesters":[],
-                  "academicRecords":{
-                    "listSmrCretSumTabYearSmr":[],
-                    "selectSmrCretSumTabSjTotal":{"gainPoint":"120","applPoint":"130","gainAvmk":"3.8","gainTavgPont":"90"}
-                  }
-                }
-                """.formatted(flangPassGb);
-    }
+  private static String payloadWithLanguageCert(String flangPassGb) {
+    return String.format(
+        """
+        {
+          "studentInfo":{"sno":"17019013","studNm":"홍길동","univCd":"01","univNm":"수원대학교","dpmjCd":"D1","dpmjNm":"컴퓨터학부","mjorCd":"M1","mjorNm":"컴퓨터학과","the2MjorCd":null,"the2MjorNm":null,"scrgStatNm":"재학","enscYear":"2021","enscSmrCd":"10","enscDvcd":"신입","studGrde":4,"facSmrCnt":8,"flangPassGb":"%s"},
+          "semesters":[],
+          "academicRecords":{
+            "listSmrCretSumTabYearSmr":[],
+            "selectSmrCretSumTabSjTotal":{"gainPoint":"120","applPoint":"130","gainAvmk":"3.8","gainTavgPont":"90"}
+          }
+        }
+        """,
+        flangPassGb);
+  }
 
-    private static String payloadWithNullPointAndGainPoint() {
-        return payloadWithLanguageCert("통과").replace(
+  private static String payloadWithNullPointAndGainPoint() {
+    return payloadWithLanguageCert("통과")
+        .replace(
+            "\"semesters\":[]",
+            "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{\"subjtCd\":\"C101\","
+                + "\"subjtNm\":\"학점보정\",\"point\":null,\"gainPoint\":4,"
+                + "\"cretDelNm\":null}]}]");
+  }
+
+  private RawPortalData areaPayload(String areaName) throws Exception {
+    String rawAreaName = areaName == null ? "null" : "\"%s\"".formatted(areaName);
+    String payload =
+        payloadWithLanguageCert("통과")
+            .replace(
                 "\"semesters\":[]",
-                "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{\"subjtCd\":\"C101\",\"subjtNm\":\"학점보정\",\"point\":null,\"gainPoint\":4,\"cretDelNm\":null}]}]"
-        );
-    }
-
-    private RawPortalData areaPayload(String areaName) throws Exception {
-        String rawAreaName = areaName == null ? "null" : "\"%s\"".formatted(areaName);
-        String payload = payloadWithLanguageCert("통과").replace(
-                "\"semesters\":[]",
-                "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{\"subjtCd\":\"C101\",\"cltTerrNm\":%s,\"cretDelNm\":null}]}]"
-                        .formatted(rawAreaName)
-        );
-        return objectMapper.readValue(payload, RawPortalData.class);
-    }
+                "\"semesters\":[{\"semester\":\"2025-10\",\"courses\":[{"
+                    + "\"subjtCd\":\"C101\",\"cltTerrNm\":%s,\"cretDelNm\":null}]}]"
+                        .formatted(rawAreaName));
+    return objectMapper.readValue(payload, RawPortalData.class);
+  }
 }
