@@ -39,6 +39,6 @@ public class StudentDeletionService {
             studentGraduationProgressRepository.deleteByStudentId(studentId);
         }
         student.anonymize();
-        studentRepository.save(student);
+        studentRepository.saveAndFlush(student);
     }
 }

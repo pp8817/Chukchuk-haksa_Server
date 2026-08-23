@@ -3,6 +3,7 @@ package com.chukchuk.haksa.domain.graduation.policy;
 
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.department.repository.DepartmentRepository;
+import com.chukchuk.haksa.domain.graduation.dto.AreaRequirementDto;
 import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
@@ -20,6 +21,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,5 +61,40 @@ class GraduationMajorResolverTest {
         assertThat(MDC.get("secondaryDepartmentId")).isEqualTo("NONE");
         assertThat(MDC.get("majorType")).isEqualTo("SINGLE");
         assertThat(MDC.get("student_code")).isNull();
+    }
+
+    @Test
+    void 복수전공은_주전공_영역요건이_있는_과거_학과_후보를_선택한다() {
+        Student student = mock(Student.class);
+        Department currentPrimary = mock(Department.class);
+        Department legacyPrimary = mock(Department.class);
+        Department secondary = mock(Department.class);
+        AreaRequirementDto requirement = new AreaRequirementDto("전핵", 3, null, null);
+
+        when(student.getMajor()).thenReturn(currentPrimary);
+        when(student.getSecondaryMajor()).thenReturn(secondary);
+        when(currentPrimary.getId()).thenReturn(197L);
+        when(currentPrimary.getEstablishedDepartmentName()).thenReturn("경제금융");
+        when(legacyPrimary.getId()).thenReturn(93L);
+        when(secondary.getId()).thenReturn(94L);
+        when(secondary.getEstablishedDepartmentName()).thenReturn("국제개발협력");
+        when(departmentRepository.findAllByEstablishedDepartmentName("경제금융"))
+                .thenReturn(List.of(currentPrimary, legacyPrimary));
+        when(departmentRepository.findAllByEstablishedDepartmentName("국제개발협력"))
+                .thenReturn(List.of(secondary));
+        when(graduationQueryRepository.getAreaRequirementsWithCache(197L, 2022))
+                .thenReturn(List.of());
+        when(graduationQueryRepository.getAreaRequirementsWithCache(93L, 2022))
+                .thenReturn(List.of(requirement));
+        when(graduationQueryRepository.getDualMajorRequirementsWithCache(93L, 94L, 2022))
+                .thenReturn(List.of(requirement));
+
+        MajorResolutionResult result = resolver.resolve(student, 2022);
+
+        assertThat(result).isEqualTo(new MajorResolutionResult(93L, 94L));
+        verify(graduationQueryRepository, never())
+                .getDualMajorRequirementsWithCache(197L, 94L, 2022);
+        verify(graduationQueryRepository)
+                .getDualMajorRequirementsWithCache(93L, 94L, 2022);
     }
 }
