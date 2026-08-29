@@ -55,8 +55,7 @@ class PortalStudentDataMapper {
             .secondaryMajor(secondaryMajor)
             .admissionYear(raw.admission().year())
             .semesterEnrolled(raw.admission().semester())
-            .isTransferStudent(
-                raw.admission().type() != null && raw.admission().type().contains("편입"))
+            .isTransferStudent(isTransferStudent(raw.admission().type()))
             .isGraduated(status == StudentStatus.졸업)
             .status(status)
             .gradeLevel(raw.academic().gradeLevel())
@@ -77,6 +76,15 @@ class PortalStudentDataMapper {
             raw.academic().completedSemesters() % 2 == 0 ? 1 : 2);
 
     return new PortalStudentData(studentData, studentInfo);
+  }
+
+  private boolean isTransferStudent(String admissionType) {
+    if (admissionType == null) {
+      return false;
+    }
+
+    String normalized = admissionType.trim();
+    return "2".equals(normalized) || normalized.contains("편입");
   }
 
   private StudentStatus parseStatus(String status) {

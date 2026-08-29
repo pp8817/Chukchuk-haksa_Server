@@ -25,6 +25,10 @@ import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -57,6 +61,36 @@ class PortalConnectionGuardTests {
     assertThat(mapper.toStudentData(student("UNKNOWN", department(), admission(), academic())))
         .isNull();
     verifyNoInteractions(departmentService);
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2, true", "편입, true", "일반편입, true", "신입, false", "' 2 ', true", "'', false"})
+  void mapperUsesPortalAdmissionCodeToIdentifyTransferStudent(
+      String admissionType, boolean expected) {
+    PortalStudentDataMapper mapper = new PortalStudentDataMapper(departmentService);
+    when(departmentService.getOrCreateDepartment("D1", "컴퓨터학부"))
+        .thenReturn(new Department("D1", "컴퓨터학부"));
+
+    PortalStudentDataMapper.PortalStudentData result =
+        mapper.toStudentData(
+            student("재학", department(), new AdmissionInfo(2021, 10, admissionType), academic()));
+
+    assertThat(result.studentData().isTransferStudent()).isEqualTo(expected);
+  }
+
+  @ParameterizedTest
+  @NullSource
+  @ValueSource(strings = {"   "})
+  void mapperTreatsMissingAdmissionCodeAsNonTransferStudent(String admissionType) {
+    PortalStudentDataMapper mapper = new PortalStudentDataMapper(departmentService);
+    when(departmentService.getOrCreateDepartment("D1", "컴퓨터학부"))
+        .thenReturn(new Department("D1", "컴퓨터학부"));
+
+    PortalStudentDataMapper.PortalStudentData result =
+        mapper.toStudentData(
+            student("재학", department(), new AdmissionInfo(2021, 10, admissionType), academic()));
+
+    assertThat(result.studentData().isTransferStudent()).isFalse();
   }
 
   @Test
