@@ -196,30 +196,13 @@ public class Student extends BaseEntity {
   }
 
   /**
-   * 학번의 입학 연도와 학적 입학 연도가 다르거나 편입 표식이 있는지 확인한다.
+   * 저장된 학적 정보로 편입생 여부를 확인한다.
    *
-   * @return 편입생으로 판정되면 {@code true}
+   * @return 저장된 편입생 플래그가 {@code true}이면 {@code true}
    */
   public boolean isTransferStudent() {
-    if (this.studentCode == null
-        || this.academicInfo == null
-        || this.academicInfo.getAdmissionYear() == null) {
-      return false;
-    }
-
-    if (this.studentCode.length() < 2) {
-      return false;
-    }
-
-    if (this.studentCode.startsWith("test_")) {
-      return false;
-    }
-
-    String codePrefix = this.studentCode.substring(0, 2); // 학번 앞 2자리
-    String yearSuffix =
-        String.valueOf(this.academicInfo.getAdmissionYear()).substring(2); // 입학년도 뒤 2자리
-
-    return !codePrefix.equals(yearSuffix);
+    return this.academicInfo != null
+        && Boolean.TRUE.equals(this.academicInfo.getIsTransferStudent());
   }
 
   /**

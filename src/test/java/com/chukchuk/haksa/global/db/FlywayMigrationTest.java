@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class FlywayMigrationTest {
 
   @Test
-  void freshDatabaseMigratesFromV1ToV10() throws Exception {
+  void freshDatabaseMigratesFromV1ToV11() throws Exception {
     String dbName = "flyway-migration-" + UUID.randomUUID();
     String url =
         "jdbc:h2:mem:"
@@ -62,7 +62,8 @@ class FlywayMigrationTest {
             MigrationVersion.fromVersion("7"),
             MigrationVersion.fromVersion("8"),
             MigrationVersion.fromVersion("9"),
-            MigrationVersion.fromVersion("10"));
+            MigrationVersion.fromVersion("10"),
+            MigrationVersion.fromVersion("11"));
 
     try (var connection = DriverManager.getConnection(url, "sa", "")) {
       assertThat(hasColumn(connection, "raw_faculty_division_name")).isTrue();
@@ -95,6 +96,104 @@ class FlywayMigrationTest {
         assertThat(resultSet.getString("area_name")).isEqualTo("8영역");
         assertThat(resultSet.getBoolean("is_active")).isTrue();
       }
+    }
+  }
+
+  @Test
+  void v11BackfillsTransferStudentFlagFromAdmissionType() throws Exception {
+    String dbName = "flyway-v11-transfer-" + UUID.randomUUID();
+    String url =
+        "jdbc:h2:mem:"
+            + dbName
+            + ";MODE=PostgreSQL;DATABASE_TO_UPPER=false;NON_KEYWORDS=YEAR;"
+            + "DB_CLOSE_DELAY=-1;"
+            + "INIT=CREATE SCHEMA IF NOT EXISTS public";
+
+    Flyway.configure()
+        .dataSource(url, "sa", "")
+        .schemas("public")
+        .locations("classpath:db/migration")
+        .target(MigrationVersion.fromVersion("10"))
+        .load()
+        .migrate();
+
+    UUID transferUserId = UUID.randomUUID();
+    UUID legacyTransferUserId = UUID.randomUUID();
+    UUID generalUserId = UUID.randomUUID();
+    UUID nullAdmissionUserId = UUID.randomUUID();
+    UUID transferStudentId = UUID.randomUUID();
+    UUID legacyTransferStudentId = UUID.randomUUID();
+    UUID generalStudentId = UUID.randomUUID();
+    UUID nullAdmissionStudentId = UUID.randomUUID();
+
+    try (var connection = DriverManager.getConnection(url, "sa", "");
+        var statement = connection.createStatement()) {
+      statement.executeUpdate(
+          """
+          INSERT INTO public.departments (id, department_code, established_department_name)
+          VALUES (1001, 'MIGRATION-TRANSFER', '마이그레이션 편입 테스트학과')
+          """);
+      statement.executeUpdate(
+          """
+          INSERT INTO public.users (id, email, is_deleted)
+          VALUES
+              ('%s', 'transfer@example.com', FALSE),
+              ('%s', 'legacy-transfer@example.com', FALSE),
+              ('%s', 'general@example.com', FALSE),
+              ('%s', 'null-admission@example.com', FALSE)
+          """
+              .formatted(transferUserId, legacyTransferUserId, generalUserId, nullAdmissionUserId));
+      statement.executeUpdate(
+          """
+          INSERT INTO public.students (
+              student_id, student_code, admission_type, reconnection_required,
+              admission_year, department_id, user_id
+          )
+          VALUES
+              ('%s', 'TRANSFER-2', '2', FALSE, 2022, 1001, '%s'),
+              ('%s', 'TRANSFER-HANGUL', ' 일반편입 ', FALSE, 2022, 1001, '%s'),
+              ('%s', 'GENERAL', '신입', FALSE, 2022, 1001, '%s'),
+              ('%s', 'NULL-ADMISSION', NULL, FALSE, 2022, 1001, '%s')
+          """
+              .formatted(
+                  transferStudentId,
+                  transferUserId,
+                  legacyTransferStudentId,
+                  legacyTransferUserId,
+                  generalStudentId,
+                  generalUserId,
+                  nullAdmissionStudentId,
+                  nullAdmissionUserId));
+    }
+
+    Flyway.configure()
+        .dataSource(url, "sa", "")
+        .schemas("public")
+        .locations("classpath:db/migration")
+        .load()
+        .migrate();
+
+    try (var connection = DriverManager.getConnection(url, "sa", "");
+        var statement = connection.createStatement();
+        var resultSet =
+            statement.executeQuery(
+                """
+                SELECT student_code, is_transfer_student
+                FROM public.students
+                ORDER BY student_code
+                """)) {
+      assertThat(resultSet.next()).isTrue();
+      assertThat(resultSet.getString("student_code")).isEqualTo("GENERAL");
+      assertThat(resultSet.getBoolean("is_transfer_student")).isFalse();
+      assertThat(resultSet.next()).isTrue();
+      assertThat(resultSet.getString("student_code")).isEqualTo("NULL-ADMISSION");
+      assertThat(resultSet.getObject("is_transfer_student")).isNull();
+      assertThat(resultSet.next()).isTrue();
+      assertThat(resultSet.getString("student_code")).isEqualTo("TRANSFER-2");
+      assertThat(resultSet.getBoolean("is_transfer_student")).isTrue();
+      assertThat(resultSet.next()).isTrue();
+      assertThat(resultSet.getString("student_code")).isEqualTo("TRANSFER-HANGUL");
+      assertThat(resultSet.getBoolean("is_transfer_student")).isTrue();
     }
   }
 

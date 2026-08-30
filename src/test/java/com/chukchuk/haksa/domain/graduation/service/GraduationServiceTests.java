@@ -157,28 +157,44 @@ class GraduationServiceTests {
   @Test
   @DisplayName("캐시에 데이터가 있으면 resolver와 repository를 호출하지 않는다")
   void returnsCachedProgressWhenAvailable() {
+    Student student = mockStudent(10L, null, ADMISSION_YEAR, false);
     GraduationProgressResponse cached = new GraduationProgressResponse(sampleProgress());
 
+    when(studentService.getStudentById(STUDENT_ID)).thenReturn(student);
     when(academicCache.getGraduationProgress(STUDENT_ID)).thenReturn(cached);
 
     GraduationProgressResponse response = graduationService.getGraduationProgress(STUDENT_ID);
 
     assertThat(response).isEqualTo(cached);
-    verifyNoInteractions(studentService, graduationMajorResolver, graduationQueryRepository);
+    verifyNoInteractions(graduationMajorResolver, graduationQueryRepository);
   }
 
   @Test
-  @DisplayName("편입생이면 TRANSFER_STUDENT_UNSUPPORTED 예외를 던진다")
-  void getGraduationProgressThrowsForTransferStudent() {
+  @DisplayName("편입생이면 캐시에 일반 졸업진단이 있어도 지원 불가 예외를 던진다")
+  void rejectsCachedProgressForTransferStudent() {
     Student student = mockStudent(10L, null, ADMISSION_YEAR, true);
-    when(academicCache.getGraduationProgress(STUDENT_ID)).thenReturn(null);
+
     when(studentService.getStudentById(STUDENT_ID)).thenReturn(student);
 
     assertThatThrownBy(() -> graduationService.getGraduationProgress(STUDENT_ID))
         .isInstanceOf(CommonException.class)
         .hasMessage(ErrorCode.TRANSFER_STUDENT_UNSUPPORTED.message());
 
+    verifyNoInteractions(academicCache);
     verifyNoInteractions(graduationMajorResolver, graduationQueryRepository);
+  }
+
+  @Test
+  @DisplayName("편입생이면 TRANSFER_STUDENT_UNSUPPORTED 예외를 던진다")
+  void getGraduationProgressThrowsForTransferStudent() {
+    Student student = mockStudent(10L, null, ADMISSION_YEAR, true);
+    when(studentService.getStudentById(STUDENT_ID)).thenReturn(student);
+
+    assertThatThrownBy(() -> graduationService.getGraduationProgress(STUDENT_ID))
+        .isInstanceOf(CommonException.class)
+        .hasMessage(ErrorCode.TRANSFER_STUDENT_UNSUPPORTED.message());
+
+    verifyNoInteractions(academicCache, graduationMajorResolver, graduationQueryRepository);
   }
 
   @Test

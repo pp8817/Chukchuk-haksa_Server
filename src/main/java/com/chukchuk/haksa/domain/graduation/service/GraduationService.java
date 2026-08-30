@@ -48,6 +48,9 @@ public class GraduationService {
    * @return 영역별 이수 현황과 졸업 요건 충족 상태
    */
   public GraduationProgressResponse getGraduationProgress(UUID studentId) {
+    Student student = studentService.getStudentById(studentId);
+    validateTransferStudent(student);
+
     // 1. 캐시 조회
     try {
       GraduationProgressResponse cached = academicCache.getGraduationProgress(studentId);
@@ -61,9 +64,6 @@ public class GraduationService {
           e.getClass().getSimpleName(),
           e);
     }
-
-    Student student = studentService.getStudentById(studentId);
-    validateTransferStudent(student);
 
     int admissionYear = student.getAcademicInfo().getAdmissionYear();
 
