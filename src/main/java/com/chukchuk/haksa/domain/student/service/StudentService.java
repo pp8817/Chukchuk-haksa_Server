@@ -5,6 +5,7 @@ import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecor
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
 import com.chukchuk.haksa.domain.student.dto.StudentDto;
 import com.chukchuk.haksa.domain.student.model.Student;
+import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
@@ -32,6 +33,7 @@ public class StudentService {
   private final StudentAcademicRecordRepository studentAcademicRecordRepository;
   private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
   private final StudentCourseRepository studentCourseRepository;
+  private final StudentDesignatedCourseRepository studentDesignatedCourseRepository;
 
   /**
    * 학생 식별자로 학생을 조회한다.
@@ -175,6 +177,8 @@ public class StudentService {
     studentCourseRepository.deleteByStudentId(studentId);
     semesterAcademicRecordRepository.deleteByStudentId(studentId);
     studentAcademicRecordRepository.deleteByStudentId(studentId);
+    studentDesignatedCourseRepository.deleteAllByStudentId(studentId);
+    studentRepository.findById(studentId).ifPresent(Student::clearDesignatedCourseSnapshotVersion);
 
     log.info("[BIZ] student.reset.done studentId={}", studentId);
   }

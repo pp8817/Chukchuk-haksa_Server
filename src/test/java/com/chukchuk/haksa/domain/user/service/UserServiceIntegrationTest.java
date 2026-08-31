@@ -34,11 +34,14 @@ import com.chukchuk.haksa.domain.student.model.Grade;
 import com.chukchuk.haksa.domain.student.model.GradeType;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentStatus;
+import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
+import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.SocialAccount;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.SocialAccountRepository;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
+import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import com.chukchuk.haksa.global.security.cache.AuthTokenCache;
 import com.chukchuk.haksa.global.security.service.OidcProvider;
 import jakarta.persistence.EntityManager;
@@ -68,6 +71,7 @@ class UserServiceIntegrationTest {
   @SpyBean private StudentAcademicRecordRepository studentAcademicRecordRepository;
   @Autowired private SemesterAcademicRecordRepository semesterAcademicRecordRepository;
   @Autowired private StudentCourseRepository studentCourseRepository;
+  @Autowired private StudentDesignatedCourseRepository studentDesignatedCourseRepository;
   @Autowired private DepartmentRepository departmentRepository;
   @Autowired private CourseRepository courseRepository;
   @Autowired private CourseOfferingRepository courseOfferingRepository;
@@ -91,6 +95,8 @@ class UserServiceIntegrationTest {
     Student student = createStudent(user);
 
     persistStudentAssociations(student);
+    studentDesignatedCourseRepository.save(
+        new StudentDesignatedCourse(student, designatedCourse("C101", 0)));
 
     entityManager.flush();
     entityManager.clear();
@@ -114,9 +120,41 @@ class UserServiceIntegrationTest {
     assertThat(semesterAcademicRecordRepository.findByStudentId(studentId)).isEmpty();
     assertThat(studentCourseRepository.findAll()).isEmpty();
     assertThat(studentGraduationProgressRepository.findByStudentId(studentId)).isEmpty();
+    assertThat(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(studentId))
+        .isEmpty();
 
     verify(academicCache).deleteAllByStudentId(studentId);
     verify(authTokenCache).evictByUserId(user.getId().toString());
+  }
+
+  @Test
+  @DisplayName("계정 병합 시 기존 학생의 지정과목과 학생 식별자를 유지한다")
+  void mergePreservesStudentDesignatedCourses() {
+    User currentUser =
+        userRepository.save(
+            User.builder().email("merge-current@haksa.com").profileNickname("current").build());
+    User existingUser =
+        userRepository.save(
+            User.builder().email("merge-existing@haksa.com").profileNickname("existing").build());
+    Student existingStudent = createStudent(existingUser, "20263337");
+    studentDesignatedCourseRepository.save(
+        new StudentDesignatedCourse(existingStudent, designatedCourse("C337", 0)));
+
+    entityManager.flush();
+    entityManager.clear();
+
+    User merged = userService.tryMergeWithExistingUser(currentUser.getId(), "20263337");
+
+    entityManager.flush();
+    entityManager.clear();
+
+    Student mergedStudent = studentRepository.findById(existingStudent.getId()).orElseThrow();
+    assertThat(merged.getId()).isEqualTo(currentUser.getId());
+    assertThat(mergedStudent.getUser().getId()).isEqualTo(currentUser.getId());
+    assertThat(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(mergedStudent.getId()))
+        .extracting(StudentDesignatedCourse::getSubjtCd)
+        .containsExactly("C337");
+    assertThat(userRepository.findById(existingUser.getId())).isEmpty();
   }
 
   @Test
@@ -318,5 +356,10 @@ class UserServiceIntegrationTest {
 
     studentGraduationProgressRepository.save(
         StudentGraduationProgress.createForLanguageCert(student, true));
+  }
+
+  private static DesignatedCourseData designatedCourse(String code, int sourceOrder) {
+    return new DesignatedCourseData(
+        "01", code, "지정과목", 3, "TRANSFER", 2024, "1학기", "", sourceOrder);
   }
 }

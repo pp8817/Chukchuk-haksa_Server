@@ -5,6 +5,7 @@ import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecor
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
 import com.chukchuk.haksa.domain.graduation.repository.StudentGraduationProgressRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
+import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class StudentDeletionService {
   private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
   private final StudentCourseRepository studentCourseRepository;
   private final StudentGraduationProgressRepository studentGraduationProgressRepository;
+  private final StudentDesignatedCourseRepository studentDesignatedCourseRepository;
   private final StudentRepository studentRepository;
 
   /**
@@ -42,6 +44,8 @@ public class StudentDeletionService {
       semesterAcademicRecordRepository.deleteByStudentId(studentId);
       studentAcademicRecordRepository.deleteByStudentId(studentId);
       studentGraduationProgressRepository.deleteByStudentId(studentId);
+      studentDesignatedCourseRepository.deleteAllByStudentId(studentId);
+      student.clearDesignatedCourseSnapshotVersion();
     }
     student.anonymize();
     studentRepository.save(student);
