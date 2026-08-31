@@ -39,7 +39,7 @@
 - Consumes: JSON 필드 `designatedCourses`와 최상위 `studentInfo.sno`.
 - Produces: `DesignatedCourseSnapshot(boolean received, List<DesignatedCourseData> courses)`.
 
-- [ ] **Step 1: 실제 스크래퍼 형태의 실패 테스트와 fixture를 추가한다.**
+- [x] **Step 1: 실제 스크래퍼 형태의 실패 테스트와 fixture를 추가한다.**
 
 fixture에는 숫자·문자열 숫자, nullable 원본 필드, 동일 과목 코드의 중복 행을 포함한다.
 
@@ -100,7 +100,7 @@ assertThat(mapped.designatedCourses().courses().get(1).point()).isNull();
 
 필드 누락과 명시적 `null`은 `received=false`, `[]`는 `received=true`와 빈 목록이어야 한다. `point="3학점"`, `cretGainYear="20X4"`, 최상위 학번과 다른 `sno`는 `IllegalArgumentException`이어야 한다.
 
-- [ ] **Step 2: focused test가 현재 모델 부재로 실패하는지 확인한다.**
+- [x] **Step 2: focused test가 현재 모델 부재로 실패하는지 확인한다.**
 
 Run:
 
@@ -110,7 +110,7 @@ Run:
 
 Expected: `designatedCourses` 접근자와 내부 모델이 없어 컴파일 또는 assertion이 실패한다.
 
-- [ ] **Step 3: Raw DTO와 내부 불변 모델을 추가한다.**
+- [x] **Step 3: Raw DTO와 내부 불변 모델을 추가한다.**
 
 `RawPortalDesignatedCourseDto`의 숫자 후보 필드는 빈 문자열도 받을 수 있도록 문자열로 수신한다. Jackson의 scalar-to-string 변환으로 JSON 숫자도 함께 수용한다.
 
@@ -158,7 +158,7 @@ public record DesignatedCourseSnapshot(
 
 `RawPortalData`에는 nullable `List<RawPortalDesignatedCourseDto> designatedCourses`를 추가하고 `PortalData`에는 non-null `DesignatedCourseSnapshot designatedCourses`를 추가한다.
 
-- [ ] **Step 4: mapper에서 수신 여부, 숫자, 순서와 학생번호를 검증한다.**
+- [x] **Step 4: mapper에서 수신 여부, 숫자, 순서와 학생번호를 검증한다.**
 
 ```java
 private static DesignatedCourseSnapshot toDesignatedCourseSnapshot(
@@ -193,7 +193,7 @@ private static DesignatedCourseSnapshot toDesignatedCourseSnapshot(
 
 `parseNullableInteger`는 `null`·blank만 `null`로 반환하고 그 외 파싱 실패는 필드명을 포함한 `IllegalArgumentException`을 던진다. `PortalCallbackPostProcessor`의 기존 RuntimeException 처리 경로가 이를 `SCRAPE_RESULT_SCHEMA_INVALID`로 변환한다.
 
-- [ ] **Step 5: focused test를 다시 실행해 통과시킨다.**
+- [x] **Step 5: focused test를 다시 실행해 통과시킨다.**
 
 Run:
 
@@ -203,7 +203,7 @@ Run:
 
 Expected: `BUILD SUCCESSFUL`.
 
-- [ ] **Step 6: 입력 계약 변경을 커밋한다.**
+- [x] **Step 6: 입력 계약 변경을 커밋한다.**
 
 ```bash
 git add src/main/java/com/chukchuk/haksa/infrastructure/portal src/test/java/com/chukchuk/haksa/infrastructure/portal src/test/resources/fixtures/portal/designated-courses.json
@@ -768,5 +768,8 @@ Expected: 이슈 #337 관련 코드·migration·테스트·작업 문서만 포�
 - 계획 작성 시점 기준 브랜치: `feat/337`, 기준 커밋: `538df4ba` (`origin/dev`).
 - 계획 작성 시점의 최신 migration: `V11__backfill_transfer_student_flag.sql`; 이번 작업의 새 migration은 V12로 고정한다.
 - 확인된 Wiki 대상: `Core-Domain-Flows.md`, `Project-Architecture.md`.
-- 구현 전 상태이므로 Gradle 테스트는 아직 실행하지 않았다.
+- Task 1 RED: `PortalDataMapperTests`가 `DesignatedCourseData`와 `PortalData.designatedCourses()` 부재로 컴파일 실패했다.
+- Task 1 GREEN: `./gradlew test --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --stacktrace --no-daemon` 통과.
+- Task 1 회귀: `./gradlew test --stacktrace --no-daemon` 통과.
+- Task 1 포맷: `./gradlew spotlessApply --no-daemon` 통과.
 - 남은 주요 위험은 실제 운영 payload의 숫자 타입 변형, PostgreSQL에서의 비관적 잠금 순서, bulk delete 뒤 insert 실패 시 rollback이다. Task 1, 3, 6에서 각각 회귀 테스트로 닫는다.
