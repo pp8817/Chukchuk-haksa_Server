@@ -446,7 +446,7 @@ class ScrapeResultCallbackServiceUnitTests {
     assertThat(job.getErrorCode()).isEqualTo("FAILED_RESULT_SCHEMA");
     assertThat(job.getRetryable()).isFalse();
     assertThat(job.getLinkEndedAt()).isNotNull();
-    verify(portalSyncService, never()).syncWithPortal(any(), any());
+    verify(portalSyncService, never()).syncWithPortal(any(), any(), any());
   }
 
   @Test
@@ -491,7 +491,7 @@ class ScrapeResultCallbackServiceUnitTests {
     assertThat(job.getStatus()).isEqualTo(ScrapeJobStatus.FAILED);
     assertThat(job.getErrorCode()).isEqualTo("FAILED_RESULT_SCHEMA");
     assertThat(job.getRetryable()).isFalse();
-    verify(portalSyncService, never()).syncWithPortal(any(), any());
+    verify(portalSyncService, never()).syncWithPortal(any(), any(), any());
   }
 
   private ScrapeResultCallbackService createService() {

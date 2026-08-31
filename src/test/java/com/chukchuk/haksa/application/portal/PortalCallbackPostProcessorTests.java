@@ -82,7 +82,7 @@ class PortalCallbackPostProcessorTests {
               return null;
             })
         .when(portalSyncService)
-        .syncWithPortal(eq(job.getUserId()), any());
+        .syncWithPortal(eq(job.getUserId()), any(), any());
     Instant finishedAt = Instant.parse("2026-04-08T00:00:00Z");
     processor.process(
         job.getJobId(),
@@ -95,7 +95,7 @@ class PortalCallbackPostProcessorTests {
         "",
         "payload-hash");
 
-    verify(portalSyncService).syncWithPortal(eq(job.getUserId()), any());
+    verify(portalSyncService).syncWithPortal(eq(job.getUserId()), any(), any());
     assertThat(meterRegistry.counter("scrape.job.callback.postprocess.success").count())
         .isEqualTo(1.0);
     assertThat(job.getStatus()).isEqualTo(ScrapeJobStatus.SUCCEEDED);
@@ -113,7 +113,7 @@ class PortalCallbackPostProcessorTests {
     Instant finishedAt = Instant.parse("2026-04-08T00:00:00Z");
     doThrow(new PortalScrapeException(ErrorCode.SCRAPING_FAILED))
         .when(portalSyncService)
-        .refreshFromPortal(eq(job.getUserId()), any());
+        .refreshFromPortal(eq(job.getUserId()), any(), any());
 
     assertThatThrownBy(
             () ->
@@ -151,7 +151,7 @@ class PortalCallbackPostProcessorTests {
     Instant finishedAt = Instant.parse("2026-04-08T00:00:00Z");
     doThrow(new EntityNotFoundException(ErrorCode.USER_NOT_FOUND))
         .when(portalSyncService)
-        .syncWithPortal(eq(job.getUserId()), any());
+        .syncWithPortal(eq(job.getUserId()), any(), any());
 
     assertThatThrownBy(
             () ->

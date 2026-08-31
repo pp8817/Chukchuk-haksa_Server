@@ -45,6 +45,8 @@ class PortalSyncServiceTests {
 
   @Mock private StudentGraduationProgressService studentGraduationProgressService;
 
+  @Mock private SyncDesignatedCourseService syncDesignatedCourseService;
+
   @Mock private Student student;
 
   private PortalSyncService portalSyncService;
@@ -58,7 +60,8 @@ class PortalSyncServiceTests {
             syncAcademicRecordService,
             userService,
             studentService,
-            studentGraduationProgressService);
+            studentGraduationProgressService,
+            syncDesignatedCourseService);
   }
 
   @Test
@@ -67,6 +70,7 @@ class PortalSyncServiceTests {
     UUID userId = UUID.randomUUID();
     User mergedUser = connectedUser(userId);
     PortalData portalData = portalData("19018036", true);
+    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
     PortalConnectionResult refreshResult = successConnection("19018036");
 
     when(userService.tryMergeWithExistingUser(userId, "19018036")).thenReturn(mergedUser);
@@ -75,7 +79,7 @@ class PortalSyncServiceTests {
     when(syncAcademicRecordService.executeForRefreshPortalData(userId, portalData))
         .thenReturn(SyncAcademicRecordResult.success());
 
-    var response = portalSyncService.syncWithPortal(userId, portalData);
+    var response = portalSyncService.syncWithPortal(userId, portalData, snapshotVersion);
 
     assertThat(response.status()).isEqualTo("SUCCESS");
     verify(initializePortalConnectionService, never()).executeWithPortalData(eq(userId), any());
@@ -84,6 +88,8 @@ class PortalSyncServiceTests {
     verify(syncAcademicRecordService, never()).executeWithPortalData(eq(userId), any());
     verify(userService).save(mergedUser);
     verify(studentService).markReconnectedByUser(mergedUser);
+    verify(syncDesignatedCourseService)
+        .sync(mergedUser.getId(), portalData.designatedCourses(), snapshotVersion);
   }
 
   @Test
@@ -92,6 +98,7 @@ class PortalSyncServiceTests {
     UUID userId = UUID.randomUUID();
     User user = unconnectedUser(userId);
     PortalData portalData = portalData("19018036", true);
+    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
     PortalConnectionResult initialResult = successConnection("19018036");
 
     when(userService.tryMergeWithExistingUser(userId, "19018036")).thenReturn(user);
@@ -101,7 +108,7 @@ class PortalSyncServiceTests {
         .thenReturn(SyncAcademicRecordResult.success());
     when(userService.getUserById(userId)).thenReturn(user);
 
-    var response = portalSyncService.syncWithPortal(userId, portalData);
+    var response = portalSyncService.syncWithPortal(userId, portalData, snapshotVersion);
 
     assertThat(response.status()).isEqualTo("SUCCESS");
     verify(initializePortalConnectionService).executeWithPortalData(userId, portalData);
@@ -110,6 +117,8 @@ class PortalSyncServiceTests {
     verify(syncAcademicRecordService, never()).executeForRefreshPortalData(eq(userId), any());
     verify(userService).save(user);
     verify(studentService).markReconnectedByUser(user);
+    verify(syncDesignatedCourseService)
+        .sync(user.getId(), portalData.designatedCourses(), snapshotVersion);
   }
 
   @Test
@@ -124,6 +133,7 @@ class PortalSyncServiceTests {
             .profileNickname("active")
             .build();
     PortalData portalData = portalData("17019013", true);
+    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
 
     when(userService.tryMergeWithExistingUser(userId, "17019013")).thenReturn(activeUser);
     when(initializePortalConnectionService.executeWithPortalData(activeUserId, portalData))
@@ -133,9 +143,11 @@ class PortalSyncServiceTests {
     when(studentService.getStudentByUserId(activeUserId)).thenReturn(student);
     when(userService.getUserById(activeUserId)).thenReturn(activeUser);
 
-    portalSyncService.syncWithPortal(userId, portalData);
+    portalSyncService.syncWithPortal(userId, portalData, snapshotVersion);
 
     verify(studentGraduationProgressService).syncLanguageCert(eq(student), eq(true));
+    verify(syncDesignatedCourseService)
+        .sync(activeUserId, portalData.designatedCourses(), snapshotVersion);
   }
 
   @Test
@@ -145,6 +157,7 @@ class PortalSyncServiceTests {
     User activeUser =
         User.builder().id(userId).email("active@example.com").profileNickname("active").build();
     PortalData portalData = portalData("17019013", false);
+    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
 
     when(userService.getUserById(userId)).thenReturn(activeUser);
     when(refreshPortalConnectionService.executeWithPortalData(userId, portalData))
@@ -153,10 +166,12 @@ class PortalSyncServiceTests {
         .thenReturn(SyncAcademicRecordResult.success());
     when(studentService.getStudentByUserId(userId)).thenReturn(student);
 
-    portalSyncService.refreshFromPortal(userId, portalData);
+    portalSyncService.refreshFromPortal(userId, portalData, snapshotVersion);
 
     verify(userService, never()).tryMergeWithExistingUser(any(), any());
     verify(studentGraduationProgressService).syncLanguageCert(eq(student), eq(false));
+    verify(syncDesignatedCourseService)
+        .sync(userId, portalData.designatedCourses(), snapshotVersion);
   }
 
   private static User connectedUser(UUID userId) {

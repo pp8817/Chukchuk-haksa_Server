@@ -401,7 +401,7 @@ git commit -m "337 feat: 학생 지정과목 저장 스키마 추가"
 - Consumes: `sync(UUID activeUserId, DesignatedCourseSnapshot snapshot, Instant snapshotVersion)`.
 - Produces: 누락 no-op, 빈 배열 삭제, 최신 배열 교체, 오래되거나 같은 버전 no-op.
 
-- [ ] **Step 1: 동기화 정책 단위 테스트를 먼저 작성한다.**
+- [x] **Step 1: 동기화 정책 단위 테스트를 먼저 작성한다.**
 
 Mockito로 다음 분기를 독립 검증한다.
 
@@ -425,7 +425,7 @@ verify(student).updateDesignatedCourseSnapshotVersion(version);
 
 빈 배열은 삭제 후 `saveAll`을 호출하지 않고 버전은 갱신한다. 저장 버전보다 오래되거나 같은 요청은 삭제·저장·버전 갱신을 모두 건너뛴다. 학생 부재는 `STUDENT_NOT_FOUND`를 던진다.
 
-- [ ] **Step 2: focused test가 서비스 부재로 실패하는지 확인한다.**
+- [x] **Step 2: focused test가 서비스 부재로 실패하는지 확인한다.**
 
 Run:
 
@@ -435,7 +435,7 @@ Run:
 
 Expected: `SyncDesignatedCourseService`가 없어 컴파일이 실패한다.
 
-- [ ] **Step 3: 최소 동기화 서비스를 구현한다.**
+- [x] **Step 3: 최소 동기화 서비스를 구현한다.**
 
 ```java
 @Service
@@ -474,7 +474,7 @@ public class SyncDesignatedCourseService {
 }
 ```
 
-- [ ] **Step 4: 트랜잭션과 순서 역전 통합 테스트를 추가한다.**
+- [x] **Step 4: 트랜잭션과 순서 역전 통합 테스트를 추가한다.**
 
 실제 JPA repository를 사용해 다음을 검증한다.
 
@@ -483,7 +483,7 @@ public class SyncDesignatedCourseService {
 - 두 개의 동일 과목 코드 행은 서로 다른 `source_order`로 모두 저장된다.
 - 지정과목 동기화 전후 `student_courses`, `courses`, `course_offerings`, `student_academic_records.total_earned_credits`의 row와 값이 변하지 않는다.
 
-- [ ] **Step 5: 단위·통합 테스트를 통과시킨다.**
+- [x] **Step 5: 단위·통합 테스트를 통과시킨다.**
 
 Run:
 
@@ -493,7 +493,7 @@ Run:
 
 Expected: `BUILD SUCCESSFUL`.
 
-- [ ] **Step 6: 동기화 서비스를 커밋한다.**
+- [x] **Step 6: 동기화 서비스를 커밋한다.**
 
 ```bash
 git add src/main/java/com/chukchuk/haksa/application/portal/SyncDesignatedCourseService.java src/test/java/com/chukchuk/haksa/application/portal/SyncDesignatedCourseServiceTests.java src/test/java/com/chukchuk/haksa/application/portal/SyncDesignatedCourseServiceIntegrationTests.java
@@ -513,7 +513,7 @@ git commit -m "337 feat: 지정과목 최신 스냅샷 동기화"
 - Consumes: `ScrapeJob.getCreatedAt()`.
 - Produces: `PortalSyncService.syncWithPortal(..., Instant snapshotVersion)`과 `refreshFromPortal(..., Instant snapshotVersion)`.
 
-- [ ] **Step 1: createdAt 전달과 두 동기화 분기의 실패 테스트를 작성한다.**
+- [x] **Step 1: createdAt 전달과 두 동기화 분기의 실패 테스트를 작성한다.**
 
 ```java
 verify(portalSyncService)
@@ -527,7 +527,7 @@ verify(syncDesignatedCourseService)
 
 LINK가 기존 계정 병합 후 REFRESH 분기로 전환되는 경우에도 병합 뒤의 `activeUserId`와 같은 `snapshotVersion`을 사용해야 한다.
 
-- [ ] **Step 2: focused test가 기존 메서드 signature 때문에 실패하는지 확인한다.**
+- [x] **Step 2: focused test가 기존 메서드 signature 때문에 실패하는지 확인한다.**
 
 Run:
 
@@ -537,7 +537,7 @@ Run:
 
 Expected: snapshot version 인자가 없어 컴파일 또는 Mockito 검증이 실패한다.
 
-- [ ] **Step 3: callback의 job 생성 시각을 PortalSyncService까지 전달한다.**
+- [x] **Step 3: callback의 job 생성 시각을 PortalSyncService까지 전달한다.**
 
 `ScrapeResultCallbackTxService.completeSuccess`에서 잠금 조회한 job의 `createdAt`을 사용한다.
 
@@ -559,7 +559,7 @@ syncDesignatedCourseService.sync(
 
 누락 스냅샷은 서비스 내부에서 즉시 반환하므로 구버전 scraper payload 흐름은 기존과 같다.
 
-- [ ] **Step 4: callback·최초 연동·새로고침 테스트를 통과시킨다.**
+- [x] **Step 4: callback·최초 연동·새로고침 테스트를 통과시킨다.**
 
 Run:
 
@@ -569,7 +569,7 @@ Run:
 
 Expected: `BUILD SUCCESSFUL`.
 
-- [ ] **Step 5: 포털 동기화 연결을 커밋한다.**
+- [x] **Step 5: 포털 동기화 연결을 커밋한다.**
 
 ```bash
 git add src/main/java/com/chukchuk/haksa/application/portal src/test/java/com/chukchuk/haksa/application/portal
@@ -772,4 +772,8 @@ Expected: 이슈 #337 관련 코드·migration·테스트·작업 문서만 포�
 - Task 1 GREEN: `./gradlew test --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --stacktrace --no-daemon` 통과.
 - Task 1 회귀: `./gradlew test --stacktrace --no-daemon` 통과.
 - Task 1 포맷: `./gradlew spotlessApply --no-daemon` 통과.
+- Task 2 회귀: `./gradlew test --tests com.chukchuk.haksa.global.db.FlywayMigrationTest --tests com.chukchuk.haksa.domain.student.model.StudentModelTests --tests com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepositoryTests --stacktrace --no-daemon` 통과.
+- Task 3 회귀: `./gradlew test --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceTests --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceIntegrationTests --stacktrace --no-daemon` 통과.
+- Task 4 회귀: `./gradlew test --tests com.chukchuk.haksa.application.portal.PortalSyncServiceTests --tests com.chukchuk.haksa.application.portal.ScrapeResultCallbackTxServiceTests --tests com.chukchuk.haksa.application.portal.PortalCallbackPostProcessorTests --tests com.chukchuk.haksa.application.portal.ScrapeResultCallbackServiceUnitTests --stacktrace --no-daemon` 통과.
+- Task 4 포맷: `./gradlew spotlessApply --no-daemon` 통과.
 - 남은 주요 위험은 실제 운영 payload의 숫자 타입 변형, PostgreSQL에서의 비관적 잠금 순서, bulk delete 뒤 insert 실패 시 rollback이다. Task 1, 3, 6에서 각각 회귀 테스트로 닫는다.
