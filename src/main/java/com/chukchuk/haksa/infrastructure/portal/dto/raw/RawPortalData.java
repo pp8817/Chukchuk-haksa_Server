@@ -17,4 +17,13 @@ public record RawPortalData(
     @JsonAlias("studentInfo") RawPortalStudentDto student,
     List<RawPortalSemesterDto> semesters,
     RawPortalGradeResponseDto academicRecords,
-    List<RawPortalDesignatedCourseDto> designatedCourses) {}
+    List<RawPortalDesignatedCourseDto> designatedCourses) {
+
+  /** 지정과목 필드가 없던 구버전 payload를 표현한다. */
+  public RawPortalData(
+      RawPortalStudentDto student,
+      List<RawPortalSemesterDto> semesters,
+      RawPortalGradeResponseDto academicRecords) {
+    this(student, semesters, academicRecords, null);
+  }
+}
