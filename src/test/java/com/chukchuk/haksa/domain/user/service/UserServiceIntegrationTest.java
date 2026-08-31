@@ -130,7 +130,7 @@ class UserServiceIntegrationTest {
   @Test
   @DisplayName("계정 병합 시 기존 학생의 지정과목과 학생 식별자를 유지한다")
   void mergePreservesStudentDesignatedCourses() {
-    User currentUser =
+    final User currentUser =
         userRepository.save(
             User.builder().email("merge-current@haksa.com").profileNickname("current").build());
     User existingUser =

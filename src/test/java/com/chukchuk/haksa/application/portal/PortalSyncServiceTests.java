@@ -70,7 +70,7 @@ class PortalSyncServiceTests {
     UUID userId = UUID.randomUUID();
     User mergedUser = connectedUser(userId);
     PortalData portalData = portalData("19018036", true);
-    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
+    final Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
     PortalConnectionResult refreshResult = successConnection("19018036");
 
     when(userService.tryMergeWithExistingUser(userId, "19018036")).thenReturn(mergedUser);
@@ -98,7 +98,7 @@ class PortalSyncServiceTests {
     UUID userId = UUID.randomUUID();
     User user = unconnectedUser(userId);
     PortalData portalData = portalData("19018036", true);
-    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
+    final Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
     PortalConnectionResult initialResult = successConnection("19018036");
 
     when(userService.tryMergeWithExistingUser(userId, "19018036")).thenReturn(user);
@@ -133,7 +133,7 @@ class PortalSyncServiceTests {
             .profileNickname("active")
             .build();
     PortalData portalData = portalData("17019013", true);
-    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
+    final Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
 
     when(userService.tryMergeWithExistingUser(userId, "17019013")).thenReturn(activeUser);
     when(initializePortalConnectionService.executeWithPortalData(activeUserId, portalData))
@@ -157,7 +157,7 @@ class PortalSyncServiceTests {
     User activeUser =
         User.builder().id(userId).email("active@example.com").profileNickname("active").build();
     PortalData portalData = portalData("17019013", false);
-    Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
+    final Instant snapshotVersion = Instant.parse("2026-08-30T02:00:00Z");
 
     when(userService.getUserById(userId)).thenReturn(activeUser);
     when(refreshPortalConnectionService.executeWithPortalData(userId, portalData))

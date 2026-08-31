@@ -209,13 +209,22 @@ public class Student extends BaseEntity {
         && Boolean.TRUE.equals(this.academicInfo.getIsTransferStudent());
   }
 
-  /** 요청한 지정과목 스냅샷이 현재 저장된 버전보다 최신인지 확인한다. */
+  /**
+   * 요청한 지정과목 스냅샷이 현재 저장된 버전보다 최신인지 확인한다.
+   *
+   * @param requestedVersion 비교할 스냅샷 버전
+   * @return 현재 버전이 없거나 요청 버전이 더 최신이면 {@code true}
+   */
   public boolean canApplyDesignatedCourseSnapshot(Instant requestedVersion) {
     return designatedCoursesSnapshotVersion == null
         || requestedVersion.isAfter(designatedCoursesSnapshotVersion);
   }
 
-  /** 지정과목 스냅샷의 마지막 반영 버전을 갱신한다. */
+  /**
+   * 지정과목 스냅샷의 마지막 반영 버전을 갱신한다.
+   *
+   * @param snapshotVersion 반영한 스냅샷 버전
+   */
   public void updateDesignatedCourseSnapshotVersion(Instant snapshotVersion) {
     this.designatedCoursesSnapshotVersion = snapshotVersion;
   }

@@ -16,10 +16,20 @@ import org.springframework.stereotype.Repository;
 public interface StudentDesignatedCourseRepository
     extends JpaRepository<StudentDesignatedCourse, Long> {
 
-  /** 학생의 지정과목을 원본 배열 순서로 조회한다. */
+  /**
+   * 학생의 지정과목을 원본 배열 순서로 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 원본 순서로 정렬된 지정과목 목록
+   */
   List<StudentDesignatedCourse> findAllByStudentIdOrderBySourceOrder(UUID studentId);
 
-  /** 학생의 지정과목을 일괄 삭제한다. */
+  /**
+   * 학생의 지정과목을 일괄 삭제한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 삭제된 행 수
+   */
   @Modifying(flushAutomatically = true)
   @Query("DELETE FROM StudentDesignatedCourse c WHERE c.student.id = :studentId")
   int deleteAllByStudentId(@Param("studentId") UUID studentId);

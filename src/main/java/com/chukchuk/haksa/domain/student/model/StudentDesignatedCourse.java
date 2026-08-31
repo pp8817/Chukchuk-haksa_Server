@@ -64,7 +64,12 @@ public class StudentDesignatedCourse {
   @Column(name = "sno")
   private String sno;
 
-  /** 내부 지정과목 행을 학생과 연결해 저장할 엔티티로 변환한다. */
+  /**
+   * 내부 지정과목 행을 학생과 연결해 저장할 엔티티로 변환한다.
+   *
+   * @param student 지정과목을 소유한 학생
+   * @param course 내부 지정과목 값
+   */
   public StudentDesignatedCourse(Student student, DesignatedCourseData course) {
     this.student = student;
     this.sourceOrder = course.sourceOrder();
