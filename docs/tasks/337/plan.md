@@ -688,7 +688,7 @@ Expected: `BUILD SUCCESSFUL`이며 다음 항목이 모두 별도 테스트명�
 - 저장 실패 전체 롤백.
 - `StudentCourse`와 취득학점 불변.
 
-- [ ] **Step 3: formatter와 전체 품질 게이트를 실행한다.**
+- [x] **Step 3: formatter와 전체 품질 게이트를 실행한다.**
 
 Run:
 
@@ -700,11 +700,11 @@ git diff --check
 
 Expected: `BUILD SUCCESSFUL`, `git diff --check` exit 0.
 
-- [ ] **Step 4: 실제 검증 결과와 발견 사항을 이 문서 하단에 기록한다.**
+- [x] **Step 4: 실제 검증 결과와 발견 사항을 이 문서 하단에 기록한다.**
 
 명령, 결과, 테스트 수, 스키마 버전, 남은 위험을 `## Verification Notes`에 기록한다. 실패한 검사를 생략하지 않고 원인과 재실행 결과를 함께 남긴다.
 
-- [ ] **Step 5: 회귀 검증 변경을 커밋한다.**
+- [x] **Step 5: 회귀 검증 변경을 커밋한다.**
 
 ```bash
 git add src/test docs/tasks/337/plan.md
@@ -779,4 +779,6 @@ Expected: 이슈 #337 관련 코드·migration·테스트·작업 문서만 포�
 - Task 5 회귀: `./gradlew test --tests com.chukchuk.haksa.domain.student.service.StudentServiceUnitTests --tests com.chukchuk.haksa.domain.student.service.StudentDeletionServiceUnitTests --tests com.chukchuk.haksa.domain.user.service.UserServiceIntegrationTest --stacktrace --no-daemon`에서 초기 RED 후 구현 GREEN 통과.
 - Task 6 회귀: `./gradlew test --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --tests com.chukchuk.haksa.application.portal.PortalCallbackPostProcessorTests --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceTests --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceIntegrationTests --tests com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepositoryTests --stacktrace --no-daemon` 통과.
 - Task 6 통합 검증: 저장 실패 시 기존 지정과목·버전 롤백, 학업 요약 취득학점 불변, 실제 callback JSON의 지정과목 순서·중복 보존을 확인했다.
+- 전체 품질 게이트: 기본 Java 24에서는 Gradle Checkstyle task 생성 오류(`Type T not present`)가 발생했으나, Java 17(`temurin-17.0.18`) 환경의 `./gradlew check --stacktrace --no-daemon`은 통과했다.
+- Task 6 포맷·정적 검사: Java 17 환경에서 `./gradlew spotlessApply --no-daemon` 및 `./gradlew checkstyleMain checkstyleTest --stacktrace --no-daemon` 통과.
 - 남은 주요 위험은 실제 운영 payload의 숫자 타입 변형, PostgreSQL에서의 비관적 잠금 순서, bulk delete 뒤 insert 실패 시 rollback이다. Task 1, 3, 6에서 각각 회귀 테스트로 닫는다.
