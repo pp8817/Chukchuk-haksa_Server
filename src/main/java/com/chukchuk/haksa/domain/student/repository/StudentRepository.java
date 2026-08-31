@@ -2,9 +2,11 @@ package com.chukchuk.haksa.domain.student.repository;
 
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.user.model.User;
+import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +22,11 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
    * @return 연결된 학생이 있으면 포함한 선택값
    */
   Optional<Student> findByUser(User user);
+
+  /** 사용자 식별자로 학생 행을 쓰기 잠금과 함께 조회한다. */
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("SELECT s FROM Student s WHERE s.user.id = :userId")
+  Optional<Student> findForUpdateByUserId(@Param("userId") UUID userId);
 
   /**
    * 학번이 일치하는 학생을 찾는다.

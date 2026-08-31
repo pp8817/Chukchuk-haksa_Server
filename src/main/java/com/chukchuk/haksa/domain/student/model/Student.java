@@ -23,6 +23,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +57,9 @@ public class Student extends BaseEntity {
 
   @Column(name = "target_gpa")
   private Double targetGpa;
+
+  @Column(name = "designated_courses_snapshot_version")
+  private Instant designatedCoursesSnapshotVersion;
 
   @Column(name = "reconnection_required", nullable = false)
   private boolean reconnectionRequired = true; // 기본값 true, 재연동 시 false
@@ -203,6 +207,22 @@ public class Student extends BaseEntity {
   public boolean isTransferStudent() {
     return this.academicInfo != null
         && Boolean.TRUE.equals(this.academicInfo.getIsTransferStudent());
+  }
+
+  /** 요청한 지정과목 스냅샷이 현재 저장된 버전보다 최신인지 확인한다. */
+  public boolean canApplyDesignatedCourseSnapshot(Instant requestedVersion) {
+    return designatedCoursesSnapshotVersion == null
+        || requestedVersion.isAfter(designatedCoursesSnapshotVersion);
+  }
+
+  /** 지정과목 스냅샷의 마지막 반영 버전을 갱신한다. */
+  public void updateDesignatedCourseSnapshotVersion(Instant snapshotVersion) {
+    this.designatedCoursesSnapshotVersion = snapshotVersion;
+  }
+
+  /** 지정과목 스냅샷의 마지막 반영 버전을 초기화한다. */
+  public void clearDesignatedCourseSnapshotVersion() {
+    this.designatedCoursesSnapshotVersion = null;
   }
 
   /**

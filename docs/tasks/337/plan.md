@@ -225,7 +225,7 @@ git commit -m "337 feat: 포털 지정과목 입력 계약 추가"
 - Consumes: `DesignatedCourseData`와 학생 UUID.
 - Produces: `student_designated_courses` 원본 행, `students.designated_courses_snapshot_version`, 학생 단위 잠금·삭제·정렬 조회 저장소.
 
-- [ ] **Step 1: V12 스키마 기대값을 실패 테스트로 추가한다.**
+- [x] **Step 1: V12 스키마 기대값을 실패 테스트로 추가한다.**
 
 `FlywayMigrationTest`의 fresh migration 기대 버전을 V12까지 확장하고 다음을 검증한다.
 
@@ -240,7 +240,7 @@ assertThat(foreignKeyDeleteRule(
 
 별도 migration 테스트에서는 동일 학생의 같은 `source_order` 중복 insert가 실패하고, 학생 삭제 시 지정과목 행도 사라지는지 확인한다.
 
-- [ ] **Step 2: migration test가 V12 부재로 실패하는지 확인한다.**
+- [x] **Step 2: migration test가 V12 부재로 실패하는지 확인한다.**
 
 Run:
 
@@ -250,7 +250,7 @@ Run:
 
 Expected: V12 테이블과 컬럼이 없어 실패한다.
 
-- [ ] **Step 3: backward-compatible V12 migration을 추가한다.**
+- [x] **Step 3: backward-compatible V12 migration을 추가한다.**
 
 ```sql
 -- 학생별 포털 지정과목 원본과 최신 스냅샷 버전을 저장한다.
@@ -280,7 +280,7 @@ CREATE TABLE public.student_designated_courses (
 
 기존 테이블이나 기존 컬럼의 제약은 변경하지 않는다. `(student_id, source_order)` unique constraint가 만드는 인덱스의 선두 컬럼으로 학생별 삭제·조회가 가능하므로 중복 `student_id` 인덱스는 추가하지 않는다.
 
-- [ ] **Step 4: 엔티티, 저장소와 학생 스냅샷 상태를 추가한다.**
+- [x] **Step 4: 엔티티, 저장소와 학생 스냅샷 상태를 추가한다.**
 
 `StudentDesignatedCourse`는 별도 `Course` 연관 없이 원본 필드와 `Student`만 가진다. 생성자는 `Student`와 `DesignatedCourseData`를 받아 모든 필드를 그대로 복사한다.
 
@@ -373,7 +373,7 @@ public void clearDesignatedCourseSnapshotVersion() {
 
 `StudentRepository`에는 `@Lock(LockModeType.PESSIMISTIC_WRITE)`와 `user.id` 조건을 사용하는 `findForUpdateByUserId(UUID userId)`를 추가한다.
 
-- [ ] **Step 5: migration과 repository 테스트를 통과시킨다.**
+- [x] **Step 5: migration과 repository 테스트를 통과시킨다.**
 
 Run:
 
@@ -383,7 +383,7 @@ Run:
 
 Expected: `BUILD SUCCESSFUL`. 조회 결과가 `source_order` 순서와 중복 행을 보존하고, 삭제 메서드가 학생의 행만 제거한다.
 
-- [ ] **Step 6: 저장 모델을 커밋한다.**
+- [x] **Step 6: 저장 모델을 커밋한다.**
 
 ```bash
 git add src/main/resources/db/migration/V12__create_student_designated_courses.sql src/main/java/com/chukchuk/haksa/domain/student src/test/java/com/chukchuk/haksa/global/db/FlywayMigrationTest.java src/test/java/com/chukchuk/haksa/domain/student/repository/StudentDesignatedCourseRepositoryTests.java
