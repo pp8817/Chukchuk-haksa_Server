@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.chukchuk.haksa.domain.academic.record.repository.SemesterAcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
+import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.student.dto.StudentDto;
 import com.chukchuk.haksa.domain.student.model.Student;
@@ -47,6 +48,8 @@ class StudentServiceUnitTests {
   @Mock private StudentCourseRepository studentCourseRepository;
 
   @Mock private StudentDesignatedCourseRepository studentDesignatedCourseRepository;
+
+  @Mock private AcademicCache academicCache;
 
   @InjectMocks private StudentService studentService;
 
@@ -273,6 +276,7 @@ class StudentServiceUnitTests {
     verify(studentAcademicRecordRepository).deleteByStudentId(studentId);
     verify(studentDesignatedCourseRepository).deleteAllByStudentId(studentId);
     verify(student).clearDesignatedCourseSnapshotVersion();
+    verify(academicCache).deleteAllByStudentId(studentId);
   }
 
   @Test
