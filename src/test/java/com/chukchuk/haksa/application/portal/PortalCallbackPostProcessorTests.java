@@ -239,7 +239,10 @@ class PortalCallbackPostProcessorTests {
   @Test
   @DisplayName("지정과목 숫자 형식이 잘못되면 payload를 거부하고 portal sync를 호출하지 않는다")
   void handleInvalidDesignatedCoursePayload() {
-    String invalidPayload = PAYLOAD_JSON.replace("\"point\":3", "\"point\":\"3학점\"");
+    String invalidPayload =
+        PAYLOAD_JSON.replace(
+            "\"subjtNm\":\"자료구조\",\"point\":3,\"precpResnCd\":\"TRANSFER\"",
+            "\"subjtNm\":\"자료구조\",\"point\":\"3학점\",\"precpResnCd\":\"TRANSFER\"");
 
     assertThatThrownBy(
             () ->
