@@ -784,5 +784,6 @@ Expected: 이슈 #337 관련 코드·migration·테스트·작업 문서만 포�
 - Task 7 문서화: Wiki `Core-Domain-Flows.md`, `Project-Architecture.md`를 커밋 `b6b7e8c`로 갱신하고 `origin/master`에 push했다.
 - 지정과목 스냅샷 반영 시 `AcademicCache.deleteAllByStudentId`를 호출해 졸업진단·학사 캐시를 무효화하며, 필드 누락·stale 결과에는 호출하지 않는다.
 - 학생 학사 데이터 reset 경로에서도 지정과목·스냅샷 버전과 함께 학생별 학사 캐시를 초기화한다.
+- 최종 품질 게이트: Java 17 환경의 `./gradlew check --stacktrace --no-daemon` 통과.
 - PR 생성과 Assignee·릴리즈 라벨 설정은 사용자의 별도 요청 후 수행한다.
 - 남은 주요 위험은 실제 운영 payload의 숫자 타입 변형, PostgreSQL에서의 비관적 잠금 순서, bulk delete 뒤 insert 실패 시 rollback이다. Task 1, 3, 6에서 각각 회귀 테스트로 닫는다.
