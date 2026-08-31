@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
@@ -36,13 +37,17 @@ class SyncDesignatedCourseServiceTests {
 
   @Mock private StudentDesignatedCourseRepository designatedCourseRepository;
 
+  @Mock private AcademicCache academicCache;
+
   @Mock private Student student;
 
   private SyncDesignatedCourseService service;
 
   @BeforeEach
   void setUp() {
-    service = new SyncDesignatedCourseService(studentRepository, designatedCourseRepository);
+    service =
+        new SyncDesignatedCourseService(
+            studentRepository, designatedCourseRepository, academicCache);
   }
 
   @Test
@@ -75,6 +80,7 @@ class SyncDesignatedCourseServiceTests {
         .extracting(StudentDesignatedCourse::getSourceOrder)
         .containsExactly(0, 1);
     verify(student).updateDesignatedCourseSnapshotVersion(snapshotVersion);
+    verify(academicCache).deleteAllByStudentId(studentId);
   }
 
   @Test
@@ -92,6 +98,7 @@ class SyncDesignatedCourseServiceTests {
     verify(designatedCourseRepository).deleteAllByStudentId(studentId);
     verify(designatedCourseRepository, never()).saveAll(any());
     verify(student).updateDesignatedCourseSnapshotVersion(snapshotVersion);
+    verify(academicCache).deleteAllByStudentId(studentId);
   }
 
   @Test

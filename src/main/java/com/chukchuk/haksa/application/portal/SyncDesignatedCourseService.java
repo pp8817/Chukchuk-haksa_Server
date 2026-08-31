@@ -2,6 +2,7 @@
 
 package com.chukchuk.haksa.application.portal;
 
+import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
@@ -22,6 +23,7 @@ public class SyncDesignatedCourseService {
 
   private final StudentRepository studentRepository;
   private final StudentDesignatedCourseRepository designatedCourseRepository;
+  private final AcademicCache academicCache;
 
   /**
    * 수신된 지정과목 스냅샷을 버전 순서에 따라 저장한다.
@@ -57,5 +59,6 @@ public class SyncDesignatedCourseService {
               .toList());
     }
     student.updateDesignatedCourseSnapshotVersion(snapshotVersion);
+    academicCache.deleteAllByStudentId(student.getId());
   }
 }

@@ -722,7 +722,7 @@ git commit -m "337 test: 지정과목 동기화 회귀 검증 보강"
 - Consumes: 확정된 S3 입력 계약, V12 스키마, 동기화·생명주기 정책.
 - Produces: 운영자와 후속 편입생 졸업진단 구현자가 참조할 Wiki 및 PR 검증 기록.
 
-- [ ] **Step 1: `Core-Domain-Flows.md`에 입력·동기화 계약을 기록한다.**
+- [x] **Step 1: `Core-Domain-Flows.md`에 입력·동기화 계약을 기록한다.**
 
 포털 후처리 데이터 목록에 `designatedCourses`를 추가하고 다음 의미를 명시한다.
 
@@ -732,11 +732,11 @@ git commit -m "337 test: 지정과목 동기화 회귀 검증 보강"
 - 지정과목은 이수 내역이 아니므로 `student_courses`나 취득학점에 직접 반영하지 않는다.
 - `ScrapeJob.createdAt`보다 최신 버전이 이미 있으면 늦은 결과를 무시한다.
 
-- [ ] **Step 2: `Project-Architecture.md`에 저장 구조를 기록한다.**
+- [x] **Step 2: `Project-Architecture.md`에 저장 구조를 기록한다.**
 
 학생 데이터 저장 설명에 `student_designated_courses`와 `students.designated_courses_snapshot_version`을 추가한다. 새 테이블은 `student_id` FK와 `ON DELETE CASCADE`, `(student_id, source_order)` unique constraint를 가지며 수강·과목 테이블과 연관되지 않음을 적는다.
 
-- [ ] **Step 3: Wiki 변경을 별도 저장소에 커밋한다.**
+- [x] **Step 3: Wiki 변경을 별도 저장소에 커밋한다.**
 
 Wiki `master`에서 변경 범위와 링크를 확인한 뒤 다음 형식으로 커밋한다.
 
@@ -746,7 +746,7 @@ git commit -m "337 docs: 포털 지정과목 저장 계약 문서화"
 git push origin master
 ```
 
-- [ ] **Step 4: 최종 브랜치 범위를 검증한다.**
+- [x] **Step 4: 최종 브랜치 범위를 검증한다.**
 
 Run:
 
@@ -781,4 +781,7 @@ Expected: 이슈 #337 관련 코드·migration·테스트·작업 문서만 포�
 - Task 6 통합 검증: 저장 실패 시 기존 지정과목·버전 롤백, 학업 요약 취득학점 불변, 실제 callback JSON의 지정과목 순서·중복 보존을 확인했다.
 - 전체 품질 게이트: 기본 Java 24에서는 Gradle Checkstyle task 생성 오류(`Type T not present`)가 발생했으나, Java 17(`temurin-17.0.18`) 환경의 `./gradlew check --stacktrace --no-daemon`은 통과했다.
 - Task 6 포맷·정적 검사: Java 17 환경에서 `./gradlew spotlessApply --no-daemon` 및 `./gradlew checkstyleMain checkstyleTest --stacktrace --no-daemon` 통과.
+- Task 7 문서화: Wiki `Core-Domain-Flows.md`, `Project-Architecture.md`를 커밋 `b6b7e8c`로 갱신하고 `origin/master`에 push했다.
+- 지정과목 스냅샷 반영 시 `AcademicCache.deleteAllByStudentId`를 호출해 졸업진단·학사 캐시를 무효화하며, 필드 누락·stale 결과에는 호출하지 않는다.
+- PR 생성과 Assignee·릴리즈 라벨 설정은 사용자의 별도 요청 후 수행한다.
 - 남은 주요 위험은 실제 운영 payload의 숫자 타입 변형, PostgreSQL에서의 비관적 잠금 순서, bulk delete 뒤 insert 실패 시 rollback이다. Task 1, 3, 6에서 각각 회귀 테스트로 닫는다.
