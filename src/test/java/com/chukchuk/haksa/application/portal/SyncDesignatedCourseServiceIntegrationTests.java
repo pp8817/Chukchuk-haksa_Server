@@ -3,7 +3,10 @@
 package com.chukchuk.haksa.application.portal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
+import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecordRepository;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.department.repository.DepartmentRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
@@ -24,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -40,6 +44,8 @@ class SyncDesignatedCourseServiceIntegrationTests {
   @Autowired private UserRepository userRepository;
 
   @Autowired private DepartmentRepository departmentRepository;
+
+  @Autowired private StudentAcademicRecordRepository studentAcademicRecordRepository;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -69,6 +75,63 @@ class SyncDesignatedCourseServiceIntegrationTests {
     assertThat(storedCourses)
         .extracting(StudentDesignatedCourse::getSubjtCd)
         .containsExactly("LATEST");
+  }
+
+  @Test
+  @DisplayName("지정과목 저장 실패 시 기존 지정과목과 버전을 함께 롤백한다")
+  void rollsBackReplacementWhenSaveFails() {
+    Student student = saveStudent();
+    Instant latest = Instant.parse("2026-08-30T02:00:00Z");
+    service.sync(
+        student.getUser().getId(),
+        DesignatedCourseSnapshot.received(List.of(course("LATEST", 0))),
+        latest);
+    entityManager.flush();
+    TestTransaction.flagForCommit();
+    TestTransaction.end();
+    TestTransaction.start();
+
+    Instant replacement = Instant.parse("2026-08-30T03:00:00Z");
+    DesignatedCourseData duplicateA = course("DUPLICATE-A", 0);
+    DesignatedCourseData duplicateB = course("DUPLICATE-B", 0);
+
+    assertThatThrownBy(
+            () -> {
+              service.sync(
+                  student.getUser().getId(),
+                  DesignatedCourseSnapshot.received(List.of(duplicateA, duplicateB)),
+                  replacement);
+              entityManager.flush();
+            })
+        .isInstanceOf(RuntimeException.class);
+    TestTransaction.flagForRollback();
+    TestTransaction.end();
+
+    Student storedStudent = studentRepository.findById(student.getId()).orElseThrow();
+    assertThat(storedStudent.getDesignatedCoursesSnapshotVersion()).isEqualTo(latest);
+    assertThat(designatedCourseRepository.findAllByStudentIdOrderBySourceOrder(student.getId()))
+        .extracting(StudentDesignatedCourse::getSubjtCd)
+        .containsExactly("LATEST");
+  }
+
+  @Test
+  @DisplayName("지정과목 동기화는 기존 학업 요약을 변경하지 않는다")
+  void keepsAcademicSummaryUnchanged() {
+    Student student = saveStudent();
+    studentAcademicRecordRepository.save(new StudentAcademicRecord(student, 42, 36, null, null));
+    entityManager.flush();
+
+    service.sync(
+        student.getUser().getId(),
+        DesignatedCourseSnapshot.received(List.of(course("C101", 0))),
+        Instant.parse("2026-08-30T02:00:00Z"));
+    entityManager.flush();
+    entityManager.clear();
+
+    assertThat(studentAcademicRecordRepository.findByStudentId(student.getId()))
+        .get()
+        .extracting(record -> record.getTotalEarnedCredits())
+        .isEqualTo(36);
   }
 
   private Student saveStudent() {

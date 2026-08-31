@@ -590,7 +590,7 @@ git commit -m "337 feat: 지정과목 동기화 흐름 연결"
 - Consumes: 기존 `/students/reset`, 재연동 시 기존 학생 재사용, 회원 탈퇴, 학번 기반 계정 병합 흐름.
 - Produces: reset·탈퇴 시 지정과목 제거와 버전 초기화, 계정 병합 시 학생 소유 데이터 유지.
 
-- [ ] **Step 1: 생명주기 실패 테스트를 추가한다.**
+- [x] **Step 1: 생명주기 실패 테스트를 추가한다.**
 
 `StudentServiceUnitTests`의 reset 검증을 다음과 같이 확장한다.
 
@@ -607,7 +607,7 @@ verify(student).clearDesignatedCourseSnapshotVersion();
 
 `UserServiceIntegrationTest`는 지정과목이 있는 기존 학생을 새 사용자로 계정 병합한 뒤 같은 학생 UUID와 지정과목 행이 유지되고, 기존 사용자만 삭제되는지 확인한다.
 
-- [ ] **Step 2: focused test가 누락된 lifecycle 처리로 실패하는지 확인한다.**
+- [x] **Step 2: focused test가 누락된 lifecycle 처리로 실패하는지 확인한다.**
 
 Run:
 
@@ -617,7 +617,7 @@ Run:
 
 Expected: 지정과목 repository 호출과 버전 초기화가 없어 실패한다.
 
-- [ ] **Step 3: reset과 탈퇴 경로에 지정과목 정리를 추가한다.**
+- [x] **Step 3: reset과 탈퇴 경로에 지정과목 정리를 추가한다.**
 
 `StudentService.resetBy`는 지정과목 bulk delete 후 학생의 버전을 `null`로 변경한다. `StudentDeletionService.anonymizeByStudent`도 학생을 실제 삭제하지 않고 익명화하므로 FK cascade에만 의존하지 않고 같은 처리를 명시적으로 수행한다.
 
@@ -628,7 +628,7 @@ student.clearDesignatedCourseSnapshotVersion();
 
 계정 통합은 지정과목이 `student_id`를 참조하고 기존 `Student` 자체를 새 사용자로 이동하므로 별도 복사·삭제 코드를 추가하지 않는다.
 
-- [ ] **Step 4: 생명주기 테스트를 통과시킨다.**
+- [x] **Step 4: 생명주기 테스트를 통과시킨다.**
 
 Run:
 
@@ -638,7 +638,7 @@ Run:
 
 Expected: `BUILD SUCCESSFUL`.
 
-- [ ] **Step 5: 생명주기 변경을 커밋한다.**
+- [x] **Step 5: 생명주기 변경을 커밋한다.**
 
 ```bash
 git add src/main/java/com/chukchuk/haksa/domain/student/service src/test/java/com/chukchuk/haksa/domain/student/service src/test/java/com/chukchuk/haksa/domain/user
@@ -656,7 +656,7 @@ git commit -m "337 feat: 지정과목 학생 생명주기 반영"
 - Consumes: Task 1의 실제 JSON fixture와 Task 2~5의 전체 저장 흐름.
 - Produces: 이슈 #337의 누락·null·빈 배열·교체·순서 역전·rollback 인수 조건에 대한 회귀 증거.
 
-- [ ] **Step 1: 실제 JSON fixture를 callback 후처리 경계에서 검증한다.**
+- [x] **Step 1: 실제 JSON fixture를 callback 후처리 경계에서 검증한다.**
 
 `PortalCallbackPostProcessorTests`에서 fixture를 읽어 `ScrapeResultCallbackTxService.completeSuccess`로 전달된 `PortalData`를 capture하고 다음을 확인한다.
 
@@ -669,7 +669,7 @@ assertThat(portalDataCaptor.getValue().designatedCourses().courses())
 
 잘못된 숫자와 학생번호 불일치 fixture 변형은 `SCRAPE_RESULT_SCHEMA_INVALID`를 발생시키고 portal sync를 호출하지 않아야 한다.
 
-- [ ] **Step 2: 인수 조건별 focused test를 실행한다.**
+- [x] **Step 2: 인수 조건별 focused test를 실행한다.**
 
 Run:
 
@@ -776,4 +776,7 @@ Expected: 이슈 #337 관련 코드·migration·테스트·작업 문서만 포�
 - Task 3 회귀: `./gradlew test --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceTests --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceIntegrationTests --stacktrace --no-daemon` 통과.
 - Task 4 회귀: `./gradlew test --tests com.chukchuk.haksa.application.portal.PortalSyncServiceTests --tests com.chukchuk.haksa.application.portal.ScrapeResultCallbackTxServiceTests --tests com.chukchuk.haksa.application.portal.PortalCallbackPostProcessorTests --tests com.chukchuk.haksa.application.portal.ScrapeResultCallbackServiceUnitTests --stacktrace --no-daemon` 통과.
 - Task 4 포맷: `./gradlew spotlessApply --no-daemon` 통과.
+- Task 5 회귀: `./gradlew test --tests com.chukchuk.haksa.domain.student.service.StudentServiceUnitTests --tests com.chukchuk.haksa.domain.student.service.StudentDeletionServiceUnitTests --tests com.chukchuk.haksa.domain.user.service.UserServiceIntegrationTest --stacktrace --no-daemon`에서 초기 RED 후 구현 GREEN 통과.
+- Task 6 회귀: `./gradlew test --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --tests com.chukchuk.haksa.application.portal.PortalCallbackPostProcessorTests --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceTests --tests com.chukchuk.haksa.application.portal.SyncDesignatedCourseServiceIntegrationTests --tests com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepositoryTests --stacktrace --no-daemon` 통과.
+- Task 6 통합 검증: 저장 실패 시 기존 지정과목·버전 롤백, 학업 요약 취득학점 불변, 실제 callback JSON의 지정과목 순서·중복 보존을 확인했다.
 - 남은 주요 위험은 실제 운영 payload의 숫자 타입 변형, PostgreSQL에서의 비관적 잠금 순서, bulk delete 뒤 insert 실패 시 rollback이다. Task 1, 3, 6에서 각각 회귀 테스트로 닫는다.

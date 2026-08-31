@@ -33,17 +33,17 @@ import com.chukchuk.haksa.domain.professor.repository.ProfessorRepository;
 import com.chukchuk.haksa.domain.student.model.Grade;
 import com.chukchuk.haksa.domain.student.model.GradeType;
 import com.chukchuk.haksa.domain.student.model.Student;
-import com.chukchuk.haksa.domain.student.model.StudentStatus;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
+import com.chukchuk.haksa.domain.student.model.StudentStatus;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.SocialAccount;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.SocialAccountRepository;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
-import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import com.chukchuk.haksa.global.security.cache.AuthTokenCache;
 import com.chukchuk.haksa.global.security.service.OidcProvider;
+import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
@@ -151,7 +151,9 @@ class UserServiceIntegrationTest {
     Student mergedStudent = studentRepository.findById(existingStudent.getId()).orElseThrow();
     assertThat(merged.getId()).isEqualTo(currentUser.getId());
     assertThat(mergedStudent.getUser().getId()).isEqualTo(currentUser.getId());
-    assertThat(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(mergedStudent.getId()))
+    assertThat(
+            studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(
+                mergedStudent.getId()))
         .extracting(StudentDesignatedCourse::getSubjtCd)
         .containsExactly("C337");
     assertThat(userRepository.findById(existingUser.getId())).isEmpty();
