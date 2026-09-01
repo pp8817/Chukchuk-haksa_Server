@@ -24,7 +24,8 @@ public class DesignatedCourseEvaluator {
   private static final Set<GradeType> NON_PASSING_GRADES =
       EnumSet.of(GradeType.F, GradeType.R, GradeType.NP, GradeType.IP);
 
-  /** 지정과목 이수 상태와 편입 인정학점을 함께 계산한다.
+  /**
+   * 지정과목 이수 상태와 편입 인정학점을 함께 계산한다.
    *
    * @param designatedCourses 학생에게 저장된 지정과목 원본 목록
    * @param studentCourses 학생의 전체 수강 기록
@@ -91,13 +92,20 @@ public class DesignatedCourseEvaluator {
     return code.trim().toUpperCase(Locale.ROOT);
   }
 
-  /** 지정과목 평가 결과를 보관한다.
+  /**
+   * 지정과목 평가 결과를 보관한다.
    *
    * @param designatedCourses 지정과목별 이수 상태
    * @param recognizedTransferCredits 편입 인정학점 합계
    */
   public record Evaluation(
       List<DesignatedCourseProgressDto> designatedCourses, int recognizedTransferCredits) {
+    /**
+     * 지정과목 평가 목록을 방어적 복사해 평가 결과를 생성한다.
+     *
+     * @param designatedCourses 지정과목별 이수 상태
+     * @param recognizedTransferCredits 편입 인정학점 합계
+     */
     public Evaluation {
       designatedCourses = List.copyOf(designatedCourses);
     }

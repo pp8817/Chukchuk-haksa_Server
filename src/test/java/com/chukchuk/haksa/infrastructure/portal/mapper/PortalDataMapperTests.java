@@ -89,8 +89,7 @@ class PortalDataMapperTests {
     assertThat(portalData.academic().semesters().get(0).courses())
         .extracting(course -> course.code())
         .containsExactly("07045", "C101");
-    assertThat(portalData.academic().semesters().get(0).courses().get(0).credits())
-        .isEqualTo(65);
+    assertThat(portalData.academic().semesters().get(0).courses().get(0).credits()).isEqualTo(65);
     assertThat(portalData.designatedCourses().courses())
         .extracting(DesignatedCourseData::subjtCd)
         .containsExactly("C101", "C202");

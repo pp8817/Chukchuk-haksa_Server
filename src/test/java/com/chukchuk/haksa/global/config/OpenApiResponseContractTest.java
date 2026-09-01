@@ -188,12 +188,7 @@ class OpenApiResponseContractTest {
         .contains("REGULAR", "TRANSFER");
     assertThat(propertySchema(apiDocs, graduationData, "analysisStatus").path("enum").toString())
         .contains("CALCULATED", "MANUAL_REVIEW_REQUIRED");
-    assertThat(
-            graduationData
-                .path("properties")
-                .path("transferProgress")
-                .path("$ref")
-                .asText())
+    assertThat(graduationData.path("properties").path("transferProgress").path("$ref").asText())
         .isEqualTo("#/components/schemas/TransferGraduationProgressDto");
     JsonNode graduationProgress =
         arrayItemSchema(apiDocs, propertySchema(apiDocs, graduationData, "graduationProgress"));

@@ -33,11 +33,9 @@ class GraduationProgressResponseJsonTest {
     JsonNode json = objectMapper.valueToTree(transfer);
 
     assertThat(json.path("analysisType").asText()).isEqualTo("TRANSFER");
-    assertThat(json.path("analysisStatus").asText())
-        .isEqualTo("MANUAL_REVIEW_REQUIRED");
+    assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIRED");
     assertThat(json.path("graduationProgress")).isEmpty();
-    assertThat(json.path("transferProgress").path("requiredTotalCredits").asInt())
-        .isEqualTo(130);
+    assertThat(json.path("transferProgress").path("requiredTotalCredits").asInt()).isEqualTo(130);
     assertThat(json.path("languageCertFulfilled").isNull()).isTrue();
   }
 
@@ -55,10 +53,7 @@ class GraduationProgressResponseJsonTest {
         false,
         List.of(
             new DesignatedCourseProgressDto(
-                "C101",
-                "자료구조",
-                3,
-                DesignatedCourseCompletionStatus.COMPLETED)),
+                "C101", "자료구조", 3, DesignatedCourseCompletionStatus.COMPLETED)),
         true,
         List.of(TransferManualReviewReason.REQUIRED_COURSES_NOT_ASSESSABLE));
   }

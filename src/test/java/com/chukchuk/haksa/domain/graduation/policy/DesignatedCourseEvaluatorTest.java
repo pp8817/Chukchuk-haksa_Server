@@ -52,8 +52,7 @@ class DesignatedCourseEvaluatorTest {
     when(deleted.isRetakeDeleted()).thenReturn(true);
 
     DesignatedCourseEvaluator.Evaluation result =
-        evaluator.evaluate(
-            List.of(designatedCourse("C101", "자료구조", 3, 0)), List.of(deleted));
+        evaluator.evaluate(List.of(designatedCourse("C101", "자료구조", 3, 0)), List.of(deleted));
 
     assertThat(result.designatedCourses().get(0).status())
         .isEqualTo(DesignatedCourseCompletionStatus.NOT_COMPLETED);

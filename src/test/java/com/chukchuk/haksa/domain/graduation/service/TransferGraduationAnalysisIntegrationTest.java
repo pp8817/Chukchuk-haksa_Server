@@ -31,12 +31,11 @@ import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepos
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
 import com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapper;
 import com.chukchuk.haksa.infrastructure.portal.model.CourseInfo;
-import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.chukchuk.haksa.infrastructure.portal.model.SemesterCourseInfo;
-import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -101,7 +100,8 @@ class TransferGraduationAnalysisIntegrationTest {
             portalData.academic().summary().totalCredits(),
             BigDecimal.valueOf(portalData.academic().summary().gpa()),
             BigDecimal.valueOf(portalData.academic().summary().score())));
-    graduationProgressRepository.save(StudentGraduationProgress.createForLanguageCert(student, true));
+    graduationProgressRepository.save(
+        StudentGraduationProgress.createForLanguageCert(student, true));
     saveDesignatedCourses(student, portalData);
     saveStudentCourses(student, portalData);
     entityManager.flush();
@@ -127,7 +127,8 @@ class TransferGraduationAnalysisIntegrationTest {
     Department department =
         departmentRepository.save(
             new Department(
-                portalData.student().department().code(), portalData.student().department().name()));
+                portalData.student().department().code(),
+                portalData.student().department().name()));
     User user =
         userRepository.save(
             User.builder()

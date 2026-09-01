@@ -13,8 +13,7 @@ class StudentCourseRepositoryFetchTest {
   void exposesStudentScopedCourseAndOfferingFetchQuery() {
     assertThatCode(
             () ->
-                StudentCourseRepository.class.getMethod(
-                    "findAllWithCourseByStudentId", UUID.class))
+                StudentCourseRepository.class.getMethod("findAllWithCourseByStudentId", UUID.class))
         .doesNotThrowAnyException();
   }
 }

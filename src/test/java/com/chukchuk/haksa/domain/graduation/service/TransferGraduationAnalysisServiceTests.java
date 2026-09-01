@@ -7,8 +7,8 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
+import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
 import com.chukchuk.haksa.domain.academic.record.service.StudentAcademicRecordService;
 import com.chukchuk.haksa.domain.department.model.Department;
@@ -60,9 +60,11 @@ class TransferGraduationAnalysisServiceTests {
     lenient().when(student.getId()).thenReturn(STUDENT_ID);
     lenient().when(student.getAcademicInfo()).thenReturn(academicInfo);
     lenient().when(student.getSecondaryMajor()).thenReturn(null);
-    lenient().when(studentAcademicRecordService.getStudentAcademicRecordByStudentId(STUDENT_ID))
+    lenient()
+        .when(studentAcademicRecordService.getStudentAcademicRecordByStudentId(STUDENT_ID))
         .thenReturn(academicRecord);
-    lenient().when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID))
+    lenient()
+        .when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID))
         .thenReturn(List.of());
     lenient()
         .when(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(STUDENT_ID))
@@ -117,7 +119,8 @@ class TransferGraduationAnalysisServiceTests {
     List<StudentCourse> studentCourses = List.of(completedCourse);
     when(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(STUDENT_ID))
         .thenReturn(designatedCourses);
-    when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID)).thenReturn(studentCourses);
+    when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID))
+        .thenReturn(studentCourses);
     when(designatedCourseEvaluator.evaluate(designatedCourses, studentCourses))
         .thenReturn(
             new DesignatedCourseEvaluator.Evaluation(
@@ -132,7 +135,8 @@ class TransferGraduationAnalysisServiceTests {
     TransferGraduationProgressDto progress = service.analyze(student).getTransferProgress();
 
     assertThat(progress.recognizedTransferCredits()).isEqualTo(65);
-    assertThat(progress.designatedCourses()).extracting(DesignatedCourseProgressDto::status)
+    assertThat(progress.designatedCourses())
+        .extracting(DesignatedCourseProgressDto::status)
         .containsExactly(DesignatedCourseCompletionStatus.COMPLETED);
     assertThat(progress.designatedCoursesNeedsRefresh()).isTrue();
     assertThat(progress.manualReviewRequired()).isTrue();
@@ -144,7 +148,8 @@ class TransferGraduationAnalysisServiceTests {
 
   @Test
   void treatsReceivedEmptyDesignatedSnapshotAsFresh() {
-    when(student.getDesignatedCoursesSnapshotVersion()).thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
+    when(student.getDesignatedCoursesSnapshotVersion())
+        .thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
     when(academicRecord.getTotalEarnedCredits()).thenReturn(130);
     when(academicRecord.getCumulativeGpa()).thenReturn(new BigDecimal("2.0"));
 

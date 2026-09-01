@@ -38,7 +38,8 @@ public class TransferGraduationAnalysisService {
   private final StudentGraduationProgressService studentGraduationProgressService;
   private final DesignatedCourseEvaluator designatedCourseEvaluator;
 
-  /** 편입생의 자동 계산 가능한 졸업요건을 API 응답으로 변환한다.
+  /**
+   * 편입생의 자동 계산 가능한 졸업요건을 API 응답으로 변환한다.
    *
    * @param student 분석할 편입생
    * @return 편입생 부분 진단 응답
@@ -65,11 +66,8 @@ public class TransferGraduationAnalysisService {
         totalEarnedCredits == null ? null : totalEarnedCredits >= REQUIRED_TOTAL_CREDITS;
 
     BigDecimal requiredGpa =
-        student.getSecondaryMajor() == null
-            ? DEFAULT_REQUIRED_GPA
-            : SECONDARY_MAJOR_REQUIRED_GPA;
-    Boolean gpaFulfilled =
-        cumulativeGpa == null ? null : cumulativeGpa.compareTo(requiredGpa) >= 0;
+        student.getSecondaryMajor() == null ? DEFAULT_REQUIRED_GPA : SECONDARY_MAJOR_REQUIRED_GPA;
+    Boolean gpaFulfilled = cumulativeGpa == null ? null : cumulativeGpa.compareTo(requiredGpa) >= 0;
 
     List<TransferManualReviewReason> manualReviewReasons = baseManualReviewReasons();
     if (totalEarnedCredits == null || cumulativeGpa == null) {

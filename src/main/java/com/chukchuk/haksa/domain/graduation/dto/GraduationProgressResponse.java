@@ -70,7 +70,8 @@ public class GraduationProgressResponse {
     this.transferProgress = transferProgress;
   }
 
-  /** 편입생 부분 진단 결과를 API 응답으로 감싼다.
+  /**
+   * 편입생 부분 진단 결과를 API 응답으로 감싼다.
    *
    * @param transferProgress 편입생 부분 진단 결과
    * @param languageCertFulfilled 외국어 인증 충족 여부
