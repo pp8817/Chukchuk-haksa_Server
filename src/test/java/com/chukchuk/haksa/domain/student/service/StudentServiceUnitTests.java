@@ -2,6 +2,7 @@ package com.chukchuk.haksa.domain.student.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -267,7 +268,7 @@ class StudentServiceUnitTests {
   void resetByDeletesAcademicRecordsInBulk() {
     UUID studentId = UUID.randomUUID();
     Student student = org.mockito.Mockito.mock(Student.class);
-    when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+    when(studentRepository.findForUpdateById(studentId)).thenReturn(Optional.of(student));
 
     studentService.resetBy(studentId);
 
@@ -275,7 +276,7 @@ class StudentServiceUnitTests {
     verify(semesterAcademicRecordRepository).deleteByStudentId(studentId);
     verify(studentAcademicRecordRepository).deleteByStudentId(studentId);
     verify(studentDesignatedCourseRepository).deleteAllByStudentId(studentId);
-    verify(student).clearDesignatedCourseSnapshotVersion();
+    verify(student).resetDesignatedCourseSnapshot(any(Instant.class));
     verify(academicCache).deleteAllByStudentId(studentId);
   }
 

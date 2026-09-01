@@ -15,6 +15,7 @@ import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepos
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
+import com.chukchuk.haksa.infrastructure.cache.local.LocalAcademicCache;
 import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseSnapshot;
 import jakarta.persistence.EntityManager;
@@ -46,6 +47,8 @@ class SyncDesignatedCourseServiceIntegrationTests {
   @Autowired private DepartmentRepository departmentRepository;
 
   @Autowired private StudentAcademicRecordRepository studentAcademicRecordRepository;
+
+  @Autowired private LocalAcademicCache academicCache;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -132,6 +135,26 @@ class SyncDesignatedCourseServiceIntegrationTests {
         .get()
         .extracting(record -> record.getTotalEarnedCredits())
         .isEqualTo(36);
+  }
+
+  @Test
+  @DisplayName("지정과목 변경 시 캐시는 트랜잭션 커밋 후 삭제한다")
+  void invalidatesCacheAfterCommit() {
+    Student student = saveStudent();
+    UUID studentId = student.getId();
+    academicCache.setSemesterSummaries(studentId, List.of());
+
+    service.sync(
+        student.getUser().getId(),
+        DesignatedCourseSnapshot.received(List.of(course("C101", 0))),
+        Instant.parse("2026-08-30T02:00:00Z"));
+
+    assertThat(academicCache.getSemesterSummaries(studentId)).isNotNull();
+
+    TestTransaction.flagForCommit();
+    TestTransaction.end();
+
+    assertThat(academicCache.getSemesterSummaries(studentId)).isNull();
   }
 
   private Student saveStudent() {

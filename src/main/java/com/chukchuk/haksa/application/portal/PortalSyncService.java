@@ -50,6 +50,7 @@ public class PortalSyncService {
     User mergedUser =
         userService.tryMergeWithExistingUser(userId, portalData.student().studentCode());
     UUID activeUserId = mergedUser.getId();
+    lockStudentForSync(activeUserId);
     if (Boolean.TRUE.equals(mergedUser.getPortalConnected())) {
       log.info(
           "[BIZ] portal.sync.refresh_after_merge userId={} activeUserId={}", userId, activeUserId);
@@ -66,6 +67,8 @@ public class PortalSyncService {
           LogSanitizer.arg(conn.error()));
       throw new PortalScrapeException(ErrorCode.SCRAPING_FAILED);
     }
+
+    lockStudentForSync(activeUserId);
 
     // 2. 학업 이력 동기화
     SyncAcademicRecordResult sync =
@@ -120,6 +123,7 @@ public class PortalSyncService {
   private ScrapingResponse refreshActiveUserFromPortal(
       UUID userId, User activeUser, PortalData portalData, Instant snapshotVersion, long t0) {
     UUID activeUserId = activeUser.getId();
+    lockStudentForSync(activeUserId);
 
     // 1. 포털 연동 정보 갱신
     PortalConnectionResult conn =
@@ -169,5 +173,9 @@ public class PortalSyncService {
     Student student = studentService.getStudentByUserId(activeUserId);
     studentGraduationProgressService.syncLanguageCert(
         student, portalData.student().languageCertFulfilled());
+  }
+
+  private void lockStudentForSync(UUID userId) {
+    studentService.findForUpdateByUserId(userId);
   }
 }

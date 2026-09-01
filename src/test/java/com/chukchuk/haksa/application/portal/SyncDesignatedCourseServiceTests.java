@@ -14,6 +14,7 @@ import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
+import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.global.exception.type.EntityNotFoundException;
 import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseSnapshot;
@@ -138,6 +139,25 @@ class SyncDesignatedCourseServiceTests {
                 service.sync(UUID.randomUUID(), DesignatedCourseSnapshot.received(List.of()), null))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("스냅샷 버전");
+  }
+
+  @Test
+  @DisplayName("탈퇴한 사용자의 늦은 지정과목 스냅샷은 저장하지 않는다")
+  void skipsSnapshotForWithdrawnUser() {
+    UUID userId = UUID.randomUUID();
+    User withdrawnUser =
+        User.builder().email("withdrawn@example.com").profileNickname("user").build();
+    withdrawnUser.withdraw(Instant.parse("2026-08-30T01:00:00Z"));
+    when(studentRepository.findForUpdateByUserId(userId)).thenReturn(Optional.of(student));
+    when(student.getUser()).thenReturn(withdrawnUser);
+
+    service.sync(
+        userId, DesignatedCourseSnapshot.received(List.of(course("C101", 0))), version("02:00"));
+
+    verify(designatedCourseRepository, never()).deleteAllByStudentId(any());
+    verify(designatedCourseRepository, never()).saveAll(any());
+    verify(student, never()).updateDesignatedCourseSnapshotVersion(any());
+    verifyNoInteractions(academicCache);
   }
 
   private static Instant version(String time) {

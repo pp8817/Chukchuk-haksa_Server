@@ -17,9 +17,17 @@
 - 지정과목으로 `Course`, `CourseOffering`, `StudentCourse`를 만들거나 취득학점을 변경하지 않는다.
 - `point`, `cretGainYear`의 누락·빈 문자열은 `null`, 잘못된 숫자는 `SCRAPE_RESULT_SCHEMA_INVALID`로 처리한다.
 - 지정과목 행의 비어 있지 않은 `sno`가 최상위 학생번호와 다르면 전체 payload를 거부한다.
-- V12 스키마는 현재 운영 중인 이전 Lambda가 새 테이블과 nullable 컬럼을 무시해도 동작하도록 additive migration으로 작성한다.
+- V12/V13 스키마는 현재 운영 중인 이전 Lambda가 새 테이블과 nullable 컬럼을 무시해도 동작하도록 additive migration으로 작성한다.
 - 새 Java 파일은 첫 줄에 역할을 설명하는 한 줄짜리 한국어 주석을 둔다.
 - 공개 API 응답은 이번 이슈에서 변경하지 않는다.
+
+## CodeRabbit 리뷰 후속 결정
+
+- 학생 데이터 초기화와 탈퇴는 학생 행을 `PESSIMISTIC_WRITE`로 잠근 뒤 지정과목과 스냅샷 상태를 함께 정리한다.
+- 명시적인 초기화·탈퇴 시점 이전의 늦은 스냅샷을 차단하기 위해 `students.designated_courses_reset_at` 워터마크를 V13으로 추가한다. 포털 최초 재연동 초기화는 같은 트랜잭션의 현재 스냅샷을 허용해야 하므로 워터마크를 설정하지 않는다.
+- 지정과목 변경으로 인한 로컬 캐시 삭제는 트랜잭션 커밋 후 수행해 롤백 또는 동시 조회가 이전 데이터를 캐시에 재저장하는 경합을 줄인다.
+- 포털 동기화 진입부에서도 학생 행을 잠그고, 탈퇴한 사용자의 지정과목 콜백은 저장하지 않는다.
+- 지정과목 배열의 `null` 행과 필수 식별 코드(`orgClsCd`, `subjtCd`) 누락은 스키마 오류로 거부한다.
 
 ---
 

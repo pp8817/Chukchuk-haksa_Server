@@ -155,6 +155,36 @@ class PortalDataMapperTests {
         .hasMessageContaining("학생번호");
   }
 
+  @Test
+  @DisplayName("designatedCourses 배열에 null 행이 있으면 입력을 거부한다")
+  void rejectsNullDesignatedCourseRow() throws Exception {
+    ObjectNode root = (ObjectNode) newObjectMapper().readTree(fixture());
+    ((ArrayNode) root.get("designatedCourses")).insertNull(0);
+    RawPortalData raw = objectMapper.readValue(root.toString(), RawPortalData.class);
+
+    assertThatThrownBy(() -> PortalDataMapper.toPortalData(raw))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("행");
+  }
+
+  @ParameterizedTest
+  @CsvSource({"orgClsCd, null", "orgClsCd, '   '", "subjtCd, null", "subjtCd, '   '"})
+  @DisplayName("지정과목의 필수 코드가 없으면 입력을 거부한다")
+  void rejectsMissingDesignatedCourseCode(String field, String value) throws Exception {
+    ObjectNode root = (ObjectNode) newObjectMapper().readTree(fixture());
+    ObjectNode course = (ObjectNode) ((ArrayNode) root.get("designatedCourses")).get(0);
+    if ("null".equals(value)) {
+      course.putNull(field);
+    } else {
+      course.put(field, value.replace("'", ""));
+    }
+    RawPortalData raw = objectMapper.readValue(root.toString(), RawPortalData.class);
+
+    assertThatThrownBy(() -> PortalDataMapper.toPortalData(raw))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining(field);
+  }
+
   @ParameterizedTest
   @CsvSource({"8영역, 8", "10영역, 10"})
   @DisplayName("숫자 영역명은 전체 영역 번호로 변환한다")

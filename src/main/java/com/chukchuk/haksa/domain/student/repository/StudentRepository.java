@@ -24,6 +24,16 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
   Optional<Student> findByUser(User user);
 
   /**
+   * 학생 식별자로 학생 행을 쓰기 잠금과 함께 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 잠근 학생이 있으면 포함한 선택값
+   */
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("SELECT s FROM Student s WHERE s.id = :studentId")
+  Optional<Student> findForUpdateById(@Param("studentId") UUID studentId);
+
+  /**
    * 사용자 식별자로 학생 행을 쓰기 잠금과 함께 조회한다.
    *
    * @param userId 사용자 식별자

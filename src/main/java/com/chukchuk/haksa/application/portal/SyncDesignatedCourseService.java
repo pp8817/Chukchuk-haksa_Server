@@ -47,6 +47,9 @@ public class SyncDesignatedCourseService {
         studentRepository
             .findForUpdateByUserId(userId)
             .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
+    if (student.getUser() != null && Boolean.TRUE.equals(student.getUser().getIsDeleted())) {
+      return;
+    }
     if (!student.canApplyDesignatedCourseSnapshot(snapshotVersion)) {
       return;
     }

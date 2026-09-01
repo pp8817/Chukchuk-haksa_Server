@@ -64,4 +64,18 @@ class StudentModelTests {
     assertThat(student.canApplyDesignatedCourseSnapshot(Instant.parse("2026-08-30T01:00:00Z")))
         .isTrue();
   }
+
+  @Test
+  @DisplayName("지정과목 초기화 시 초기화 이전 스냅샷은 다시 적용하지 않는다")
+  void blocksSnapshotsCreatedBeforeReset() {
+    Student student = Student.builder().studentCode("20221234").admissionYear(2022).build();
+    Instant resetAt = Instant.parse("2026-08-30T02:00:00Z");
+
+    student.resetDesignatedCourseSnapshot(resetAt);
+
+    assertThat(student.canApplyDesignatedCourseSnapshot(Instant.parse("2026-08-30T01:00:00Z")))
+        .isFalse();
+    assertThat(student.canApplyDesignatedCourseSnapshot(Instant.parse("2026-08-30T03:00:00Z")))
+        .isTrue();
+  }
 }

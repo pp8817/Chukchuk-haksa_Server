@@ -7,6 +7,9 @@ import com.chukchuk.haksa.domain.graduation.repository.StudentGraduationProgress
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
+import com.chukchuk.haksa.global.exception.code.ErrorCode;
+import com.chukchuk.haksa.global.exception.type.EntityNotFoundException;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +42,20 @@ public class StudentDeletionService {
     }
 
     UUID studentId = student.getId();
+    Student targetStudent = student;
     if (studentId != null) {
+      targetStudent =
+          studentRepository
+              .findForUpdateById(studentId)
+              .orElseThrow(() -> new EntityNotFoundException(ErrorCode.STUDENT_NOT_FOUND));
       studentCourseRepository.deleteByStudentId(studentId);
       semesterAcademicRecordRepository.deleteByStudentId(studentId);
       studentAcademicRecordRepository.deleteByStudentId(studentId);
       studentGraduationProgressRepository.deleteByStudentId(studentId);
       studentDesignatedCourseRepository.deleteAllByStudentId(studentId);
-      student.clearDesignatedCourseSnapshotVersion();
+      targetStudent.resetDesignatedCourseSnapshot(Instant.now());
     }
-    student.anonymize();
-    studentRepository.save(student);
+    targetStudent.anonymize();
+    studentRepository.save(targetStudent);
   }
 }

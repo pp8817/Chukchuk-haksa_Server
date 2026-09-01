@@ -14,6 +14,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /** 학사 조회 결과를 애플리케이션 메모리에 캐시한다. */
 @Component
@@ -120,8 +122,22 @@ public class LocalAcademicCache implements AcademicCache {
   /** 학생 단위 캐시를 무효화한다. Caffeine에서는 keySet 순회가 합리적인 선택이다. */
   @Override
   public void deleteAllByStudentId(UUID studentId) {
-    String prefix = AcademicCacheKeys.studentPrefix(studentId);
+    if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+      deleteImmediately(studentId);
+      return;
+    }
 
+    TransactionSynchronizationManager.registerSynchronization(
+        new TransactionSynchronization() {
+          @Override
+          public void afterCommit() {
+            deleteImmediately(studentId);
+          }
+        });
+  }
+
+  private void deleteImmediately(UUID studentId) {
+    String prefix = AcademicCacheKeys.studentPrefix(studentId);
     cache.asMap().keySet().removeIf(key -> key.startsWith(prefix));
   }
 }

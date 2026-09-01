@@ -2,6 +2,7 @@
 
 package com.chukchuk.haksa.domain.student.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,8 @@ import com.chukchuk.haksa.domain.graduation.repository.StudentGraduationProgress
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,11 +47,13 @@ class StudentDeletionServiceUnitTests {
   void anonymizeByStudentClearsDesignatedCourses() {
     UUID studentId = UUID.randomUUID();
     when(student.getId()).thenReturn(studentId);
+    when(studentRepository.findForUpdateById(studentId)).thenReturn(Optional.of(student));
 
     studentDeletionService.anonymizeByStudent(student);
 
     verify(studentDesignatedCourseRepository).deleteAllByStudentId(studentId);
-    verify(student).clearDesignatedCourseSnapshotVersion();
+    verify(student).resetDesignatedCourseSnapshot(any(Instant.class));
+    verify(student).anonymize();
     verify(studentRepository).save(student);
   }
 }

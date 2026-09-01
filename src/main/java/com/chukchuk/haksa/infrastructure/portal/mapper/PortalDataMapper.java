@@ -63,6 +63,15 @@ public class PortalDataMapper {
     List<DesignatedCourseData> courses = new ArrayList<>();
     for (int sourceOrder = 0; sourceOrder < rawCourses.size(); sourceOrder++) {
       RawPortalDesignatedCourseDto raw = rawCourses.get(sourceOrder);
+      if (raw == null) {
+        throw new IllegalArgumentException("지정과목 행이 null입니다.");
+      }
+      if (raw.orgClsCd() == null || raw.orgClsCd().isBlank()) {
+        throw new IllegalArgumentException("지정과목 orgClsCd가 비어 있습니다.");
+      }
+      if (raw.subjtCd() == null || raw.subjtCd().isBlank()) {
+        throw new IllegalArgumentException("지정과목 subjtCd가 비어 있습니다.");
+      }
       if (raw.sno() != null && !raw.sno().isBlank() && !raw.sno().trim().equals(studentCode)) {
         throw new IllegalArgumentException("지정과목 학생번호가 최상위 학생번호와 다릅니다.");
       }

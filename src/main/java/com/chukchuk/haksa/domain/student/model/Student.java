@@ -61,6 +61,9 @@ public class Student extends BaseEntity {
   @Column(name = "designated_courses_snapshot_version")
   private Instant designatedCoursesSnapshotVersion;
 
+  @Column(name = "designated_courses_reset_at")
+  private Instant designatedCoursesResetAt;
+
   @Column(name = "reconnection_required", nullable = false)
   private boolean reconnectionRequired = true; // 기본값 true, 재연동 시 false
 
@@ -216,8 +219,12 @@ public class Student extends BaseEntity {
    * @return 현재 버전이 없거나 요청 버전이 더 최신이면 {@code true}
    */
   public boolean canApplyDesignatedCourseSnapshot(Instant requestedVersion) {
-    return designatedCoursesSnapshotVersion == null
-        || requestedVersion.isAfter(designatedCoursesSnapshotVersion);
+    return isAfterWatermark(requestedVersion, designatedCoursesSnapshotVersion)
+        && isAfterWatermark(requestedVersion, designatedCoursesResetAt);
+  }
+
+  private boolean isAfterWatermark(Instant requestedVersion, Instant watermark) {
+    return watermark == null || requestedVersion.isAfter(watermark);
   }
 
   /**
@@ -232,6 +239,16 @@ public class Student extends BaseEntity {
   /** 지정과목 스냅샷의 마지막 반영 버전을 초기화한다. */
   public void clearDesignatedCourseSnapshotVersion() {
     this.designatedCoursesSnapshotVersion = null;
+  }
+
+  /**
+   * 지정과목을 초기화하고 초기화 시점 이전의 스냅샷을 차단한다.
+   *
+   * @param resetAt 늦은 스냅샷을 차단할 기준 시각
+   */
+  public void resetDesignatedCourseSnapshot(Instant resetAt) {
+    this.designatedCoursesResetAt = resetAt;
+    clearDesignatedCourseSnapshotVersion();
   }
 
   /**
