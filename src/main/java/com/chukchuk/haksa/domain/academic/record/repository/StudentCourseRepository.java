@@ -14,6 +14,21 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentCourseRepository extends JpaRepository<StudentCourse, Long> {
   /**
+   * 학생의 전체 수강 기록과 과목 정보를 한 번의 fetch join으로 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 과목과 개설 정보가 초기화된 수강 기록 목록
+   */
+  @Query(
+      """
+        SELECT sc FROM StudentCourse sc
+        JOIN FETCH sc.offering co
+        JOIN FETCH co.course c
+        WHERE sc.student.id = :studentId
+      """)
+  List<StudentCourse> findAllWithCourseByStudentId(@Param("studentId") UUID studentId);
+
+  /**
    * 학생의 지정 학기 수강 내역을 과목·교수 정보와 함께 조회한다.
    *
    * @param studentId 학생 식별자
