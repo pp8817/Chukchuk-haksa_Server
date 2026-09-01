@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.Level;
@@ -22,6 +23,7 @@ import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.global.exception.type.EntityNotFoundException;
 import com.chukchuk.haksa.infrastructure.portal.exception.PortalScrapeException;
+import com.chukchuk.haksa.infrastructure.portal.model.PortalData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.Instant;
@@ -47,7 +49,11 @@ class PortalCallbackPostProcessorTests {
               "academicRecords":{
                 "listSmrCretSumTabYearSmr":[{"cretGainYear":"2024","cretSmrCd":"10","gainPoint":"18","applPoint":"18","gainAvmk":"4.2","gainTavgPont":"95","dpmjOrdp":"1/100"}],
                 "selectSmrCretSumTabSjTotal":{"gainPoint":"120","applPoint":"130","gainAvmk":"3.8","gainTavgPont":"90"}
-              }
+              },
+              "designatedCourses":[
+                {"orgClsCd":"01","subjtCd":"C101","subjtNm":"자료구조","point":3,"precpResnCd":"TRANSFER","cretGainYear":"2024","cretSmrNm":"1학기","sno":"17019013"},
+                {"orgClsCd":"01","subjtCd":"C101","subjtNm":"자료구조","point":"","precpResnCd":"TRANSFER","cretGainYear":null,"cretSmrNm":"1학기","sno":"17019013"}
+              ]
             }
       """;
 
@@ -79,10 +85,15 @@ class PortalCallbackPostProcessorTests {
               assertThat(MDC.get("userId")).isEqualTo(job.getUserId().toString());
               assertThat(MDC.get("jobId")).isEqualTo(job.getJobId());
               assertThat(MDC.get("operationType")).isEqualTo(ScrapeJobOperationType.LINK.name());
+              PortalData portalData = invocation.getArgument(1, PortalData.class);
+              assertThat(portalData.designatedCourses().received()).isTrue();
+              assertThat(portalData.designatedCourses().courses())
+                  .extracting(course -> course.subjtCd())
+                  .containsExactly("C101", "C101");
               return null;
             })
         .when(portalSyncService)
-        .syncWithPortal(eq(job.getUserId()), any());
+        .syncWithPortal(eq(job.getUserId()), any(), any());
     Instant finishedAt = Instant.parse("2026-04-08T00:00:00Z");
     processor.process(
         job.getJobId(),
@@ -95,7 +106,7 @@ class PortalCallbackPostProcessorTests {
         "",
         "payload-hash");
 
-    verify(portalSyncService).syncWithPortal(eq(job.getUserId()), any());
+    verify(portalSyncService).syncWithPortal(eq(job.getUserId()), any(), any());
     assertThat(meterRegistry.counter("scrape.job.callback.postprocess.success").count())
         .isEqualTo(1.0);
     assertThat(job.getStatus()).isEqualTo(ScrapeJobStatus.SUCCEEDED);
@@ -113,7 +124,7 @@ class PortalCallbackPostProcessorTests {
     Instant finishedAt = Instant.parse("2026-04-08T00:00:00Z");
     doThrow(new PortalScrapeException(ErrorCode.SCRAPING_FAILED))
         .when(portalSyncService)
-        .refreshFromPortal(eq(job.getUserId()), any());
+        .refreshFromPortal(eq(job.getUserId()), any(), any());
 
     assertThatThrownBy(
             () ->
@@ -151,7 +162,7 @@ class PortalCallbackPostProcessorTests {
     Instant finishedAt = Instant.parse("2026-04-08T00:00:00Z");
     doThrow(new EntityNotFoundException(ErrorCode.USER_NOT_FOUND))
         .when(portalSyncService)
-        .syncWithPortal(eq(job.getUserId()), any());
+        .syncWithPortal(eq(job.getUserId()), any(), any());
 
     assertThatThrownBy(
             () ->
@@ -223,6 +234,35 @@ class PortalCallbackPostProcessorTests {
     assertThat(job.getStatus()).isEqualTo(ScrapeJobStatus.POST_PROCESSING);
     assertThat(appender.list).noneMatch(event -> event.getLevel().equals(Level.ERROR));
     verify(scrapeJobRepository, never()).findForUpdateByJobId(job.getJobId());
+  }
+
+  @Test
+  @DisplayName("지정과목 숫자 형식이 잘못되면 payload를 거부하고 portal sync를 호출하지 않는다")
+  void handleInvalidDesignatedCoursePayload() {
+    String invalidPayload =
+        PAYLOAD_JSON.replace(
+            "\"subjtNm\":\"자료구조\",\"point\":3,\"precpResnCd\":\"TRANSFER\"",
+            "\"subjtNm\":\"자료구조\",\"point\":\"3학점\",\"precpResnCd\":\"TRANSFER\"");
+
+    assertThatThrownBy(
+            () ->
+                processor.process(
+                    UUID.randomUUID().toString(),
+                    UUID.randomUUID(),
+                    ScrapeJobOperationType.LINK,
+                    invalidPayload,
+                    Instant.parse("2026-04-08T00:00:00Z"),
+                    1.0,
+                    1,
+                    "",
+                    "invalid-designated-course"))
+        .isInstanceOf(CommonException.class)
+        .satisfies(
+            ex ->
+                assertThat(((CommonException) ex).getCode())
+                    .isEqualTo(ErrorCode.SCRAPE_RESULT_SCHEMA_INVALID.code()));
+
+    verifyNoInteractions(portalSyncService);
   }
 
   private static ScrapeJob newJob(ScrapeJobOperationType operationType) {

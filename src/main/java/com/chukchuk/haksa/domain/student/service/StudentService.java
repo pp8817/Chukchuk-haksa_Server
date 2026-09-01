@@ -3,8 +3,10 @@ package com.chukchuk.haksa.domain.student.service;
 import com.chukchuk.haksa.domain.academic.record.repository.SemesterAcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
+import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.student.dto.StudentDto;
 import com.chukchuk.haksa.domain.student.model.Student;
+import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
@@ -12,6 +14,7 @@ import com.chukchuk.haksa.domain.user.service.UserService;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.global.exception.type.EntityNotFoundException;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,8 @@ public class StudentService {
   private final StudentAcademicRecordRepository studentAcademicRecordRepository;
   private final SemesterAcademicRecordRepository semesterAcademicRecordRepository;
   private final StudentCourseRepository studentCourseRepository;
+  private final StudentDesignatedCourseRepository studentDesignatedCourseRepository;
+  private final AcademicCache academicCache;
 
   /**
    * 학생 식별자로 학생을 조회한다.
@@ -77,6 +82,17 @@ public class StudentService {
    */
   public Optional<Student> findPortalPendingStudent(UUID userId) {
     return studentRepository.findPortalPendingStudent(userId);
+  }
+
+  /**
+   * 사용자에게 연결된 학생 행을 쓰기 잠금과 함께 조회한다.
+   *
+   * @param userId 사용자 식별자
+   * @return 잠근 학생이 있으면 포함한 선택값
+   */
+  @Transactional
+  public Optional<Student> findForUpdateByUserId(UUID userId) {
+    return studentRepository.findForUpdateByUserId(userId);
   }
 
   /**
@@ -172,9 +188,34 @@ public class StudentService {
    */
   @Transactional
   public void resetBy(UUID studentId) {
+    resetInternal(studentId, true);
+  }
+
+  /**
+   * 포털 재연동 전에 기존 학사 데이터를 초기화한다.
+   *
+   * @param studentId 초기화할 학생 식별자
+   */
+  @Transactional
+  public void resetForPortalReuse(UUID studentId) {
+    resetInternal(studentId, false);
+  }
+
+  private void resetInternal(UUID studentId, boolean blockOlderSnapshots) {
+    final Optional<Student> lockedStudent = studentRepository.findForUpdateById(studentId);
     studentCourseRepository.deleteByStudentId(studentId);
     semesterAcademicRecordRepository.deleteByStudentId(studentId);
     studentAcademicRecordRepository.deleteByStudentId(studentId);
+    studentDesignatedCourseRepository.deleteAllByStudentId(studentId);
+    lockedStudent.ifPresent(
+        student -> {
+          if (blockOlderSnapshots) {
+            student.resetDesignatedCourseSnapshot(Instant.now());
+          } else {
+            student.clearDesignatedCourseSnapshotVersion();
+          }
+        });
+    academicCache.deleteAllByStudentId(studentId);
 
     log.info("[BIZ] student.reset.done studentId={}", studentId);
   }

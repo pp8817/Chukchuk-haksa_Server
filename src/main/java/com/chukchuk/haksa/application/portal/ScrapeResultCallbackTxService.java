@@ -128,9 +128,9 @@ public class ScrapeResultCallbackTxService {
         job.getStatus());
 
     if (operationType == ScrapeJobOperationType.LINK) {
-      portalSyncService.syncWithPortal(userId, portalData);
+      portalSyncService.syncWithPortal(userId, portalData, job.getCreatedAt());
     } else {
-      portalSyncService.refreshFromPortal(userId, portalData);
+      portalSyncService.refreshFromPortal(userId, portalData, job.getCreatedAt());
     }
 
     Instant resolvedFinishedAt = resolveFinishedAt(finishedAt);

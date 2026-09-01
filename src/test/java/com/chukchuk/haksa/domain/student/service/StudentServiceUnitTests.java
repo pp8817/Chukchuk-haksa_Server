@@ -2,17 +2,20 @@ package com.chukchuk.haksa.domain.student.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.chukchuk.haksa.domain.academic.record.repository.SemesterAcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentAcademicRecordRepository;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
+import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.student.dto.StudentDto;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentStatus;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
+import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
 import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import com.chukchuk.haksa.domain.user.model.User;
 import com.chukchuk.haksa.domain.user.repository.UserRepository;
@@ -44,6 +47,10 @@ class StudentServiceUnitTests {
   @Mock private SemesterAcademicRecordRepository semesterAcademicRecordRepository;
 
   @Mock private StudentCourseRepository studentCourseRepository;
+
+  @Mock private StudentDesignatedCourseRepository studentDesignatedCourseRepository;
+
+  @Mock private AcademicCache academicCache;
 
   @InjectMocks private StudentService studentService;
 
@@ -260,12 +267,17 @@ class StudentServiceUnitTests {
   @DisplayName("학생 데이터 초기화 시 학기/과목/학업요약을 벌크 삭제한다")
   void resetByDeletesAcademicRecordsInBulk() {
     UUID studentId = UUID.randomUUID();
+    Student student = org.mockito.Mockito.mock(Student.class);
+    when(studentRepository.findForUpdateById(studentId)).thenReturn(Optional.of(student));
 
     studentService.resetBy(studentId);
 
     verify(studentCourseRepository).deleteByStudentId(studentId);
     verify(semesterAcademicRecordRepository).deleteByStudentId(studentId);
     verify(studentAcademicRecordRepository).deleteByStudentId(studentId);
+    verify(studentDesignatedCourseRepository).deleteAllByStudentId(studentId);
+    verify(student).resetDesignatedCourseSnapshot(any(Instant.class));
+    verify(academicCache).deleteAllByStudentId(studentId);
   }
 
   @Test

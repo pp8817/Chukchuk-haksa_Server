@@ -2,6 +2,7 @@ package com.chukchuk.haksa.infrastructure.portal.mapper;
 
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalCourseDto;
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalData;
+import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalDesignatedCourseDto;
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalGradeResponseDto;
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalGradeSummaryDto;
 import com.chukchuk.haksa.infrastructure.portal.dto.raw.RawPortalSemesterDto;
@@ -11,6 +12,8 @@ import com.chukchuk.haksa.infrastructure.portal.model.AcademicSummary;
 import com.chukchuk.haksa.infrastructure.portal.model.AdmissionInfo;
 import com.chukchuk.haksa.infrastructure.portal.model.CodeName;
 import com.chukchuk.haksa.infrastructure.portal.model.CourseInfo;
+import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
+import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseSnapshot;
 import com.chukchuk.haksa.infrastructure.portal.model.GradeSummary;
 import com.chukchuk.haksa.infrastructure.portal.model.OfferingInfo;
 import com.chukchuk.haksa.infrastructure.portal.model.PortalAcademicData;
@@ -47,7 +50,44 @@ public class PortalDataMapper {
     return new PortalData(
         toPortalStudentInfo(raw.student()),
         toPortalAcademicInfo(raw.semesters(), raw.academicRecords()),
-        toPortalCurriculumInfo(raw.semesters()));
+        toPortalCurriculumInfo(raw.semesters()),
+        toDesignatedCourseSnapshot(raw.designatedCourses(), raw.student().sno()));
+  }
+
+  private static DesignatedCourseSnapshot toDesignatedCourseSnapshot(
+      List<RawPortalDesignatedCourseDto> rawCourses, String studentCode) {
+    if (rawCourses == null) {
+      return DesignatedCourseSnapshot.notReceived();
+    }
+
+    List<DesignatedCourseData> courses = new ArrayList<>();
+    for (int sourceOrder = 0; sourceOrder < rawCourses.size(); sourceOrder++) {
+      RawPortalDesignatedCourseDto raw = rawCourses.get(sourceOrder);
+      if (raw == null) {
+        throw new IllegalArgumentException("지정과목 행이 null입니다.");
+      }
+      if (raw.orgClsCd() == null || raw.orgClsCd().isBlank()) {
+        throw new IllegalArgumentException("지정과목 orgClsCd가 비어 있습니다.");
+      }
+      if (raw.subjtCd() == null || raw.subjtCd().isBlank()) {
+        throw new IllegalArgumentException("지정과목 subjtCd가 비어 있습니다.");
+      }
+      if (raw.sno() != null && !raw.sno().isBlank() && !raw.sno().trim().equals(studentCode)) {
+        throw new IllegalArgumentException("지정과목 학생번호가 최상위 학생번호와 다릅니다.");
+      }
+      courses.add(
+          new DesignatedCourseData(
+              raw.orgClsCd(),
+              raw.subjtCd(),
+              raw.subjtNm(),
+              parseNullableInteger(raw.point(), "point"),
+              raw.precpResnCd(),
+              parseNullableInteger(raw.cretGainYear(), "cretGainYear"),
+              raw.cretSmrNm(),
+              raw.sno(),
+              sourceOrder));
+    }
+    return DesignatedCourseSnapshot.received(courses);
   }
 
   private static PortalStudentInfo toPortalStudentInfo(RawPortalStudentDto s) {
@@ -189,6 +229,17 @@ public class PortalDataMapper {
     } catch (NumberFormatException e) {
       log.debug("parseInt 실패: {}", str);
       return 0;
+    }
+  }
+
+  private static Integer parseNullableInteger(String value, String fieldName) {
+    if (value == null || value.isBlank()) {
+      return null;
+    }
+    try {
+      return Integer.valueOf(value.trim());
+    } catch (NumberFormatException exception) {
+      throw new IllegalArgumentException("지정과목 " + fieldName + " 값이 숫자가 아닙니다: " + value, exception);
     }
   }
 

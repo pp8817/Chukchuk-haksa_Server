@@ -63,7 +63,7 @@ public class UserPortalConnectionRepository {
 
   private void reuseExistingStudent(
       Student student, User user, StudentInitializationDataType studentData) {
-    studentService.resetBy(student.getId());
+    studentService.resetForPortalReuse(student.getId());
     student.updateInfo(
         studentData.getName(),
         studentData.getDepartment(),

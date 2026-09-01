@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class FlywayMigrationTest {
 
   @Test
-  void freshDatabaseMigratesFromV1ToV11() throws Exception {
+  void freshDatabaseMigratesFromV1ToV13() throws Exception {
     String dbName = "flyway-migration-" + UUID.randomUUID();
     String url =
         "jdbc:h2:mem:"
@@ -63,7 +63,9 @@ class FlywayMigrationTest {
             MigrationVersion.fromVersion("8"),
             MigrationVersion.fromVersion("9"),
             MigrationVersion.fromVersion("10"),
-            MigrationVersion.fromVersion("11"));
+            MigrationVersion.fromVersion("11"),
+            MigrationVersion.fromVersion("12"),
+            MigrationVersion.fromVersion("13"));
 
     try (var connection = DriverManager.getConnection(url, "sa", "")) {
       assertThat(hasColumn(connection, "raw_faculty_division_name")).isTrue();
@@ -87,6 +89,19 @@ class FlywayMigrationTest {
       assertThat(primaryKeyColumn(connection, "refresh_token")).isEqualTo("session_id");
       assertThat(isNullable(connection, "users", "email")).isTrue();
       assertThat(isNullable(connection, "social_accounts", "email")).isTrue();
+      assertThat(hasTable(connection, "student_designated_courses")).isTrue();
+      assertThat(hasColumn(connection, "students", "designated_courses_snapshot_version")).isTrue();
+      assertThat(isNullable(connection, "students", "designated_courses_snapshot_version"))
+          .isTrue();
+      assertThat(hasColumn(connection, "students", "designated_courses_reset_at")).isTrue();
+      assertThat(isNullable(connection, "students", "designated_courses_reset_at")).isTrue();
+      assertThat(
+              (int)
+                  foreignKeyDeleteRule(
+                      connection,
+                      "student_designated_courses",
+                      "fk_student_designated_courses_student_id"))
+          .isEqualTo(java.sql.DatabaseMetaData.importedKeyCascade);
       try (var statement = connection.createStatement();
           var resultSet =
               statement.executeQuery(
@@ -399,5 +414,17 @@ class FlywayMigrationTest {
       assertThat(primaryKeys.next()).isTrue();
       return primaryKeys.getString("COLUMN_NAME");
     }
+  }
+
+  private short foreignKeyDeleteRule(Connection connection, String tableName, String fkName)
+      throws Exception {
+    try (var foreignKeys = connection.getMetaData().getImportedKeys(null, "public", tableName)) {
+      while (foreignKeys.next()) {
+        if (fkName.equalsIgnoreCase(foreignKeys.getString("FK_NAME"))) {
+          return foreignKeys.getShort("DELETE_RULE");
+        }
+      }
+    }
+    throw new AssertionError("외래 키를 찾을 수 없습니다: " + fkName);
   }
 }
