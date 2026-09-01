@@ -213,10 +213,10 @@ public class Student extends BaseEntity {
   }
 
   /**
-   * 요청한 지정과목 스냅샷이 현재 저장된 버전보다 최신인지 확인한다.
+   * 요청한 지정과목 스냅샷이 저장된 버전과 마지막 초기화 시점보다 최신인지 확인한다.
    *
    * @param requestedVersion 비교할 스냅샷 버전
-   * @return 현재 버전이 없거나 요청 버전이 더 최신이면 {@code true}
+   * @return 두 기준 시점이 없거나 요청 버전이 모두 더 최신이면 {@code true}
    */
   public boolean canApplyDesignatedCourseSnapshot(Instant requestedVersion) {
     return isAfterWatermark(requestedVersion, designatedCoursesSnapshotVersion)
