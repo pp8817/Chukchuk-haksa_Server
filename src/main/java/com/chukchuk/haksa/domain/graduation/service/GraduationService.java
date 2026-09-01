@@ -39,6 +39,7 @@ public class GraduationService {
   private final GraduationQueryRepository graduationQueryRepository;
   private final AcademicCache academicCache;
   private final StudentGraduationProgressService studentGraduationProgressService;
+  private final TransferGraduationAnalysisService transferGraduationAnalysisService;
 
   /* 졸업 요건 진행 상황 조회 */
   /**
@@ -49,7 +50,9 @@ public class GraduationService {
    */
   public GraduationProgressResponse getGraduationProgress(UUID studentId) {
     Student student = studentService.getStudentById(studentId);
-    validateTransferStudent(student);
+    if (student.isTransferStudent()) {
+      return transferGraduationAnalysisService.analyze(student);
+    }
 
     // 1. 캐시 조회
     try {
@@ -162,12 +165,6 @@ public class GraduationService {
   // ==============================
   // Utilities
   // ==============================
-
-  private void validateTransferStudent(Student student) {
-    if (student.isTransferStudent()) {
-      throw new CommonException(ErrorCode.TRANSFER_STUDENT_UNSUPPORTED);
-    }
-  }
 
   private boolean isDifferentGradRequirement(Long departmentId, int admissionYear) {
     return admissionYear == SPECIAL_YEAR
