@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
 import com.chukchuk.haksa.domain.graduation.dto.LanguageCertRequirementResponse;
+import com.chukchuk.haksa.domain.graduation.dto.TransferGraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.model.LanguageCertMatchStatus;
 import com.chukchuk.haksa.domain.graduation.model.LanguageCertTestType;
 import com.chukchuk.haksa.domain.graduation.service.GraduationService;
@@ -15,6 +16,7 @@ import com.chukchuk.haksa.domain.student.service.StudentService;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.support.ApiControllerWebMvcTestSupport;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -52,8 +54,49 @@ class GraduationControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
         .perform(get("/api/graduation/progress"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.analysisType").value("REGULAR"))
+        .andExpect(jsonPath("$.data.analysisStatus").value("CALCULATED"))
+        .andExpect(jsonPath("$.data.transferProgress").doesNotExist())
         .andExpect(jsonPath("$.data.languageCertFulfilled").value(true))
         .andExpect(jsonPath("$.data.languageCertNeedsRefresh").value(false));
+  }
+
+  @Test
+  @DisplayName("편입생 졸업진단은 편입 전용 진행률과 수동 확인 상태를 반환한다")
+  void getTransferGraduationProgressSuccess() throws Exception {
+    UUID userId = UUID.randomUUID();
+    UUID studentId = UUID.randomUUID();
+    authenticate(userId, studentId);
+    when(studentService.getRequiredStudentIdByUserId(userId)).thenReturn(studentId);
+
+    TransferGraduationProgressDto transferProgress =
+        new TransferGraduationProgressDto(
+            130,
+            112,
+            18,
+            false,
+            65,
+            new BigDecimal("3.2"),
+            new BigDecimal("2.0"),
+            true,
+            3,
+            false,
+            List.of(),
+            true,
+            List.of());
+    when(graduationService.getGraduationProgress(studentId))
+        .thenReturn(GraduationProgressResponse.forTransfer(transferProgress, true));
+
+    mockMvc
+        .perform(get("/api/graduation/progress"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.analysisType").value("TRANSFER"))
+        .andExpect(jsonPath("$.data.analysisStatus").value("MANUAL_REVIEW_REQUIRED"))
+        .andExpect(jsonPath("$.data.graduationProgress").isEmpty())
+        .andExpect(jsonPath("$.data.transferProgress.totalEarnedCredits").value(112))
+        .andExpect(jsonPath("$.data.transferProgress.designatedCourses").isEmpty())
+        .andExpect(jsonPath("$.data.transferProgress.manualReviewRequired").value(true));
   }
 
   @Test

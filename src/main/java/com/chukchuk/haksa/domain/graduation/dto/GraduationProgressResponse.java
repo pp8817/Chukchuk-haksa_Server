@@ -1,5 +1,6 @@
 package com.chukchuk.haksa.domain.graduation.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Getter;
@@ -8,6 +9,12 @@ import lombok.Getter;
 @Getter
 @Schema(description = "졸업 요건 진행 상황 응답")
 public class GraduationProgressResponse {
+  @Schema(description = "졸업진단 학생 유형", required = true)
+  private GraduationAnalysisType analysisType;
+
+  @Schema(description = "졸업진단 분석 상태", required = true)
+  private GraduationAnalysisStatus analysisStatus;
+
   @Schema(description = "졸업 요건 영역별 이수 현황", required = true)
   private List<AreaProgressDto> graduationProgress;
 
@@ -19,6 +26,10 @@ public class GraduationProgressResponse {
 
   @Schema(description = "특정 학과/연도 예외로 기존과 다른 졸업요건이 적용되는지 여부", required = true)
   private boolean hasDifferentGraduationRequirement = false;
+
+  @Schema(description = "편입생 전용 졸업요건 부분 진단 결과", nullable = true)
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private TransferGraduationProgressDto transferProgress;
 
   /**
    * 외국어 인증 정보가 아직 없는 영역별 졸업 진행 응답을 생성한다.
@@ -37,9 +48,43 @@ public class GraduationProgressResponse {
    */
   public GraduationProgressResponse(
       List<AreaProgressDto> graduationProgress, Boolean languageCertFulfilled) {
+    this(
+        GraduationAnalysisType.REGULAR,
+        GraduationAnalysisStatus.CALCULATED,
+        graduationProgress,
+        languageCertFulfilled,
+        null);
+  }
+
+  private GraduationProgressResponse(
+      GraduationAnalysisType analysisType,
+      GraduationAnalysisStatus analysisStatus,
+      List<AreaProgressDto> graduationProgress,
+      Boolean languageCertFulfilled,
+      TransferGraduationProgressDto transferProgress) {
+    this.analysisType = analysisType;
+    this.analysisStatus = analysisStatus;
     this.graduationProgress = graduationProgress;
     this.languageCertFulfilled = languageCertFulfilled;
     this.languageCertNeedsRefresh = languageCertFulfilled == null;
+    this.transferProgress = transferProgress;
+  }
+
+  /**
+   * 편입생 부분 진단 결과를 API 응답으로 감싼다.
+   *
+   * @param transferProgress 편입생 부분 진단 결과
+   * @param languageCertFulfilled 외국어 인증 충족 여부
+   * @return 편입생 졸업진단 응답
+   */
+  public static GraduationProgressResponse forTransfer(
+      TransferGraduationProgressDto transferProgress, Boolean languageCertFulfilled) {
+    return new GraduationProgressResponse(
+        GraduationAnalysisType.TRANSFER,
+        GraduationAnalysisStatus.MANUAL_REVIEW_REQUIRED,
+        List.of(),
+        languageCertFulfilled,
+        transferProgress);
   }
 
   /** 응답에 일반 기준과 다른 학과·연도별 졸업 요건이 적용됐음을 표시한다. */

@@ -31,7 +31,10 @@ public interface GraduationControllerDocs {
       description =
           "로그인된 사용자의 졸업 요건 충족 여부와 외국어 졸업 인증 통과 여부를 조회합니다. areaType이 선교인 영역의 "
               + "courses[] 과목은 liberalAreaCode를 포함할 수 있습니다. areaType이 선교가 아닌 영역의 "
-              + "courses[] 과목은 liberalAreaCode 키가 응답에 포함되지 않습니다.",
+              + "courses[] 과목은 liberalAreaCode 키가 응답에 포함되지 않습니다. 편입생은 일반 재학생의 영역별 졸업요건을 "
+              + "자동 판정하지 않고 transferProgress에 총 취득학점, 편입 인정학점, GPA, 지정과목 이수 현황과 "
+              + "수동 확인이 필요한 사유를 반환합니다. 편입생 응답의 analysisStatus가 MANUAL_REVIEW_REQUIRED이면 "
+              + "학교 확인이 필요한 졸업요건이 남아 있음을 의미합니다.",
       responses = {
         @ApiResponse(
             responseCode = "200",

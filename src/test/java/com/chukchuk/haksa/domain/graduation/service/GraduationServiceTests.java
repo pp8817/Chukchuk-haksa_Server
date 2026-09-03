@@ -48,6 +48,7 @@ class GraduationServiceTests {
   @Mock private AcademicCache academicCache;
   @Mock private GraduationMajorResolver graduationMajorResolver;
   @Mock private StudentGraduationProgressService studentGraduationProgressService;
+  @Mock private TransferGraduationAnalysisService transferGraduationAnalysisService;
 
   @InjectMocks private GraduationService graduationService;
 
@@ -170,31 +171,20 @@ class GraduationServiceTests {
   }
 
   @Test
-  @DisplayName("편입생이면 캐시에 일반 졸업진단이 있어도 지원 불가 예외를 던진다")
-  void rejectsCachedProgressForTransferStudent() {
+  @DisplayName("편입생은 일반 졸업진단 캐시를 우회하고 전용 분석을 사용한다")
+  void usesDedicatedAnalysisForTransferStudentBeforeCache() {
     Student student = mockStudent(10L, null, ADMISSION_YEAR, true);
+    GraduationProgressResponse transferResponse = new GraduationProgressResponse(List.of());
 
     when(studentService.getStudentById(STUDENT_ID)).thenReturn(student);
+    when(transferGraduationAnalysisService.analyze(student)).thenReturn(transferResponse);
 
-    assertThatThrownBy(() -> graduationService.getGraduationProgress(STUDENT_ID))
-        .isInstanceOf(CommonException.class)
-        .hasMessage(ErrorCode.TRANSFER_STUDENT_UNSUPPORTED.message());
+    GraduationProgressResponse response = graduationService.getGraduationProgress(STUDENT_ID);
 
+    assertThat(response).isSameAs(transferResponse);
+    verify(transferGraduationAnalysisService).analyze(student);
     verifyNoInteractions(academicCache);
     verifyNoInteractions(graduationMajorResolver, graduationQueryRepository);
-  }
-
-  @Test
-  @DisplayName("편입생이면 TRANSFER_STUDENT_UNSUPPORTED 예외를 던진다")
-  void getGraduationProgressThrowsForTransferStudent() {
-    Student student = mockStudent(10L, null, ADMISSION_YEAR, true);
-    when(studentService.getStudentById(STUDENT_ID)).thenReturn(student);
-
-    assertThatThrownBy(() -> graduationService.getGraduationProgress(STUDENT_ID))
-        .isInstanceOf(CommonException.class)
-        .hasMessage(ErrorCode.TRANSFER_STUDENT_UNSUPPORTED.message());
-
-    verifyNoInteractions(academicCache, graduationMajorResolver, graduationQueryRepository);
   }
 
   @Test

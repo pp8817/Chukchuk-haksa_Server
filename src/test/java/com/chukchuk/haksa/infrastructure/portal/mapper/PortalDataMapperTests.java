@@ -77,6 +77,25 @@ class PortalDataMapperTests {
   }
 
   @Test
+  @DisplayName("실제 편입생 포털 fixture의 학점·외국어·지정과목을 내부 모델로 변환한다")
+  void mapsTransferGraduationFixture() throws Exception {
+    RawPortalData raw = objectMapper.readValue(transferFixture(), RawPortalData.class);
+
+    PortalData portalData = PortalDataMapper.toPortalData(raw);
+
+    assertThat(portalData.student().admission().type()).isEqualTo("2");
+    assertThat(portalData.student().languageCertFulfilled()).isTrue();
+    assertThat(portalData.academic().summary().totalCredits()).isEqualTo(112);
+    assertThat(portalData.academic().semesters().get(0).courses())
+        .extracting(course -> course.code())
+        .containsExactly("07045", "C101");
+    assertThat(portalData.academic().semesters().get(0).courses().get(0).credits()).isEqualTo(65);
+    assertThat(portalData.designatedCourses().courses())
+        .extracting(DesignatedCourseData::subjtCd)
+        .containsExactly("C101", "C202");
+  }
+
+  @Test
   @DisplayName("designatedCourses 배열은 순서와 중복을 보존하고 숫자 필드를 변환한다")
   void mapsDesignatedCoursesFromFixture() throws Exception {
     RawPortalData raw = objectMapper.readValue(fixture(), RawPortalData.class);
@@ -232,6 +251,14 @@ class PortalDataMapperTests {
     try (InputStream input =
         PortalDataMapperTests.class.getResourceAsStream(
             "/fixtures/portal/designated-courses.json")) {
+      return new String(input.readAllBytes(), StandardCharsets.UTF_8);
+    }
+  }
+
+  private static String transferFixture() throws Exception {
+    try (InputStream input =
+        PortalDataMapperTests.class.getResourceAsStream(
+            "/fixtures/portal/transfer-graduation.json")) {
       return new String(input.readAllBytes(), StandardCharsets.UTF_8);
     }
   }

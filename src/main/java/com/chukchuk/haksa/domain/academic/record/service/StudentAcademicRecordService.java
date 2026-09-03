@@ -9,6 +9,7 @@ import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.global.exception.code.ErrorCode;
 import com.chukchuk.haksa.global.exception.type.EntityNotFoundException;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,13 +91,22 @@ public class StudentAcademicRecordService {
    * @throws EntityNotFoundException 학생의 누적 성적 기록이 없는 경우
    */
   public StudentAcademicRecord getStudentAcademicRecordByStudentId(UUID studentId) {
-    return studentAcademicRecordRepository
-        .findByStudentId(studentId)
+    return findStudentAcademicRecordByStudentId(studentId)
         .orElseThrow(
             () -> {
               log.warn("[BIZ] academic.summary.not_found studentId={}", studentId);
               return new EntityNotFoundException(ErrorCode.STUDENT_ACADEMIC_RECORD_NOT_FOUND);
             });
+  }
+
+  /**
+   * 학생의 누적 성적 엔티티를 예외 없이 조회한다.
+   *
+   * @param studentId 학생 식별자
+   * @return 학생에게 연결된 누적 성적이 있으면 반환
+   */
+  public Optional<StudentAcademicRecord> findStudentAcademicRecordByStudentId(UUID studentId) {
+    return studentAcademicRecordRepository.findByStudentId(studentId);
   }
 
   /** 복수 전공을 고려한 졸업 필요 학점 계산 메서드. */
