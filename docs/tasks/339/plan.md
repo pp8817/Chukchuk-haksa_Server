@@ -734,12 +734,14 @@ git commit -m "339 docs: 편입생 졸업진단 검증 결과 기록"
 ## Verification
 
 - 구현 완료 기준은 Task 1~6의 코드·테스트·API 계약 반영으로 충족했다.
-- `env JAVA_HOME=/Users/keemhoeyune/Library/Java/JavaVirtualMachines/temurin-17.0.18/Contents/Home ./gradlew test --tests com.chukchuk.haksa.domain.graduation.controller.GraduationControllerApiIntegrationTest --tests com.chukchuk.haksa.global.config.OpenApiResponseContractTest --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
-- `env JAVA_HOME=/Users/keemhoeyune/Library/Java/JavaVirtualMachines/temurin-17.0.18/Contents/Home ./gradlew test --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --tests com.chukchuk.haksa.domain.graduation.service.TransferGraduationAnalysisIntegrationTest --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
-- `env JAVA_HOME=/Users/keemhoeyune/Library/Java/JavaVirtualMachines/temurin-17.0.18/Contents/Home ./gradlew spotlessCheck checkstyleMain checkstyleTest --no-daemon` → `BUILD SUCCESSFUL`.
-- `env JAVA_HOME=/Users/keemhoeyune/Library/Java/JavaVirtualMachines/temurin-17.0.18/Contents/Home ./gradlew test --tests 'com.chukchuk.haksa.domain.graduation.*' --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
-- `env JAVA_HOME=/Users/keemhoeyune/Library/Java/JavaVirtualMachines/temurin-17.0.18/Contents/Home ./gradlew check --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
+- `./gradlew test --tests com.chukchuk.haksa.domain.graduation.controller.GraduationControllerApiIntegrationTest --tests com.chukchuk.haksa.global.config.OpenApiResponseContractTest --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
+- `./gradlew test --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --tests com.chukchuk.haksa.domain.graduation.service.TransferGraduationAnalysisIntegrationTest --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
+- `./gradlew spotlessCheck checkstyleMain checkstyleTest --no-daemon` → `BUILD SUCCESSFUL`.
+- `./gradlew test --tests 'com.chukchuk.haksa.domain.graduation.*' --tests com.chukchuk.haksa.infrastructure.portal.mapper.PortalDataMapperTests --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
+- `./gradlew check --stacktrace --no-daemon` → `BUILD SUCCESSFUL`.
 - `git diff --check origin/dev...HEAD` → whitespace 오류 없음. 변경 파일에 `src/main/resources/db/migration`이 없어 이번 이슈에서는 새 migration을 추가하지 않았다.
 - OpenAPI는 `OpenApiResponseContractTest`에서 `/api/graduation/progress`의 신규 schema와 참조를 검증했다. `bootRun`/jar를 통한 별도 서버 검증은 테스트 프로필의 H2가 production runtime classpath에 없고 local 프로필은 개인 PostgreSQL·환경변수를 요구해 실행하지 못했다.
+- CodeRabbit 리뷰 반영 후 `./gradlew test --tests com.chukchuk.haksa.domain.graduation.service.TransferGraduationAnalysisServiceTests --tests com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepositoryFetchTest --tests com.chukchuk.haksa.domain.graduation.service.TransferGraduationAnalysisIntegrationTest --no-daemon`을 Java 17 환경에서 실행해 `BUILD SUCCESSFUL`을 확인했다.
+- CodeRabbit 리뷰 반영 후 `./gradlew spotlessCheck checkstyleMain checkstyleTest --no-daemon`과 `./gradlew check --stacktrace --no-daemon`을 Java 17 환경에서 실행해 모두 `BUILD SUCCESSFUL`을 확인했다.
 - Wiki `master`에 `16fac8d` (`339 docs: 편입생 졸업진단 계약 문서화`)를 반영했다.
 - 남은 위험은 130학점 예외 학과, `completedSemesters`의 규정상 의미, 편입학년 이후 필수과목·전공선택 비율·부전공/연계전공·졸업심사 데이터 부재다. 이 항목들은 `MANUAL_REVIEW_REQUIRED`와 사유 enum으로 노출하며 자동 졸업 확정에서 제외했다.
