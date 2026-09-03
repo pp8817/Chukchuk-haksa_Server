@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,8 @@ public class TransferGraduationAnalysisService {
    */
   public GraduationProgressResponse analyze(Student student) {
     UUID studentId = student.getId();
-    StudentAcademicRecord academicRecord =
-        studentAcademicRecordService.getStudentAcademicRecordByStudentId(studentId);
+    Optional<StudentAcademicRecord> academicRecord =
+        studentAcademicRecordService.findStudentAcademicRecordByStudentId(studentId);
     List<StudentDesignatedCourse> designatedCourses =
         studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(studentId);
     List<StudentCourse> studentCourses =
@@ -55,8 +56,10 @@ public class TransferGraduationAnalysisService {
 
     DesignatedCourseEvaluator.Evaluation evaluation =
         designatedCourseEvaluator.evaluate(designatedCourses, studentCourses);
-    Integer totalEarnedCredits = academicRecord.getTotalEarnedCredits();
-    BigDecimal cumulativeGpa = academicRecord.getCumulativeGpa();
+    Integer totalEarnedCredits =
+        academicRecord.map(StudentAcademicRecord::getTotalEarnedCredits).orElse(null);
+    BigDecimal cumulativeGpa =
+        academicRecord.map(StudentAcademicRecord::getCumulativeGpa).orElse(null);
 
     Integer remainingCredits =
         totalEarnedCredits == null

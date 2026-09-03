@@ -61,8 +61,8 @@ class TransferGraduationAnalysisServiceTests {
     lenient().when(student.getAcademicInfo()).thenReturn(academicInfo);
     lenient().when(student.getSecondaryMajor()).thenReturn(null);
     lenient()
-        .when(studentAcademicRecordService.getStudentAcademicRecordByStudentId(STUDENT_ID))
-        .thenReturn(academicRecord);
+        .when(studentAcademicRecordService.findStudentAcademicRecordByStudentId(STUDENT_ID))
+        .thenReturn(Optional.of(academicRecord));
     lenient()
         .when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID))
         .thenReturn(List.of());
@@ -169,6 +169,22 @@ class TransferGraduationAnalysisServiceTests {
     assertThat(progress.totalEarnedCredits()).isNull();
     assertThat(progress.remainingCredits()).isNull();
     assertThat(progress.creditsFulfilled()).isNull();
+    assertThat(progress.gpaFulfilled()).isNull();
+    assertThat(progress.manualReviewReasons())
+        .contains(TransferManualReviewReason.ACADEMIC_SUMMARY_INCOMPLETE);
+  }
+
+  @Test
+  void returnsPartialDiagnosisWhenAcademicSummaryRecordIsMissing() {
+    when(studentAcademicRecordService.findStudentAcademicRecordByStudentId(STUDENT_ID))
+        .thenReturn(Optional.empty());
+
+    TransferGraduationProgressDto progress = service.analyze(student).getTransferProgress();
+
+    assertThat(progress.totalEarnedCredits()).isNull();
+    assertThat(progress.remainingCredits()).isNull();
+    assertThat(progress.creditsFulfilled()).isNull();
+    assertThat(progress.cumulativeGpa()).isNull();
     assertThat(progress.gpaFulfilled()).isNull();
     assertThat(progress.manualReviewReasons())
         .contains(TransferManualReviewReason.ACADEMIC_SUMMARY_INCOMPLETE);
