@@ -17,7 +17,9 @@ import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
 import com.chukchuk.haksa.domain.graduation.dto.TransferGraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.TransferManualReviewReason;
+import com.chukchuk.haksa.domain.graduation.dto.TransferRequirementProgressDto;
 import com.chukchuk.haksa.domain.graduation.policy.DesignatedCourseEvaluator;
+import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
@@ -44,6 +46,8 @@ class TransferGraduationAnalysisServiceTests {
   @Mock private StudentDesignatedCourseRepository studentDesignatedCourseRepository;
   @Mock private StudentGraduationProgressService studentGraduationProgressService;
   @Mock private DesignatedCourseEvaluator designatedCourseEvaluator;
+
+  @Mock private GraduationQueryRepository graduationQueryRepository;
 
   @InjectMocks private TransferGraduationAnalysisService service;
 
@@ -142,8 +146,8 @@ class TransferGraduationAnalysisServiceTests {
     assertThat(progress.manualReviewRequired()).isTrue();
     assertThat(progress.manualReviewReasons())
         .contains(
-            TransferManualReviewReason.REQUIRED_COURSES_NOT_ASSESSABLE,
-            TransferManualReviewReason.ELECTIVE_RATIO_NOT_ASSESSABLE);
+            TransferManualReviewReason.GRADUATION_REQUIREMENTS_NOT_FOUND,
+            TransferManualReviewReason.GRADUATION_REVIEW_NOT_AVAILABLE);
   }
 
   @Test
@@ -201,5 +205,59 @@ class TransferGraduationAnalysisServiceTests {
 
     assertThat(response.getLanguageCertFulfilled()).isNull();
     assertThat(response.isLanguageCertNeedsRefresh()).isTrue();
+  }
+
+  @Test
+  void calculatesTransferGraduationEligibilityWhenAllInputsExist() {
+    Department department = mock(Department.class);
+    when(department.getId()).thenReturn(10L);
+    when(student.getDepartment()).thenReturn(department);
+    when(student.getAcademicInfo())
+        .thenReturn(
+            AcademicInfo.builder()
+                .admissionYear(2024)
+                .completedSemesters(4)
+                .isTransferStudent(true)
+                .build());
+    when(student.getTransferRegisteredSemesters()).thenReturn(4);
+    when(student.getDesignatedCoursesSnapshotVersion())
+        .thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
+    when(studentGraduationProgressService.getGraduationReviewFulfilled(STUDENT_ID))
+        .thenReturn(Optional.of(true));
+    when(studentGraduationProgressService.getLanguageCertFulfilled(STUDENT_ID))
+        .thenReturn(Optional.of(true));
+    when(academicRecord.getTotalEarnedCredits()).thenReturn(130);
+    when(academicRecord.getCumulativeGpa()).thenReturn(new BigDecimal("3.2"));
+    when(graduationQueryRepository.getAreaRequirementsWithCache(10L, 2024))
+        .thenReturn(
+            List.of(
+                new com.chukchuk.haksa.domain.graduation.dto.AreaRequirementDto(
+                    "전핵", 60, null, null),
+                new com.chukchuk.haksa.domain.graduation.dto.AreaRequirementDto(
+                    "전선", 30, null, null)));
+    when(graduationQueryRepository.getLatestValidCourses(STUDENT_ID))
+        .thenReturn(
+            List.of(
+                new com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto(
+                    1L, "전핵", 60, "A0", "전공필수", 1, 2025, "C101", 90, null),
+                new com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto(
+                    2L, "전선", 15, "A0", "전공선택", 1, 2025, "C102", 90, null),
+                new com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto(
+                    3L, "일선", 20, "P", "편입 인정학점", 1, 2024, "07045", null, null)));
+    when(designatedCourseEvaluator.evaluate(List.of(), List.of()))
+        .thenReturn(new DesignatedCourseEvaluator.Evaluation(List.of(), 20));
+
+    GraduationProgressResponse response = service.analyze(student);
+    TransferGraduationProgressDto progress = response.getTransferProgress();
+
+    assertThat(response.getAnalysisStatus())
+        .isEqualTo(com.chukchuk.haksa.domain.graduation.dto.GraduationAnalysisStatus.CALCULATED);
+    assertThat(progress.graduationEligible()).isTrue();
+    assertThat(progress.majorCoreProgress())
+        .isEqualTo(new TransferRequirementProgressDto(60, 60, true));
+    assertThat(progress.majorElectiveProgress())
+        .isEqualTo(new TransferRequirementProgressDto(15, 15, true));
+    assertThat(progress.designatedCoursesFulfilled()).isTrue();
+    assertThat(progress.registeredSemestersFulfilled()).isTrue();
   }
 }

@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 
-/** 편입생에게 현재 데이터로 계산 가능한 졸업요건 진행 현황을 제공한다. */
-@Schema(description = "편입생 졸업요건 부분 진단 결과")
+/** 편입생의 졸업요건 진행 현황과 최종 판정 결과를 제공한다. */
+@Schema(description = "편입생 졸업요건 진단 결과")
 public record TransferGraduationProgressDto(
     @Schema(description = "졸업 필요 총학점", example = "130") int requiredTotalCredits,
     @Schema(description = "포털 누적 취득학점", example = "112", nullable = true)
@@ -22,8 +22,52 @@ public record TransferGraduationProgressDto(
     @Schema(description = "지정과목 스냅샷 새로고침 필요 여부") boolean designatedCoursesNeedsRefresh,
     @Schema(description = "지정과목 이수 현황") List<DesignatedCourseProgressDto> designatedCourses,
     @Schema(description = "자동 판정할 수 없는 요건 존재 여부") boolean manualReviewRequired,
-    @Schema(description = "수동 확인이 필요한 요건 목록")
-        List<TransferManualReviewReason> manualReviewReasons) {
+    @Schema(description = "수동 확인이 필요한 요건 목록") List<TransferManualReviewReason> manualReviewReasons,
+    @Schema(description = "전공필수 진행 현황", nullable = true)
+        TransferRequirementProgressDto majorCoreProgress,
+    @Schema(description = "전공선택 진행 현황", nullable = true)
+        TransferRequirementProgressDto majorElectiveProgress,
+    @Schema(description = "편입 후 등록 학기 충족 여부", nullable = true) Boolean registeredSemestersFulfilled,
+    @Schema(description = "지정과목 전체 이수 여부", nullable = true) Boolean designatedCoursesFulfilled,
+    @Schema(description = "학과 졸업심사 통과 여부", nullable = true) Boolean graduationReviewFulfilled,
+    @Schema(description = "편입생 최종 졸업 가능 여부", nullable = true) Boolean graduationEligible) {
+
+  /** 기존 부분 진단 생성 계약을 유지하는 편입생 결과 생성자다. */
+  public TransferGraduationProgressDto(
+      int requiredTotalCredits,
+      Integer totalEarnedCredits,
+      Integer remainingCredits,
+      Boolean creditsFulfilled,
+      int recognizedTransferCredits,
+      BigDecimal cumulativeGpa,
+      BigDecimal requiredGpa,
+      Boolean gpaFulfilled,
+      Integer completedSemesters,
+      boolean designatedCoursesNeedsRefresh,
+      List<DesignatedCourseProgressDto> designatedCourses,
+      boolean manualReviewRequired,
+      List<TransferManualReviewReason> manualReviewReasons) {
+    this(
+        requiredTotalCredits,
+        totalEarnedCredits,
+        remainingCredits,
+        creditsFulfilled,
+        recognizedTransferCredits,
+        cumulativeGpa,
+        requiredGpa,
+        gpaFulfilled,
+        completedSemesters,
+        designatedCoursesNeedsRefresh,
+        designatedCourses,
+        manualReviewRequired,
+        manualReviewReasons,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null);
+  }
 
   /** 목록 필드를 방어적 복사해 편입생 진단 결과를 생성한다. */
   public TransferGraduationProgressDto {

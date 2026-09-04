@@ -3,6 +3,7 @@
 package com.chukchuk.haksa.domain.graduation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +11,7 @@ import com.chukchuk.haksa.domain.cache.AcademicCache;
 import com.chukchuk.haksa.domain.graduation.model.StudentGraduationProgress;
 import com.chukchuk.haksa.domain.graduation.repository.StudentGraduationProgressRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
+import com.chukchuk.haksa.domain.student.repository.StudentRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -27,14 +29,16 @@ class StudentGraduationProgressServiceTests {
 
   @Mock private AcademicCache academicCache;
 
+  @Mock private StudentRepository studentRepository;
+
   @Mock private Student student;
 
   @Test
   @DisplayName("외국어 인증 row가 없으면 새로 생성하고 학생 캐시를 무효화한다")
   void syncLanguageCertCreatesProgressWhenMissing() {
     UUID studentId = UUID.randomUUID();
-    StudentGraduationProgressService service =
-        new StudentGraduationProgressService(repository, academicCache);
+    final StudentGraduationProgressService service =
+        new StudentGraduationProgressService(repository, studentRepository, academicCache);
 
     when(student.getId()).thenReturn(studentId);
     when(repository.findByStudentId(studentId)).thenReturn(Optional.empty());
@@ -60,8 +64,8 @@ class StudentGraduationProgressServiceTests {
     ReflectionTestUtils.setField(
         existing, "checkedAt", java.time.Instant.parse("2026-05-01T00:00:00Z"));
     ReflectionTestUtils.setField(existing, "gpaFulfilled", Boolean.TRUE);
-    StudentGraduationProgressService service =
-        new StudentGraduationProgressService(repository, academicCache);
+    final StudentGraduationProgressService service =
+        new StudentGraduationProgressService(repository, studentRepository, academicCache);
 
     when(student.getId()).thenReturn(studentId);
     when(repository.findByStudentId(studentId)).thenReturn(Optional.of(existing));
@@ -78,11 +82,41 @@ class StudentGraduationProgressServiceTests {
   @Test
   @DisplayName("외국어 인증 값이 없으면 저장하지 않고 기존 캐시도 유지한다")
   void syncLanguageCertSkipsWhenValueIsNull() {
-    StudentGraduationProgressService service =
-        new StudentGraduationProgressService(repository, academicCache);
+    final StudentGraduationProgressService service =
+        new StudentGraduationProgressService(repository, studentRepository, academicCache);
 
     service.syncLanguageCert(student, null);
 
     org.mockito.Mockito.verifyNoInteractions(repository, academicCache);
+  }
+
+  @Test
+  @DisplayName("편입생 수동 졸업진단 정보를 저장하고 캐시를 무효화한다")
+  void updatesTransferManualReview() {
+    UUID studentId = UUID.randomUUID();
+    final StudentGraduationProgressService service =
+        new StudentGraduationProgressService(repository, studentRepository, academicCache);
+    when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+    when(student.isTransferStudent()).thenReturn(true);
+    when(repository.findByStudentId(studentId)).thenReturn(Optional.empty());
+
+    service.updateTransferManualReview(studentId, 4, true);
+
+    verify(studentRepository).findById(studentId);
+    verify(repository).save(org.mockito.ArgumentMatchers.any(StudentGraduationProgress.class));
+    verify(academicCache).deleteAllByStudentId(studentId);
+  }
+
+  @Test
+  @DisplayName("일반 재학생은 편입생 수동 졸업진단 정보를 저장할 수 없다")
+  void rejectsManualReviewForRegularStudent() {
+    UUID studentId = UUID.randomUUID();
+    StudentGraduationProgressService service =
+        new StudentGraduationProgressService(repository, studentRepository, academicCache);
+    when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+    when(student.isTransferStudent()).thenReturn(false);
+
+    assertThatThrownBy(() -> service.updateTransferManualReview(studentId, 4, true))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 }

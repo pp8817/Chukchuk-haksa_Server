@@ -44,7 +44,10 @@ public class DesignatedCourseEvaluator {
         continue;
       }
 
-      Integer credits = studentCourse.getPoints();
+      Integer credits =
+          studentCourse.getPoints() != null
+              ? studentCourse.getPoints()
+              : studentCourse.getOffering().getPoints();
       if (credits == null) {
         credits = 0;
       }

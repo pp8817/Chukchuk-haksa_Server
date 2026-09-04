@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class FlywayMigrationTest {
 
   @Test
-  void freshDatabaseMigratesFromV1ToV13() throws Exception {
+  void freshDatabaseMigratesFromV1ToV14() throws Exception {
     String dbName = "flyway-migration-" + UUID.randomUUID();
     String url =
         "jdbc:h2:mem:"
@@ -65,7 +65,8 @@ class FlywayMigrationTest {
             MigrationVersion.fromVersion("10"),
             MigrationVersion.fromVersion("11"),
             MigrationVersion.fromVersion("12"),
-            MigrationVersion.fromVersion("13"));
+            MigrationVersion.fromVersion("13"),
+            MigrationVersion.fromVersion("14"));
 
     try (var connection = DriverManager.getConnection(url, "sa", "")) {
       assertThat(hasColumn(connection, "raw_faculty_division_name")).isTrue();
@@ -95,6 +96,14 @@ class FlywayMigrationTest {
           .isTrue();
       assertThat(hasColumn(connection, "students", "designated_courses_reset_at")).isTrue();
       assertThat(isNullable(connection, "students", "designated_courses_reset_at")).isTrue();
+      assertThat(hasColumn(connection, "students", "transfer_registered_semesters")).isTrue();
+      assertThat(isNullable(connection, "students", "transfer_registered_semesters")).isTrue();
+      assertThat(
+              hasColumn(connection, "student_graduation_progress", "graduation_review_fulfilled"))
+          .isTrue();
+      assertThat(
+              isNullable(connection, "student_graduation_progress", "graduation_review_fulfilled"))
+          .isTrue();
       assertThat(
               (int)
                   foreignKeyDeleteRule(
