@@ -11,14 +11,43 @@ import com.chukchuk.haksa.domain.course.model.Course;
 import com.chukchuk.haksa.domain.course.model.CourseOffering;
 import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto;
+import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
 import com.chukchuk.haksa.domain.student.model.Grade;
 import com.chukchuk.haksa.domain.student.model.GradeType;
+import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
+import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import java.util.List;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 class TransferCourseEvaluatorTest {
 
   private final TransferCourseEvaluator evaluator = new TransferCourseEvaluator();
+
+  @Test
+  @ResourceLock(Resources.LOCALE)
+  void matchesDesignatedCourseCodesUnderTurkishLocale() {
+    Locale original = Locale.getDefault();
+    try {
+      Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+      StudentCourse course = course(" i101 ", FacultyDivision.전핵, 2025, 1, 3, GradeType.P);
+      StudentDesignatedCourse designated =
+          new StudentDesignatedCourse(
+              null, new DesignatedCourseData(null, "i101", "자료구조", 3, null, null, null, null, 0));
+
+      TransferCourseEvaluator.Evaluation result = evaluator.evaluate(List.of(course));
+      DesignatedCourseEvaluator.Evaluation designatedResult =
+          new DesignatedCourseEvaluator().evaluate(List.of(designated), result);
+
+      assertThat(result.creditsByCourseCode()).containsEntry("I101", 3);
+      assertThat(designatedResult.designatedCourses().get(0).status())
+          .isEqualTo(DesignatedCourseCompletionStatus.COMPLETED);
+    } finally {
+      Locale.setDefault(original);
+    }
+  }
 
   @Test
   void keepsLatestPassingCourseOnceAndExcludesInvalidGrades() {

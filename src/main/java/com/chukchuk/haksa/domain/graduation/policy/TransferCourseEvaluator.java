@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -176,7 +177,7 @@ public class TransferCourseEvaluator {
     if (courseCode == null || courseCode.isBlank()) {
       return null;
     }
-    return courseCode.trim().toUpperCase();
+    return courseCode.trim().toUpperCase(Locale.ROOT);
   }
 
   private int nullToZero(Integer value) {
