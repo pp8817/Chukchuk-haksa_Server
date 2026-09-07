@@ -3,6 +3,8 @@
 package com.chukchuk.haksa.domain.graduation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,9 +19,9 @@ import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
 import com.chukchuk.haksa.domain.graduation.dto.TransferGraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.TransferManualReviewReason;
-import com.chukchuk.haksa.domain.graduation.dto.TransferRequirementProgressDto;
 import com.chukchuk.haksa.domain.graduation.policy.DesignatedCourseEvaluator;
-import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
+import com.chukchuk.haksa.domain.graduation.policy.TransferAreaEvaluator;
+import com.chukchuk.haksa.domain.graduation.policy.TransferCourseEvaluator;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
@@ -27,7 +29,9 @@ import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepos
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +51,9 @@ class TransferGraduationAnalysisServiceTests {
   @Mock private StudentGraduationProgressService studentGraduationProgressService;
   @Mock private DesignatedCourseEvaluator designatedCourseEvaluator;
 
-  @Mock private GraduationQueryRepository graduationQueryRepository;
+  @Mock private TransferCourseEvaluator transferCourseEvaluator;
+
+  @Mock private TransferAreaEvaluator transferAreaEvaluator;
 
   @InjectMocks private TransferGraduationAnalysisService service;
 
@@ -73,9 +79,10 @@ class TransferGraduationAnalysisServiceTests {
     lenient()
         .when(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(STUDENT_ID))
         .thenReturn(List.of());
-    lenient()
-        .when(designatedCourseEvaluator.evaluate(List.of(), List.of()))
-        .thenReturn(new DesignatedCourseEvaluator.Evaluation(List.of(), 0));
+    TransferCourseEvaluator.Evaluation emptyCourseEvaluation =
+        new TransferCourseEvaluator.Evaluation(List.of(), Map.of(), Map.of(), Set.of(), 0);
+    lenient().when(transferCourseEvaluator.evaluate(anyList())).thenReturn(emptyCourseEvaluation);
+    lenient().when(transferAreaEvaluator.evaluate(any(), any())).thenReturn(List.of());
     lenient()
         .when(studentGraduationProgressService.getLanguageCertFulfilled(STUDENT_ID))
         .thenReturn(Optional.of(true));
@@ -123,9 +130,18 @@ class TransferGraduationAnalysisServiceTests {
     List<StudentCourse> studentCourses = List.of(completedCourse);
     when(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(STUDENT_ID))
         .thenReturn(designatedCourses);
+    lenient()
+        .when(
+            designatedCourseEvaluator.evaluate(
+                anyList(), any(TransferCourseEvaluator.Evaluation.class)))
+        .thenReturn(null);
     when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID))
         .thenReturn(studentCourses);
-    when(designatedCourseEvaluator.evaluate(designatedCourses, studentCourses))
+    TransferCourseEvaluator.Evaluation courseEvaluation =
+        new TransferCourseEvaluator.Evaluation(
+            List.of(), Map.of("C101", 3), Map.of("C101", 3), Set.of(), 65);
+    when(transferCourseEvaluator.evaluate(studentCourses)).thenReturn(courseEvaluation);
+    when(designatedCourseEvaluator.evaluate(designatedCourses, courseEvaluation))
         .thenReturn(
             new DesignatedCourseEvaluator.Evaluation(
                 List.of(
@@ -143,11 +159,12 @@ class TransferGraduationAnalysisServiceTests {
         .extracting(DesignatedCourseProgressDto::status)
         .containsExactly(DesignatedCourseCompletionStatus.COMPLETED);
     assertThat(progress.designatedCoursesNeedsRefresh()).isTrue();
+    assertThat(progress.designatedEarnedCredits()).isNull();
+    assertThat(progress.designatedCreditUnavailableReasons())
+        .containsExactly("SNAPSHOT_NOT_RECEIVED");
     assertThat(progress.manualReviewRequired()).isTrue();
     assertThat(progress.manualReviewReasons())
-        .contains(
-            TransferManualReviewReason.GRADUATION_REQUIREMENTS_NOT_FOUND,
-            TransferManualReviewReason.GRADUATION_REVIEW_NOT_AVAILABLE);
+        .contains(TransferManualReviewReason.GRADUATION_REVIEW_NOT_AVAILABLE);
   }
 
   @Test
@@ -161,6 +178,36 @@ class TransferGraduationAnalysisServiceTests {
 
     assertThat(progress.designatedCourses()).isEmpty();
     assertThat(progress.designatedCoursesNeedsRefresh()).isFalse();
+    assertThat(progress.designatedEarnedCredits()).isZero();
+    assertThat(progress.designatedCreditUnavailableReasons()).isEmpty();
+  }
+
+  @Test
+  void keepsDesignatedCreditUnknownWhenDesignatedCodeIsMissing() {
+    StudentDesignatedCourse designated = mock(StudentDesignatedCourse.class);
+    List<StudentDesignatedCourse> designatedCourses = List.of(designated);
+    when(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(STUDENT_ID))
+        .thenReturn(designatedCourses);
+    lenient()
+        .when(
+            designatedCourseEvaluator.evaluate(
+                anyList(), any(TransferCourseEvaluator.Evaluation.class)))
+        .thenReturn(null);
+    when(designatedCourseEvaluator.evaluate(designatedCourses, List.of()))
+        .thenReturn(
+            new DesignatedCourseEvaluator.Evaluation(
+                List.of(
+                    new DesignatedCourseProgressDto(
+                        null, "자료구조", 3, DesignatedCourseCompletionStatus.UNKNOWN)),
+                0));
+    when(student.getDesignatedCoursesSnapshotVersion())
+        .thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
+
+    TransferGraduationProgressDto progress = service.analyze(student).getTransferProgress();
+
+    assertThat(progress.designatedEarnedCredits()).isNull();
+    assertThat(progress.designatedCreditUnavailableReasons())
+        .containsExactly("COURSE_DATA_INCOMPLETE");
   }
 
   @Test
@@ -208,10 +255,7 @@ class TransferGraduationAnalysisServiceTests {
   }
 
   @Test
-  void calculatesTransferGraduationEligibilityWhenAllInputsExist() {
-    Department department = mock(Department.class);
-    when(department.getId()).thenReturn(10L);
-    when(student.getDepartment()).thenReturn(department);
+  void keepsPartialDiagnosisWithoutFinalEligibility() {
     when(student.getAcademicInfo())
         .thenReturn(
             AcademicInfo.builder()
@@ -219,45 +263,19 @@ class TransferGraduationAnalysisServiceTests {
                 .completedSemesters(4)
                 .isTransferStudent(true)
                 .build());
-    when(student.getTransferRegisteredSemesters()).thenReturn(4);
     when(student.getDesignatedCoursesSnapshotVersion())
         .thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
-    when(studentGraduationProgressService.getGraduationReviewFulfilled(STUDENT_ID))
-        .thenReturn(Optional.of(true));
     when(studentGraduationProgressService.getLanguageCertFulfilled(STUDENT_ID))
         .thenReturn(Optional.of(true));
     when(academicRecord.getTotalEarnedCredits()).thenReturn(130);
     when(academicRecord.getCumulativeGpa()).thenReturn(new BigDecimal("3.2"));
-    when(graduationQueryRepository.getAreaRequirementsWithCache(10L, 2024))
-        .thenReturn(
-            List.of(
-                new com.chukchuk.haksa.domain.graduation.dto.AreaRequirementDto(
-                    "전핵", 60, null, null),
-                new com.chukchuk.haksa.domain.graduation.dto.AreaRequirementDto(
-                    "전선", 30, null, null)));
-    when(graduationQueryRepository.getLatestValidCourses(STUDENT_ID))
-        .thenReturn(
-            List.of(
-                new com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto(
-                    1L, "전핵", 60, "A0", "전공필수", 1, 2025, "C101", 90, null),
-                new com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto(
-                    2L, "전선", 15, "A0", "전공선택", 1, 2025, "C102", 90, null),
-                new com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto(
-                    3L, "일선", 20, "P", "편입 인정학점", 1, 2024, "07045", null, null)));
-    when(designatedCourseEvaluator.evaluate(List.of(), List.of()))
-        .thenReturn(new DesignatedCourseEvaluator.Evaluation(List.of(), 20));
-
     GraduationProgressResponse response = service.analyze(student);
     TransferGraduationProgressDto progress = response.getTransferProgress();
 
     assertThat(response.getAnalysisStatus())
-        .isEqualTo(com.chukchuk.haksa.domain.graduation.dto.GraduationAnalysisStatus.CALCULATED);
-    assertThat(progress.graduationEligible()).isTrue();
-    assertThat(progress.majorCoreProgress())
-        .isEqualTo(new TransferRequirementProgressDto(60, 60, true));
-    assertThat(progress.majorElectiveProgress())
-        .isEqualTo(new TransferRequirementProgressDto(15, 15, true));
-    assertThat(progress.designatedCoursesFulfilled()).isTrue();
-    assertThat(progress.registeredSemestersFulfilled()).isTrue();
+        .isEqualTo(
+            com.chukchuk.haksa.domain.graduation.dto.GraduationAnalysisStatus
+                .MANUAL_REVIEW_REQUIRED);
+    assertThat(progress.areas()).isEmpty();
   }
 }

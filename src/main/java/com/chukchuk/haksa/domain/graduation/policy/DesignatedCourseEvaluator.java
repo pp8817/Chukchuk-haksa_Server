@@ -7,6 +7,7 @@ import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.student.model.GradeType;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,9 @@ public class DesignatedCourseEvaluator {
   public Evaluation evaluate(
       List<StudentDesignatedCourse> designatedCourses, List<StudentCourse> studentCourses) {
     Map<String, Integer> completedCourseCredits = new HashMap<>();
-    for (StudentCourse studentCourse : studentCourses) {
+    boolean recognizedCreditUnknown = false;
+    for (StudentCourse studentCourse :
+        studentCourses == null ? Collections.<StudentCourse>emptyList() : studentCourses) {
       if (!isValidCompletedCourse(studentCourse)) {
         continue;
       }
@@ -44,26 +47,49 @@ public class DesignatedCourseEvaluator {
         continue;
       }
 
-      Integer credits =
-          studentCourse.getPoints() != null
-              ? studentCourse.getPoints()
-              : studentCourse.getOffering().getPoints();
+      Integer credits = studentCourse.getPoints();
       if (credits == null) {
-        credits = 0;
+        if (TRANSFER_CREDIT_CODES.contains(courseCode)) {
+          recognizedCreditUnknown = true;
+        }
+        continue;
       }
       completedCourseCredits.merge(courseCode, credits, Math::max);
     }
 
     List<DesignatedCourseProgressDto> progress =
-        designatedCourses.stream()
-            .map(course -> toProgress(course, completedCourseCredits))
-            .toList();
+        (designatedCourses == null
+                ? Collections.<StudentDesignatedCourse>emptyList()
+                : designatedCourses)
+            .stream().map(course -> toProgress(course, completedCourseCredits)).toList();
 
-    int recognizedTransferCredits =
-        TRANSFER_CREDIT_CODES.stream()
-            .mapToInt(code -> completedCourseCredits.getOrDefault(code, 0))
-            .sum();
+    Integer recognizedTransferCredits =
+        recognizedCreditUnknown
+            ? null
+            : TRANSFER_CREDIT_CODES.stream()
+                .mapToInt(code -> completedCourseCredits.getOrDefault(code, 0))
+                .sum();
     return new Evaluation(progress, recognizedTransferCredits);
+  }
+
+  /**
+   * 정규화한 편입생 수강 기록으로 지정과목 상태를 계산한다.
+   *
+   * @param designatedCourses 학생에게 저장된 지정과목 원본 목록
+   * @param courseEvaluation 편입생 수강 기록 평가 결과
+   * @return 지정과목 상태와 편입 인정학점
+   */
+  public Evaluation evaluate(
+      List<StudentDesignatedCourse> designatedCourses,
+      TransferCourseEvaluator.Evaluation courseEvaluation) {
+    List<DesignatedCourseProgressDto> progress =
+        (designatedCourses == null
+                ? Collections.<StudentDesignatedCourse>emptyList()
+                : designatedCourses)
+            .stream()
+                .map(course -> toProgress(course, courseEvaluation.creditsByCourseCode()))
+                .toList();
+    return new Evaluation(progress, courseEvaluation.recognizedTransferCredits());
   }
 
   private DesignatedCourseProgressDto toProgress(
@@ -83,7 +109,11 @@ public class DesignatedCourseEvaluator {
   }
 
   private boolean isValidCompletedCourse(StudentCourse studentCourse) {
-    return studentCourse.getGrade() != null
+    return studentCourse != null
+        && studentCourse.getOffering() != null
+        && studentCourse.getOffering().getCourse() != null
+        && studentCourse.getGrade() != null
+        && studentCourse.getGrade().getValue() != null
         && !NON_PASSING_GRADES.contains(studentCourse.getGrade().getValue())
         && !studentCourse.isRetakeDeleted();
   }
@@ -102,7 +132,7 @@ public class DesignatedCourseEvaluator {
    * @param recognizedTransferCredits 편입 인정학점 합계
    */
   public record Evaluation(
-      List<DesignatedCourseProgressDto> designatedCourses, int recognizedTransferCredits) {
+      List<DesignatedCourseProgressDto> designatedCourses, Integer recognizedTransferCredits) {
     /**
      * 지정과목 평가 목록을 방어적 복사해 평가 결과를 생성한다.
      *

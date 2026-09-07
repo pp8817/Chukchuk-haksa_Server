@@ -87,8 +87,8 @@ class DesignatedCourseEvaluatorTest {
   }
 
   @Test
-  @DisplayName("수강 학점이 없으면 개설 과목 학점으로 편입 인정학점을 계산한다")
-  void fallsBackToOfferingPointsWhenStudentCoursePointsAreMissing() {
+  @DisplayName("수강 학점이 없으면 편입 인정학점을 미확인으로 둔다")
+  void keepsRecognizedTransferCreditsUnknownWhenStudentCoursePointsAreMissing() {
     Course course = mock(Course.class);
     when(course.getCourseCode()).thenReturn("07045");
     CourseOffering offering = mock(CourseOffering.class);
@@ -103,7 +103,7 @@ class DesignatedCourseEvaluatorTest {
     DesignatedCourseEvaluator.Evaluation result =
         evaluator.evaluate(List.of(), List.of(studentCourse));
 
-    assertThat(result.recognizedTransferCredits()).isEqualTo(20);
+    assertThat(result.recognizedTransferCredits()).isNull();
   }
 
   private StudentDesignatedCourse designatedCourse(

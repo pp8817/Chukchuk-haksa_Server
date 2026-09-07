@@ -19,7 +19,7 @@
 - 사용자 변경과 기존 커밋을 보존하고 전체 revert·reset·파일 일괄 복원을 하지 않는다.
 - 커밋은 `341 {type}: {한국어 메시지}` 형식을 사용한다. 새 Java·SQL 소스에는 한국어 역할 주석을 두며 Java 스타일 문서를 따른다.
 - 문서 작업은 LOW다. 후속 제품 구현은 공개 API·도메인 기준·필요 시 migration을 다루므로 HIGH로 취급한다. 관련 테스트와 실제 사용 검증 후 독립 Sol 검토를 수행한다. 코드 리뷰 전 저장소 규칙에 따라 리뷰 그래프를 확인한다.
-- 이 문서 작성은 제품 구현 승인을 뜻하지 않는다. 사용자 요청 범위는 체크아웃과 설계·계획 문서다.
+- 교육과정 원천을 확인하기 전에는 전핵·전선 비교를 완료 처리하지 않는다. 확인 전 구현은 이수 현황과 `UNAVAILABLE` 상태만 제공한다.
 
 ## 파일 경계
 
@@ -66,7 +66,7 @@
 
 **입출력:** 기존 응답에 `areas`, `designatedEarnedCredits`, `designatedCreditUnavailableReasons`를 추가한다. 타입·사유 코드는 설계의 API 표를 따른다.
 
-- [ ] 기존 편입 fixture에 아래 직렬화 사례를 추가한다. 일반 학생의 `transferProgress` 미노출 assertion을 유지한다.
+- [x] 기존 편입 fixture에 아래 직렬화 사례를 추가한다. 일반 학생의 `transferProgress` 미노출 assertion을 유지한다.
 
 ```json
 {
@@ -91,8 +91,8 @@ assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIR
 ```
 
 - [ ] `./gradlew test --tests '*GraduationProgressResponseJsonTest' --tests '*OpenApiResponseContractTest' --no-daemon`으로 새 계약이 없어 실패함을 확인한다.
-- [ ] DTO·enum·nullable 필드를 추가한다. 기존 dev 계약을 유지하고 브랜치 전용 필드 삭제는 Task 6에서 수행한다.
-- [ ] COMPARISON·UNAVAILABLE, null 합계·실제 0, 일반 응답도 같은 명령으로 검증한다.
+- [x] DTO·enum·nullable 필드를 추가한다. 기존 dev 계약을 유지하고 브랜치 전용 필드 삭제는 Task 6에서 수행한다.
+- [x] COMPARISON·UNAVAILABLE, null 합계·실제 0, 일반 응답도 같은 명령으로 검증한다.
 - [ ] `341 feat: 편입생 영역별 이수 현황 응답 계약 추가`로 커밋한다.
 
 ## Task 3. 편입 유효 이수 기록을 일관되게 정리한다.
@@ -101,9 +101,9 @@ assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIR
 
 **입출력:** `TransferCourseEvaluator.evaluate(List<StudentCourse>)`는 nested `Evaluation`을 반환한다. 결과에는 코드별 유효 기록, 영역별 전체 목록, nullable 인정학점 합계와 영향을 받는 코드·영역의 누락 정보를 담는다. 영역과 지정과목 평가기가 같은 결과를 소비한다.
 
-- [ ] 기존 `studentCourse` fixture를 참고해 등급별 제외, 재수강 삭제, 중복 코드·최신 기록, 동일 시점 충돌, 빈 코드, null·0학점을 테스트한다.
+- [x] 기존 `studentCourse` fixture를 참고해 등급별 제외, 재수강 삭제, 중복 코드·최신 기록, 동일 시점 충돌, 빈 코드, null·0학점을 테스트한다.
 - [ ] `./gradlew test --tests '*TransferCourseEvaluatorTest' --tests '*DesignatedCourseEvaluatorTest' --no-daemon`으로 실패를 확인한다.
-- [ ] 다음 알고리즘을 편입 전용 평가기에 구현한다. 일반 SQL과 공용 성적 정책은 변경하지 않는다.
+- [x] 다음 알고리즘을 편입 전용 평가기에 구현한다. 일반 SQL과 공용 성적 정책은 변경하지 않는다.
 
 ```text
 유효 성적과 재수강 삭제 여부로 필터링한다.
@@ -114,8 +114,8 @@ assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIR
 전체 이수 목록과 집계 결과를 함께 보관한다.
 ```
 
-- [ ] 지정과목 평가기가 `Evaluation`을 소비하도록 연결하고 offering fallback 테스트를 null·미확인 사유 검증으로 교체한다. 모든 호출부는 `rg`로 확인한다.
-- [ ] 동일 명령을 재실행한다. 인정학점 `07045:15,18`과 `07050:17`의 합계 35를 검증하는 기존 사례도 유지한다.
+- [x] 지정과목 평가기가 `Evaluation`을 소비하도록 연결하고 offering fallback 테스트를 null·미확인 사유 검증으로 교체한다. 모든 호출부는 `rg`로 확인한다.
+- [x] 동일 명령을 재실행한다. 인정학점 `07045:15,18`과 `07050:17`의 합계 35를 검증하는 기존 사례도 유지한다.
 - [ ] `341 feat: 편입생 유효 이수와 학점 집계 기준 통일`로 커밋한다.
 
 ## Task 4. 모든 영역과 지정과목의 취득학점을 제공한다.
@@ -135,10 +135,10 @@ assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIR
 | 지정목록 미수신 / 수신한 빈 목록 | 합계 null·refresh=true / 합계 0·refresh=false다. |
 | 이수한 지정과목의 개인 학점 null | 이수 상태는 유지하고 합계 null·사유를 반환한다. |
 
-- [ ] `./gradlew test --tests '*TransferAreaEvaluatorTest' --tests '*TransferGraduationAnalysisServiceTests' --tests '*DesignatedCourseEvaluatorTest' --no-daemon`으로 실패를 확인한다.
-- [ ] 수강 기록을 한 번 fetch한 뒤 정규화 결과를 두 평가기에 전달한다. 실제 영역과 전핵·전선의 합집합을 고정 순서로 출력한다.
-- [ ] 기준이 없는 전핵·전선은 실제 사유로 UNAVAILABLE를 반환한다. 기존 전취 합산·일괄 올림·수동값 최종 판정은 새 분석 경로에서 사용하지 않는다.
-- [ ] 지정과목 코드 집합과 유효 이수 기록을 교차해 합계를 계산한다. 원본 목록 학점이나 화면 합계로 총학점을 재계산하지 않는다.
+- [x] `./gradlew test --tests '*TransferAreaEvaluatorTest' --tests '*TransferGraduationAnalysisServiceTests' --tests '*DesignatedCourseEvaluatorTest' --no-daemon`으로 실패를 확인한다.
+- [x] 수강 기록을 한 번 fetch한 뒤 정규화 결과를 두 평가기에 전달한다. 실제 영역과 전핵·전선의 합집합을 고정 순서로 출력한다.
+- [x] 기준이 없는 전핵·전선은 실제 사유로 UNAVAILABLE를 반환한다. 기존 전취 합산·일괄 올림·수동값 최종 판정은 새 분석 경로에서 사용하지 않는다.
+- [x] 지정과목 코드 집합과 유효 이수 기록을 교차해 합계를 계산한다. 원본 목록 학점이나 화면 합계로 총학점을 재계산하지 않는다.
 - [ ] 같은 명령을 통과시키고 `341 feat: 편입생 영역별 취득학점과 지정과목 합계 제공`으로 커밋한다.
 
 ## Task 5. 검증한 전핵·전선 기준을 연결한다.
@@ -171,7 +171,7 @@ assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIR
 
 **Files:** 파일 경계의 조건부 수정·삭제 파일, 편입 DTO·envelope·수동 사유, `src/test/java/com/chukchuk/haksa/domain/graduation/controller/GraduationControllerApiIntegrationTest.java`, `src/test/java/com/chukchuk/haksa/domain/graduation/service/StudentGraduationProgressServiceTests.java`, `src/test/java/com/chukchuk/haksa/domain/graduation/service/GraduationServiceTests.java`, JSON·OpenAPI 테스트.
 
-- [ ] GET JSON에 최종 판정 필드가 없고 OpenAPI에 수동 PATCH가 없는 테스트를 먼저 추가한다.
+- [x] GET JSON에 최종 판정 필드가 없고 OpenAPI에 수동 PATCH가 없는 테스트를 먼저 추가한다.
 
 ```java
 assertThat(json.path("transferProgress").has("graduationEligible")).isFalse();
@@ -179,9 +179,9 @@ assertThat(openApi.path("paths").has("/api/graduation/transfer/manual-review")).
 ```
 
 - [ ] `./gradlew test --tests '*GraduationProgressResponseJsonTest' --tests '*GraduationControllerApiIntegrationTest' --tests '*OpenApiResponseContractTest' --tests '*StudentGraduationProgressServiceTests' --tests '*GraduationServiceTests' --no-daemon`으로 실패를 확인한다.
-- [ ] 수동 PATCH·request·service 쓰기 경로, 브랜치의 전체 판정 필드·함수와 사용처 없는 DTO만 제거한다. 다른 API·동기화·엔티티 데이터는 보존한다.
-- [ ] 편입 envelope의 MANUAL_REVIEW_REQUIRED 의미를 유지하고 영역 상태는 독립 제공한다. 해결된 전핵·전선 사유만 제거한다.
-- [ ] V14와 nullable 컬럼을 보존한다. 새 분석이 수동 컬럼을 읽거나 사용자 입력을 요구하지 않음을 검증한다.
+- [x] 수동 PATCH·request·service 쓰기 경로, 브랜치의 전체 판정 필드·함수와 사용처 없는 DTO만 제거한다. 다른 API·동기화·엔티티 데이터는 보존한다.
+- [x] 편입 envelope의 MANUAL_REVIEW_REQUIRED 의미를 유지하고 영역 상태는 독립 제공한다. 해결된 전핵·전선 사유만 제거한다.
+- [x] V14와 nullable 컬럼을 보존한다. 새 분석이 수동 컬럼을 읽거나 사용자 입력을 요구하지 않음을 검증한다.
 - [ ] 같은 명령으로 일반 응답·캐시 분기·외국어 동기화를 검증하고 `341 refactor: 편입생 진단을 이수 현황 제공 범위로 정리`로 커밋한다.
 
 ## Task 7. 실제 API와 전체 검증을 완료한다.
@@ -190,9 +190,9 @@ assertThat(openApi.path("paths").has("/api/graduation/transfer/manual-review")).
 
 - [ ] 익명화 포털 fixture→동기화→GET 응답을 통합 테스트한다. 새로고침 후 지정과목·영역 갱신, 중복 합산 없는 총학점, 일반 재학생 회귀를 포함한다.
 - [ ] 프론트와 전핵 counted/required, 전선 earned/required, earned-only·unavailable, 지정과목 최상단·드롭다운·안내 문구를 확인한다. 이 저장소에서 프론트 소스를 수정하지 않는다.
-- [ ] Java 17과 로컬 PostgreSQL 등 기존 실행 조건을 확인한다. 비밀값은 명령 출력·문서·커밋에 기록하지 않는다.
-- [ ] `./gradlew spotlessApply --no-daemon`을 실행하고 요청 범위 밖의 포맷 변경이 없는지 확인한다.
-- [ ] `./gradlew check --stacktrace --no-daemon`을 통과시킨다. 실패나 환경 제한은 실제 오류·영향·재검증 결과를 기록한다.
+- [x] Java 17과 로컬 PostgreSQL 등 기존 실행 조건을 확인한다. 비밀값은 명령 출력·문서·커밋에 기록하지 않는다.
+- [x] `./gradlew spotlessApply --no-daemon`을 실행하고 요청 범위 밖의 포맷 변경이 없는지 확인한다.
+- [x] `./gradlew check --stacktrace --no-daemon`을 통과시킨다. 실패나 환경 제한은 실제 오류·영향·재검증 결과를 기록한다.
 - [ ] 로컬 앱을 실행하고 별도 터미널에서 OpenAPI를 조회한다.
 
 ```bash
@@ -223,6 +223,8 @@ curl --fail --silent http://localhost:8080/v3/api-docs
 ## 실행 기록
 
 - 2026-09-06. `feat/341`로 체크아웃하고 설계를 노션 기준으로 갱신했다. 구현 Task는 아직 실행하지 않았다.
-- 이번 문서 작성에서 제품 테스트, DB 조회·변경, API 배포 확인, GitHub 수정과 Wiki 갱신은 수행하지 않았다.
-- 문서 검증은 `git diff --check` 통과, Python 문서 검사(상대 링크·앵커 3개, 기존 수정 대상 파일 존재, 코드 펜스 짝, 후행 공백, 미작성 표식 검사) 통과다.
-- 설계의 성공 조건을 위 Task 추적표와 대조하고 제품 코드 변경이 없음을 확인했다. 구현 단계의 예상 결과를 실행 성공으로 기록하지 않았다.
+- 2026-09-07. Task 2~4와 Task 6 구현을 시작해 편입 영역 응답·유효 수강 정규화·지정과목 학점·최종 판정 및 수동 PATCH 제거를 반영했다. 교육과정 원천이 확인되지 않아 Task 5는 보류하고 전핵·전선을 `UNAVAILABLE`로 반환한다.
+- 2026-09-07. Java 17 직접 Gradle로 `check`, 정책·DTO·서비스·컨트롤러·OpenAPI·편입 통합 테스트를 통과했다. 기본 Java 24의 `./gradlew test`는 Gradle Test task 생성 중 `Type T not present`로 실행되지 않아 Java 17 검증으로 재실행했다.
+- 이번 구현에서 DB schema·migration은 변경하지 않았고 API 배포 확인, GitHub 이슈 수정과 Wiki 갱신은 수행하지 않았다.
+- 문서와 코드 검증은 `git diff --check`와 Java 17 기준 전체 `check` 통과로 확인했다. 계획의 체크 상태와 실제 구현·보류 범위를 대조했다.
+- 교육과정 원천 확인, 로컬 앱의 실제 OpenAPI 조회, Wiki 갱신과 독립 리뷰는 다음 단계로 남아 있다.

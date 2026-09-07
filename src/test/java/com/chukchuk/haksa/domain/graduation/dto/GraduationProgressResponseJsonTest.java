@@ -39,6 +39,48 @@ class GraduationProgressResponseJsonTest {
     assertThat(json.path("languageCertFulfilled").isNull()).isTrue();
   }
 
+  @Test
+  void transferProgressSerializesAreaEvaluationStateAndNullableTarget() {
+    TransferAreaProgressDto earnedOnlyArea =
+        new TransferAreaProgressDto(
+            com.chukchuk.haksa.domain.course.model.FacultyDivision.전취,
+            TransferAreaEvaluationType.EARNED_ONLY,
+            6,
+            null,
+            null,
+            null,
+            List.of(),
+            List.of(),
+            List.of());
+    TransferGraduationProgressDto transferProgress =
+        new TransferGraduationProgressDto(
+            130,
+            112,
+            18,
+            false,
+            65,
+            new BigDecimal("3.2"),
+            new BigDecimal("2.0"),
+            true,
+            3,
+            false,
+            List.of(),
+            true,
+            List.of(TransferManualReviewReason.REQUIRED_COURSES_NOT_ASSESSABLE),
+            List.of(earnedOnlyArea),
+            0,
+            List.of());
+
+    JsonNode json =
+        objectMapper.valueToTree(GraduationProgressResponse.forTransfer(transferProgress, null));
+
+    JsonNode area = json.path("transferProgress").path("areas").get(0);
+    assertThat(area.path("evaluationType").asText()).isEqualTo("EARNED_ONLY");
+    assertThat(area.path("earnedCredits").asInt()).isEqualTo(6);
+    assertThat(area.path("requiredCredits").isNull()).isTrue();
+    assertThat(area.path("fulfilled").isNull()).isTrue();
+  }
+
   private TransferGraduationProgressDto transferProgress() {
     return new TransferGraduationProgressDto(
         130,
