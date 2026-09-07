@@ -23,6 +23,26 @@ class DesignatedCourseEvaluatorTest {
   private final DesignatedCourseEvaluator evaluator = new DesignatedCourseEvaluator();
 
   @Test
+  void keepsPassedDesignatedCourseCompletedWhenPersonalCreditsAreMissing() {
+    List<StudentDesignatedCourse> designated = List.of(designatedCourse(" c101 ", "자료구조", 3, 0));
+    List<StudentCourse> courses = List.of(studentCourse("C101", GradeType.P, null, false));
+
+    assertThat(evaluator.evaluate(designated, courses).designatedCourses().get(0).status())
+        .isEqualTo(DesignatedCourseCompletionStatus.COMPLETED);
+  }
+
+  @Test
+  void keepsNormalizedPassedCourseCompletedWhenPersonalCreditsAreMissing() {
+    List<StudentDesignatedCourse> designated = List.of(designatedCourse(" c101 ", "자료구조", 3, 0));
+    TransferCourseEvaluator.Evaluation courses =
+        new TransferCourseEvaluator()
+            .evaluate(List.of(studentCourse("C101", GradeType.P, null, false)));
+
+    assertThat(evaluator.evaluate(designated, courses).designatedCourses().get(0).status())
+        .isEqualTo(DesignatedCourseCompletionStatus.COMPLETED);
+  }
+
+  @Test
   @DisplayName("과목 코드를 정규화하고 유효한 성적만 지정과목 이수로 인정한다")
   void evaluatesDesignatedCourseByNormalizedCodeAndPassingGrade() {
     StudentDesignatedCourse designated = designatedCourse(" abc123 ", "자료구조", 3, 0);

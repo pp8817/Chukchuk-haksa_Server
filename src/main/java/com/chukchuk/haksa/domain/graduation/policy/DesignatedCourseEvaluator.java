@@ -3,6 +3,7 @@
 package com.chukchuk.haksa.domain.graduation.policy;
 
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
+import com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.student.model.GradeType;
@@ -10,10 +11,13 @@ import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /** 지정과목과 실제 수강 기록을 비교하는 저장소 비의존 평가기다. */
@@ -35,6 +39,7 @@ public class DesignatedCourseEvaluator {
   public Evaluation evaluate(
       List<StudentDesignatedCourse> designatedCourses, List<StudentCourse> studentCourses) {
     Map<String, Integer> completedCourseCredits = new HashMap<>();
+    Set<String> completedCourseCodes = new HashSet<>();
     boolean recognizedCreditUnknown = false;
     for (StudentCourse studentCourse :
         studentCourses == null ? Collections.<StudentCourse>emptyList() : studentCourses) {
@@ -46,6 +51,7 @@ public class DesignatedCourseEvaluator {
       if (courseCode == null) {
         continue;
       }
+      completedCourseCodes.add(courseCode);
 
       Integer credits = studentCourse.getPoints();
       if (credits == null) {
@@ -61,7 +67,7 @@ public class DesignatedCourseEvaluator {
         (designatedCourses == null
                 ? Collections.<StudentDesignatedCourse>emptyList()
                 : designatedCourses)
-            .stream().map(course -> toProgress(course, completedCourseCredits)).toList();
+            .stream().map(course -> toProgress(course, completedCourseCodes)).toList();
 
     Integer recognizedTransferCredits =
         recognizedCreditUnknown
@@ -82,23 +88,26 @@ public class DesignatedCourseEvaluator {
   public Evaluation evaluate(
       List<StudentDesignatedCourse> designatedCourses,
       TransferCourseEvaluator.Evaluation courseEvaluation) {
+    Set<String> completedCourseCodes =
+        courseEvaluation.courses().stream()
+            .map(CourseInternalDto::getCourseCode)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
     List<DesignatedCourseProgressDto> progress =
         (designatedCourses == null
                 ? Collections.<StudentDesignatedCourse>emptyList()
                 : designatedCourses)
-            .stream()
-                .map(course -> toProgress(course, courseEvaluation.creditsByCourseCode()))
-                .toList();
+            .stream().map(course -> toProgress(course, completedCourseCodes)).toList();
     return new Evaluation(progress, courseEvaluation.recognizedTransferCredits());
   }
 
   private DesignatedCourseProgressDto toProgress(
-      StudentDesignatedCourse designatedCourse, Map<String, Integer> completedCourseCredits) {
+      StudentDesignatedCourse designatedCourse, Set<String> completedCourseCodes) {
     String normalizedCode = normalizeCode(designatedCourse.getSubjtCd());
     DesignatedCourseCompletionStatus status;
     if (normalizedCode == null) {
       status = DesignatedCourseCompletionStatus.UNKNOWN;
-    } else if (completedCourseCredits.containsKey(normalizedCode)) {
+    } else if (completedCourseCodes.contains(normalizedCode)) {
       status = DesignatedCourseCompletionStatus.COMPLETED;
     } else {
       status = DesignatedCourseCompletionStatus.NOT_COMPLETED;

@@ -13,6 +13,9 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
 import com.chukchuk.haksa.domain.academic.record.service.StudentAcademicRecordService;
+import com.chukchuk.haksa.domain.course.model.Course;
+import com.chukchuk.haksa.domain.course.model.CourseOffering;
+import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
@@ -22,10 +25,13 @@ import com.chukchuk.haksa.domain.graduation.dto.TransferManualReviewReason;
 import com.chukchuk.haksa.domain.graduation.policy.DesignatedCourseEvaluator;
 import com.chukchuk.haksa.domain.graduation.policy.TransferAreaEvaluator;
 import com.chukchuk.haksa.domain.graduation.policy.TransferCourseEvaluator;
+import com.chukchuk.haksa.domain.student.model.Grade;
+import com.chukchuk.haksa.domain.student.model.GradeType;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
+import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -36,6 +42,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -105,6 +113,77 @@ class TransferGraduationAnalysisServiceTests {
     assertThat(progress.requiredGpa()).isEqualByComparingTo("2.0");
     assertThat(progress.gpaFulfilled()).isTrue();
     assertThat(progress.completedSemesters()).isEqualTo(3);
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      value = {"NULL,NULL", "0,3", "3,6"},
+      nullValues = "NULL")
+  void separatesDesignatedCompletionFromPersonalCreditAvailability(
+      Integer personalCredits, Integer expectedCredits) {
+    TransferGraduationAnalysisService realEvaluatorService =
+        new TransferGraduationAnalysisService(
+            studentAcademicRecordService,
+            studentCourseRepository,
+            studentDesignatedCourseRepository,
+            studentGraduationProgressService,
+            new DesignatedCourseEvaluator(),
+            new TransferCourseEvaluator(),
+            new TransferAreaEvaluator());
+    when(student.getDesignatedCoursesSnapshotVersion())
+        .thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
+    when(academicRecord.getTotalEarnedCredits()).thenReturn(112);
+    when(academicRecord.getCumulativeGpa()).thenReturn(new BigDecimal("3.2"));
+    when(studentDesignatedCourseRepository.findAllByStudentIdOrderBySourceOrder(STUDENT_ID))
+        .thenReturn(
+            List.of(
+                designatedCourse("C101", 0),
+                designatedCourse("C102", 1),
+                designatedCourse("C103", 2)));
+    when(studentCourseRepository.findAllWithCourseByStudentId(STUDENT_ID))
+        .thenReturn(List.of(completedCourse("C101", personalCredits), completedCourse("C102", 3)));
+
+    TransferGraduationProgressDto progress =
+        realEvaluatorService.analyze(student).getTransferProgress();
+
+    assertThat(progress.designatedCourses())
+        .extracting(DesignatedCourseProgressDto::status)
+        .containsExactly(
+            DesignatedCourseCompletionStatus.COMPLETED,
+            DesignatedCourseCompletionStatus.COMPLETED,
+            DesignatedCourseCompletionStatus.NOT_COMPLETED);
+    assertThat(progress.designatedEarnedCredits()).isEqualTo(expectedCredits);
+    assertThat(progress.designatedCreditUnavailableReasons())
+        .isEqualTo(expectedCredits == null ? List.of("COURSE_DATA_INCOMPLETE") : List.of());
+    assertThat(progress.totalEarnedCredits()).isEqualTo(112);
+  }
+
+  private StudentDesignatedCourse designatedCourse(String code, int sourceOrder) {
+    return new StudentDesignatedCourse(
+        student,
+        new DesignatedCourseData(null, code, code, 3, null, null, null, null, sourceOrder));
+  }
+
+  private StudentCourse completedCourse(String code, Integer credits) {
+    CourseOffering offering =
+        new CourseOffering(
+            null,
+            false,
+            2025,
+            1,
+            null,
+            null,
+            null,
+            null,
+            3,
+            null,
+            FacultyDivision.전핵,
+            new Course(code, code),
+            null,
+            null,
+            null);
+    return new StudentCourse(
+        student, offering, new Grade(GradeType.P), credits, false, null, false);
   }
 
   @Test
