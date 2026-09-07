@@ -55,7 +55,6 @@ security:
 
 crawler:
   base-url: ${CRAWLER_BASE_URL}
-  internal-auth-token: ${SCRAPER_INTERNAL_AUTH_TOKEN:}
 
 scraping:
   mode: ${SCRAPING_MODE:async}
