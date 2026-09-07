@@ -228,3 +228,13 @@ curl --fail --silent http://localhost:8080/v3/api-docs
 - 이번 구현에서 DB schema·migration은 변경하지 않았고 API 배포 확인, GitHub 이슈 수정과 Wiki 갱신은 수행하지 않았다.
 - 문서와 코드 검증은 `git diff --check`와 Java 17 기준 전체 `check` 통과로 확인했다. 계획의 체크 상태와 실제 구현·보류 범위를 대조했다.
 - 교육과정 원천 확인, 로컬 앱의 실제 OpenAPI 조회, Wiki 갱신과 독립 리뷰는 다음 단계로 남아 있다.
+
+### 2026-09-08. PR #343 CodeRabbit 리뷰 반영.
+
+- 지정과목 이수 여부를 학점 map의 키가 아닌 유효 이수 코드로 판단하도록 두 평가 오버로드를 수정했다. 통과한 과목의 개인 학점이 null이어도 `COMPLETED`를 유지하며, 서비스의 지정과목 합계는 `null`과 `COURSE_DATA_INCOMPLETE`를 반환한다.
+- 2인자 편입 응답 팩터리는 부분 진단의 `MANUAL_REVIEW_REQUIRED`를 유지한다. 3인자 팩터리의 명시적 상태 지정은 보존했다.
+- 편입 수강 과목 코드를 `Locale.ROOT`로 정규화해 지정과목과 동일한 기준으로 비교한다.
+- 지정과목 정책·서비스 테스트에서 기존 오류에 따른 3건 실패를 확인한 뒤 수정했다. 이후 상태 계약과 터키어 Locale 테스트에서 2건 실패를 확인한 뒤 수정했다. 실제 평가기를 연결한 서비스 테스트는 개인 학점 null·0·3, 미수강 지정과목, 일부 합계를 전체 합계로 반환하지 않는 동작과 포털 누적값 보존을 검증한다.
+- Java 17에서 `./gradlew spotlessApply test --tests '*GraduationProgressResponseJsonTest' --tests '*TransferCourseEvaluatorTest' --tests '*DesignatedCourseEvaluatorTest' --tests '*TransferGraduationAnalysisServiceTests' --no-daemon --offline`을 통과했다.
+- Java 17에서 최종 `./gradlew check --stacktrace --no-daemon`을 통과했다. 포맷·Checkstyle·전체 테스트를 검증하고 `git diff --check`도 통과했다.
+- Wiki `API-and-Authentication`, `Core-Domain-Flows`의 편입 부분 진단·지정과목 판정 계약을 확인했다. 이번 수정은 기존 계약을 복구하며 API schema와 DB를 변경하지 않아 Wiki는 수정하지 않았다. 기존 영역 응답 확장의 Wiki 갱신·실제 API 검증, 전핵·전선 원천 연결 및 동일 학기 충돌 처리는 여전히 남아 있다.
