@@ -81,6 +81,41 @@ class GraduationProgressResponseJsonTest {
     assertThat(area.path("fulfilled").isNull()).isTrue();
   }
 
+  @Test
+  void transferFactoryKeepsPartialDiagnosisWithoutManualReviewReasons() {
+    TransferGraduationProgressDto progress =
+        new TransferGraduationProgressDto(
+            130,
+            130,
+            0,
+            true,
+            65,
+            new BigDecimal("3.2"),
+            new BigDecimal("2.0"),
+            true,
+            4,
+            false,
+            List.of(),
+            false,
+            List.of());
+
+    JsonNode json =
+        objectMapper.valueToTree(GraduationProgressResponse.forTransfer(progress, true));
+
+    assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIRED");
+    assertThat(json.path("transferProgress").path("manualReviewRequired").asBoolean()).isFalse();
+  }
+
+  @Test
+  void transferFactoryPreservesExplicitAnalysisStatus() {
+    JsonNode json =
+        objectMapper.valueToTree(
+            GraduationProgressResponse.forTransfer(
+                transferProgress(), true, GraduationAnalysisStatus.CALCULATED));
+
+    assertThat(json.path("analysisStatus").asText()).isEqualTo("CALCULATED");
+  }
+
   private TransferGraduationProgressDto transferProgress() {
     return new TransferGraduationProgressDto(
         130,

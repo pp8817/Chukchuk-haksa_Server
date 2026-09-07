@@ -79,11 +79,8 @@ public class GraduationProgressResponse {
    */
   public static GraduationProgressResponse forTransfer(
       TransferGraduationProgressDto transferProgress, Boolean languageCertFulfilled) {
-    GraduationAnalysisStatus status =
-        transferProgress.manualReviewRequired()
-            ? GraduationAnalysisStatus.MANUAL_REVIEW_REQUIRED
-            : GraduationAnalysisStatus.CALCULATED;
-    return forTransfer(transferProgress, languageCertFulfilled, status);
+    return forTransfer(
+        transferProgress, languageCertFulfilled, GraduationAnalysisStatus.MANUAL_REVIEW_REQUIRED);
   }
 
   /**
