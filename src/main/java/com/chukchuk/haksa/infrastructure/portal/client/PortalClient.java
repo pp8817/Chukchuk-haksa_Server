@@ -27,6 +27,9 @@ public class PortalClient {
   @Value("${crawler.base-url}")
   private String baseUrl;
 
+  @Value("${crawler.internal-auth-token:}")
+  private String internalAuthToken;
+
   private final RestTemplate restTemplate;
   private final RestTemplate loginRestTemplate = new RestTemplate(loginRequestFactory());
 
@@ -45,6 +48,7 @@ public class PortalClient {
       RequestEntity<LoginRequest> request =
           RequestEntity.post(URI.create(baseUrl + uri))
               .contentType(MediaType.APPLICATION_JSON)
+              .header("X-Scraper-Internal-Token", internalAuthToken)
               .body(new LoginRequest(username, password));
 
       loginRestTemplate.exchange(request, Void.class);
