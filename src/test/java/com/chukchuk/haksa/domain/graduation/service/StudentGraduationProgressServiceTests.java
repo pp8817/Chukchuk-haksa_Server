@@ -33,7 +33,7 @@ class StudentGraduationProgressServiceTests {
   @DisplayName("외국어 인증 row가 없으면 새로 생성하고 학생 캐시를 무효화한다")
   void syncLanguageCertCreatesProgressWhenMissing() {
     UUID studentId = UUID.randomUUID();
-    StudentGraduationProgressService service =
+    final StudentGraduationProgressService service =
         new StudentGraduationProgressService(repository, academicCache);
 
     when(student.getId()).thenReturn(studentId);
@@ -60,7 +60,7 @@ class StudentGraduationProgressServiceTests {
     ReflectionTestUtils.setField(
         existing, "checkedAt", java.time.Instant.parse("2026-05-01T00:00:00Z"));
     ReflectionTestUtils.setField(existing, "gpaFulfilled", Boolean.TRUE);
-    StudentGraduationProgressService service =
+    final StudentGraduationProgressService service =
         new StudentGraduationProgressService(repository, academicCache);
 
     when(student.getId()).thenReturn(studentId);
@@ -78,7 +78,7 @@ class StudentGraduationProgressServiceTests {
   @Test
   @DisplayName("외국어 인증 값이 없으면 저장하지 않고 기존 캐시도 유지한다")
   void syncLanguageCertSkipsWhenValueIsNull() {
-    StudentGraduationProgressService service =
+    final StudentGraduationProgressService service =
         new StudentGraduationProgressService(repository, academicCache);
 
     service.syncLanguageCert(student, null);

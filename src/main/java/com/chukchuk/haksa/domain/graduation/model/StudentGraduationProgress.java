@@ -38,6 +38,9 @@ public class StudentGraduationProgress extends BaseEntity {
   @Column(name = "language_cert_fulfilled")
   private Boolean languageCertFulfilled;
 
+  @Column(name = "graduation_review_fulfilled")
+  private Boolean graduationReviewFulfilled;
+
   @Column(name = "gpa_fulfilled")
   private Boolean gpaFulfilled;
 
@@ -73,11 +76,30 @@ public class StudentGraduationProgress extends BaseEntity {
   }
 
   /**
+   * 포털 외부의 수동 졸업심사 정보를 저장할 진행 상태를 생성한다.
+   *
+   * @param student 대상 학생
+   * @return 수동 졸업심사 상태를 담은 진행 상태
+   */
+  public static StudentGraduationProgress createForManualReview(Student student) {
+    return new StudentGraduationProgress(student, null);
+  }
+
+  /**
    * 졸업 요건의 호출자에게 노출된 상태를 입력 값에 맞게 변경한다.
    *
    * @param languageCertFulfilled 어학 인증 충족 여부
    */
   public void updateLanguageCert(boolean languageCertFulfilled) {
     this.languageCertFulfilled = languageCertFulfilled;
+  }
+
+  /**
+   * 학과 졸업논문·시험·작품·실기 심사 통과 여부를 수동으로 저장한다.
+   *
+   * @param graduationReviewFulfilled 졸업심사 통과 여부
+   */
+  public void updateGraduationReview(Boolean graduationReviewFulfilled) {
+    this.graduationReviewFulfilled = graduationReviewFulfilled;
   }
 }

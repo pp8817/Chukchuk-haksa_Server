@@ -64,6 +64,9 @@ public class Student extends BaseEntity {
   @Column(name = "designated_courses_reset_at")
   private Instant designatedCoursesResetAt;
 
+  @Column(name = "transfer_registered_semesters")
+  private Integer transferRegisteredSemesters;
+
   @Column(name = "reconnection_required", nullable = false)
   private boolean reconnectionRequired = true; // 기본값 true, 재연동 시 false
 
@@ -286,6 +289,15 @@ public class Student extends BaseEntity {
 
   public void setTargetGpa(Double targetGpa) {
     this.targetGpa = targetGpa;
+  }
+
+  /**
+   * 포털에서 확인할 수 없는 편입 후 등록 학기 수를 수동으로 저장한다.
+   *
+   * @param registeredSemesters 편입 후 등록 학기 수
+   */
+  public void updateTransferRegisteredSemesters(Integer registeredSemesters) {
+    this.transferRegisteredSemesters = registeredSemesters;
   }
 
   /**

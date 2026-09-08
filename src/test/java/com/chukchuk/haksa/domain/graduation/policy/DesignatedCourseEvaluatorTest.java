@@ -23,6 +23,26 @@ class DesignatedCourseEvaluatorTest {
   private final DesignatedCourseEvaluator evaluator = new DesignatedCourseEvaluator();
 
   @Test
+  void keepsPassedDesignatedCourseCompletedWhenPersonalCreditsAreMissing() {
+    List<StudentDesignatedCourse> designated = List.of(designatedCourse(" c101 ", "자료구조", 3, 0));
+    List<StudentCourse> courses = List.of(studentCourse("C101", GradeType.P, null, false));
+
+    assertThat(evaluator.evaluate(designated, courses).designatedCourses().get(0).status())
+        .isEqualTo(DesignatedCourseCompletionStatus.COMPLETED);
+  }
+
+  @Test
+  void keepsNormalizedPassedCourseCompletedWhenPersonalCreditsAreMissing() {
+    List<StudentDesignatedCourse> designated = List.of(designatedCourse(" c101 ", "자료구조", 3, 0));
+    TransferCourseEvaluator.Evaluation courses =
+        new TransferCourseEvaluator()
+            .evaluate(List.of(studentCourse("C101", GradeType.P, null, false)));
+
+    assertThat(evaluator.evaluate(designated, courses).designatedCourses().get(0).status())
+        .isEqualTo(DesignatedCourseCompletionStatus.COMPLETED);
+  }
+
+  @Test
   @DisplayName("과목 코드를 정규화하고 유효한 성적만 지정과목 이수로 인정한다")
   void evaluatesDesignatedCourseByNormalizedCodeAndPassingGrade() {
     StudentDesignatedCourse designated = designatedCourse(" abc123 ", "자료구조", 3, 0);
@@ -84,6 +104,26 @@ class DesignatedCourseEvaluatorTest {
                 studentCourse("07046", GradeType.F, 20, false)));
 
     assertThat(result.recognizedTransferCredits()).isEqualTo(35);
+  }
+
+  @Test
+  @DisplayName("수강 학점이 없으면 편입 인정학점을 미확인으로 둔다")
+  void keepsRecognizedTransferCreditsUnknownWhenStudentCoursePointsAreMissing() {
+    Course course = mock(Course.class);
+    when(course.getCourseCode()).thenReturn("07045");
+    CourseOffering offering = mock(CourseOffering.class);
+    when(offering.getCourse()).thenReturn(course);
+    when(offering.getPoints()).thenReturn(20);
+    StudentCourse studentCourse = mock(StudentCourse.class);
+    when(studentCourse.getOffering()).thenReturn(offering);
+    when(studentCourse.getGrade()).thenReturn(new Grade(GradeType.P));
+    when(studentCourse.getPoints()).thenReturn(null);
+    when(studentCourse.isRetakeDeleted()).thenReturn(false);
+
+    DesignatedCourseEvaluator.Evaluation result =
+        evaluator.evaluate(List.of(), List.of(studentCourse));
+
+    assertThat(result.recognizedTransferCredits()).isNull();
   }
 
   private StudentDesignatedCourse designatedCourse(

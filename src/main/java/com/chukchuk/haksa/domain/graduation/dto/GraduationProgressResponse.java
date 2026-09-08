@@ -27,7 +27,7 @@ public class GraduationProgressResponse {
   @Schema(description = "특정 학과/연도 예외로 기존과 다른 졸업요건이 적용되는지 여부", required = true)
   private boolean hasDifferentGraduationRequirement = false;
 
-  @Schema(description = "편입생 전용 졸업요건 부분 진단 결과", nullable = true)
+  @Schema(description = "편입생 전용 졸업요건 진단 결과", nullable = true)
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private TransferGraduationProgressDto transferProgress;
 
@@ -79,9 +79,25 @@ public class GraduationProgressResponse {
    */
   public static GraduationProgressResponse forTransfer(
       TransferGraduationProgressDto transferProgress, Boolean languageCertFulfilled) {
+    return forTransfer(
+        transferProgress, languageCertFulfilled, GraduationAnalysisStatus.MANUAL_REVIEW_REQUIRED);
+  }
+
+  /**
+   * 계산 결과에 맞는 상태를 지정해 편입생 진단 응답을 생성한다.
+   *
+   * @param transferProgress 편입생 진단 결과
+   * @param languageCertFulfilled 외국어 인증 통과 여부
+   * @param analysisStatus 분석 상태
+   * @return 편입생 졸업진단 응답
+   */
+  public static GraduationProgressResponse forTransfer(
+      TransferGraduationProgressDto transferProgress,
+      Boolean languageCertFulfilled,
+      GraduationAnalysisStatus analysisStatus) {
     return new GraduationProgressResponse(
         GraduationAnalysisType.TRANSFER,
-        GraduationAnalysisStatus.MANUAL_REVIEW_REQUIRED,
+        analysisStatus,
         List.of(),
         languageCertFulfilled,
         transferProgress);

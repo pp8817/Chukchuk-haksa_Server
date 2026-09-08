@@ -178,6 +178,7 @@ class OpenApiResponseContractTest {
     JsonNode apiDocs = apiDocs();
 
     assertThat(apiDocs.path("paths").has("/api/graduation/progress")).isTrue();
+    assertThat(apiDocs.path("paths").has("/api/graduation/transfer/manual-review")).isFalse();
     assertThat(apiDocs.path("paths").has("/api/academic/record")).isTrue();
 
     JsonNode graduationResponse = responseSchema(apiDocs, "/api/graduation/progress", "get", "200");
@@ -190,6 +191,11 @@ class OpenApiResponseContractTest {
         .contains("CALCULATED", "MANUAL_REVIEW_REQUIRED");
     assertThat(graduationData.path("properties").path("transferProgress").path("$ref").asText())
         .isEqualTo("#/components/schemas/TransferGraduationProgressDto");
+    JsonNode transferProgress =
+        apiDocs.path("components").path("schemas").path("TransferGraduationProgressDto");
+    assertThat(transferProgress.path("properties").has("areas")).isTrue();
+    assertThat(transferProgress.path("properties").has("designatedEarnedCredits")).isTrue();
+    assertThat(transferProgress.path("properties").has("graduationEligible")).isFalse();
     JsonNode graduationProgress =
         arrayItemSchema(apiDocs, propertySchema(apiDocs, graduationData, "graduationProgress"));
     JsonNode graduationCourse =
