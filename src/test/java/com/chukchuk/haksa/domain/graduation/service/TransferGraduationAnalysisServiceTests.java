@@ -3,10 +3,12 @@
 package com.chukchuk.haksa.domain.graduation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
@@ -20,17 +22,22 @@ import com.chukchuk.haksa.domain.department.model.Department;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
+import com.chukchuk.haksa.domain.graduation.dto.TransferAreaEvaluationType;
 import com.chukchuk.haksa.domain.graduation.dto.TransferGraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.TransferManualReviewReason;
 import com.chukchuk.haksa.domain.graduation.policy.DesignatedCourseEvaluator;
+import com.chukchuk.haksa.domain.graduation.policy.GraduationMajorResolver;
 import com.chukchuk.haksa.domain.graduation.policy.TransferAreaEvaluator;
 import com.chukchuk.haksa.domain.graduation.policy.TransferCourseEvaluator;
+import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
 import com.chukchuk.haksa.domain.student.model.Grade;
 import com.chukchuk.haksa.domain.student.model.GradeType;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.model.embeddable.AcademicInfo;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
+import com.chukchuk.haksa.global.exception.code.ErrorCode;
+import com.chukchuk.haksa.global.exception.type.CommonException;
 import com.chukchuk.haksa.infrastructure.portal.model.DesignatedCourseData;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -44,6 +51,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,6 +71,9 @@ class TransferGraduationAnalysisServiceTests {
   @Mock private TransferCourseEvaluator transferCourseEvaluator;
 
   @Mock private TransferAreaEvaluator transferAreaEvaluator;
+
+  @Mock private GraduationMajorResolver graduationMajorResolver;
+  @Mock private GraduationQueryRepository graduationQueryRepository;
 
   @InjectMocks private TransferGraduationAnalysisService service;
 
@@ -129,7 +141,9 @@ class TransferGraduationAnalysisServiceTests {
             studentGraduationProgressService,
             new DesignatedCourseEvaluator(),
             new TransferCourseEvaluator(),
-            new TransferAreaEvaluator());
+            new TransferAreaEvaluator(),
+            graduationMajorResolver,
+            graduationQueryRepository);
     when(student.getDesignatedCoursesSnapshotVersion())
         .thenReturn(Instant.parse("2026-09-02T00:00:00Z"));
     when(academicRecord.getTotalEarnedCredits()).thenReturn(112);
@@ -199,6 +213,85 @@ class TransferGraduationAnalysisServiceTests {
     assertThat(progress.creditsFulfilled()).isTrue();
     assertThat(progress.requiredGpa()).isEqualByComparingTo("2.5");
     assertThat(progress.gpaFulfilled()).isFalse();
+  }
+
+  @ParameterizedTest
+  @NullSource
+  @ValueSource(ints = {0, 1, 2})
+  void preservesEarnedProgressWhenTransferYearIsMissing(Integer year) {
+    when(student.getAcademicInfo()).thenReturn(AcademicInfo.builder().admissionYear(year).build());
+
+    TransferGraduationProgressDto progress =
+        withRealEvaluators().analyze(student).getTransferProgress();
+
+    assertThat(progress.areas())
+        .extracting(area -> area.evaluationType())
+        .containsExactly(
+            TransferAreaEvaluationType.UNAVAILABLE, TransferAreaEvaluationType.UNAVAILABLE);
+    verifyNoInteractions(graduationMajorResolver, graduationQueryRepository);
+  }
+
+  @Test
+  void preservesProgressWhenDepartmentIsMissing() {
+    when(student.getAcademicInfo()).thenReturn(AcademicInfo.builder().admissionYear(2026).build());
+
+    assertThat(withRealEvaluators().analyze(student).getTransferProgress().areas())
+        .allSatisfy(
+            area ->
+                assertThat(area.evaluationType())
+                    .isEqualTo(TransferAreaEvaluationType.UNAVAILABLE));
+    verifyNoInteractions(graduationMajorResolver, graduationQueryRepository);
+  }
+
+  @Test
+  void doesNotApplySingleMajorHalfRuleToSecondaryMajor() {
+    when(student.getAcademicInfo()).thenReturn(AcademicInfo.builder().admissionYear(2026).build());
+    when(student.getDepartment()).thenReturn(mock(Department.class));
+    when(student.getSecondaryMajor()).thenReturn(mock(Department.class));
+
+    assertThat(withRealEvaluators().analyze(student).getTransferProgress().areas())
+        .allSatisfy(
+            area ->
+                assertThat(area.evaluationType())
+                    .isEqualTo(TransferAreaEvaluationType.UNAVAILABLE));
+    verifyNoInteractions(graduationMajorResolver, graduationQueryRepository);
+  }
+
+  @Test
+  void preservesPartialProgressWhenCohortRequirementsAreNotFound() {
+    when(student.getAcademicInfo()).thenReturn(AcademicInfo.builder().admissionYear(2026).build());
+    when(student.getDepartment()).thenReturn(mock(Department.class));
+    when(graduationMajorResolver.resolve(student, 2024))
+        .thenThrow(new CommonException(ErrorCode.GRADUATION_REQUIREMENTS_DATA_NOT_FOUND));
+
+    assertThat(withRealEvaluators().analyze(student).getTransferProgress().areas())
+        .allSatisfy(
+            area ->
+                assertThat(area.evaluationType())
+                    .isEqualTo(TransferAreaEvaluationType.UNAVAILABLE));
+  }
+
+  @Test
+  void doesNotHideOtherRequirementLookupFailures() {
+    when(student.getAcademicInfo()).thenReturn(AcademicInfo.builder().admissionYear(2026).build());
+    when(student.getDepartment()).thenReturn(mock(Department.class));
+    IllegalStateException failure = new IllegalStateException("test lookup failure");
+    when(graduationMajorResolver.resolve(student, 2024)).thenThrow(failure);
+
+    assertThatThrownBy(() -> withRealEvaluators().analyze(student)).isSameAs(failure);
+  }
+
+  private TransferGraduationAnalysisService withRealEvaluators() {
+    return new TransferGraduationAnalysisService(
+        studentAcademicRecordService,
+        studentCourseRepository,
+        studentDesignatedCourseRepository,
+        studentGraduationProgressService,
+        new DesignatedCourseEvaluator(),
+        new TransferCourseEvaluator(),
+        new TransferAreaEvaluator(),
+        graduationMajorResolver,
+        graduationQueryRepository);
   }
 
   @Test

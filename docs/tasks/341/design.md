@@ -3,148 +3,116 @@
 ## 기준과 상태
 
 - 작업 이슈는 [#341](https://github.com/cchaksa/cchaksa-backend/issues/341)이다.
-- 요구사항은 [노션 작업 사항](https://app.notion.com/p/3d01a2480da18046853de1e393ed876d)을 우선한다.
-- 2026-09-06 사용자와 검토한 범위를 반영한다. 이 문서는 기존 최종 졸업 판정 설계를 대체한다.
-- 코드 확인 기준은 `dev`의 `461abd38`과 `feat/341`의 `adb44c55`다. 기존 구현은 새 설계의 완료 증거가 아니다.
-- 2026-09-07부터 계획의 Task 2~4와 Task 6 구현을 시작했다. 기준 원천이 확인되지 않은 전핵·전선 비교는 `UNAVAILABLE`로 남기고, 최종 졸업 판정과 수동 입력 API는 제거했다.
+- 원래 요구사항은 [노션 작업 사항](https://app.notion.com/p/3d01a2480da18046853de1e393ed876d)을 기준으로 하며, 적용 연도·전핵 비교 방식은 2026-09-08 사용자의 후속 확정사항을 우선한다.
+- 이 문서는 2026-09-08 사용자가 확정한 3학년 편입생 기준을 반영한 현재 최종 설계다.
+- 이전에 차단사항으로 둔 적용 연도 검증과 3·4학년 전핵 전체 과목 목록 확보는 아래 학점 기준으로 대체됐으며 더 이상 선행 조건이 아니다.
+- 기존 편입 영역 응답·유효 이수 정규화·지정과목 집계를 유지하면서 전핵·전선의 실제 기준 조회를 연결한다.
 
 ## 목표와 범위
 
-편입생에게 전핵·전선의 기준 대비 이수 현황, 나머지 영역의 취득학점, 지정과목의 취득학점 합계와 과목별 이수 상태를 제공한다.
+3학년 편입생에게 전핵·전선의 기준 대비 이수 현황, 나머지 영역의 취득학점, 지정과목의 취득학점 합계와 과목별 이수 상태를 제공한다.
 
 | 대상 | 제공할 정보 | 판정 범위 |
 | --- | --- | --- |
-| 전핵 | 적용 교육과정의 3·4학년 전핵 목록과 이수 현황 | 대상 과목 전부 이수했는지 확인한다. |
-| 전선 | 본인 학번에 적용되는 기준학점의 50%와 취득학점 | 필요학점 이상인지 확인한다. |
+| 전핵 | 정규 입학 코호트 전핵 요구학점의 50%와 본인의 전핵 취득학점 | 취득학점이 절반 기준 이상인지 비교한다. |
+| 전선 | 정규 입학 코호트 전선 요구학점의 50%와 본인의 전선 취득학점 | 취득학점이 절반 기준 이상인지 비교한다. |
 | 교양·전취·일선 등 | 취득학점과 이수 과목 목록 | 면제·충족 여부를 판정하지 않는다. |
 | 지정과목 | 별도 취득학점 합계와 과목별 상태 | 실제 수강 기록과 대조한다. |
 
-총 취득학점, 편입 인정학점, GPA, 외국어 인증의 기존 `dev` 제공 기능은 유지한다. 기존 130학점·GPA 정책을 이번 작업에서 재설계하거나 전체 졸업 자격으로 확대하지 않는다.
+총 취득학점, 편입 인정학점, GPA, 외국어 인증의 기존 기능을 유지한다. 130학점·GPA 진행 상태도 그대로 제공하되 이를 편입생의 최종 졸업 가능 여부로 결합하지 않는다.
 
-최종 졸업 가능 여부, 등록학기·졸업심사 추가 판정, 학생별 수동 정보 저장 API, 교양 일괄 면제, 범용 정책 엔진과 관리자 편집 UI는 제외한다. 규정이 확인되지 않은 편입 유형·복수전공에는 단일전공 규칙을 임의 확장하지 않고 확인 가능한 이수 내역을 제공한다.
+최종 졸업 자격, 등록학기·졸업심사 추가 판정, 학생별 수동 정보 저장 API, 교양 일괄 면제, 범용 정책 엔진과 관리자 편집 UI는 제외한다. 복수전공 편입생의 전핵·전선 절반 정책은 확인된 근거가 없으므로 단일전공 규칙을 확장하지 않는다. 이 경우 확인 가능한 취득 내역과 기존 GPA·외국어 인증 등은 계속 제공한다.
 
-## 현재 코드의 근거
+## 현재 코드의 근거와 통합 지점
 
 경로는 저장소 루트 기준이다.
 
-| 파일 | 현재 동작과 변경 방향 |
+| 파일 | 현재 동작과 후속 변경 |
 | --- | --- |
-| `src/main/java/com/chukchuk/haksa/domain/graduation/service/GraduationService.java` | 캐시 조회 전 편입 전용 분기를 유지한다. |
-| `src/main/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisService.java` | 브랜치의 전핵·전필·전취 합산, 수동값 의존, 최종 판정을 영역별 표시로 교체한다. |
-| `src/main/java/com/chukchuk/haksa/domain/graduation/policy/DesignatedCourseEvaluator.java` | 지정과목 상태와 인정학점 코드 중복 제거를 재사용한다. 브랜치의 offering 학점 fallback은 개인 취득학점 근거로 사용하지 않는다. |
-| `src/main/java/com/chukchuk/haksa/domain/graduation/repository/GraduationQueryRepository.java` | 일반 조회는 F·R만 제외하고 요건 표를 순회한다. NP·IP 포함 가능성과 미등록 영역 누락 때문에 편입 계산에 그대로 사용하지 않는다. |
-| `src/main/java/com/chukchuk/haksa/domain/academic/record/repository/StudentCourseRepository.java` | `findAllWithCourseByStudentId`로 수강·개설·과목을 한 번에 조회한다. |
-| `src/main/java/com/chukchuk/haksa/infrastructure/portal/mapper/PortalDataMapper.java` | `toPortalCurriculumInfo`는 수강 목록으로 만든다. 미이수 전핵을 포함한 전체 교육과정이 아니다. |
-| `src/main/java/com/chukchuk/haksa/application/portal/PortalStudentDataMapper.java` | `admissionYear`는 포털 `enscYear`에서 온 값이다. 학번의 교육과정 연도와 동일하다고 확정할 수 없다. |
-| `src/main/java/com/chukchuk/haksa/domain/department/model/DepartmentAreaRequirement.java` | 학과·연도·영역별 필요학점은 있으나 과목별 배정 학년은 없다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/service/GraduationService.java` | 캐시 조회 전 편입 전용 분기를 유지한다. 일반 재학생 경로는 변경하지 않는다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisService.java` | 적용 연도와 학과를 해석하고 실제 `Requirements`를 조립한다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/policy/GraduationMajorResolver.java` | 현재 학과와 `establishedDepartmentName`이 같은 개편 학과를 후보로 조회한다. 이 별칭 해석을 그대로 재사용한다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/repository/GraduationQueryRepository.java` | `department_area_requirements`를 학과 ID와 입학 연도로 조회하는 `getAreaRequirementsWithCache`를 그대로 재사용한다. 새 저장소나 migration은 만들지 않는다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/policy/TransferAreaEvaluator.java` | 전핵 과목 목록 기반 `Requirements`를 전핵·전선 학점 기준으로 단순화하고 두 영역에 같은 비교 규칙을 적용한다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferAreaProgressDto.java` | 기존 공개 필드를 유지한다. `requiredCourses`는 호환성을 위해 빈 목록을 반환하고 schema 설명을 현재 의미에 맞게 고친다. |
+| `src/main/java/com/chukchuk/haksa/domain/graduation/policy/TransferCourseEvaluator.java` | 영역별 실제 취득학점, 유효 성적, 중복과 누락 처리 결과를 그대로 제공한다. |
 
-운영 DB, 별도 교육과정 자료, 기존 기능의 배포 여부는 이번 문서 작업에서 조회하지 않았다. 저장소에 전체 목록을 보장하는 구조가 없다는 관찰을 운영 데이터 자체가 없다는 결론으로 확대하지 않는다.
-
-## 구현 전에 확인할 근거
-
-| 항목 | 확보할 증거 | 없을 때의 처리 |
-| --- | --- | --- |
-| 적용 교육과정 연도 | 익명화한 포털 값과 학교 기준을 대조한 학번→연도 규칙 | 입학연도 그대로 사용, 학번 앞자리 추출, 편입연도에서 2년 차감을 추정으로 적용하지 않는다. |
-| 전핵 대상 목록 | 학과·적용 연도별 3·4학년 전핵 과목코드·학점·출처·목록 완전성 | 전핵 필요학점·충족 여부를 미확인으로 반환한다. |
-| 전선 기준 | 학과·학번별 기준학점, 50% 소수 처리와 복수전공 적용 범위 | 자동 올림을 확정하지 않는다. 근거 없는 대상은 기준 미확인으로 반환한다. |
-| 기존 API 배포 | 배포 버전·OpenAPI와 프론트 사용 여부 | 브랜치 전용 API 삭제 전에 호환 이행을 결정한다. |
-| V14 적용 | 적용 환경과 Flyway 이력 | 기존 migration과 nullable 컬럼을 보존한다. |
-
-근거와 결정은 이 문서에 기록한다. DTO, 유효 이수 정리, 취득학점 전용 표시와 지정과목 합계는 기준 확인과 독립적으로 진행할 수 있다. 전핵·전선 기준이 미확인인 채 전체 작업을 완료 처리하지 않는다.
-
-기존 관리 자료를 우선 사용한다. 새 참조 저장소가 필요하면 학과·적용 연도·배정 학년·과목코드·기준학점과 출처·완전성을 표현하는 최소 구조를 확정하고 계획에 실제 파일명을 추가한다. 전체 교육과정 크롤러나 정책 관리 시스템을 선제적으로 만들지 않는다.
+조회와 조립은 `TransferGraduationAnalysisService`의 private 메서드 하나에 모은다. 새 공개 서비스나 범용 정책 계층은 추가하지 않는다.
 
 ## 계산 규칙
 
-### 유효 이수와 학점
+### 적용 코호트와 요구학점 조회
 
-- 편입 경로에서만 `F`, `R`, `NP`, `IP`, 성적 미확인과 재수강 삭제 기록을 취득학점 집계에서 제외한다. 공용 성적 정책과 일반 재학생 SQL은 바꾸지 않는다.
-- 과목코드를 trim·대문자로 정규화하고 같은 과목을 여러 번 더하지 않는다. 일반 과목은 삭제되지 않은 유효 기록 중 최신 연도·학기를 사용한다. 같은 최신 시점의 학점·이수구분이 충돌하면 영향을 받는 합계를 미확인으로 둔다.
-- 코드 없는 이수 기록은 화면에서 누락하지 않되 중복 제거를 보장할 수 없으므로 해당 합계를 확정하지 않는다.
-- 취득학점은 개인 수강 기록의 `StudentCourse.points`가 기준이다. 지정과목 원본 `point`나 공용 offering 학점으로 대체하지 않는다.
-- 정상 수신한 빈 목록의 합계는 0이다. 필요한 학점이 null인 합계는 null이며 일부 합계를 전체 합계로 반환하지 않는다. 과목 이수 여부와 학점 확인 여부는 별개다.
-- 인정학점 코드 `07045`, `07046`, `00111`, `07050`은 영역별 합계에서 제외하고 별도로 표시한다. 코드별 유효 인정학점의 최대값을 한 번 합산하는 기존 규칙을 유지한다.
-- 인정학점이 미확인이면 `recognizedTransferCredits`를 nullable로 확장하고 사유를 남긴다. offering fallback으로 값을 채우지 않는다.
-- 총 취득학점은 `StudentAcademicRecord.totalEarnedCredits` 단일 기준이다. 영역·인정학점·지정과목 합계로 재구성하지 않는다.
+- 지원 범위는 3학년 편입이다. `Student.academicInfo.admissionYear`에 저장된 입학/편입 연도를 `transferYear`로 보고 `cohortYear = transferYear - 2`를 적용한다. 예를 들어 2026년 편입생은 2024년 정규 입학 코호트 요건을 사용한다. 이후 현재 `gradeLevel`이 4로 동기화돼도 적용 코호트는 바뀌지 않는다.
+- 학적 정보나 `transferYear`가 없으면 전핵·전선 기준을 만들지 않고 두 영역을 각각 `UNAVAILABLE`로 반환한다.
+- 주전공은 `student.major`가 있으면 우선하고 없으면 `student.department`를 사용하는 기존 `GraduationMajorResolver` 계약을 따른다. 두 값 모두 없으면 기준을 만들지 않는다.
+- 단일전공일 때 `GraduationMajorResolver.resolve(student, cohortYear)`로 현재 학과와 개편 학과 별칭 후보를 해석한 뒤, 확정된 주전공 ID와 `cohortYear`로 `GraduationQueryRepository.getAreaRequirementsWithCache`를 호출한다.
+- 복수전공이 있으면 이번 정책의 지원 범위 밖이므로 단일전공 `department_area_requirements` 기준을 적용하지 않는다. 전핵·전선은 `UNAVAILABLE`로 남기고 다른 계산은 계속한다.
+- resolver가 `GRADUATION_REQUIREMENTS_DATA_NOT_FOUND`를 반환하면 기준 부재로 바꿔 편입 전체 응답을 유지한다. 다른 예외는 데이터 부재로 오인해 삼키지 않고 기존 예외 처리로 전달한다.
+- 조회 결과에서 `areaType=전핵`, `areaType=전선`을 서로 독립적으로 찾는다. 한 영역 행이 없으면 그 영역만 `UNAVAILABLE`이며, 다른 영역의 정상 기준은 사용한다. 조회 DTO와 테이블의 영역·요구학점 NOT NULL 불변조건은 기존 계약을 따른다.
+- 같은 학과·연도·영역에 중복 행이 있으면 서로 다른 `requiredCredits` 값의 개수를 확인한다. 값이 하나면 같은 기준의 중복으로 보고 그 절반을 사용하며, 서로 다른 값이 둘 이상이면 임의 선택하지 않고 해당 영역만 `UNAVAILABLE`로 둔다.
 
-### 영역별 현황
+### 전핵·전선 절반 기준
 
-- 실제 이수 영역을 바탕으로 목록을 구성한다. 비교 대상 전핵·전선은 수강이 없어도 포함한다. 출력 순서는 기존 `FacultyDivision` 순서로 고정한다.
-- 전취를 전핵에 합치지 않는다. 저장된 분류와 기존 기타 분류를 보존한다.
-- 전핵 필요학점은 검증된 3·4학년 대상 과목의 기준학점 합계다. 수강 당시 학년으로 필터링하지 않는다. 완료 조건은 대상 과목 전체의 이수이며 다른 전핵으로 학점만 채운 경우 완료 처리하지 않는다.
-- 전핵 전체 취득학점과 필수 대상 취득학점은 다를 수 있다. 전체 과목 목록을 보존하면서 `earnedCredits`와 `countedCredits`를 구분한다. 전핵의 화면 비율은 `countedCredits / requiredCredits`다.
-- 전선은 `countedCredits=earnedCredits`다. 기준은 검증된 학과·적용 연도의 원래 전선 학점의 50%이며 예시의 48을 고정하지 않는다.
-- 새 DTO의 필요학점은 `BigDecimal`로 표현한다. 올림·절삭 여부는 검증한 규칙으로만 결정한다.
-- 대체·동일 과목 인정은 확인된 매핑만 사용한다. 과목명 유사도로 필수과목을 충족시키지 않는다.
-- 학과 개편 후보 조회는 `GraduationMajorResolver`의 근거를 활용하되 일반 요건 미존재 예외가 편입 전체 현황을 차단하지 않게 한다.
+- 전핵과 전선의 필요학점은 각각 정규 입학 코호트의 `department_area_requirements.required_credits × 0.5`다.
+- 계산은 `BigDecimal.valueOf(requiredCredits).multiply(new BigDecimal("0.5"))`처럼 10진수로 정확히 수행한다. 올림, 내림, 반올림하거나 정수로 바꾸지 않는다.
+- 홀수 기준도 정확한 절반을 유지한다. 예를 들어 45학점의 절반은 `22.5`다.
+- 두 영역 모두 `earnedCredits`와 `countedCredits`는 해당 영역의 유효 개인 취득학점이며, `fulfilled`는 `BigDecimal.valueOf(earnedCredits).compareTo(requiredCredits) >= 0`으로 계산한다.
+- 전핵 전체 과목 목록을 확보할 수 없으므로 과목별 필수 이수 여부를 판정하지 않는다. 다른 전핵 과목을 포함한 전체 전핵 취득학점을 절반 기준과 비교한다.
+- 공개 API의 `requiredCourses`는 기존 클라이언트 호환을 위해 전핵에서도 항상 빈 목록이다. 이 필드를 전핵 전체 과목 목록으로 설명하거나 사용하지 않는다.
+- 기준은 있지만 해당 영역의 개인 학점이 불완전하면 `evaluationType=COMPARISON`과 `requiredCredits`는 유지하고 `earnedCredits`, `countedCredits`, `fulfilled`는 null, 사유는 `COURSE_DATA_INCOMPLETE`로 반환한다.
 
-### 지정과목
+### 유효 이수, 기타 영역과 기존 계산
 
-- 기존 `designatedCourses`의 순서·코드·명칭·원본 학점·이수 상태를 유지한다.
-- `designatedEarnedCredits`는 이수한 지정과목의 개인 취득학점을 코드별 한 번 합산한다. 중복 원본 행은 표시해도 합계에 반복 반영하지 않는다.
-- 목록 미수신이면 `designatedCoursesNeedsRefresh=true`, 합계 null이다. 수신한 빈 목록이면 새로고침 불필요, 합계 0이다.
-- 코드 미확인 지정과목이나 개인 학점 미확인 이수 과목이 있으면 합계 null과 사유를 제공한다. 미이수 과목은 합산하지 않는다.
-- 지정과목과 전공 영역의 중복 표시는 허용하지만 총학점에는 다시 더하지 않는다.
+- 편입 경로에서만 `F`, `R`, `NP`, `IP`, 성적 미확인과 재수강 삭제 기록을 취득학점 집계에서 제외한다. 일반 재학생 SQL과 공용 성적 정책은 바꾸지 않는다.
+- 과목코드를 trim·대문자로 정규화하고 같은 과목을 여러 번 더하지 않는다. 정상 수신한 빈 영역의 합계는 0이다. 코드·개인 학점·동일 시점 분류가 불완전하면 영향을 받는 합계를 null로 유지한다.
+- 취득학점은 `StudentCourse.points`를 사용하고 offering 학점으로 대체하지 않는다. 인정학점 코드 `07045`, `07046`, `00111`, `07050`은 영역 합계에서 제외하고 기존 규칙으로 별도 표시한다.
+- 전취를 전핵에 합치지 않는다. 전핵·전선 이외 영역은 `EARNED_ONLY`로 취득학점과 과목을 제공하며 면제 또는 충족을 뜻하지 않는다.
+- 총 취득학점은 `StudentAcademicRecord.totalEarnedCredits`를 유지하고 영역·인정학점·지정과목 합계로 재구성하지 않는다.
+- 지정과목의 순서·코드·명칭·원본 학점·이수 상태, 개인 취득학점 합계, 미수신과 빈 목록 구분은 기존 구현을 유지한다.
+- GPA, 복수전공 시 기존 GPA 기준, 외국어 인증도 기존 동작을 유지한다.
 
-## API 계약
+## API 계약과 미확인 상태
 
-`GET /api/graduation/progress`, `analysisType=TRANSFER`, 편입 캐시 우회와 일반 재학생의 `graduationProgress` 계약을 유지한다. 새 목록은 `transferProgress.areas`에 둔다. 일반용 `AreaProgressDto`는 변경하지 않는다.
+`GET /api/graduation/progress`, `analysisType=TRANSFER`, 편입 캐시 우회와 일반 재학생의 `graduationProgress` 계약을 유지한다. 편입 영역은 `transferProgress.areas`에 둔다.
 
-| TransferAreaProgressDto 필드 | 타입 | 의미 |
+| `TransferAreaProgressDto` 필드 | 타입 | 의미 |
 | --- | --- | --- |
 | `areaType` | `FacultyDivision` | 기존 이수구분이다. |
 | `evaluationType` | `TransferAreaEvaluationType` | `COMPARISON`, `EARNED_ONLY`, `UNAVAILABLE`다. |
 | `earnedCredits` | nullable `Integer` | 영역 전체 실제 취득학점이다. |
-| `countedCredits` | nullable `Integer` | 비교 대상에 포함되는 취득학점이다. 학점 전용 영역은 null이다. |
-| `requiredCredits` | nullable `BigDecimal` | 검증한 필요학점이다. |
-| `fulfilled` | nullable `Boolean` | 비교 대상의 충족 여부다. |
-| `courses` | `List<CourseDto>` | 기존 과목 표시 계약을 재사용한 전체 이수 목록이다. |
-| `requiredCourses` | `List<DesignatedCourseProgressDto>` | 전핵 대상 목록과 이수 상태다. 지정과목과 표현만 재사용하며 원천은 별개다. |
-| `unavailableReasons` | `List<String>` | 아래 문서화한 코드만 사용한다. |
+| `countedCredits` | nullable `Integer` | 전핵·전선 비교에 쓰는 취득학점이며 `earnedCredits`와 같다. 기타 영역은 null이다. |
+| `requiredCredits` | nullable `BigDecimal` | 정규 코호트 요구학점의 정확한 절반이다. |
+| `fulfilled` | nullable `Boolean` | 전핵·전선 학점 기준의 충족 여부다. |
+| `courses` | `List<CourseDto>` | 해당 영역의 유효 이수 과목 목록이다. |
+| `requiredCourses` | `List<DesignatedCourseProgressDto>` | 호환성 유지 필드이며 현재 정책에서는 항상 빈 목록이다. |
+| `unavailableReasons` | `List<String>` | 기준 또는 개인 데이터 미확인 사유다. |
 
-영역 사유는 `CURRICULUM_YEAR_UNVERIFIED`, `CORE_CURRICULUM_UNAVAILABLE`, `ELECTIVE_REQUIREMENT_UNAVAILABLE`, `TRANSFER_POLICY_UNVERIFIED`, `COURSE_DATA_INCOMPLETE`로 제한한다.
+기존 사유 문자열의 API 호환성을 유지한다. `CORE_CURRICULUM_UNAVAILABLE`은 이제 “적용 코호트의 전핵 요구학점을 조회할 수 없음”을 뜻하고, `ELECTIVE_REQUIREMENT_UNAVAILABLE`은 전선 요구학점 부재를 뜻한다. `COURSE_DATA_INCOMPLETE`는 개인 이수 데이터가 불완전함을 뜻한다. 한 영역의 사유를 다른 영역에 전파하지 않는다.
 
-`EARNED_ONLY`는 의도적으로 기준 비교를 하지 않는 상태이며 면제가 아니다. `UNAVAILABLE`은 전핵·전선 비교 근거가 없는 상태다. 교양 개인 학점이 누락되면 `EARNED_ONLY`를 유지하고 합계 null·데이터 사유를 반환한다. 검증한 기준이 있는 `COMPARISON`에서도 개인 데이터가 미확인이면 비율과 충족을 확정하지 않는다. 알려진 미이수 과목이 있으면 전핵 `fulfilled=false`, 판단 근거가 부족하면 null이다.
-
-기존 `analysisStatus=MANUAL_REVIEW_REQUIRED`는 전체 졸업 자격을 확정하지 않는 편입 부분 진단 의미로 유지한다. 영역 계산이 완료됐다고 전체를 `CALCULATED`로 바꾸지 않는다. `manualReviewRequired`는 학교 확인이 남는다는 의미이며 수동 입력 API를 요구하지 않는다. 계산으로 해소된 전핵·전선 수동 사유는 제거한다.
-
-`transferProgress`에 `areas`, nullable `designatedEarnedCredits`, `designatedCreditUnavailableReasons`를 추가한다. 지정과목 사유는 `SNAPSHOT_NOT_RECEIVED`, `COURSE_DATA_INCOMPLETE`다. 인정학점 미확인은 기존 수동 사유에 `RECOGNIZED_CREDITS_INCOMPLETE`를 추가한다.
-
-안내 문구는 “편입생은 개인별 적용 조건이 달라 전핵·전선은 기준 대비 이수 현황을, 나머지 영역은 취득학점만 제공합니다. 최종 졸업요건은 학과에 확인해 주세요.”로 제안한다. 문구·최상단 배치·드롭다운은 프론트가 담당하며 백엔드에 화면 설정 시스템을 만들지 않는다.
-
-## 기존 feat/341 구현의 처리
-
-`adb44c55` 전체 revert나 `dev` 파일 일괄 복원 대신 파일별 후속 변경으로 조정한다.
-
-| 기존 구현 | 후속 구현 시 처리 |
-| --- | --- |
-| `majorCoreProgress`, `majorElectiveProgress` | `areas`로 통합하고 미배포·미사용 확인 후 중복 필드를 제거한다. |
-| `graduationEligible`, 등록학기·졸업심사·지정과목 전체 충족 필드 | 최종 판정 결합을 제거한다. 필드 삭제 전 사용 여부를 확인한다. |
-| `PATCH /api/graduation/transfer/manual-review` | 미배포·미사용 확인 후 controller/docs/request/service 경로와 전용 테스트만 제거한다. |
-| 엔티티의 수동값 필드 | 분석에서 사용하지 않는다. 저장 데이터는 삭제하지 않고 불필요한 엔티티 정리로 범위를 넓히지 않는다. |
-| `V14__add_transfer_manual_graduation_fields.sql` | 원문과 nullable 컬럼 보존이 기본안이다. 무단 DROP·rollback·수정하지 않는다. |
-| 새 교육과정 DB 구조 | 필요할 때 최신 migration 다음 번호로 추가한다. 현재 마지막은 V14이나 구현 시 다시 확인한다. |
-
-기존 API가 사용 중이면 삭제 전에 필요한 호환 이행을 이 문서에 확정한다. 이 확인은 문서 작성이나 독립 집계 작업의 차단 조건이 아니다.
+`analysisStatus=MANUAL_REVIEW_REQUIRED`는 편입 부분 진단이 최종 졸업 자격을 확정하지 않는다는 의미로 유지한다. 3학년 편입 정책을 명시적으로 적용하므로 `TRANSFER_ENTRY_GRADE_UNKNOWN`을 항상 추가하던 동작은 제거한다. 기준 부재에 따른 기존 전핵·전선 수동 확인 사유는 해당 영역이 `UNAVAILABLE`일 때만 남긴다.
 
 ## 완료 조건과 Wiki
 
-1. 적용 학번·전핵 전체 목록의 출처와 완전성, 전선 50%·소수 정책 근거가 있다.
-2. 전핵 미이수 과목을 식별하고 전선 경계값을 정확히 계산한다.
-3. 교양·전취를 면제로 처리하지 않고 기준표 밖의 실제 영역도 표시한다.
-4. 성적·재수강·중복·코드 충돌·null 학점에서 영역과 지정과목 집계가 일관된다.
-5. 지정과목 미수신·빈 목록·중복 표시를 구분하고 총학점은 포털 누적값 그대로다.
-6. 기준 누락이 확인 가능한 이수 현황까지 차단하지 않는다.
-7. 일반 재학생 API·계산·캐시와 기존 총학점·GPA·외국어 인증을 보존한다.
-8. API 배포·V14 검토 결과와 단위·통합·계약·실제 API 검증 증거가 계획에 기록돼 있다.
+이번 연결 작업과 별도로, 기존 `TransferCourseEvaluator`에서 동일 학기의 원점수가 다른 상충 수강 기록을 놓칠 수 있는 문제는 남아 있다. 이 문서의 유효 이수 원칙을 모든 상충 데이터에 대해 완전히 검증했다는 의미는 아니다.
 
-Wiki `master`의 `16fac8d`에서 편입생 계약을 확인했다. 구현 완료 시 `API-and-Authentication`, `Core-Domain-Flows`, `Troubleshooting`을 갱신하고 schema 추가 시 `Project-Architecture`도 갱신한다. 문서 작성 단계에서는 운영 Wiki를 바꾸지 않는다.
+1. 2026년 편입생이 2024년 학과 요건을 조회하고, 학과 개편 별칭도 기존 resolver를 통해 해석한다.
+2. 전핵과 전선 요구학점의 정확한 50%를 독립적으로 계산하며 홀수 기준도 반올림하지 않는다.
+3. 취득학점이 기준 미만·같음·초과일 때 `fulfilled`가 각각 false·true·true다.
+4. 한 영역 기준이 누락돼도 다른 영역과 기타 취득학점·지정과목·총학점·GPA·외국어 인증을 제공한다.
+5. 같은 영역의 동일 기준 중복은 허용하고 상충 기준 중복은 해당 영역만 `UNAVAILABLE`로 둔다.
+6. 연도·주전공·요건이 없거나 복수전공이면 지원하지 않는 기준만 `UNAVAILABLE`로 남는다.
+7. 전핵 과목 목록을 만들거나 `requiredCourses`에 추정 데이터를 넣지 않는다.
+8. 일반 재학생 API·계산·캐시가 회귀하지 않으며 실행 중인 `/v3/api-docs`와 인증 GET으로 실제 계약을 확인한다.
+9. 구현 diff와 검증 증거를 독립 Sol 검토자가 확인하고, 관련 Wiki를 실제 동작과 일치시킨다.
+
+구현 완료 시 Wiki `master`의 `API-and-Authentication`, `Core-Domain-Flows`, `Troubleshooting`을 갱신한다. DB schema는 바뀌지 않으므로 `Project-Architecture` 갱신은 필요하지 않다.
 
 ## 결정 기록
 
 - 2026-09-06. 노션 우선, 전체 졸업 판정·수동 입력 제외, 편입 전용 영역 DTO와 유효 이수 집계를 선택했다.
-- 2026-09-06. 기준 연도·전핵 원천·전선 소수 정책·API 배포·V14 적용은 미확인이다. 의존 작업의 근거 확보 단계로 계획에 명시했다.
-- 2026-09-07. `TransferCourseEvaluator`가 유효 수강 기록을 한 번 정규화하고 영역·지정과목 평가기가 같은 결과를 소비하도록 연결했다. 전핵·전선 기준 입력은 원천 확인 전까지 `UNAVAILABLE`로 반환한다.
-- 2026-09-07. `graduationEligible` 등 최종 판정 필드와 편입생 수동 PATCH·쓰기 서비스 경로를 제거하고 V14 엔티티·migration은 보존했다. Java 17 기준 `check`와 관련 API 계약 테스트를 통과했다.
-- 2026-09-07. `feat/341` 원격 브랜치와 연결된 PR이 없는 것을 확인해 해당 계약을 브랜치 전용으로 보고 수동 PATCH 제거를 진행했다. 운영 배포·프론트 소비 여부 자체는 아직 확인하지 않았다.
+- 2026-09-07. `TransferCourseEvaluator`가 유효 수강 기록을 한 번 정규화하고 영역·지정과목 평가기가 같은 결과를 소비하도록 연결했다. 전핵·전선 기준 입력은 원천 결정 전까지 `UNAVAILABLE`로 반환했다.
+- 2026-09-07. 최종 판정 필드와 편입생 수동 PATCH·쓰기 서비스 경로를 제거하고 V14 엔티티·migration은 보존했다. Java 17 기준 `check`와 관련 API 계약 테스트를 통과했다.
+- 2026-09-08. 이전의 “적용 교육과정 연도 미확인”과 “3·4학년 전핵 전체 과목 목록 필수” 결정을 폐기했다. 3학년 편입 연도에서 2를 뺀 정규 코호트의 `department_area_requirements` 전핵·전선 학점을 각각 정확히 50% 적용하는 정책으로 대체했다.
+- 2026-09-08. 복수전공 편입 정책은 근거 없이 확장하지 않으며 후속 정책 확인 대상으로 남겼다.
 - 문서 검사와 후속 구현 증거는 [계획의 실행 기록](plan.md#실행-기록)에 기록한다.

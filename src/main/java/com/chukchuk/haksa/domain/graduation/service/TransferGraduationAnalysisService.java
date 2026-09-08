@@ -6,6 +6,7 @@ import com.chukchuk.haksa.domain.academic.record.model.StudentAcademicRecord;
 import com.chukchuk.haksa.domain.academic.record.model.StudentCourse;
 import com.chukchuk.haksa.domain.academic.record.repository.StudentCourseRepository;
 import com.chukchuk.haksa.domain.academic.record.service.StudentAcademicRecordService;
+import com.chukchuk.haksa.domain.graduation.dto.AreaRequirementDto;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
 import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.GraduationProgressResponse;
@@ -13,11 +14,16 @@ import com.chukchuk.haksa.domain.graduation.dto.TransferAreaProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.TransferGraduationProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.TransferManualReviewReason;
 import com.chukchuk.haksa.domain.graduation.policy.DesignatedCourseEvaluator;
+import com.chukchuk.haksa.domain.graduation.policy.GraduationMajorResolver;
+import com.chukchuk.haksa.domain.graduation.policy.MajorResolutionResult;
 import com.chukchuk.haksa.domain.graduation.policy.TransferAreaEvaluator;
 import com.chukchuk.haksa.domain.graduation.policy.TransferCourseEvaluator;
+import com.chukchuk.haksa.domain.graduation.repository.GraduationQueryRepository;
 import com.chukchuk.haksa.domain.student.model.Student;
 import com.chukchuk.haksa.domain.student.model.StudentDesignatedCourse;
 import com.chukchuk.haksa.domain.student.repository.StudentDesignatedCourseRepository;
+import com.chukchuk.haksa.global.exception.code.ErrorCode;
+import com.chukchuk.haksa.global.exception.type.CommonException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +50,8 @@ public class TransferGraduationAnalysisService {
   private final DesignatedCourseEvaluator designatedCourseEvaluator;
   private final TransferCourseEvaluator transferCourseEvaluator;
   private final TransferAreaEvaluator transferAreaEvaluator;
+  private final GraduationMajorResolver graduationMajorResolver;
+  private final GraduationQueryRepository graduationQueryRepository;
 
   /**
    * 편입생의 현재 데이터로 계산 가능한 이수 현황을 API 응답으로 변환한다.
@@ -82,8 +90,7 @@ public class TransferGraduationAnalysisService {
     }
 
     List<TransferAreaProgressDto> areas =
-        transferAreaEvaluator.evaluate(
-            courseEvaluation, TransferAreaEvaluator.Requirements.unavailable());
+        transferAreaEvaluator.evaluate(courseEvaluation, resolveRequirements(student));
     if (areas == null) {
       areas = List.of();
     }
@@ -134,10 +141,54 @@ public class TransferGraduationAnalysisService {
   private List<TransferManualReviewReason> baseManualReviewReasons() {
     return new ArrayList<>(
         List.of(
-            TransferManualReviewReason.TRANSFER_ENTRY_GRADE_UNKNOWN,
             TransferManualReviewReason.REGISTERED_SEMESTERS_NOT_VERIFIED,
             TransferManualReviewReason.MINOR_OR_LINKED_MAJOR_NOT_ASSESSABLE,
             TransferManualReviewReason.GRADUATION_REVIEW_NOT_AVAILABLE));
+  }
+
+  private TransferAreaEvaluator.Requirements resolveRequirements(Student student) {
+    Integer transferYear =
+        student.getAcademicInfo() == null ? null : student.getAcademicInfo().getAdmissionYear();
+    if (transferYear == null
+        || transferYear <= 2
+        || (student.getMajor() == null && student.getDepartment() == null)
+        || student.getSecondaryMajor() != null) {
+      return TransferAreaEvaluator.Requirements.unavailable();
+    }
+
+    int curriculumYear = transferYear - 2;
+    List<AreaRequirementDto> requirements;
+    try {
+      MajorResolutionResult major = graduationMajorResolver.resolve(student, curriculumYear);
+      requirements =
+          graduationQueryRepository.getAreaRequirementsWithCache(
+              major.primaryMajorId(), curriculumYear);
+    } catch (CommonException exception) {
+      if (!ErrorCode.GRADUATION_REQUIREMENTS_DATA_NOT_FOUND.code().equals(exception.getCode())) {
+        throw exception;
+      }
+      return TransferAreaEvaluator.Requirements.unavailable();
+    }
+
+    BigDecimal coreCredits = halfRequiredCredits(requirements, "전핵");
+    BigDecimal electiveCredits = halfRequiredCredits(requirements, "전선");
+    return new TransferAreaEvaluator.Requirements(
+        coreCredits,
+        electiveCredits,
+        coreCredits == null ? List.of("CORE_CURRICULUM_UNAVAILABLE") : List.of(),
+        electiveCredits == null ? List.of("ELECTIVE_REQUIREMENT_UNAVAILABLE") : List.of());
+  }
+
+  private BigDecimal halfRequiredCredits(List<AreaRequirementDto> requirements, String area) {
+    List<Integer> credits =
+        requirements.stream()
+            .filter(requirement -> area.equals(requirement.areaType().trim()))
+            .map(AreaRequirementDto::requiredCredits)
+            .distinct()
+            .toList();
+    return credits.size() == 1
+        ? BigDecimal.valueOf(credits.get(0)).multiply(new BigDecimal("0.5"))
+        : null;
   }
 
   private void addUnavailableAreaReasons(

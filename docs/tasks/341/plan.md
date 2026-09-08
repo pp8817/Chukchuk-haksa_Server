@@ -1,240 +1,119 @@
 # 편입생 영역별 학점 및 지정과목 이수 현황 구현 계획
 
-> **For agentic workers:** 구현 착수 시 `superpowers:executing-plans`를 사용한다. 겹치는 서비스·DTO를 순서대로 변경하므로 기본 실행은 단일 구현 흐름이며 저장소의 위험도별 검토 규칙을 따른다.
+> **For agentic workers:** REQUIRED SUB-SKILL: 구현 착수 시 `superpowers:executing-plans`를 사용한다. 서비스와 평가기의 한 코드 경로를 순서대로 바꾸므로 단일 구현 흐름으로 진행하고, 완료 전 독립 Sol 검토를 수행한다.
 
-**Goal:** 노션 기준으로 전핵·전선 비교, 나머지 영역 취득학점, 지정과목 이수 현황을 완성한다.
+**Goal:** 3학년 편입생에게 편입 연도보다 2년 앞선 정규 코호트의 전핵·전선 요구학점 50%를 적용해 영역별 학점 현황을 제공한다.
 
-**Architecture:** 기존 편입 분기에서 수강 기록을 한 번 조회하고 편입 전용 정책으로 정규화한다. 검증한 교육과정과 결합해 `transferProgress.areas`를 만들고 동일한 이수 근거로 지정과목·인정학점을 계산한다. 일반 재학생 계산은 유지한다.
+**Architecture:** `TransferGraduationAnalysisService`가 기존 `GraduationMajorResolver`와 `GraduationQueryRepository`로 적용 코호트의 학과 요건을 조회해 `TransferAreaEvaluator.Requirements`로 변환한다. 평가기는 전핵·전선을 동일한 학점 비교 방식으로 계산하고, 기준이 없는 영역만 `UNAVAILABLE`로 둔다. 기존 유효 이수·지정과목·총학점·GPA·외국어 인증과 일반 재학생 경로는 유지한다.
 
-**Tech Stack:** Java 17, Spring Boot 3.2.5, Gradle, PostgreSQL, Flyway, JUnit 5, AssertJ, Mockito, Springdoc.
+**Tech Stack:** Java 17, Spring Boot 3.2.5, Gradle, PostgreSQL, JUnit 5, AssertJ, Mockito, Springdoc.
 
-**Spec:** [design.md](design.md). 요구사항 우선순위, 계산 규칙과 미확인 사항의 단일 기준이다.
+**Spec:** [design.md](design.md).
 
 ## 공통 제약
 
-- 현재 기준 브랜치는 `feat/341`, 시작 커밋은 `adb44c55`, 비교 기준 `dev`는 `461abd38`다.
-- 최종 졸업 판정·추가 졸업심사·수동 입력 기능은 제외한다. 기존 총학점·GPA·외국어 인증과 일반 재학생 동작은 보존한다.
-- 개인 학점 누락을 offering 학점·0으로 대체하지 않고, 기준을 추정하지 않는다. 전취를 전핵에 합산하지 않는다.
-- 기존 migration은 수정·삭제·rollback하지 않는다. 새 migration은 구현 당시 마지막 version 다음 번호다.
-- 사용자 변경과 기존 커밋을 보존하고 전체 revert·reset·파일 일괄 복원을 하지 않는다.
-- 커밋은 `341 {type}: {한국어 메시지}` 형식을 사용한다. 새 Java·SQL 소스에는 한국어 역할 주석을 두며 Java 스타일 문서를 따른다.
-- 문서 작업은 LOW다. 후속 제품 구현은 공개 API·도메인 기준·필요 시 migration을 다루므로 HIGH로 취급한다. 관련 테스트와 실제 사용 검증 후 독립 Sol 검토를 수행한다. 코드 리뷰 전 저장소 규칙에 따라 리뷰 그래프를 확인한다.
-- 교육과정 원천을 확인하기 전에는 전핵·전선 비교를 완료 처리하지 않는다. 확인 전 구현은 이수 현황과 `UNAVAILABLE` 상태만 제공한다.
+- 현재 브랜치는 `feat/341`이다.
+- 지원 정책은 3학년 편입이다. 저장된 입학/편입 연도에서 2를 뺀 값을 `cohortYear`로 사용하며, 동기화 뒤 현재 `gradeLevel`이 4로 바뀌어도 이 계산은 달라지지 않는다. 2026년 편입은 2024년 요건을 사용한다.
+- `department_area_requirements`와 기존 캐시 조회만 사용한다. DB schema와 migration은 변경하지 않는다.
+- 전핵·전선은 각각 정규 코호트 요구학점의 정확한 50%를 `BigDecimal`로 계산하며 반올림하지 않는다.
+- 전핵 전체 과목 목록은 만들지 않는다. 공개 `requiredCourses`는 호환성을 위해 빈 목록을 유지한다.
+- 최종 졸업 판정·추가 졸업심사·수동 입력 기능은 제외한다. 기존 총학점·GPA·외국어 인증, 지정과목, 기타 영역 취득학점과 일반 재학생 동작을 보존한다.
+- 복수전공에는 단일전공 절반 정책을 확장하지 않는다. 적용 근거가 추가되기 전까지 전핵·전선 기준만 `UNAVAILABLE`로 둔다.
+- 요구사항 부재로 바꾸는 예외는 `GRADUATION_REQUIREMENTS_DATA_NOT_FOUND`뿐이다. 다른 예외는 삼키지 않는다.
+- 후속 제품 구현은 공개 API와 도메인 기준을 다루므로 HIGH로 검증한다. 코드 리뷰 그래프를 확인하고 실제 API 검증 뒤 구현에 참여하지 않은 Sol 리뷰를 받는다.
+- 커밋은 `341 {type}: {한국어 메시지}` 형식을 사용한다.
 
 ## 파일 경계
 
-아래 경로는 저장소 루트 기준이다. 새 파일은 예정 경로이며 아직 생성하지 않았다. 뒤의 Task에서 축약 파일명은 이 표의 전체 경로를 가리킨다.
-
 | 처리 | 파일 | 역할 |
 | --- | --- | --- |
-| 추가 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferAreaProgressDto.java` | 설계의 영역별 응답이다. |
-| 추가 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferAreaEvaluationType.java` | COMPARISON·EARNED_ONLY·UNAVAILABLE를 구분한다. |
-| 추가 | `src/main/java/com/chukchuk/haksa/domain/graduation/policy/TransferCourseEvaluator.java` | 유효 이수·중복·누락을 정리한다. 결과 record는 이 파일에 둔다. |
-| 추가 | `src/main/java/com/chukchuk/haksa/domain/graduation/policy/TransferAreaEvaluator.java` | 기준과 이수 내역을 영역 응답으로 변환한다. 기준 입력 record는 이 파일에 둔다. |
-| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/policy/DesignatedCourseEvaluator.java` | 같은 이수 근거로 지정과목 합계를 계산한다. |
-| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisService.java` | 조회·기준 해석·응답 조립을 담당한다. |
-| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferGraduationProgressDto.java` | areas·지정과목 합계·누락 사유를 추가한다. |
-| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/GraduationProgressResponse.java` | 편입 부분 진단 envelope을 유지한다. |
-| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferManualReviewReason.java` | 해소된 사유와 인정학점 미확인 사유를 정확히 표현한다. |
-| 조건부 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/controller/GraduationController.java` | 미배포 확인 후 수동 PATCH를 제거한다. |
-| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/controller/docs/GraduationControllerDocs.java` | 실제 최종 API 계약을 문서화한다. |
-| 조건부 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/service/StudentGraduationProgressService.java` | 미배포 확인 후 수동 입력 서비스 경로를 제거한다. |
-| 조건부 삭제 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferManualReviewRequest.java`, `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferRequirementProgressDto.java` | 후속 구현으로 사용처가 없어진 경우만 삭제한다. |
+| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisService.java` | 코호트 계산, 전공 별칭 해석, 요건 조회와 `Requirements` 조립을 담당한다. |
+| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/policy/TransferAreaEvaluator.java` | 전핵 과목 목록 기준을 제거하고 전핵·전선 학점 임계값을 같은 방식으로 비교한다. |
+| 수정 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferAreaProgressDto.java` | `requiredCourses`의 호환성 필드 설명을 현재 계약에 맞춘다. |
+| 참조 | `src/main/java/com/chukchuk/haksa/domain/graduation/dto/TransferManualReviewReason.java` | 편입 학년 미확인 사유의 서비스 사용만 제거하고 enum은 호환성을 위해 보존했다. |
+| 테스트 | `src/test/java/com/chukchuk/haksa/domain/graduation/policy/TransferAreaEvaluatorTest.java` | 전핵·전선 절반 임계값과 영역별 누락을 검증한다. |
+| 테스트 | `src/test/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisServiceTests.java` | 2026→2024 조회, resolver·repository 연결, 예외·누락·복수전공 처리를 검증한다. |
+| 테스트 | `src/test/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisIntegrationTest.java` | 실제 repository를 포함한 편입 응답과 일반 경로 회귀를 검증한다. |
+| 테스트 | `src/test/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationProgressHttpIntegrationTest.java` | random port와 JWT로 실제 `/v3/api-docs`와 졸업 진행 GET을 검증한다. |
+| 테스트 | `src/test/java/com/chukchuk/haksa/domain/graduation/controller/GraduationControllerApiIntegrationTest.java`, `src/test/java/com/chukchuk/haksa/global/config/OpenApiResponseContractTest.java` | 실제 HTTP 응답과 OpenAPI 계약을 검증한다. |
 
-전핵 참조 저장·조회 파일과 migration은 Task 1에서 실제 원천을 확인해 확정한다. 가상 저장소·빈 데이터 공급자를 제품에 먼저 추가하지 않는다.
+새 저장소, 새 정책 서비스, 새 테이블은 추가하지 않는다.
 
-## Task 1. 원천과 기존 배포 계약을 확인한다.
+## Task 1. 전핵·전선 학점 비교 정책을 고정한다.
 
-**Files:** 이 계획과 설계, 설계의 코드 근거 표에 있는 포털 mapper·학과 요건, `src/main/java/com/chukchuk/haksa/domain/graduation/policy/GraduationMajorResolver.java`, `src/main/resources/db/migration/V14__add_transfer_manual_graduation_fields.sql`.
+**Files:** `TransferAreaEvaluatorTest.java`, `TransferAreaEvaluator.java`, `TransferAreaProgressDto.java`.
 
-**산출물:** 근거 URL·적용 범위·익명화 fixture·결정 내용과 필요한 실제 파일 목록을 두 문서에 기록한다.
+**입출력:** `Requirements`는 nullable `BigDecimal coreRequiredCredits`, nullable `BigDecimal electiveRequiredCredits`, 영역별 미확인 사유를 가진다. `evaluate`는 두 영역의 개인 취득학점을 각 임계값과 비교한다.
 
-- [ ] 포털 입학연도·학번·학과와 학교 적용 교육과정 연도를 대조해 검증한 규칙을 기록한다. 개인정보 원문은 문서에 넣지 않는다.
-- [ ] 기존 운영 자료부터 확인해 학과·학번별 3·4학년 전핵 코드·학점·목록 완전성을 검증한다. 전핵이 없다는 확인과 자료가 없다는 상태를 구분한다.
-- [ ] 전선 기준학점·소수 정책·편입 유형과 복수전공 적용 범위를 확인한다. 단일전공 기준을 다른 유형에 자동 적용하지 않는다.
-- [ ] 참조 저장소가 필요하면 최소 schema·조회 계약과 실제 소스·migration·테스트 경로를 설계와 계획에 추가한다. 기존 자료로 해결되면 신규 테이블을 만들지 않는다.
-- [ ] 수동 PATCH와 최종 판정 필드의 배포·소비 여부, V14 적용 이력을 확인한다. 비밀값 없이 버전·적용 여부만 기록한다.
-- [ ] 비교 근거 미확인이면 Task 5만 보류하고 Task 2~4는 진행한다. API 배포 미확인이면 Task 6의 삭제만 보류한다.
+- [x] 전핵과 전선의 기준 미만·같음·초과가 false·true·true인지 테스트한다.
+- [x] 홀수 원래 요구학점의 절반을 반올림하지 않고 `BigDecimal` 소수로 유지하는 테스트를 추가한다.
+- [x] 전핵 또는 전선 기준이 하나만 없을 때 해당 영역만 `UNAVAILABLE`인지 검증한다.
+- [x] 기타 영역은 `EARNED_ONLY`이고 전취가 전핵에 합쳐지지 않는 기존 동작을 유지한다.
+- [x] `Requirements.coreCourses`와 `RequiredCourse`를 제거하고 전핵·전선에 같은 학점 비교 규칙을 적용한다. 두 영역의 `requiredCourses`는 빈 목록이다.
+- [x] `TransferAreaProgressDto.requiredCourses`의 Springdoc 설명을 호환성 유지 빈 목록으로 고친다.
+- [x] 관련 정책 테스트를 통과시킨다.
 
-**검증:** 적용 연도가 다른 사례, 기준 누락 사례, 검증된 빈 전핵 목록을 근거와 대조한다. 운영 자료에 접근하지 못한 것을 원천 부재로 기록하지 않는다.
+## Task 2. 적용 코호트 요건을 서비스에 연결한다.
 
-**커밋:** 근거와 결정이 추가됐을 때 `341 docs: 편입생 교육과정 기준과 적용 범위 확정`으로 기록한다.
+**Files:** `TransferGraduationAnalysisService.java`, `TransferGraduationAnalysisServiceTests.java`, 기존 resolver·repository 테스트.
 
-## Task 2. 편입 전용 응답 계약을 고정한다.
+**입출력:** private 요건 조회 메서드는 `Student`를 받아 `Requirements`를 반환한다. 성공 경로는 `admissionYear - 2`, resolver가 반환한 primary major ID, `getAreaRequirementsWithCache` 결과를 사용한다.
 
-**Files:** 새 영역 DTO·enum, 편입 DTO·envelope, `src/test/java/com/chukchuk/haksa/domain/graduation/dto/GraduationProgressResponseJsonTest.java`, `src/test/java/com/chukchuk/haksa/global/config/OpenApiResponseContractTest.java`.
+- [x] 입학/편입 연도 2026인 단일전공 학생이 2024 요건을 조회하는 테스트를 추가한다.
+- [x] 기존 `GraduationMajorResolver`를 통해 `establishedDepartmentName` 별칭 후보의 요건을 조회하는 통합 테스트를 추가한다.
+- [x] 전핵·전선 원래 요구학점을 각각 정확한 절반으로 `Requirements`에 전달한다.
+- [x] 전핵 또는 전선 행이 없을 때 다른 영역 기준을 보존하는 테스트를 추가한다.
+- [x] 같은 영역에 같은 요구학점 행이 중복되면 그 기준을 사용하고, 서로 다른 요구학점이 중복되면 해당 영역만 `UNAVAILABLE`인지 DB 통합 테스트로 검증한다.
+- [x] 학적 연도·주전공·요건이 없을 때 응답을 유지하고 전핵·전선을 `UNAVAILABLE`로 둔다.
+- [x] 복수전공에는 단일전공 요건을 적용하지 않고 기존 나머지 계산을 유지한다.
+- [x] `GRADUATION_REQUIREMENTS_DATA_NOT_FOUND`만 unavailable로 변환하고 다른 예외는 전파한다.
+- [x] `Requirements.unavailable()` 고정 전달을 실제 조회 결과로 교체한다.
+- [x] 항상 추가하던 `TRANSFER_ENTRY_GRADE_UNKNOWN` 수동 확인 사유를 제거한다.
+- [x] 관련 서비스·resolver·repository 테스트를 통과시킨다.
 
-**입출력:** 기존 응답에 `areas`, `designatedEarnedCredits`, `designatedCreditUnavailableReasons`를 추가한다. 타입·사유 코드는 설계의 API 표를 따른다.
+## Task 3. 통합·공개 API·일반 재학생 회귀를 검증한다.
 
-- [x] 기존 편입 fixture에 아래 직렬화 사례를 추가한다. 일반 학생의 `transferProgress` 미노출 assertion을 유지한다.
+**Files:** 편입 통합 테스트, controller API 통합 테스트, OpenAPI 계약 테스트, controller docs, 이 계획의 실행 기록.
 
-```json
-{
-  "areaType": "전취",
-  "evaluationType": "EARNED_ONLY",
-  "earnedCredits": 0,
-  "countedCredits": null,
-  "requiredCredits": null,
-  "fulfilled": null,
-  "courses": [],
-  "requiredCourses": [],
-  "unavailableReasons": []
-}
-```
+- [x] 테스트 DB의 2024 `department_area_requirements`로 2026 편입생이 2024 기준 절반을 반환하는 통합 테스트를 추가한다.
+- [x] 전핵 또는 전선 행을 하나씩 누락한 fixture로 영역별 독립 `UNAVAILABLE`을 검증한다.
+- [x] 비편입 학생의 기존 계산 경로 회귀 테스트를 유지하고 실행한다.
+- [x] random port 애플리케이션과 JWT를 사용해 실제 `/v3/api-docs`와 `GET /api/graduation/progress` HTTP 경로를 검증한다.
+- [x] JSON·Springdoc 계약에서 `requiredCourses`가 빈 목록이며 현재 전핵 학점 비교 의미로 설명되는지 검증한다.
+- [x] `./gradlew spotlessApply --no-daemon` 후 요청 범위 밖 포맷 변경이 없는지 확인한다.
+- [x] `./gradlew check --stacktrace --no-daemon`을 최종 통과시킨다.
+- [x] 코드 리뷰 그래프를 확인하고 구현 diff·테스트·실제 API 증거를 구현에 참여하지 않은 Sol 리뷰어에게 제공한다. 차단사항을 수정한 뒤 영향받는 검증과 최종 `check`를 다시 실행한다.
 
-```java
-JsonNode area = json.path("transferProgress").path("areas").get(0);
-assertThat(area.path("evaluationType").asText()).isEqualTo("EARNED_ONLY");
-assertThat(area.path("requiredCredits").isNull()).isTrue();
-assertThat(area.path("fulfilled").isNull()).isTrue();
-assertThat(json.path("analysisStatus").asText()).isEqualTo("MANUAL_REVIEW_REQUIRED");
-```
+## Task 4. Wiki와 완료 증거를 갱신한다.
 
-- [ ] `./gradlew test --tests '*GraduationProgressResponseJsonTest' --tests '*OpenApiResponseContractTest' --no-daemon`으로 새 계약이 없어 실패함을 확인한다.
-- [x] DTO·enum·nullable 필드를 추가한다. 기존 dev 계약을 유지하고 브랜치 전용 필드 삭제는 Task 6에서 수행한다.
-- [x] COMPARISON·UNAVAILABLE, null 합계·실제 0, 일반 응답도 같은 명령으로 검증한다.
-- [ ] `341 feat: 편입생 영역별 이수 현황 응답 계약 추가`로 커밋한다.
+**Files:** 별도 Wiki 저장소 `master`의 `API-and-Authentication.md`, `Core-Domain-Flows.md`, `Troubleshooting.md`, 이 계획의 실행 기록.
 
-## Task 3. 편입 유효 이수 기록을 일관되게 정리한다.
-
-**Files:** `TransferCourseEvaluator.java`, `DesignatedCourseEvaluator.java`, 새 `src/test/java/com/chukchuk/haksa/domain/graduation/policy/TransferCourseEvaluatorTest.java`, 기존 `src/test/java/com/chukchuk/haksa/domain/graduation/policy/DesignatedCourseEvaluatorTest.java`.
-
-**입출력:** `TransferCourseEvaluator.evaluate(List<StudentCourse>)`는 nested `Evaluation`을 반환한다. 결과에는 코드별 유효 기록, 영역별 전체 목록, nullable 인정학점 합계와 영향을 받는 코드·영역의 누락 정보를 담는다. 영역과 지정과목 평가기가 같은 결과를 소비한다.
-
-- [x] 기존 `studentCourse` fixture를 참고해 등급별 제외, 재수강 삭제, 중복 코드·최신 기록, 동일 시점 충돌, 빈 코드, null·0학점을 테스트한다.
-- [ ] `./gradlew test --tests '*TransferCourseEvaluatorTest' --tests '*DesignatedCourseEvaluatorTest' --no-daemon`으로 실패를 확인한다.
-- [x] 다음 알고리즘을 편입 전용 평가기에 구현한다. 일반 SQL과 공용 성적 정책은 변경하지 않는다.
-
-```text
-유효 성적과 재수강 삭제 여부로 필터링한다.
-코드를 정규화하고 코드별로 묶는다.
-일반 과목은 최신 유효 기록을 선택하되 동시점 충돌은 미확인으로 남긴다.
-인정학점 코드는 별도로 기존 코드별 최대 유효 학점 규칙을 적용한다.
-개인 학점이 없으면 unknown을 보존하고 offering으로 대체하지 않는다.
-전체 이수 목록과 집계 결과를 함께 보관한다.
-```
-
-- [x] 지정과목 평가기가 `Evaluation`을 소비하도록 연결하고 offering fallback 테스트를 null·미확인 사유 검증으로 교체한다. 모든 호출부는 `rg`로 확인한다.
-- [x] 동일 명령을 재실행한다. 인정학점 `07045:15,18`과 `07050:17`의 합계 35를 검증하는 기존 사례도 유지한다.
-- [ ] `341 feat: 편입생 유효 이수와 학점 집계 기준 통일`로 커밋한다.
-
-## Task 4. 모든 영역과 지정과목의 취득학점을 제공한다.
-
-**Files:** `TransferAreaEvaluator.java`, `TransferGraduationAnalysisService.java`, `DesignatedCourseEvaluator.java`, 새 `src/test/java/com/chukchuk/haksa/domain/graduation/policy/TransferAreaEvaluatorTest.java`, 기존 `src/test/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisServiceTests.java`.
-
-**입출력:** `TransferAreaEvaluator.evaluate(TransferCourseEvaluator.Evaluation, TransferAreaEvaluator.Requirements)`는 `List<TransferAreaProgressDto>`를 반환한다. nested `Requirements`는 검증된 전핵 대상 목록, 전선 필요학점, 기준별 미확인 사유를 담는다. 미수신과 검증된 빈 전핵 목록을 구분한다.
-
-- [ ] 아래 사례를 테스트로 먼저 작성한다.
-
-| 입력 | 기대 결과 |
-| --- | --- |
-| 요건 표에 없는 전취 6학점·기타 2학점 | 두 영역 모두 EARNED_ONLY로 반환한다. |
-| 전핵·전선 기준 없음 | 과목·전체 취득학점은 남고 비교만 UNAVAILABLE다. |
-| 지정과목 C101 3학점이 전핵에도 포함 | 양쪽에 표시하고 누적 총학점 112는 그대로다. |
-| 지정과목 C101 원본 두 행 | 표시 순서는 보존하고 합계는 3이다. |
-| 지정목록 미수신 / 수신한 빈 목록 | 합계 null·refresh=true / 합계 0·refresh=false다. |
-| 이수한 지정과목의 개인 학점 null | 이수 상태는 유지하고 합계 null·사유를 반환한다. |
-
-- [x] `./gradlew test --tests '*TransferAreaEvaluatorTest' --tests '*TransferGraduationAnalysisServiceTests' --tests '*DesignatedCourseEvaluatorTest' --no-daemon`으로 실패를 확인한다.
-- [x] 수강 기록을 한 번 fetch한 뒤 정규화 결과를 두 평가기에 전달한다. 실제 영역과 전핵·전선의 합집합을 고정 순서로 출력한다.
-- [x] 기준이 없는 전핵·전선은 실제 사유로 UNAVAILABLE를 반환한다. 기존 전취 합산·일괄 올림·수동값 최종 판정은 새 분석 경로에서 사용하지 않는다.
-- [x] 지정과목 코드 집합과 유효 이수 기록을 교차해 합계를 계산한다. 원본 목록 학점이나 화면 합계로 총학점을 재계산하지 않는다.
-- [ ] 같은 명령을 통과시키고 `341 feat: 편입생 영역별 취득학점과 지정과목 합계 제공`으로 커밋한다.
-
-## Task 5. 검증한 전핵·전선 기준을 연결한다.
-
-**선행 조건:** Task 1의 교육과정 연도·전핵 전체 목록·전선 소수 정책 근거가 기록돼 있어야 한다. 미확인이면 이 Task와 제품 전체를 완료 표시하지 않는다.
-
-**Files:** `TransferAreaEvaluator.java`, `TransferGraduationAnalysisService.java`, Task 1에서 확정한 기준 조회 파일, `TransferAreaEvaluatorTest.java`, `src/test/java/com/chukchuk/haksa/domain/graduation/service/TransferGraduationAnalysisIntegrationTest.java`. schema를 추가하면 `src/test/java/com/chukchuk/haksa/global/db/FlywayMigrationTest.java`도 포함한다.
-
-- [ ] 다음 경계 사례를 `Requirements` fixture로 작성한다. 과목코드와 숫자는 계산 검증용 합성 값이다.
-
-| 기준·수강 | 기대 결과 |
-| --- | --- |
-| 전핵 필수 C301·C401 각 3학점, C301·기타 전핵 C999만 이수 | earned=6, counted=3, required=6, fulfilled=false다. |
-| 전핵 필수 두 과목 모두 이수, 실제 수강 연도는 다름 | 교육과정 배정 학년을 기준으로 true다. |
-| 전선 원래 기준 96, 취득 45·48·51 | 필요 48, 각각 false·true·true다. |
-| 학번 기준 연도와 포털 편입연도가 다름 | 검증한 기준 연도의 요건을 선택한다. |
-| 전핵 목록 완전성 미확인 | 빈 목록이라고 자동 완료하지 않는다. |
-| 미지원 편입 유형·복수전공 | 절반 규칙을 임의 적용하지 않고 기준 미확인과 이수 현황을 제공한다. |
-
-- [ ] `./gradlew test --tests '*TransferAreaEvaluatorTest' --tests '*TransferGraduationAnalysisIntegrationTest' --no-daemon`으로 실패를 확인한다.
-- [ ] 검증한 원천만 `Requirements`에 연결한다. 학과 개편 후보는 기존 resolver 근거를 활용하되 기준 부재가 전체 응답 예외가 되지 않게 한다.
-- [ ] 전핵은 대상 과목 전체 이수로 완료를 판정하고 countedCredits를 별도 계산한다. 대체과목은 검증된 매핑만 사용한다.
-- [ ] 전선 필요학점은 BigDecimal로 계산해 확인한 소수 정책을 적용한다. 코드 편의로 올림·절삭하지 않는다.
-- [ ] 필요한 migration은 새 version으로 추가하고 V14 원문을 보존한다. 해당 시 `./gradlew test --tests '*FlywayMigrationTest' --no-daemon`도 통과시킨다.
-- [ ] 같은 명령을 통과시키고 `341 feat: 편입생 교육과정별 전핵 전선 기준 적용`으로 커밋한다.
-
-## Task 6. 이전 전체 판정·수동 입력 계약을 정리한다.
-
-**선행 조건:** Task 1에서 미배포·미사용을 확인한 경우의 실행안이다. 사용 중이면 삭제 전에 호환 이행안을 설계에 기록하고 그 검증을 추가한다.
-
-**Files:** 파일 경계의 조건부 수정·삭제 파일, 편입 DTO·envelope·수동 사유, `src/test/java/com/chukchuk/haksa/domain/graduation/controller/GraduationControllerApiIntegrationTest.java`, `src/test/java/com/chukchuk/haksa/domain/graduation/service/StudentGraduationProgressServiceTests.java`, `src/test/java/com/chukchuk/haksa/domain/graduation/service/GraduationServiceTests.java`, JSON·OpenAPI 테스트.
-
-- [x] GET JSON에 최종 판정 필드가 없고 OpenAPI에 수동 PATCH가 없는 테스트를 먼저 추가한다.
-
-```java
-assertThat(json.path("transferProgress").has("graduationEligible")).isFalse();
-assertThat(openApi.path("paths").has("/api/graduation/transfer/manual-review")).isFalse();
-```
-
-- [ ] `./gradlew test --tests '*GraduationProgressResponseJsonTest' --tests '*GraduationControllerApiIntegrationTest' --tests '*OpenApiResponseContractTest' --tests '*StudentGraduationProgressServiceTests' --tests '*GraduationServiceTests' --no-daemon`으로 실패를 확인한다.
-- [x] 수동 PATCH·request·service 쓰기 경로, 브랜치의 전체 판정 필드·함수와 사용처 없는 DTO만 제거한다. 다른 API·동기화·엔티티 데이터는 보존한다.
-- [x] 편입 envelope의 MANUAL_REVIEW_REQUIRED 의미를 유지하고 영역 상태는 독립 제공한다. 해결된 전핵·전선 사유만 제거한다.
-- [x] V14와 nullable 컬럼을 보존한다. 새 분석이 수동 컬럼을 읽거나 사용자 입력을 요구하지 않음을 검증한다.
-- [ ] 같은 명령으로 일반 응답·캐시 분기·외국어 동기화를 검증하고 `341 refactor: 편입생 진단을 이수 현황 제공 범위로 정리`로 커밋한다.
-
-## Task 7. 실제 API와 전체 검증을 완료한다.
-
-**Files:** controller docs, OpenAPI 테스트, 실행 기록, 별도 Wiki의 `API-and-Authentication.md`, `Core-Domain-Flows.md`, `Troubleshooting.md`. 새 schema가 있으면 `Project-Architecture.md`도 포함한다.
-
-- [ ] 익명화 포털 fixture→동기화→GET 응답을 통합 테스트한다. 새로고침 후 지정과목·영역 갱신, 중복 합산 없는 총학점, 일반 재학생 회귀를 포함한다.
-- [ ] 프론트와 전핵 counted/required, 전선 earned/required, earned-only·unavailable, 지정과목 최상단·드롭다운·안내 문구를 확인한다. 이 저장소에서 프론트 소스를 수정하지 않는다.
-- [x] Java 17과 로컬 PostgreSQL 등 기존 실행 조건을 확인한다. 비밀값은 명령 출력·문서·커밋에 기록하지 않는다.
-- [x] `./gradlew spotlessApply --no-daemon`을 실행하고 요청 범위 밖의 포맷 변경이 없는지 확인한다.
-- [x] `./gradlew check --stacktrace --no-daemon`을 통과시킨다. 실패나 환경 제한은 실제 오류·영향·재검증 결과를 기록한다.
-- [ ] 로컬 앱을 실행하고 별도 터미널에서 OpenAPI를 조회한다.
-
-```bash
-./gradlew bootRun --args='--spring.profiles.active=local' --no-daemon
-```
-
-```bash
-curl --fail --silent http://localhost:8080/v3/api-docs
-```
-
-- [ ] 실제 schema에서 areas·세 가지 상태·nullable 숫자·지정과목 합계·일반 응답을 확인한다. 미배포 수동 PATCH와 최종 판정 필드가 없어야 한다. 실제 인증 GET도 익명화한 로컬 테스트 계정으로 검증한다.
-- [ ] Wiki를 실제 동작과 일치하게 갱신하고 변경 커밋과 대상 문서를 기록한다.
-- [ ] 관련 증거와 diff를 독립 Sol 검토에 제공한다. 성공 기준 차단사항을 수정하고 영향받는 검증을 재실행한다. 반복 실패 시 저장소 재검토 제한을 따른다.
-- [ ] `git diff --check`, 변경 범위·문서 링크 검토 후 `341 docs: 편입생 이수 현황 API와 검증 결과 기록`으로 커밋한다.
+- [x] Wiki에 3학년 편입 코호트 계산, 전핵·전선 각각 50%, 정확한 소수 임계값, `requiredCourses=[]`, 영역별 `UNAVAILABLE`, 최종 졸업 판정 제외를 기록한다.
+- [x] 복수전공 편입 정책이 확인되지 않아 전핵·전선 비교를 제공하지 않는 현재 제한을 기록한다.
+- [x] `git diff --check`와 문서 링크·변경 범위를 검토하고 실제 명령, 결과, 독립 리뷰 결론, Wiki 커밋을 실행 기록에 남긴다.
 
 ## 성공 기준 추적
 
-| 설계의 성공 기준 | Task |
+| 설계 성공 기준 | Task |
 | --- | --- |
-| 적용 학번·전핵 전체 목록·전선 소수 정책 근거 | 1, 5 |
-| 모든 실제 영역·전취 분리·표시 상태 구분 | 2, 4 |
-| 성적·재수강·코드·학점 누락 정합성 | 3, 4 |
-| 전핵 전체 과목 이수·전선 경계값 | 5 |
-| 지정과목 중복·미수신·빈 목록·총학점 보존 | 3, 4, 7 |
-| 기존 전체 판정·수동 입력 조정, V14 보존 | 1, 6 |
-| 일반 학생·외국어·API 호환성과 실제 사용 검증 | 2, 6, 7 |
+| 2026→2024 코호트와 학과 개편 별칭 | 2, 3 |
+| 전핵·전선 50%, 미만·같음·초과와 홀수 절반 | 1, 2, 3 |
+| 영역별 독립 기준 누락 | 1, 2, 3 |
+| 동일·상충 요구학점 중복 처리 | 2, 3 |
+| 연도·전공·전체 요건 누락과 복수전공 제한 | 2, 3 |
+| 기타 영역·지정과목·총학점·GPA·외국어 보존 | 2, 3 |
+| 일반 재학생 회귀와 실제 HTTP 검증 | 3 |
+| Wiki와 독립 Sol 검토 | 3, 4 |
 
 ## 실행 기록
 
-- 2026-09-06. `feat/341`로 체크아웃하고 설계를 노션 기준으로 갱신했다. 구현 Task는 아직 실행하지 않았다.
-- 2026-09-07. Task 2~4와 Task 6 구현을 시작해 편입 영역 응답·유효 수강 정규화·지정과목 학점·최종 판정 및 수동 PATCH 제거를 반영했다. 교육과정 원천이 확인되지 않아 Task 5는 보류하고 전핵·전선을 `UNAVAILABLE`로 반환한다.
-- 2026-09-07. Java 17 직접 Gradle로 `check`, 정책·DTO·서비스·컨트롤러·OpenAPI·편입 통합 테스트를 통과했다. 기본 Java 24의 `./gradlew test`는 Gradle Test task 생성 중 `Type T not present`로 실행되지 않아 Java 17 검증으로 재실행했다.
-- 이번 구현에서 DB schema·migration은 변경하지 않았고 API 배포 확인, GitHub 이슈 수정과 Wiki 갱신은 수행하지 않았다.
-- 문서와 코드 검증은 `git diff --check`와 Java 17 기준 전체 `check` 통과로 확인했다. 계획의 체크 상태와 실제 구현·보류 범위를 대조했다.
-- 교육과정 원천 확인, 로컬 앱의 실제 OpenAPI 조회, Wiki 갱신과 독립 리뷰는 다음 단계로 남아 있다.
-
-### 2026-09-08. PR #343 CodeRabbit 리뷰 반영.
-
-- 지정과목 이수 여부를 학점 map의 키가 아닌 유효 이수 코드로 판단하도록 두 평가 오버로드를 수정했다. 통과한 과목의 개인 학점이 null이어도 `COMPLETED`를 유지하며, 서비스의 지정과목 합계는 `null`과 `COURSE_DATA_INCOMPLETE`를 반환한다.
-- 2인자 편입 응답 팩터리는 부분 진단의 `MANUAL_REVIEW_REQUIRED`를 유지한다. 3인자 팩터리의 명시적 상태 지정은 보존했다.
-- 편입 수강 과목 코드를 `Locale.ROOT`로 정규화해 지정과목과 동일한 기준으로 비교한다.
-- 지정과목 정책·서비스 테스트에서 기존 오류에 따른 3건 실패를 확인한 뒤 수정했다. 이후 상태 계약과 터키어 Locale 테스트에서 2건 실패를 확인한 뒤 수정했다. 실제 평가기를 연결한 서비스 테스트는 개인 학점 null·0·3, 미수강 지정과목, 일부 합계를 전체 합계로 반환하지 않는 동작과 포털 누적값 보존을 검증한다.
-- Java 17에서 `./gradlew spotlessApply test --tests '*GraduationProgressResponseJsonTest' --tests '*TransferCourseEvaluatorTest' --tests '*DesignatedCourseEvaluatorTest' --tests '*TransferGraduationAnalysisServiceTests' --no-daemon --offline`을 통과했다.
-- Java 17에서 최종 `./gradlew check --stacktrace --no-daemon`을 통과했다. 포맷·Checkstyle·전체 테스트를 검증하고 `git diff --check`도 통과했다.
-- Wiki `API-and-Authentication`, `Core-Domain-Flows`의 편입 부분 진단·지정과목 판정 계약을 확인했다. 이번 수정은 기존 계약을 복구하며 API schema와 DB를 변경하지 않아 Wiki는 수정하지 않았다. 기존 영역 응답 확장의 Wiki 갱신·실제 API 검증, 전핵·전선 원천 연결 및 동일 학기 충돌 처리는 여전히 남아 있다.
+- 2026-09-06. `feat/341`에서 노션 기준 설계를 작성했다.
+- 2026-09-07. 편입 영역 응답, 유효 수강 정규화, 지정과목 학점, 최종 판정 및 수동 PATCH 제거를 구현했다. 당시 전핵·전선 원천 결정 전이라 `Requirements.unavailable()`을 연결했다.
+- 2026-09-07. Java 17에서 전체 `check`와 정책·DTO·서비스·컨트롤러·OpenAPI·편입 통합 테스트를 통과했다. DB schema와 migration은 변경하지 않았다.
+- 2026-09-08. PR #343 CodeRabbit 리뷰에 따라 지정과목 이수와 개인 학점 가용성을 분리하고 과목코드 정규화를 `Locale.ROOT`로 고쳤다. Java 17에서 관련 테스트와 최종 `check`, `git diff --check`를 통과했다.
+- 2026-09-08. 사용자가 이전의 적용 연도·전핵 전체 목록 차단 결정을 대체했다. 3학년 편입 연도에서 2를 뺀 정규 코호트의 기존 `department_area_requirements` 전핵·전선 요구학점을 각각 정확히 50% 적용하기로 확정했다.
+- 2026-09-08. 후속 구현에서 2026→2024, 임계값, 영역별 누락, 학과 개편 별칭, 비편입 회귀 테스트를 통과했다. random port와 JWT를 사용한 실제 `/v3/api-docs` 및 졸업 진행 GET도 통과했고, 기존 schema 설명 불일치는 현재 계약에 맞게 수정했다.
+- 2026-09-08. 독립 Sol 리뷰에서 상충 기준 행의 임의 선택을 확인했다. DB 통합 테스트가 기존 `COMPARISON` 응답으로 실패하는 것을 확인한 뒤, 동일 요구학점 중복은 허용하고 상충 값은 해당 영역만 `UNAVAILABLE`로 수정했다. 재검토에서 차단사항 없음으로 확인됐다.
+- 2026-09-08. Java 17에서 `./gradlew spotlessApply test --tests '*TransferGraduationAnalysisIntegrationTest.leavesConflictingRequirementUnknownAndAcceptsIdenticalDuplicates' --no-daemon --offline`을 통과했다. 최종 `./gradlew check --stacktrace --no-daemon`은 491건 중 490건 통과·1건 건너뜀·실패와 오류 0건이다. 새 HTTP 테스트는 로컬 랜덤 포트 서버에서 테스트 JWT로 인증한 GET과 `/v3/api-docs`를 검증하며 운영 데이터나 서비스는 사용하지 않는다.
+- 2026-09-08. Wiki `master`의 `API-and-Authentication`, `Core-Domain-Flows`, `Troubleshooting`에 PR #343 적용 예정 계약을 기록했다. Wiki 커밋은 `bb4d51d`이며, 실제 운영 반영 여부는 PR과 배포 이력으로 구분한다. DB schema와 migration은 이번 연결 작업에서 변경하지 않았다.
+- 2026-09-08. 최종 `git diff --check`와 문서 링크·변경 범위 검토를 통과했다. 기존 `.DS_Store`는 커밋하지 않는다. 복수전공 편입 정책과 이전부터 남은 동일 학기 상충 수강 기록 문제는 별도 후속 범위이며, 운영 배포 및 프론트 화면 연동은 이번 검증에 포함하지 않았다.

@@ -14,10 +14,12 @@ public record TransferAreaProgressDto(
     @Schema(description = "영역 평가 방식") TransferAreaEvaluationType evaluationType,
     @Schema(description = "영역 전체 취득학점", nullable = true) Integer earnedCredits,
     @Schema(description = "기준 비교에 포함되는 취득학점", nullable = true) Integer countedCredits,
-    @Schema(description = "영역 필요학점", nullable = true) BigDecimal requiredCredits,
+    @Schema(description = "편입연도에서 2년 전 일반 학생 전핵·전선 기준학점의 50%. 소수점 기준을 유지한다.", nullable = true)
+        BigDecimal requiredCredits,
     @Schema(description = "영역 기준 충족 여부", nullable = true) Boolean fulfilled,
     @Schema(description = "영역에 포함된 이수 과목") List<CourseDto> courses,
-    @Schema(description = "전핵 대상 과목별 이수 상태") List<DesignatedCourseProgressDto> requiredCourses,
+    @Schema(description = "기존 응답 호환용 필드. 전핵·전선은 학점으로 비교하므로 빈 목록을 반환한다.")
+        List<DesignatedCourseProgressDto> requiredCourses,
     @Schema(description = "영역 평가가 불가능한 사유 코드") List<String> unavailableReasons) {
 
   /** 목록 필드를 방어적 복사해 응답을 생성한다. */

@@ -5,8 +5,6 @@ package com.chukchuk.haksa.domain.graduation.policy;
 import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.CourseDto;
 import com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto;
-import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
-import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseProgressDto;
 import com.chukchuk.haksa.domain.graduation.dto.TransferAreaEvaluationType;
 import com.chukchuk.haksa.domain.graduation.dto.TransferAreaProgressDto;
 import java.math.BigDecimal;
@@ -46,9 +44,23 @@ public class TransferAreaEvaluator {
     for (String areaName : orderedAreaNames(areaNames)) {
       List<CourseInternalDto> courses = coursesByArea.getOrDefault(areaName, List.of());
       if (CORE_AREA.equals(areaName)) {
-        result.add(evaluateCore(courses, evaluation, requirements));
+        result.add(
+            compareCredits(
+                CORE_AREA,
+                courses,
+                evaluation,
+                requirements.coreRequiredCredits(),
+                requirements.coreUnavailableReasons(),
+                "CORE_CURRICULUM_UNAVAILABLE"));
       } else if (ELECTIVE_AREA.equals(areaName)) {
-        result.add(evaluateElective(courses, evaluation, requirements));
+        result.add(
+            compareCredits(
+                ELECTIVE_AREA,
+                courses,
+                evaluation,
+                requirements.electiveRequiredCredits(),
+                requirements.electiveUnavailableReasons(),
+                "ELECTIVE_REQUIREMENT_UNAVAILABLE"));
       } else {
         result.add(earnedOnly(areaName, courses, evaluation));
       }
@@ -56,76 +68,32 @@ public class TransferAreaEvaluator {
     return List.copyOf(result);
   }
 
-  private TransferAreaProgressDto evaluateCore(
+  private TransferAreaProgressDto compareCredits(
+      String areaName,
       List<CourseInternalDto> courses,
       TransferCourseEvaluator.Evaluation evaluation,
-      Requirements requirements) {
-    if (!requirements.coreUnavailableReasons().isEmpty()) {
-      return unavailable(CORE_AREA, courses, evaluation, requirements.coreUnavailableReasons());
-    }
-
-    Map<String, CourseInternalDto> completedByCode = byCourseCode(courses);
-    List<DesignatedCourseProgressDto> requiredCourses =
-        requirements.coreCourses().stream()
-            .map(
-                required ->
-                    new DesignatedCourseProgressDto(
-                        required.courseCode(),
-                        required.courseName(),
-                        required.credits(),
-                        completedByCode.containsKey(normalize(required.courseCode()))
-                            ? DesignatedCourseCompletionStatus.COMPLETED
-                            : DesignatedCourseCompletionStatus.NOT_COMPLETED))
-            .toList();
-    BigDecimal requiredCredits =
-        requirements.coreCourses().stream()
-            .map(RequiredCourse::credits)
-            .map(BigDecimal::valueOf)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    Integer countedCredits = sumCreditsForCodes(requirements.coreCourses(), evaluation);
-    Boolean fulfilled =
-        countedCredits == null
-            ? null
-            : requiredCourses.stream()
-                .allMatch(value -> value.status() == DesignatedCourseCompletionStatus.COMPLETED);
-
-    return new TransferAreaProgressDto(
-        FacultyDivision.전핵,
-        TransferAreaEvaluationType.COMPARISON,
-        sumCredits(courses, evaluation),
-        countedCredits,
-        requiredCredits,
-        fulfilled,
-        toCourseDtos(courses),
-        requiredCourses,
-        countedCredits == null ? List.of("COURSE_DATA_INCOMPLETE") : List.of());
-  }
-
-  private TransferAreaProgressDto evaluateElective(
-      List<CourseInternalDto> courses,
-      TransferCourseEvaluator.Evaluation evaluation,
-      Requirements requirements) {
-    if (!requirements.electiveUnavailableReasons().isEmpty()
-        || requirements.electiveRequiredCredits() == null) {
-      List<String> reasons =
-          requirements.electiveUnavailableReasons().isEmpty()
-              ? List.of("ELECTIVE_REQUIREMENT_UNAVAILABLE")
-              : requirements.electiveUnavailableReasons();
-      return unavailable(ELECTIVE_AREA, courses, evaluation, reasons);
+      BigDecimal requiredCredits,
+      List<String> unavailableReasons,
+      String missingRequirementReason) {
+    if (!unavailableReasons.isEmpty() || requiredCredits == null) {
+      return unavailable(
+          areaName,
+          courses,
+          evaluation,
+          unavailableReasons.isEmpty() ? List.of(missingRequirementReason) : unavailableReasons);
     }
 
     Integer earnedCredits = sumCredits(courses, evaluation);
     Boolean fulfilled =
         earnedCredits == null
             ? null
-            : BigDecimal.valueOf(earnedCredits).compareTo(requirements.electiveRequiredCredits())
-                >= 0;
+            : BigDecimal.valueOf(earnedCredits).compareTo(requiredCredits) >= 0;
     return new TransferAreaProgressDto(
-        FacultyDivision.전선,
+        parseArea(areaName),
         TransferAreaEvaluationType.COMPARISON,
         earnedCredits,
         earnedCredits,
-        requirements.electiveRequiredCredits(),
+        requiredCredits,
         fulfilled,
         toCourseDtos(courses),
         List.of(),
@@ -182,16 +150,6 @@ public class TransferAreaEvaluator {
     return grouped;
   }
 
-  private Map<String, CourseInternalDto> byCourseCode(List<CourseInternalDto> courses) {
-    Map<String, CourseInternalDto> result = new HashMap<>();
-    for (CourseInternalDto course : courses) {
-      if (course.getCourseCode() != null) {
-        result.put(normalize(course.getCourseCode()), course);
-      }
-    }
-    return result;
-  }
-
   private Integer sumCredits(
       List<CourseInternalDto> courses, TransferCourseEvaluator.Evaluation evaluation) {
     int total = 0;
@@ -202,26 +160,6 @@ public class TransferAreaEvaluator {
         return null;
       }
       total += course.getCredits();
-    }
-    return total;
-  }
-
-  private Integer sumCreditsForCodes(
-      List<RequiredCourse> requiredCourses, TransferCourseEvaluator.Evaluation evaluation) {
-    Set<String> requiredCodes =
-        requiredCourses.stream()
-            .map(RequiredCourse::courseCode)
-            .map(this::normalize)
-            .collect(java.util.stream.Collectors.toSet());
-    int total = 0;
-    for (String requiredCode : requiredCodes) {
-      if (evaluation.unknownCreditCourseCodes().contains(requiredCode)) {
-        return null;
-      }
-      Integer credits = evaluation.creditsByCourseCode().get(requiredCode);
-      if (credits != null) {
-        total += credits;
-      }
     }
     return total;
   }
@@ -260,20 +198,16 @@ public class TransferAreaEvaluator {
     }
   }
 
-  private String normalize(String value) {
-    return value == null ? "" : value.trim().toUpperCase();
-  }
-
   /**
    * 검증된 편입생 기준을 보관한다.
    *
-   * @param coreCourses 검증된 전핵 대상 과목
-   * @param electiveRequiredCredits 검증된 전선 필요학점
+   * @param coreRequiredCredits 일반 학생 전핵 기준학점의 50%
+   * @param electiveRequiredCredits 일반 학생 전선 기준학점의 50%
    * @param coreUnavailableReasons 전핵 기준 미확인 사유
    * @param electiveUnavailableReasons 전선 기준 미확인 사유
    */
   public record Requirements(
-      List<RequiredCourse> coreCourses,
+      BigDecimal coreRequiredCredits,
       BigDecimal electiveRequiredCredits,
       List<String> coreUnavailableReasons,
       List<String> electiveUnavailableReasons) {
@@ -285,7 +219,7 @@ public class TransferAreaEvaluator {
      */
     public static Requirements unavailable() {
       return new Requirements(
-          List.of(),
+          null,
           null,
           List.of("CORE_CURRICULUM_UNAVAILABLE"),
           List.of("ELECTIVE_REQUIREMENT_UNAVAILABLE"));
@@ -294,18 +228,14 @@ public class TransferAreaEvaluator {
     /**
      * 목록 필드를 방어적으로 보관한다.
      *
-     * @param coreCourses 검증된 전핵 대상 과목
-     * @param electiveRequiredCredits 검증된 전선 필요학점
+     * @param coreRequiredCredits 일반 학생 전핵 기준학점의 50%
+     * @param electiveRequiredCredits 일반 학생 전선 기준학점의 50%
      * @param coreUnavailableReasons 전핵 기준 미확인 사유
      * @param electiveUnavailableReasons 전선 기준 미확인 사유
      */
     public Requirements {
-      coreCourses = List.copyOf(coreCourses);
       coreUnavailableReasons = List.copyOf(coreUnavailableReasons);
       electiveUnavailableReasons = List.copyOf(electiveUnavailableReasons);
     }
   }
-
-  /** 전핵 대상 한 과목의 기준 정보다. */
-  public record RequiredCourse(String courseCode, String courseName, int credits) {}
 }

@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.chukchuk.haksa.domain.course.model.FacultyDivision;
 import com.chukchuk.haksa.domain.graduation.dto.CourseInternalDto;
-import com.chukchuk.haksa.domain.graduation.dto.DesignatedCourseCompletionStatus;
 import com.chukchuk.haksa.domain.graduation.dto.TransferAreaEvaluationType;
 import com.chukchuk.haksa.domain.graduation.dto.TransferAreaProgressDto;
 import java.math.BigDecimal;
@@ -14,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class TransferAreaEvaluatorTest {
 
@@ -37,35 +38,45 @@ class TransferAreaEvaluatorTest {
     assertThat(area.fulfilled()).isNull();
   }
 
-  @Test
-  void marksRequiredCoreCourseMissingEvenWhenOtherCoreCreditsAreEnough() {
-    TransferCourseEvaluator.Evaluation courses =
-        evaluation(course("전핵", "C301", 3), course("전핵", "C999", 3));
+  @ParameterizedTest
+  @CsvSource({"8,9,false", "9,9,true", "10,9,true", "9,9.5,false", "10,9.5,true"})
+  void comparesCoreCreditsWithoutRequiringIndividualCourses(
+      int earned, String required, boolean fulfilled) {
+    TransferCourseEvaluator.Evaluation courses = evaluation(course("전핵", "C999", earned));
     TransferAreaEvaluator.Requirements requirements =
         new TransferAreaEvaluator.Requirements(
-            List.of(
-                new TransferAreaEvaluator.RequiredCourse("C301", "자료구조", 3),
-                new TransferAreaEvaluator.RequiredCourse("C401", "운영체제", 3)),
-            BigDecimal.valueOf(48),
-            List.of(),
-            List.of());
-
+            new BigDecimal(required), new BigDecimal("48"), List.of(), List.of());
     TransferAreaProgressDto core =
         evaluator.evaluate(courses, requirements).stream()
             .filter(value -> value.areaType() == FacultyDivision.전핵)
             .findFirst()
             .orElseThrow();
-
     assertThat(core.evaluationType()).isEqualTo(TransferAreaEvaluationType.COMPARISON);
-    assertThat(core.earnedCredits()).isEqualTo(6);
-    assertThat(core.countedCredits()).isEqualTo(3);
-    assertThat(core.requiredCredits()).isEqualByComparingTo("6");
-    assertThat(core.fulfilled()).isFalse();
-    assertThat(core.requiredCourses())
-        .extracting(value -> value.status())
-        .containsExactly(
-            DesignatedCourseCompletionStatus.COMPLETED,
-            DesignatedCourseCompletionStatus.NOT_COMPLETED);
+    assertThat(core.earnedCredits()).isEqualTo(earned);
+    assertThat(core.countedCredits()).isEqualTo(earned);
+    assertThat(core.requiredCredits()).isEqualByComparingTo(required);
+    assertThat(core.fulfilled()).isEqualTo(fulfilled);
+    assertThat(core.requiredCourses()).isEmpty();
+  }
+
+  @Test
+  void keepsFulfillmentUnknownWhenEarnedCreditsAreUnknown() {
+    CourseInternalDto course =
+        new CourseInternalDto(1L, "전핵", null, "P", "C101", 1, 2026, "C101", null, null);
+    TransferAreaProgressDto core =
+        evaluator
+            .evaluate(
+                evaluation(course),
+                new TransferAreaEvaluator.Requirements(
+                    new BigDecimal("9"), new BigDecimal("48"), List.of(), List.of()))
+            .stream()
+            .filter(value -> value.areaType() == FacultyDivision.전핵)
+            .findFirst()
+            .orElseThrow();
+    assertThat(core.evaluationType()).isEqualTo(TransferAreaEvaluationType.COMPARISON);
+    assertThat(core.earnedCredits()).isNull();
+    assertThat(core.fulfilled()).isNull();
+    assertThat(core.unavailableReasons()).containsExactly("COURSE_DATA_INCOMPLETE");
   }
 
   @Test
@@ -73,7 +84,7 @@ class TransferAreaEvaluatorTest {
     TransferCourseEvaluator.Evaluation courses = evaluation(course("전선", "E101", 45));
     TransferAreaEvaluator.Requirements requirements =
         new TransferAreaEvaluator.Requirements(
-            List.of(),
+            null,
             null,
             List.of("CORE_CURRICULUM_UNAVAILABLE"),
             List.of("ELECTIVE_REQUIREMENT_UNAVAILABLE"));
