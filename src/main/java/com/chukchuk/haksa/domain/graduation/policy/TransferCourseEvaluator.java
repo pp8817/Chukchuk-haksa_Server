@@ -66,6 +66,7 @@ public class TransferCourseEvaluator {
       int recency = previous == null ? 1 : compareRecency(studentCourse, previous);
       if (previous == null || recency > 0) {
         latestByCourseCode.put(courseCode, studentCourse);
+        conflictingCourseCodes.remove(courseCode);
       } else if (recency == 0 && !sameResult(studentCourse, previous)) {
         conflictingCourseCodes.add(courseCode);
       }
@@ -135,14 +136,8 @@ public class TransferCourseEvaluator {
     if (year != 0) {
       return year;
     }
-    int semester =
-        Integer.compare(
-            nullToZero(leftOffering.getSemester()), nullToZero(rightOffering.getSemester()));
-    if (semester != 0) {
-      return semester;
-    }
     return Integer.compare(
-        nullToZero(left.getOriginalScore()), nullToZero(right.getOriginalScore()));
+        nullToZero(leftOffering.getSemester()), nullToZero(rightOffering.getSemester()));
   }
 
   private boolean sameResult(StudentCourse left, StudentCourse right) {

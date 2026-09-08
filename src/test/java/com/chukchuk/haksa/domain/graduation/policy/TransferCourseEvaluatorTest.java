@@ -21,6 +21,8 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class TransferCourseEvaluatorTest {
 
@@ -117,6 +119,68 @@ class TransferCourseEvaluatorTest {
     TransferCourseEvaluator.Evaluation result = evaluator.evaluate(List.of(first, second));
 
     assertThat(result.unknownCreditCourseCodes()).containsExactly("C101");
+  }
+
+  @ParameterizedTest
+  @CsvSource({"4, A0, 전핵", "3, B0, 전핵", "3, A0, 전선"})
+  void detectsLatestSemesterConflictsRegardlessOfScoreAndInputOrder(
+      int credits, GradeType grade, FacultyDivision area) {
+    StudentCourse first = course("C101", FacultyDivision.전핵, 2025, 1, 3, GradeType.A0);
+    StudentCourse second = course("C101", area, 2025, 1, credits, grade);
+    when(first.getOriginalScore()).thenReturn(80);
+    when(second.getOriginalScore()).thenReturn(90);
+
+    for (List<StudentCourse> records : List.of(List.of(first, second), List.of(second, first))) {
+      assertThat(evaluator.evaluate(records).unknownCreditCourseCodes()).containsExactly("C101");
+    }
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2024, 2", "2025, 1"})
+  void discardsOlderSemesterConflictsRegardlessOfInputOrder(int latestYear, int latestSemester) {
+    StudentCourse first = course("C101", FacultyDivision.전핵, 2024, 1, 2, GradeType.A0);
+    StudentCourse second = course("C101", FacultyDivision.전핵, 2024, 1, 3, GradeType.A0);
+    StudentCourse latest =
+        course("C101", FacultyDivision.전핵, latestYear, latestSemester, 4, GradeType.B0);
+    when(first.getOriginalScore()).thenReturn(90);
+    when(second.getOriginalScore()).thenReturn(90);
+    when(latest.getOriginalScore()).thenReturn(80);
+
+    for (List<StudentCourse> records :
+        List.of(
+            List.of(first, second, latest),
+            List.of(second, first, latest),
+            List.of(first, latest, second),
+            List.of(second, latest, first),
+            List.of(latest, first, second),
+            List.of(latest, second, first))) {
+      TransferCourseEvaluator.Evaluation result = evaluator.evaluate(records);
+
+      assertThat(result.unknownCreditCourseCodes()).isEmpty();
+      assertThat(result.earnedCreditsByCourseCode())
+          .containsOnlyKeys("C101")
+          .containsEntry("C101", 4);
+      assertThat(result.courses())
+          .singleElement()
+          .satisfies(
+              selected -> {
+                assertThat(selected.getYear()).isEqualTo(latestYear);
+                assertThat(selected.getSemester()).isEqualTo(latestSemester);
+              });
+    }
+  }
+
+  @Test
+  void keepsLatestSemesterConflictWhenMatchingRecordArrivesLater() {
+    StudentCourse first = course("C101", FacultyDivision.전핵, 2025, 1, 3, GradeType.A0);
+    StudentCourse conflicting = course("C101", FacultyDivision.전핵, 2025, 1, 4, GradeType.A0);
+    StudentCourse matching = course("C101", FacultyDivision.전핵, 2025, 1, 3, GradeType.A0);
+    when(first.getOriginalScore()).thenReturn(80);
+    when(conflicting.getOriginalScore()).thenReturn(80);
+    when(matching.getOriginalScore()).thenReturn(90);
+
+    assertThat(evaluator.evaluate(List.of(first, conflicting, matching)).unknownCreditCourseCodes())
+        .containsExactly("C101");
   }
 
   private StudentCourse course(
