@@ -10,48 +10,18 @@ import java.time.Instant;
 public class PortalLinkDto {
 
   /**
-   * 검증할 포털 종류와 계정 자격 증명을 담는다.
+   * 포털 연동 작업 생성에 필요한 자격 증명을 전달한다.
    *
    * @param portalType 포털 유형
    * @param username 포털 로그인 아이디
    * @param password 포털 비밀번호
-   */
-  @Schema(description = "포털 로그인 검증 요청")
-  public record LoginRequest(
-      @NotBlank @JsonProperty("portal_type") @Schema(description = "포털 타입", example = "suwon")
-          String portalType,
-      @NotBlank @Schema(description = "포털 아이디", example = "17019013") String username,
-      @NotBlank @Schema(description = "포털 비밀번호", example = "pw") String password) {}
-
-  /**
-   * 검증 완료 후 연동 작업 생성에 사용할 일회성 토큰을 담는다.
-   *
-   * @param portalVerificationToken 연동 작업 생성에 사용할 일회성 검증 토큰
-   */
-  @Schema(description = "포털 로그인 검증 응답")
-  public record LoginResponse(
-      @JsonProperty("portal_verification_token")
-          @Schema(description = "포털 로그인 검증 token", example = "token")
-          String portalVerificationToken) {}
-
-  /**
-   * 포털 연동 작업 생성에 필요한 자격 증명과 검증 토큰을 전달한다.
-   *
-   * @param portalType 포털 유형
-   * @param username 포털 로그인 아이디
-   * @param password 포털 비밀번호
-   * @param portalVerificationToken 로그인 검증으로 발급된 일회성 토큰
    */
   @Schema(description = "포털 연동 job 생성 요청")
   public record LinkRequest(
       @NotBlank @JsonProperty("portal_type") @Schema(description = "포털 타입", example = "suwon")
           String portalType,
       @NotBlank @Schema(description = "포털 아이디", example = "17019013") String username,
-      @NotBlank @Schema(description = "포털 비밀번호", example = "pw") String password,
-      @NotBlank
-          @JsonProperty("portal_verification_token")
-          @Schema(description = "포털 로그인 검증 token", example = "token")
-          String portalVerificationToken) {}
+      @NotBlank @Schema(description = "포털 비밀번호", example = "pw") String password) {}
 
   /**
    * 접수된 포털 연동 작업의 식별자와 상태 조회 경로를 전달한다.

@@ -39,7 +39,8 @@ class PortalLinkControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
             argThat(
                 request ->
                     "suwon".equals(request.portalType())
-                        && "verification-token".equals(request.portalVerificationToken()))))
+                        && "17019013".equals(request.username())
+                        && "pw".equals(request.password()))))
         .thenReturn(
             new PortalLinkDto.AcceptedResponse("job-1", "accepted", "/portal/link/jobs/job-1"));
 
@@ -53,8 +54,7 @@ class PortalLinkControllerApiIntegrationTest extends ApiControllerWebMvcTestSupp
                                 {
                                   "portal_type":"suwon",
                                   "username":"17019013",
-                                  "password":"pw",
-                                  "portal_verification_token":"verification-token"
+                                  "password":"pw"
                                 }
                     """))
         .andExpect(status().isAccepted())

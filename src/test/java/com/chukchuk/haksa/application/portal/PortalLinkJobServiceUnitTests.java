@@ -4,11 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.chukchuk.haksa.domain.portal.dto.PortalLinkDto;
@@ -24,7 +21,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,8 +33,6 @@ class PortalLinkJobServiceUnitTests {
   @Mock private ScrapeJobOutboxDispatcher scrapeJobOutboxDispatcher;
 
   @Mock private UserService userService;
-
-  @Mock private PortalLoginVerificationTokenService tokenService;
 
   @Test
   @DisplayName("새 요청은 job/outbox 저장 후 같은 요청에서 동기 publish 한다")
@@ -75,68 +69,7 @@ class PortalLinkJobServiceUnitTests {
 
     assertThat(response.jobId()).isEqualTo("job-1");
     assertThat(response.status()).isEqualTo("accepted");
-    verify(tokenService).verify(userId, "suwon", "17019013", "pw", "verification-token");
     verify(scrapeJobOutboxDispatcher).dispatchOnce("outbox-1");
-  }
-
-  @Test
-  @DisplayName("포털 로그인 검증 token을 먼저 검증한 뒤 job을 생성한다")
-  void acceptLinkJobVerifiesPortalLoginTokenBeforeCreatingJob() {
-    UUID userId = UUID.randomUUID();
-    PortalLinkJobService service = service();
-    PortalLinkDto.LinkRequest request = linkRequest("pw");
-    PortalLinkJobTxService.PreparedJob preparedJob =
-        new PortalLinkJobTxService.PreparedJob("job-1", "outbox-1", true, false);
-
-    when(userService.getUserById(userId)).thenReturn(disconnectedUser(userId));
-    when(portalLinkJobTxService.createOrLoadJob(
-            eq(userId),
-            eq("idem-1"),
-            eq("suwon"),
-            eq(ScrapeJobOperationType.LINK),
-            any(),
-            any(),
-            eq("17019013"),
-            eq("pw"),
-            any()))
-        .thenReturn(preparedJob);
-
-    service.acceptJob(userId, "idem-1", request);
-
-    InOrder inOrder = inOrder(tokenService, userService, portalLinkJobTxService);
-    inOrder.verify(tokenService).verify(userId, "suwon", "17019013", "pw", "verification-token");
-    inOrder.verify(userService).getUserById(userId);
-    inOrder
-        .verify(portalLinkJobTxService)
-        .createOrLoadJob(
-            eq(userId),
-            eq("idem-1"),
-            eq("suwon"),
-            eq(ScrapeJobOperationType.LINK),
-            any(),
-            any(),
-            eq("17019013"),
-            eq("pw"),
-            any());
-  }
-
-  @Test
-  @DisplayName("포털 로그인 검증 token 검증에 실패하면 job을 생성하지 않는다")
-  void acceptLinkJobDoesNotCreateJobWhenPortalLoginTokenIsInvalid() {
-    UUID userId = UUID.randomUUID();
-    PortalLinkJobService service = service();
-    PortalLinkDto.LinkRequest request = linkRequest("wrong");
-    doThrow(new CommonException(ErrorCode.INVALID_ARGUMENT))
-        .when(tokenService)
-        .verify(userId, "suwon", "17019013", "wrong", "verification-token");
-
-    assertThatThrownBy(() -> service.acceptJob(userId, "idem-1", request))
-        .isInstanceOf(CommonException.class)
-        .satisfies(
-            ex ->
-                assertThat(((CommonException) ex).getCode())
-                    .isEqualTo(ErrorCode.INVALID_ARGUMENT.code()));
-    verifyNoInteractions(userService, portalLinkJobTxService, scrapeJobOutboxDispatcher);
   }
 
   @Test
@@ -250,12 +183,11 @@ class PortalLinkJobServiceUnitTests {
         portalLinkJobTxService,
         scrapeJobOutboxDispatcher,
         userService,
-        new ObjectMapper().findAndRegisterModules(),
-        tokenService);
+        new ObjectMapper().findAndRegisterModules());
   }
 
   private static PortalLinkDto.LinkRequest linkRequest(String password) {
-    return new PortalLinkDto.LinkRequest("suwon", "17019013", password, "verification-token");
+    return new PortalLinkDto.LinkRequest("suwon", "17019013", password);
   }
 
   private static User disconnectedUser(UUID userId) {
