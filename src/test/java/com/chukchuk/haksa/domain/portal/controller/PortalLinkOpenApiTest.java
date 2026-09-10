@@ -3,27 +3,25 @@
 package com.chukchuk.haksa.domain.portal.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {
       "scraping.scheduler.enabled=false",
       "scraping.publisher.enabled=false",
       "scraping.stale.enabled=false"
     })
-@AutoConfigureMockMvc(addFilters = false)
 class PortalLinkOpenApiTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired private TestRestTemplate restTemplate;
 
   @Autowired private ObjectMapper objectMapper;
 
@@ -31,8 +29,15 @@ class PortalLinkOpenApiTest {
   void portalLinkSuccessResponsesDocumentSuccessResponseWrappers() throws Exception {
     JsonNode apiDocs = apiDocs();
 
-    assertSuccessResponseSchema(
-        apiDocs, "/portal/login", "post", "200", "PortalLoginApiResponse", "LoginResponse");
+    assertThat(apiDocs.path("paths").has("/portal/login")).isFalse();
+    assertThat(
+            apiDocs
+                .path("components")
+                .path("schemas")
+                .path("LinkRequest")
+                .path("properties")
+                .has("portal_verification_token"))
+        .isFalse();
     assertSuccessResponseSchema(
         apiDocs,
         "/portal/link",
@@ -64,14 +69,9 @@ class PortalLinkOpenApiTest {
   }
 
   private JsonNode apiDocs() throws Exception {
-    String body =
-        mockMvc
-            .perform(get("/v3/api-docs"))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    return objectMapper.readTree(body);
+    ResponseEntity<String> response = restTemplate.getForEntity("/v3/api-docs", String.class);
+    assertThat(response.getStatusCode().value()).isEqualTo(200);
+    return objectMapper.readTree(response.getBody());
   }
 
   private void assertSuccessResponseSchema(

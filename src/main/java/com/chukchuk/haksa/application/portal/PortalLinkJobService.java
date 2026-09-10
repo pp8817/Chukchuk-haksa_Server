@@ -28,26 +28,19 @@ public class PortalLinkJobService {
   private final ScrapeJobOutboxDispatcher scrapeJobOutboxDispatcher;
   private final UserService userService;
   private final ObjectMapper objectMapper;
-  private final PortalLoginVerificationTokenService tokenService;
 
   /**
    * 포털 연동 작업을 접수하고 비동기 처리 정보를 반환한다.
    *
    * @param userId 사용자 식별자
    * @param idempotencyKey 같은 요청을 재사용하기 위한 비어 있지 않은 멱등성 키
-   * @param request 포털 자격 증명과 사전 검증 토큰을 담은 요청
+   * @param request 포털 유형과 자격 증명을 담은 요청
    * @return 접수되거나 재사용된 작업 식별자와 상태 조회 경로
    * @throws CommonException 요청이 유효하지 않거나 멱등성 충돌 또는 작업 발행에 실패한 경우
    */
   public PortalLinkDto.AcceptedResponse acceptJob(
       UUID userId, String idempotencyKey, PortalLinkDto.LinkRequest request) {
     validateRequest(idempotencyKey, request);
-    tokenService.verify(
-        userId,
-        request.portalType(),
-        request.username(),
-        request.password(),
-        request.portalVerificationToken());
 
     User user = userService.getUserById(userId);
     ScrapeJobOperationType operationType =
@@ -127,9 +120,6 @@ public class PortalLinkJobService {
         || request.username().isBlank()
         || request.password() == null
         || request.password().isBlank()) {
-      throw new CommonException(ErrorCode.INVALID_ARGUMENT);
-    }
-    if (request.portalVerificationToken() == null || request.portalVerificationToken().isBlank()) {
       throw new CommonException(ErrorCode.INVALID_ARGUMENT);
     }
     if (!"suwon".equals(normalize(request.portalType()))) {

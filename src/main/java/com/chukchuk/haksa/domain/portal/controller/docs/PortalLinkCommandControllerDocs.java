@@ -20,21 +20,22 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-/** 검증된 포털 자격 증명으로 비동기 연동 작업을 생성하는 API를 정의한다. */
+/** 포털 자격 증명으로 비동기 연동 작업을 생성하는 API를 정의한다. */
 @Tag(name = "Portal Link", description = "비동기 포털 연동 job 생성 및 폴링 안내")
 public interface PortalLinkCommandControllerDocs {
 
   /**
-   * 일회용 검증 토큰으로 비동기 포털 연동 작업을 생성한다.
+   * 포털 자격 증명으로 비동기 포털 연동 작업을 생성한다.
    *
    * @param userDetails 인증된 사용자 정보
    * @param idempotencyKey 멱등성 키
-   * @param request 포털 유형·일회용 검증 토큰·멱등성 키를 포함한 작업 생성 요청
+   * @param request 포털 유형·아이디·비밀번호를 포함한 작업 생성 요청
    * @return 접수된 작업 식별자와 상태 조회 경로
    */
   @Operation(
       summary = "포털 연동 job 생성",
-      description = "포털 로그인 verification token을 검증한 뒤 비동기 스크래핑 job을 생성하고 polling endpoint를 반환합니다.",
+      description =
+          "포털 자격 증명으로 비동기 스크래핑 job을 생성하고 polling endpoint를 반환합니다. 포털 로그인 실패는 job 상태 조회로 확인합니다.",
       responses = {
         @ApiResponse(
             responseCode = "202",
@@ -52,7 +53,7 @@ public interface PortalLinkCommandControllerDocs {
                     schema = @Schema(implementation = ErrorResponseWrapper.class))),
         @ApiResponse(
             responseCode = "401",
-            description = "인증 실패",
+            description = "서비스 접근 토큰 인증 실패",
             content =
                 @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,

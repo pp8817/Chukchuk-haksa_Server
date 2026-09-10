@@ -19,11 +19,6 @@ security:
 crawler:
   base-url: https://example.com
 
-portal:
-  login-verification:
-    secret: test-portal-login-verification-secret
-    ttl-seconds: 300
-
 scraping:
   mode: async
   job:
